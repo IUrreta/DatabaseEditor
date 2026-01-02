@@ -9885,9 +9885,6 @@ input::-webkit-inner-spin-button {
   padding: 0 10px;
 }
 
-#selectImage {
-  margin-top: 0px !important;
-}
 
 .color-selector {
   display: flex;
@@ -10172,7 +10169,7 @@ input::-webkit-inner-spin-button {
 }
 
 #editorPill {
-  width: 70px;
+  width: 81px;
 }
 
 #gamePill {
@@ -11322,6 +11319,13 @@ body:has(#mentalitySpan.frozen) #driverMentalityAttributes {
 
 input[type="range"] {
   width: 100%;
+  outline: none;
+}
+
+input[type="range"]:focus,
+input[type="range"]:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 datalist {
@@ -11339,24 +11343,73 @@ datalist .my-mark {
   width: 2px;
 }
 
-#difficultySlider::-webkit-slider-thumb {
+.slider-and-label{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 400px;
+}
+
+#turningPointsFrequencyLabel{
+  width: 160px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
   background-color: var(--new-primary-dark);
   z-index: 2;
   box-shadow: none;
 }
 
-#difficultySlider::-webkit-slider-thumb:hover {
+input[type="range"]:focus::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  background-color: var(--new-primary-dark);
+  box-shadow: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
   outline: 1px solid var(--new-primary);
   transform: scale(1.05);
 }
 
-#difficultySlider::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: var(--text-selected);
+}
+
+input[type="range"]::-moz-range-thumb {
+  background-color: var(--new-primary-dark);
+  border: none;
+  box-shadow: none;
+}
+
+input[type="range"]::-moz-range-thumb:active {
+  background-color: var(--new-primary-dark);
+  box-shadow: none;
+}
+
+input[type="range"]::-moz-range-track {
   background-color: var(--text-selected);
 }
 
 .option-state {
   padding-left: 5px;
   transition: color 0.15s;
+}
+
+#turningPointsFrequencyLabel.tp-default {
+  color: var(--modal-text);
+}
+
+#turningPointsFrequencyLabel.tp-less {
+  color: var(--new-secondary);
+}
+
+#turningPointsFrequencyLabel.tp-more {
+  color: var(--new-primary);
 }
 
 .dif-warning {

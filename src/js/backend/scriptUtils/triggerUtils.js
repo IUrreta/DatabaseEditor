@@ -10,14 +10,6 @@ const difficultyDict = {
     research: 0
   },
   1: {
-    name: "reducedWeight",
-    perc: 0,
-    "7and8": 0,
-    "9": 0,
-    reduction: 0,
-    research: 0
-  },
-  2: {
     name: "extraHard",
     perc: 0.5,
     "7and8": 0.01,
@@ -25,7 +17,7 @@ const difficultyDict = {
     reduction: 0,
     research: 8
   },
-  3: {
+  2: {
     name: "brutal",
     perc: 0.8,
     "7and8": 0.016,
@@ -33,7 +25,7 @@ const difficultyDict = {
     reduction: 0.05,
     research: 14
   },
-  4: {
+  3: {
     name: "unfair",
     perc: 1.5,
     "7and8": 0.03,
@@ -41,7 +33,7 @@ const difficultyDict = {
     reduction: 0.11,
     research: 30
   },
-  5: {
+  4: {
     name: "insane",
     perc: 2,
     "7and8": 0.04,
@@ -49,7 +41,7 @@ const difficultyDict = {
     reduction: 0.16,
     research: 45
   },
-  6: {
+  5: {
     name: "impossible",
     perc: 3,
     "7and8": 0.06,
@@ -75,7 +67,9 @@ export function manageDifficultyTriggers(triggerList) {
 
 export function manageWeightTrigger(triggerLevel) {
   console.log("Managing weight trigger with level:", triggerLevel);
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_reducedWeight", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_normal", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_extraHard", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_extreme", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_impossible", [], 'run');
   triggerLevel = parseInt(triggerLevel);
@@ -83,7 +77,7 @@ export function manageWeightTrigger(triggerLevel) {
   if (triggerLevel > 0) {
     if (triggerLevel === 1) {
       triggerSQL = `
-          CREATE TRIGGER reduced_weight_normal
+          CREATE TRIGGER reduced_weight_extraHard
           AFTER INSERT ON Parts_Designs_StatValues
           FOR EACH ROW
           WHEN (
@@ -157,6 +151,7 @@ export function manageDesignTimeTriggers(triggerLevel) {
 export function manageDesignBoostTriggers(triggerLevel) {
   triggerLevel = parseInt(triggerLevel);
   queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_reducedWeight", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS difficulty_brutal", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS difficulty_unfair", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS difficulty_insane", [], 'run');
@@ -249,6 +244,7 @@ export function manageInstantBuildTriggers(triggerLevel) {
 }
 
 export function manageResearchTriggers(triggerLevel) {
+  queryDB("DROP TRIGGER IF EXISTS research_reducedWeight", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS research_extraHard", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS research_brutal", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS research_unfair", [], 'run');
@@ -326,8 +322,11 @@ export function fetchExistingTriggers() {
       const triggerName = row[0];
       const parts = triggerName.split("_");
       const dif = parts[parts.length - 1];
+      console.log("Processing trigger:", triggerName, "with difficulty part:", dif);
       const dif_level = invertedDifficultyDict[dif] !== undefined ? invertedDifficultyDict[dif] : 0;
+      console.log("Mapped difficulty level:", dif_level);
       const type_trigger = parts[0];
+
       if (type_trigger === "difficulty") {
         triggerList.statDif = dif_level;
       } else if (type_trigger === "designTime") {
@@ -349,6 +348,7 @@ export function fetchExistingTriggers() {
       } else if (type_trigger === "clear") {
         frozenMentality = 1;
       }
+      
       if (dif_level > highest_difficulty) highest_difficulty = dif_level;
     });
   }

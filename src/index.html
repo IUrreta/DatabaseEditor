@@ -422,7 +422,7 @@
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills d-none" data-bs-toggle="pill"
                   data-section=".teams-section" id="editorPill">
-                  <div class="basic-label bold-font">Save</div>
+                  <div class="basic-label bold-font">Editor</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
@@ -600,10 +600,10 @@
                   </div>
                   <div class="logo-and-preview">
                     <div style="width: max-content;">
-                      <button class="custom-dropdown custom-button" id="selectImage">
-                        <div class="front-gradient">Select icon</div>
-                      </button>
-                      <div class="dropdown-line"></div>
+                      <div class="button-with-icon" id="selectImage">
+                        <i class="bi bi-image"></i>
+                        <div class="bold-font">Select icon</div>
+                      </div>
                     </div>
                     <input class="d-none" type="file" id="fileInput" accept="image/*">
                     <img class="logo-preview"></img>
@@ -622,6 +622,17 @@
                   </div>
                 </div>
 
+              </div>
+            </div>
+            <div class="mt-4 d-none" id="turningPointsFrequencyConfig">
+              <h5 class="modal-subtitle bold-font">Turning Points Frequency</h5>
+              <div class="modal-text">
+                Scales the chance and seasonal cap for all Turning Points.
+              </div>
+              <div class="slider-and-label">
+                <input class="form-range" type="range" min="0" max="4" step="1" value="2"
+                  id="turningPointsFrequencySlider">
+                <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
               </div>
             </div>
           </div>

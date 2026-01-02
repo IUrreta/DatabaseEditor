@@ -512,3 +512,78 @@ export const weightDifConfig = {0 : {text: "Disabled", className: "disabled"}, 1
 export const defaultDifficultiesConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Extra Hard", className: "extra-hard"},
         2 : {text: "Brutal", className: "brutal"}, 3 : {text: "Unfair", className: "unfair"},
         4 : {text: "Insane", className: "insane"}, 5 : {text: "Impossible", className: "impossible"}}
+
+export const defaultTurningPointsFrequencyPreset = 2;
+
+export const turningPointsFrequencyLevels = [
+    { label: "Much less" },
+    { label: "Less" },
+    { label: "Default" },
+    { label: "More" },
+    { label: "Most" }
+];
+
+export const turningPointsTuningByType = {
+    dsq: {
+        chance: [0.02, 0.05, 0.08, 0.15, 0.25],
+        max: [1, 1, 2, 3, 4],
+    },
+    midSeasonTransfers: {
+        chance: [0.15, 0.3, 0.5, 0.7, 0.9],
+        max: [1, 2, 3, 3, 3],
+    },
+    technicalDirective: {
+        chance: [0.1, 0.25, 0.4, 0.6, 0.8],
+        max: [1, 1, 2, 2, 2],
+    },
+    investment: {
+        chance: [0.02, 0.05, 0.1, 0.2, 0.35],
+        max: [1, 1, 1, 2, 3],
+    },
+    raceSubstitution: {
+        chance: [0.02, 0.05, 0.1, 0.2, 0.35],
+        max: [1, 1, 1, 2, 3],
+    },
+    injury: {
+        chance: [0.05, 0.12, 0.2, 0.35, 0.5],
+        max: [1, 1, 2, 3, 3],
+    },
+    engineRegulation: {
+        chance: [0.15, 0.3, 0.5, 0.75, 0.9],
+        max: [1, 1, 1, 1, 1],
+    },
+    youngDrivers: {
+        chance: [0.25, 0.5, 1, 1, 1],
+        max: [1, 1, 1, 1, 1],
+    },
+};
+
+export function normalizeTurningPointsFrequencyPreset(index) {
+    const idx = Number(index);
+    const maxIndex = Math.max(0, turningPointsFrequencyLevels.length - 1);
+    if (!Number.isFinite(idx)) return defaultTurningPointsFrequencyPreset;
+    return Math.max(0, Math.min(maxIndex, Math.round(idx)));
+}
+
+export function getTurningPointsFrequencyLabel(index) {
+    const idx = normalizeTurningPointsFrequencyPreset(index);
+    return turningPointsFrequencyLevels[idx]?.label ?? "Default";
+}
+
+export function getTurningPointTuning(tpType, presetIndex) {
+    const idx = normalizeTurningPointsFrequencyPreset(presetIndex);
+    const tuning = turningPointsTuningByType?.[tpType];
+
+    const chanceRaw = tuning?.chance?.[idx];
+    const maxRaw = tuning?.max?.[idx];
+
+    const chance = Number.isFinite(Number(chanceRaw))
+        ? Math.max(0, Math.min(1, Number(chanceRaw)))
+        : 0;
+
+    const max = Number.isFinite(Number(maxRaw))
+        ? Math.max(1, Math.round(Number(maxRaw)))
+        : 1;
+
+    return { chance, max, presetIndex: idx };
+}

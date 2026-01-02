@@ -6,7 +6,7 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, turningPointsFrequencyLevels, defaultTurningPointsFrequencyPreset, normalizeTurningPointsFrequencyPreset, getTurningPointsFrequencyLabel } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -119,6 +119,30 @@ const patreonThemes = document.querySelector(".patreon-themes");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
+
+const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequencyConfig");
+const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
+const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
+
+function normalizeTurningPointsPresetIndex(rawIndex) {
+    const idx = normalizeTurningPointsFrequencyPreset(rawIndex);
+    const maxIndex = Math.max(0, (turningPointsFrequencyLevels?.length || 1) - 1);
+    return Math.max(0, Math.min(maxIndex, idx));
+}
+
+function updateTurningPointsFrequencyUI() {
+    if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
+    const idx = normalizeTurningPointsPresetIndex(turningPointsFrequencySlider.value);
+    turningPointsFrequencySlider.value = String(idx);
+    turningPointsFrequencyLabel.textContent = getTurningPointsFrequencyLabel(idx);
+    const directionClass =
+        idx === defaultTurningPointsFrequencyPreset
+            ? "tp-default"
+            : idx > defaultTurningPointsFrequencyPreset
+                ? "tp-more"
+                : "tp-less";
+    turningPointsFrequencyLabel.className = `option-state ${directionClass}`;
+}
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
@@ -463,6 +487,15 @@ function updatePatreonUI(tier) {
     }
 
     manageNewsStatus(tier);
+
+    if (turningPointsFrequencyConfig) {
+        const insiderOrFounder = tier?.tier === "Insider" || tier?.tier === "Founder";
+        if (tier?.isLoggedIn && insiderOrFounder) {
+            turningPointsFrequencyConfig.classList.remove("d-none");
+        } else {
+            turningPointsFrequencyConfig.classList.add("d-none");
+        }
+    }
 }
 
 
@@ -1431,6 +1464,12 @@ function manage_config_content(info, year_config = false) {
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+
+        if (turningPointsFrequencySlider) {
+            const presetIndex = normalizeTurningPointsPresetIndex(info?.turningPointsFrequencyPreset);
+            turningPointsFrequencySlider.value = String(presetIndex);
+            updateTurningPointsFrequencyUI();
+        }
     }
 }
 
@@ -1800,6 +1839,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         triggerList: triggerList,
         playerTeam: playerTeam
     }
+
+    const tpPresetIndex = normalizeTurningPointsPresetIndex(turningPointsFrequencySlider?.value);
+    data.turningPointsFrequencyPreset = tpPresetIndex;
+
     changeTheme()
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
@@ -1974,6 +2017,11 @@ patreonPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
 })
+
+if (turningPointsFrequencySlider) {
+    updateTurningPointsFrequencyUI();
+    turningPointsFrequencySlider.addEventListener("input", updateTurningPointsFrequencyUI);
+}
 
 
 
@@ -2150,7 +2198,7 @@ function manageScripts(...divs) {
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
-    manage_config_content(configCopy[0], false)
+    manage_config_content(configCopy, false)
 })
 
 
