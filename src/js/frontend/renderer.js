@@ -112,8 +112,10 @@ const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
-const patreonUnlockables = document.querySelector(".patreon-unlockables")
-const downloadSaveButton = document.querySelector(".download-save-button")
+const patreonUnlockables = document.querySelector(".patreon-unlockables")       
+const downloadSaveButton = document.querySelector(".download-save-button")      
+const downloadSaveProgress = document.getElementById("downloadSaveProgress");
+const downloadSaveProgressFill = document.getElementById("downloadSaveProgressFill");
 
 const patreonThemes = document.querySelector(".patreon-themes");
 
@@ -1906,19 +1908,137 @@ async function askFixDoublePointsBug(message){
     }
 }
 
-document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
-    dbWorker.postMessage({
-        command: 'exportSave',
-        data: {}
-    });
+let isDownloadingSave = false;
+let downloadSaveProgressStartedAt = 0;
+let downloadSaveProgressValue = 0;
+let downloadSaveProgressIntervalId = null;
+let downloadSaveProgressTimeoutId = null;
+let downloadSaveWorkerHandler = null;
 
-    dbWorker.onmessage = (msg) => {
-        const finalData = msg.data.content.finalData;
-        const metadata = msg.data.content.metadata;
+function setDownloadSaveProgress(percent) {
+    if (!downloadSaveProgressFill) return;
+    const clamped = Math.max(0, Math.min(100, percent));
+    downloadSaveProgressFill.style.width = `${clamped}%`;
+}
 
-        saveAs(new Blob([finalData], { type: "application/binary" }), metadata.filename);
-    };
-})
+function clearDownloadSaveWorkerHandler() {
+    if (!downloadSaveWorkerHandler) return;
+    dbWorker.removeEventListener("message", downloadSaveWorkerHandler);
+    downloadSaveWorkerHandler = null;
+}
+
+function clearDownloadSaveProgressTimers() {
+    if (downloadSaveProgressIntervalId !== null) {
+        window.clearInterval(downloadSaveProgressIntervalId);
+        downloadSaveProgressIntervalId = null;
+    }
+    if (downloadSaveProgressTimeoutId !== null) {
+        window.clearTimeout(downloadSaveProgressTimeoutId);
+        downloadSaveProgressTimeoutId = null;
+    }
+}
+
+function resetDownloadSaveProgress() {
+    clearDownloadSaveProgressTimers();
+    clearDownloadSaveWorkerHandler();
+    isDownloadingSave = false;
+    downloadSaveProgressValue = 0;
+    setDownloadSaveProgress(0);
+    if (downloadSaveProgress) downloadSaveProgress.classList.add("hidden");
+}
+
+function startDownloadSaveProgressSimulation() {
+    if (!downloadSaveProgress || !downloadSaveProgressFill) return;
+
+    clearDownloadSaveProgressTimers();
+
+    isDownloadingSave = true;
+    downloadSaveProgressStartedAt = performance.now();
+    downloadSaveProgressValue = 0;
+
+    setDownloadSaveProgress(0);
+    downloadSaveProgress.classList.remove("hidden");
+
+    downloadSaveProgressIntervalId = window.setInterval(() => {
+        if (!isDownloadingSave) return;
+
+        const elapsed = performance.now() - downloadSaveProgressStartedAt;
+        const fastPhase = Math.min(elapsed / 500, 1) * 45; // 0 -> 45 quickly
+        const slowPhase = Math.min(Math.max(elapsed - 500, 0) / 4500, 1) * 50; // 45 -> 95 slower
+        const target = Math.min(95, fastPhase + slowPhase);
+
+        if (target > downloadSaveProgressValue) {
+            downloadSaveProgressValue = target;
+            setDownloadSaveProgress(downloadSaveProgressValue);
+        }
+    }, 100);
+
+    downloadSaveProgressTimeoutId = window.setTimeout(() => {
+        if (!isDownloadingSave) return;
+        resetDownloadSaveProgress();
+        new_update_notifications("Save export timed out.", "error");
+    }, 20000);
+}
+
+function finishDownloadSaveProgress() {
+    if (!downloadSaveProgress || !downloadSaveProgressFill) return;
+
+    const elapsed = performance.now() - downloadSaveProgressStartedAt;
+    const minVisibleMs = 700;
+    const hideDelayMs = Math.max(250, minVisibleMs - elapsed);
+
+    clearDownloadSaveProgressTimers();
+    clearDownloadSaveWorkerHandler();
+    isDownloadingSave = false;
+
+    setDownloadSaveProgress(100);
+    window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
+}
+
+const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+if (downloadSaveIcon) {
+    downloadSaveIcon.addEventListener("click", function () {
+        if (isDownloadingSave) return;
+
+        startDownloadSaveProgressSimulation();
+
+        downloadSaveWorkerHandler = (msg) => {
+            if (!isDownloadingSave) return;
+
+            const response = msg?.data;
+            if (!response) return;
+
+            if (response.error) {
+                console.error("Error exporting save:", response.error);
+                resetDownloadSaveProgress();
+                new_update_notifications("Error exporting save.", "error");
+                return;
+            }
+
+            if (response.responseMessage !== "Database exported") return;
+
+            try {
+                const finalData = response?.content?.finalData;
+                const metadata = response?.content?.metadata;
+                const filename = metadata?.filename || saveName || "save.sav";
+
+                if (finalData == null) {
+                    throw new Error("Missing exported data");
+                }
+
+                saveAs(new Blob([finalData], { type: "application/binary" }), filename);
+                finishDownloadSaveProgress();
+            } catch (e) {
+                console.error("Failed to download exported save:", e);
+                resetDownloadSaveProgress();
+                new_update_notifications("Error exporting save.", "error");
+            }
+        };
+
+        dbWorker.addEventListener("message", downloadSaveWorkerHandler);
+        dbWorker.postMessage({ command: "exportSave", data: {} });
+    })
+}
 
 
 

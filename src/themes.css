@@ -351,6 +351,16 @@ body.light-theme {
 
     --positive-general: #2a9b63;
 
+    --rate-ok-color: #24a45a;
+    --rate-ok-bg: color-mix(in srgb, var(--rate-ok-color) 30%, transparent);
+
+    --rate-warning-color: #bca211;
+    --rate-warning-bg: color-mix(in srgb, var(--rate-warning-color) 30%, transparent);
+
+    --rate-danger-color: #d46a11;
+    --rate-danger-bg: color-mix(in srgb, var(--rate-danger-color) 30%, transparent);
+
+
     --general-secondary: #f1f1f1;
     --mercedes-primary: #13c2a2;
     --haas-primary: #57575a;

@@ -9139,7 +9139,29 @@ body.og-theme .records-list {
   opacity: 1;
 }
 
+.download-save-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.download-save-progress {
+  width: 160px;
+  min-width: 160px;
+  margin-left: 8px;
+  opacity: 1;
+  transition: width 0.15s, min-width 0.15s, margin-left 0.15s, opacity 0.15s;
+}
+
 .download-save-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.download-save-progress.hidden {
+  width: 0;
+  min-width: 0;
+  margin-left: 0;
   opacity: 0;
   pointer-events: none;
 }
