@@ -2862,17 +2862,20 @@ export async function confirmModal({
 document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
     dropdown.addEventListener("click", function (e) {
         e.stopPropagation();
+
+        document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+            if (openDropdown !== dropdown) {
+                openDropdown.classList.remove("open");
+            }
+        });
+
         dropdown.classList.toggle("open");
     });
 });
 
-document.addEventListener("click", function (e) {
+document.addEventListener("click", function () {
     document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
-        // Si el click NO ocurre dentro del dropdown ni en su botón
-        if (!openDropdown.contains(e.target)) {
-            openDropdown.classList.remove("open");
-        }
-
+        openDropdown.classList.remove("open");
     });
 });
 

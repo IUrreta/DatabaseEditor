@@ -704,6 +704,14 @@ input[role="switch"]:focus {
   box-shadow: none;
 }
 
+body.light-theme input[role="switch"]:not(:checked) {
+  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
+}
+
+body.light-theme input[role="switch"]:not(:checked):focus {
+  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
+}
+
 input[role="switch"]:not(:checked) {
   --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
 }
