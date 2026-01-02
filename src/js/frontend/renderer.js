@@ -6,7 +6,7 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, turningPointsFrequencyLevels, defaultTurningPointsFrequencyPreset, normalizeTurningPointsFrequencyPreset, getTurningPointsFrequencyLabel } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -126,17 +126,11 @@ const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequ
 const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
 const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
 
-function normalizeTurningPointsPresetIndex(rawIndex) {
-    const idx = normalizeTurningPointsFrequencyPreset(rawIndex);
-    const maxIndex = Math.max(0, (turningPointsFrequencyLevels?.length || 1) - 1);
-    return Math.max(0, Math.min(maxIndex, idx));
-}
-
 function updateTurningPointsFrequencyUI() {
     if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
-    const idx = normalizeTurningPointsPresetIndex(turningPointsFrequencySlider.value);
+    const idx = parseInt(turningPointsFrequencySlider.value, 10);
     turningPointsFrequencySlider.value = String(idx);
-    turningPointsFrequencyLabel.textContent = getTurningPointsFrequencyLabel(idx);
+    turningPointsFrequencyLabel.textContent = turningPointsFrequencyLabels[idx];
     const directionClass =
         idx === defaultTurningPointsFrequencyPreset
             ? "tp-default"
@@ -145,6 +139,7 @@ function updateTurningPointsFrequencyUI() {
                 : "tp-less";
     turningPointsFrequencyLabel.className = `option-state ${directionClass}`;
 }
+
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
@@ -1484,7 +1479,10 @@ function manage_config_content(info, year_config = false) {
         update_refurbish_span(info["refurbish"])
 
         if (turningPointsFrequencySlider) {
-            const presetIndex = normalizeTurningPointsPresetIndex(info?.turningPointsFrequencyPreset);
+            let presetIndex = info?.turningPointsFrequencyPreset;
+            if (presetIndex === undefined || presetIndex === null) {
+                presetIndex = defaultTurningPointsFrequencyPreset;
+            }
             turningPointsFrequencySlider.value = String(presetIndex);
             updateTurningPointsFrequencyUI();
         }
@@ -1858,7 +1856,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         playerTeam: playerTeam
     }
 
-    const tpPresetIndex = normalizeTurningPointsPresetIndex(turningPointsFrequencySlider?.value);
+    const tpPresetIndex = parseInt(turningPointsFrequencySlider.value, 10);
     data.turningPointsFrequencyPreset = tpPresetIndex;
 
     changeTheme()

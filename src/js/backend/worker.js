@@ -34,7 +34,8 @@ import {
   getNewsFromSeason,
   deleteNewByKey,
   checkDoublePointsBug,
-  fixDoublePointsBug
+  fixDoublePointsBug,
+  getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -625,9 +626,16 @@ const workerCommands = {
   },
   fullChampionshipDetailsRequest: (data, postMessage) => {
     const season = data.season;
+    const junior = data.junior || false;
 
     const results = getFullChampionSeasonDetails(season);
     postMessage({ responseMessage: "Full championship details fetched", content: results });
+  },
+  fullFeederSeriesDetailsRequest: (data, postMessage) => {
+    const season = data.season;
+
+    const results = getFullFeederSeriesDetails(season, true);
+    postMessage({ responseMessage: "Full feeder series details fetched", content: results });
   },
   recordSelected: (data, postMessage) => {
     const type = data.type;

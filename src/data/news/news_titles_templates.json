@@ -595,5 +595,25 @@
             "Team-by-team look at the {{season_year}} Formula 1 grid",
             "{{season_year}} F1 driver line-ups – all you need to know"
         ]
+    },
+    {
+        "id": "feeder_series_review",
+        "new_type": 20,
+        "titles": [
+            "How did the F2 and F3 seasons unfold in {{season_year}}?",
+            "Reviewing the {{season_year}} F2 and F3 championships – {{f2_champion}} and {{f3_champion}} crowned",
+            "Standout moments from the {{season_year}} F2 and F3 seasons",
+            "{{f2_champion}} and {{f3_champion}} take the crowns – a look back at {{season_year}}",
+            "The rise of future stars – highlights from {{season_year}} F2 and F3",
+            "'We knew he had something special' – reflecting on {{f2_champion}}'s {{season_year}} F2 title",
+            "From the juniors to the spotlight – {{season_year}} F2 and F3 season review",
+            "Key takeaways from the {{season_year}} F2 and F3 championships",
+            "How did {{f2_champion}} and {{f3_champion}} clinch their titles in {{season_year}}?",
+            "{{f2_champion}} and {{f3_champion}} crowned – a look back at the {{season_year}} feeder series seasons",
+            "Rising stars of {{season_year}} – reviewing the F2 and F3 championships",
+            "The journey to F1 – highlights from the {{season_year}} F2 and F3 seasons",
+            "Season review of the {{season_year}} F2 and F3 championships",
+            "From contenders to champions – how {{f2_champion}} and {{f3_champion}} won in {{season_year}}"
+        ]
     }
 ]

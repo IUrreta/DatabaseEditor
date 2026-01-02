@@ -1295,6 +1295,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     season_review: contextualizeSeasonReview,
     race_reaction: contextualizeRaceReaction,
     next_season_grid: contextualizeNextSeasonGrid,
+    feeder_series_review: contextualizeFeederSeriesReview,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -2586,6 +2587,47 @@ async function contextualizeRaceReaction(newData) {
   }
 
   const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeFeederSeriesReview(newData) {
+  let seasonYear = newData.data.season_year;
+  let f2_champion = newData.data.f2_champion.name;
+  let f3_champion = newData.data.f3_champion.name;
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 20).prompt;
+  prompt = prompt.replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*f2_champion\s*}}/g, f2_champion)
+    .replace(/{{\s*f3_champion\s*}}/g, f3_champion);
+
+  const command = new Command("fullFeederSeriesDetailsRequest", {
+    season: seasonYear
+  });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return { instruction: prompt, context: "" };
+  }
+
+  const f2Context = buildContextualPrompt({ enrichedAllTime: [], ...(resp.content?.f2 || {}) }, {
+    seasonYear,
+    timing: "(Formula 2)"
+  });
+  const f3Context = buildContextualPrompt({ enrichedAllTime: [], ...(resp.content?.f3 || {}) }, {
+    seasonYear,
+    timing: "(Formula 3)"
+  });
+
+  const contextData =
+    `For Formula 2 and Formula 3, each race weekend includes a Sprint and a Main race.\n` +
+    `In the driver results strings, the format is: Main result (SPR Sprint result).\n` +
+    `\n\n=== Formula 2 ===\n${f2Context}\n\n=== Formula 3 ===\n${f3Context}`;
 
   return {
     instruction: prompt,

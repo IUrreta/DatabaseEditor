@@ -14513,7 +14513,7 @@ p.news-error-api-key {
 
 .loader-div span {
   font-size: 20px;
-  color: color-mix(in srgb, var(--elements) 60%, var(--text-general));
+  color: var(--text-muted)
 }
 
 .ai-progress-bar {
@@ -15493,6 +15493,10 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 
 .script-view.hide .facility-group{
+  pointer-events: none;
+}
+
+.script-view.hide *{
   pointer-events: none;
 }
 

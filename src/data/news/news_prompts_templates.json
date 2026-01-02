@@ -78,5 +78,10 @@
         "id": "next_season_grid",
         "new_type": 19,
         "prompt": "Write ONLY the body (not the title) of a news article in {{language}} previewing the driver lineup for the upcoming {{season_year}} Formula 1 season. Use clear, natural {{language}} in a professional journalistic style, similar to outlets like Autosport or Motorsport.com. Avoid slang, overly dramatic phrasing, or unnecessary flourishes. The article should be between 700 and 800 words long. Focus on the confirmed driver-team pairings for the new season, highlighting any significant changes from the previous year. Discuss the implications of these changes for both the drivers and the teams involved. Mention any notable rookies or returning drivers, as well as any shifts in team dynamics that may impact performance. Use a flowing, paragraph-based structure like a typical F1 news report."
+    },
+    {
+        "id": "feeder_series_review",
+        "new_type": 20,
+        "prompt": "Write ONLY the body (not the title) of a professional season review article in {{language}} summarizing the {{season_year}} Formula 2 and Formula 3 seasons. In Formula 2, {{f2_champion}} won the championship, and in Formula 3, {{f3_champion}} claimed the title.\n\nThe article must be written in clear, natural {{language}}, using a neutral and professional journalistic tone similar to outlets such as Autosport or Motorsport.com. Avoid slang, hype, or overly dramatic language.\n\nThis article must function as a long-term historical recap of both seasons, suitable for readers who want to understand what happened in Formula 2 and Formula 3 during {{season_year}}. For each category, include:\n- An overview of how the season unfolded\n- Key championship battles and decisive moments\n- A summary of race winners across the different Grands Prix\n- Notable performances, consistency trends, and turning points\n- How and why the eventual champion secured the title\n\nDo not invent events or results. Focus on clarity, structure, and factual-style narration. The article should read as a comprehensive end-of-season review rather than a single race report.\n\nMaximum length: 1000 words."
     }
 ]

@@ -1,5 +1,5 @@
 import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines } from "./dbUtils";
-import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, normalizeTurningPointsFrequencyPreset, getTurningPointTuning } from "../../frontend/config";
+import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, turningPointsTuningByType } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
 import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
@@ -25,7 +25,10 @@ function loadTurningPointsFrequencyConfig() {
             [],
             'singleValue'
         );
-        const presetIndex = normalizeTurningPointsFrequencyPreset(presetRaw);
+        let presetIndex = defaultTurningPointsFrequencyPreset;
+        if (presetRaw !== null && presetRaw !== undefined) {
+            presetIndex = parseInt(presetRaw, 10);
+        }
         return { presetIndex };
     } catch {
         return { presetIndex: defaultTurningPointsFrequencyPreset };
@@ -33,13 +36,19 @@ function loadTurningPointsFrequencyConfig() {
 }
 
 function getTurningPointChance(tpType, tpConfig) {
-    const presetIndex = tpConfig?.presetIndex ?? defaultTurningPointsFrequencyPreset;
-    return getTurningPointTuning(tpType, presetIndex).chance;
+    let presetIndex = tpConfig?.presetIndex;
+    if (presetIndex === undefined || presetIndex === null) {
+        presetIndex = defaultTurningPointsFrequencyPreset;
+    }
+    return turningPointsTuningByType[tpType].chance[presetIndex];
 }
 
 function getTurningPointMax(tpType, tpConfig) {
-    const presetIndex = tpConfig?.presetIndex ?? defaultTurningPointsFrequencyPreset;
-    return getTurningPointTuning(tpType, presetIndex).max;
+    let presetIndex = tpConfig?.presetIndex;
+    if (presetIndex === undefined || presetIndex === null) {
+        presetIndex = defaultTurningPointsFrequencyPreset;
+    }
+    return turningPointsTuningByType[tpType].max[presetIndex];
 }
 
 
@@ -95,6 +104,8 @@ export function generate_news(savednews, turningPointState) {
 
     const nextSeasonGridNews = generateNextSeasonGridNews(savednews, currentMonth);
 
+    const juniorSeasonReviewNews = generateF2AndF3ReviewNews(currentMonth, savednews);
+
     const dsqTurningPointNews = generateDSQTurningPointNews(racesDone, savednews, turningPointState, tpConfig);
 
     const midSeasonTransfersTurningPointNews = generateMidSeasonTransfersTurningPointNews(monthsDone, currentMonth, savednews, turningPointState, tpConfig);
@@ -119,8 +130,8 @@ export function generate_news(savednews, turningPointState) {
 
     let newsList = [...raceNews || [], ...qualiNews || [], ...fakeTransferNews || [],
     ...bigConfirmedTransfersNews || [], ...contractRenewalsNews || [], ...comparisonNews || [], ...seasonReviews || [],
-    ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...dsqTurningPointNews || [], ...midSeasonTransfersTurningPointNews || [],
-    ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
+    ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...juniorSeasonReviewNews || [], ...dsqTurningPointNews || [], 
+    ...midSeasonTransfersTurningPointNews || [], ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
     ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
     ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || []];
 
@@ -1204,6 +1215,7 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
 
 
 function generateYoungDriversTurningPointNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null) {
+    console.log("TP CONFIG:", tpConfig);
     const FREE_AGENT_MAX_AGE = 19;
     const YOUNG_DRIVER_MAX_PER_SERIES = 3;
     const FREE_AGENT_MAX = 3;
@@ -1238,6 +1250,7 @@ function generateYoungDriversTurningPointNews(currentMonth, savednews = {}, turn
     }
 
     const chance = getTurningPointChance("youngDrivers", tpConfig);
+    console.log("Young Drivers Turning Point Chance:", chance);
     if (Math.random() >= chance) {
         return newsList;
     }
@@ -2494,6 +2507,75 @@ function generateTitle(data, new_type) {
     const tpl = titles[idx];
 
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap[new_type][key] || '');
+}
+
+function generateF2AndF3ReviewNews(currentMonth, savedNews) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow");
+    const season = daySeason[1];
+    const newsList = [];
+
+    const allRacesDone = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`,
+        [season],
+        "singleValue"
+    );
+    const totalRaces = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ?`,
+        [season],
+        "singleValue"
+    );
+
+    // Solo último mes + temporada terminada
+    if (currentMonth < 11 || allRacesDone < totalRaces) {
+        return newsList;
+    }
+
+    const F2Champion = queryDB(
+        `SELECT bas.FirstName, bas.LastName, rds.DriverID, 1
+            FROM Races_DriverStandings rds
+            JOIN Staff_BasicData bas ON rds.DriverID = bas.StaffID
+            WHERE rds.SeasonID = ? AND rds.RaceFormula = 2 AND rds.Position = 1
+            LIMIT 1`,
+        [season],
+        "singleRow"
+    );
+    const F3Champion = queryDB(
+        `SELECT bas.FirstName, bas.LastName, rds.DriverID, 1
+            FROM Races_DriverStandings rds
+            JOIN Staff_BasicData bas ON rds.DriverID = bas.StaffID
+            WHERE rds.SeasonID = ? AND rds.RaceFormula = 3 AND rds.Position = 1
+            LIMIT 1`,
+        [season],
+        "singleRow"
+    );
+
+    const entry = `feeder_series_review_${season}`;
+    if (savedNews[entry]) {
+        newsList.push({ id: entry, ...savedNews[entry] });
+        return newsList;
+    }
+
+    const titleData = {
+        f2_champion: formatNamesSimple(F2Champion)[0],
+        f3_champion: formatNamesSimple(F3Champion)[0],
+        season_year: season
+    };
+
+    const date = new Date(season, currentMonth - 1, Math.floor(Math.random() * 28) + 1);
+    const excelDate = dateToExcel(date);
+    const title = generateTitle(titleData, 20);
+    const image = getImagePath(null, null, "young");
+    const newEntry = {
+        id: entry,
+        title,
+        image,
+        data: titleData,
+        date: excelDate,
+        type: "feeder_series_review"
+    };
+
+    newsList.push(newEntry);
+    return newsList;
 }
 
 export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTransfersNews) {
@@ -4606,6 +4688,111 @@ export function getFullChampionSeasonDetails(season) {
         enrichedAllTime: enrichedAllTime,
     }
 
+}
+
+export function getFullFeederSeriesDetails(season) {
+    const f2 = buildFeederSeriesSeasonDetails(season, 2);
+    const f3 = buildFeederSeriesSeasonDetails(season, 3);
+
+    return { f2, f3 };
+}
+
+function buildFeederSeriesSeasonDetails(season, formula) {
+    const seasonResults = fetchSeasonResults(season, true, false, formula) || [];
+    const byDriverId = new Map(
+        seasonResults.map(r => [Number(r.driverId), r])
+    );
+
+    const standingsRows = queryDB(`
+        SELECT DriverID, Points, Position
+        FROM Races_DriverStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY Position
+    `, [season, formula], 'allRows') || [];
+
+    const driverStandings = standingsRows.map(([driverId, points]) => {
+        const id = Number(driverId);
+        const rec = byDriverId.get(id);
+        const rawName = rec?.driverName ?? `Driver ${id}`;
+        return {
+            name: news_insert_space(rawName),
+            driverId: id,
+            points: Number(points) || 0,
+            teamId: Number(rec?.latestTeamId) || 0,
+            gapToLeader: 0,
+        };
+    });
+
+    if (driverStandings.length > 0) {
+        const leaderPoints = driverStandings[0].points;
+        driverStandings.forEach(d => {
+            d.gapToLeader = leaderPoints - d.points;
+        });
+    }
+
+    const teamStandingsRows = queryDB(`
+        SELECT TeamID, Points, Position
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY Position
+    `, [season, formula], 'allRows') || [];
+
+    const teamStandings = teamStandingsRows.map(([teamId, points]) => ({
+        teamId: Number(teamId),
+        points: Number(points) || 0
+    }));
+
+    const driversResults = seasonResults.map(driverRec => {
+        const rawName = driverRec?.driverName ?? `Driver ${driverRec?.driverId}`;
+        const name = news_insert_space(rawName);
+
+        let resultsString = "";
+        let nPodiums = 0;
+        let nWins = 0;
+        let nPointsFinishes = 0;
+
+        const races = Array.isArray(driverRec?.races) ? driverRec.races : [];
+        races.forEach(r => {
+            const fin = Number(r.finishingPos);
+            const sprintFin = (r.sprintPos == null) ? null : Number(r.sprintPos);
+
+            const mainStr =
+                (fin > 0 && fin !== 99) ? `P${fin}` : "DNF";
+
+            if (fin === 1) nWins++;
+            if (fin > 0 && fin <= 3) nPodiums++;
+
+            const featurePts = (Number(r.points) > 0) ? Number(r.points) : 0;
+            const sprintPts = (r.sprintPoints != null && Number(r.sprintPoints) > 0)
+                ? Number(r.sprintPoints)
+                : 0;
+            if ((featurePts + sprintPts) > 0) nPointsFinishes++;
+
+            let sprintPart = "";
+            if (sprintFin != null) {
+                const sprintStr =
+                    (sprintFin > 0 && sprintFin !== 99) ? `P${sprintFin}` : "DNF";
+                sprintPart = ` (SPR ${sprintStr})`;
+            }
+
+            resultsString += `${mainStr}${sprintPart}, `;
+        });
+
+        if (resultsString.endsWith(", ")) resultsString = resultsString.slice(0, -2);
+
+        return {
+            name,
+            resultsString,
+            nPodiums,
+            nWins,
+            teamId: Number(driverRec?.latestTeamId) || 0,
+            nPointsFinishes
+        };
+    });
+
+    return { driverStandings, teamStandings, driversResults, enrichedAllTime: [] };
 }
 
 export function getPreviouslyDrivenTeams(driverId) {

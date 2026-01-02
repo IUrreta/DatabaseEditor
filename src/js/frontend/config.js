@@ -390,6 +390,11 @@ export function getParamMap(data) {
         19: {
             season_year: data.season_year
         },
+        20: {
+            f2_champion: data.f2_champion,
+            f3_champion: data.f3_champion,
+            season_year: data.season_year
+        },
         100: {
             component: data.component
         },
@@ -515,12 +520,12 @@ export const defaultDifficultiesConfig = {0 : {text: "Disabled", className: "dis
 
 export const defaultTurningPointsFrequencyPreset = 2;
 
-export const turningPointsFrequencyLevels = [
-    { label: "Much less" },
-    { label: "Less" },
-    { label: "Default" },
-    { label: "More" },
-    { label: "Most" }
+export const turningPointsFrequencyLabels = [
+    "Much less",
+    "Less",
+    "Default",
+    "More",
+    "Most"
 ];
 
 export const turningPointsTuningByType = {
@@ -558,32 +563,3 @@ export const turningPointsTuningByType = {
     },
 };
 
-export function normalizeTurningPointsFrequencyPreset(index) {
-    const idx = Number(index);
-    const maxIndex = Math.max(0, turningPointsFrequencyLevels.length - 1);
-    if (!Number.isFinite(idx)) return defaultTurningPointsFrequencyPreset;
-    return Math.max(0, Math.min(maxIndex, Math.round(idx)));
-}
-
-export function getTurningPointsFrequencyLabel(index) {
-    const idx = normalizeTurningPointsFrequencyPreset(index);
-    return turningPointsFrequencyLevels[idx]?.label ?? "Default";
-}
-
-export function getTurningPointTuning(tpType, presetIndex) {
-    const idx = normalizeTurningPointsFrequencyPreset(presetIndex);
-    const tuning = turningPointsTuningByType?.[tpType];
-
-    const chanceRaw = tuning?.chance?.[idx];
-    const maxRaw = tuning?.max?.[idx];
-
-    const chance = Number.isFinite(Number(chanceRaw))
-        ? Math.max(0, Math.min(1, Number(chanceRaw)))
-        : 0;
-
-    const max = Number.isFinite(Number(maxRaw))
-        ? Math.max(1, Math.round(Number(maxRaw)))
-        : 1;
-
-    return { chance, max, presetIndex: idx };
-}

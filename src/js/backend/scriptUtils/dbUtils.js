@@ -3,7 +3,7 @@ import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
-import { default_dict, defaultTurningPointsFrequencyPreset, normalizeTurningPointsFrequencyPreset } from "../../frontend/config.js";
+import { default_dict, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
 
 
@@ -2236,6 +2236,12 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, e
       const newTeam = teams[key][year];
       queryDB(`INSERT OR REPLACE INTO Custom_Save_Config (key, value) VALUES (?, ?)`, [key, newTeam], 'run');
     }
+
+    queryDB(
+      `INSERT OR IGNORE INTO Custom_Save_Config (key, value) VALUES ('turningPointsFrequencyPreset', ?)`,
+      [String(defaultTurningPointsFrequencyPreset)],
+      'run'
+    );
   }
 
 
@@ -2437,13 +2443,12 @@ export function updateCustomConfig(data) {
     VALUES ('secondaryColor', ?)
   `, [secondaryColor], 'run');
 
-  if (turningPointsFrequencyPreset != null) {
-    const idx = normalizeTurningPointsFrequencyPreset(turningPointsFrequencyPreset);
-    queryDB(`
-      INSERT OR REPLACE INTO Custom_Save_Config (key, value)
-      VALUES ('turningPointsFrequencyPreset', ?)
-    `, [String(idx)], 'run');
-  }
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('turningPointsFrequencyPreset', ?)
+  `, [turningPointsFrequencyPreset], 'run');
+  
+
 
   //delete the difficulty key from Custom_Save_Config every time
   queryDB(`DELETE FROM Custom_Save_Config WHERE key = 'difficulty'`, [], 'run');
@@ -2502,8 +2507,8 @@ export function fetchCustomConfig() {
     else if (key === 'difficulty') {
       config.difficulty = value;
     } else if (key === 'turningPointsFrequencyPreset') {
-      const parsed = parseInt(value, 10);
-      if (!Number.isNaN(parsed)) config.turningPointsFrequencyPreset = normalizeTurningPointsFrequencyPreset(parsed);
+      config.turningPointsFrequencyPreset = parseInt(value, 10);
+      
     }
   });
 
