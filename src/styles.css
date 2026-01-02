@@ -6196,9 +6196,6 @@ body.og-theme .records-list {
   transition: box-shadow 0.15s;
 }
 
-.team.selected {
-  box-shadow: var(--shadow-s);
-}
 
 .car {
   border: 1px solid transparent;
@@ -9662,7 +9659,7 @@ input::-webkit-inner-spin-button {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  font-size: 15px;
+  font-size: 13px;
   height: 13.5px;
   padding-bottom: 4px;
 }

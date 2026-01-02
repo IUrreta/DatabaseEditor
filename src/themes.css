@@ -23,7 +23,7 @@
     --new-primary: #c89efc;
     /* C37CF9 alternative*/
     --new-primary-dark: #ba82ff;
-    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
     --text-selected: #e7d3ff;

@@ -1541,12 +1541,18 @@ function alphaTauriReplace(info) {
     })
     document.querySelectorAll(".at-name").forEach(function (elem) {
         //if it has the class complete, put names_configs[info], else out VCARB
-        if (info === "visarb" && !elem.classList.contains("complete")) {
-            elem.textContent = "VCARB"
+        let name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : names_configs[info];
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : pretty_names[info];
+                elem.textContent = `${name} ${match[2]}`;
+            }
         }
-        else {
-            elem.textContent = names_configs[info]
+        else{
+            elem.textContent = name
         }
+        
     })
     if (info !== "alphatauri") {
         document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
@@ -1643,7 +1649,17 @@ function alpineReplace(info) {
         elem.dataset.teamshow = pretty_names[info]
     })
     document.querySelectorAll(".alpine-name").forEach(function (elem) {
-        elem.textContent = names_configs[info]
+        let name = names_configs[info]
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = pretty_names[info]
+                elem.textContent = `${name} ${match[2]}`;
+            }
+        }
+        else{
+            elem.textContent = name
+        }
     })
     if (info !== "alpine") {
         document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
@@ -1728,7 +1744,19 @@ function alfaReplace(info) {
         elem.dataset.teamshow = pretty_names[info]
     })
     document.querySelectorAll(".alfa-name").forEach(function (elem) {
-        elem.textContent = names_configs[info]
+        let name = names_configs[info]
+        if (elem.parentElement.classList.contains("car-title")) {
+            console.log("GOT HERE")
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            console.log("MATCH", match)
+            if (match) {
+                name = pretty_names[info]
+                elem.textContent = `${name} ${match[2]}`;
+            }  
+        }
+        else{
+            elem.textContent = name
+        }
     })
     if (info !== "alfa") {
         document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
