@@ -3799,6 +3799,7 @@ export function generateRaceReactionsNews(events, savednews) {
         const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
         const code = races_names[parseInt(trackId)].toLowerCase();
 
+
         let titleData = {
             raceId,
             allHappyDrivers: happyDrivers,
@@ -3808,12 +3809,24 @@ export function generateRaceReactionsNews(events, savednews) {
             unhappyTeam: randomUnHappyDriver.teamName,
             randomUnHappyDriver,
             seasonYear,
-            trackId: trackId,
+            trackId: trackId
         }
 
         const title = generateTitle(titleData, 16);
+        
 
-        const image = getImagePath(randomHappyDriver.teamId, code, "reaction");
+        let driverTeamIdInTitle = null;
+        //check if in the title there is randomHappyDriver name or randomUnHappyDriver name
+        if (title.includes(randomUnHappyDriver.name)) {
+            driverTeamIdInTitle = randomUnHappyDriver.teamId;
+            titleData.driverTeamIdInTitle = driverTeamIdInTitle;
+        }
+        else if (title.includes(randomHappyDriver.name)) {
+            driverTeamIdInTitle = randomHappyDriver.teamId;
+            titleData.driverTeamIdInTitle = driverTeamIdInTitle;
+        }
+
+        const image = getImagePath(driverTeamIdInTitle, code, "reaction");
 
         const date = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
 
@@ -3823,7 +3836,7 @@ export function generateRaceReactionsNews(events, savednews) {
             title: title,
             date: date + 1,
             image: image,
-            overlay: null,
+            overlay: "reaction-overlay",
             data: titleData,
             text: null
         };
@@ -4438,14 +4451,24 @@ function getImagePath(teamId, code, type) {
 
     }
     else if (type === "reaction") {
-        const useTeam = Math.random() < 0.8;
-        if (useTeam) {
-            const options = [1, 2, 3, 4, 5, 6, 8, 9, 10]
-            const randomNum = randomPick(options);
-            return `./assets/images/news/${randomNum}_gar.webp`;
+        if (code === "mon"){
+            return `./assets/images/news/monaco_media.webp`;
+        }
+        const useTrack = Math.random() > 0.8;
+        if (useTrack) {
+            return `./assets/images/news/${code}_tra.webp`;
         }
         else {
-            return `./assets/images/news/${code}_tra.webp`;
+            const useMedia = Math.random() < 0.5;
+            if (useMedia) {
+                const randomNum = getRandomInt(1, 5);
+                return `./assets/images/news/${randomNum}_media.webp`;
+            }
+            else {
+                const options = [1, 2, 3, 4, 5, 6, 8, 9, 10]
+                const randomNum = randomPick(options);
+                return `./assets/images/news/${randomNum}_gar.webp`;
+            }
         }
 
     }

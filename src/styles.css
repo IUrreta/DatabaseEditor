@@ -14310,6 +14310,44 @@ body.default-theme .news-article-date {
   z-index: 2;
 }
 
+.reaction-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  z-index: 2;
+}
+
+.reaction-overlay .reaction-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-bottom: 3px solid transparent;
+  color: var(--news-overlays-text);
+  font-family: 'Formula1Bold';
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.reaction-overlay .reaction-title-text {
+  font-size: 26px;
+}
+
+.reaction-overlay .reaction-race-name {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
 .race-overlay .position {
   font-size: 20px;
   color: var(--news-overlays-text);
@@ -14864,7 +14902,7 @@ body:has(.toolbar-title.nightly) .glow-spot {
 }
 
 body:has(.toolbar-title.nightly) .icon-circle {
-  background-color: var(--new-secondary-transparent);
+  background-color: color-mix(in srgb, var(--new-secondary) 25%, var(--background));
 }
 
 #statusTitle {
@@ -14992,7 +15030,7 @@ body:has(.toolbar-title.nightly) .icon-circle {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  background-color: var(--new-primary-transparent);
+  background-color: color-mix(in srgb, var(--new-primary) 25%, var(--background));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15001,7 +15039,7 @@ body:has(.toolbar-title.nightly) .icon-circle {
 }
 
 .icon-circle.success-mode {
-  background-color: var(--positive-transparent) !important;
+  background-color: color-mix(in srgb, var(--positive-general) 25%, var(--background)) !important;
 }
 
 .idle-content {
@@ -15179,7 +15217,7 @@ body:has(.toolbar-title.nightly) .loading-spinner {
 }
 
 .file-name:hover {
-  background-color: var(--new-primary-transparent);
+  background-color: color-mix(in srgb, var(--new-primary) 25%, var(--background));
 }
 
 .file-name:active {

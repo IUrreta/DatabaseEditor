@@ -2969,6 +2969,36 @@ function manage_overlay(imageContainer, overlay, data, image) {
     overlayDiv.appendChild(thirdTeam);
     imageContainer.appendChild(overlayDiv);
   }
+  else if (overlay === "reaction-overlay") {
+    overlayDiv = document.createElement('div');
+    overlayDiv.classList.add('reaction-overlay');
+
+    const candidateTeamId = Number.parseInt(data?.driverTeamIdInTitle, 10);
+    const teamId = Number.isFinite(candidateTeamId) && candidateTeamId >= 1 && candidateTeamId <= 10
+      ? candidateTeamId
+      : (Math.floor(Math.random() * 10) + 1);
+
+    const teamColor = colors_dict?.[`${teamId}0`] ?? '#ffffff';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.classList.add('reaction-title');
+    titleDiv.style.borderBottomColor = teamColor;
+
+    const titleTextDiv = document.createElement('div');
+    titleTextDiv.classList.add('reaction-title-text');
+    titleTextDiv.innerText = 'POST RACE REACTIONS';
+
+    const raceNameDiv = document.createElement('div');
+    const raceGP = countries_data?.[races_names?.[data?.trackId]]?.adjective ?? 'Unknown GP';
+    raceNameDiv.classList.add('reaction-race-name');
+    raceNameDiv.innerText = `${data?.seasonYear ?? ''} ${raceGP} GP`.trim();
+
+    titleDiv.appendChild(titleTextDiv);
+    titleDiv.appendChild(raceNameDiv);
+
+    overlayDiv.appendChild(titleDiv);
+    imageContainer.appendChild(overlayDiv);
+  }
   else if (overlay === "driver-comparison-overlay") {
     const teamId = data.teamId;
     overlayDiv = document.createElement('div');

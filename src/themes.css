@@ -29,7 +29,7 @@
     --text-selected: #e7d3ff;
     --text-selected-secondary: #b1dbd6;
     --new-secondary: #9AD2CB;
-    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, var(--elements));
     --new-secondary-dark: #74aaa4;
     --table-hover: #4a4a4a;
     --elements-hover: #3a3a3a;
@@ -122,7 +122,7 @@
     --negative-general: #e95656;
     --negative-general-clicked: #cf2626;
     --positive-general: #5bd999;
-    --positive-transparent: color-mix(in srgb, var(--positive-general) 25%, transparent);
+    --positive-transparent: color-mix(in srgb, var(--positive-general) 25%, var(--elements));
     --positive-general-clicked: #11ac5e;
     --positive-general-darker: #3f8a6b;
     --positive--general-darker2: #2f6a4b;
