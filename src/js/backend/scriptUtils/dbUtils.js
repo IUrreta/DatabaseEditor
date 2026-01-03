@@ -1245,6 +1245,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
 
   const rand = seededRandom(raceId);
   const RANDOM_INTENSITY = 0.8;
+  const MAX_WINNER_SHARE = 45; // (%). Evita resultados tipo "99%"
 
   const rowsScored = [];
   for (const row of rows) {
@@ -1279,11 +1280,21 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     });
   }
 
-  // Softmax -> porcentajes que suman 100
-  const shares = softmaxToPercent(rowsScored.map(r => r.scoreRaw), /*temperature*/ 1.0);
-  for (let i = 0; i < rowsScored.length; i++) {
-    rowsScored[i].share = Math.round(shares[i] * 10) / 10; // p.ej., 1 decimal
-  }
+  // Softmax -> porcentajes que suman 100, con tope para evitar picos (p.ej. 99%)
+  const maxShareCap = (rowsScored.length * MAX_WINNER_SHARE >= 100)
+    ? MAX_WINNER_SHARE
+    : (100 / Math.max(1, rowsScored.length));
+
+  const shares = softmaxToPercentBounded(rowsScored.map(r => r.scoreRaw), {
+    maxSharePct: maxShareCap,
+    initialTemperature: 1.0
+  });
+  const sharesRounded = roundPercentsToTargetSum(shares, {
+    decimals: 1,
+    targetSum: 100,
+    maxPerItem: maxShareCap
+  });
+  for (let i = 0; i < rowsScored.length; i++) rowsScored[i].share = sharesRounded[i];
 
   // Orden: mayor share (equivale a mayor scoreRaw)
   rowsScored.sort((a, b) =>
@@ -1299,6 +1310,98 @@ function softmaxToPercent(values, temperature = 1.0) {
   const exps = values.map(v => Math.exp((v - maxV) / temperature));
   const sum = exps.reduce((a, b) => a + b, 0);
   return exps.map(x => (x / sum) * 100);
+}
+
+function softmaxToPercentBounded(values, opts = {}) {
+  const {
+    maxSharePct = 45,
+    initialTemperature = 1.0,
+    maxTemperature = 256,
+    minTemperature = 0.001,
+    iterations = 28
+  } = opts;
+
+  if (!values || values.length === 0) return [];
+  if (values.length === 1) return [100];
+
+  // Si el tope es matemáticamente imposible (p.ej. solo 2 candidatos), usamos el máximo factible.
+  const feasibleCap = (values.length * maxSharePct >= 100) ? maxSharePct : (100 / values.length);
+
+  const maxOf = (arr) => arr.reduce((m, v) => (v > m ? v : m), -Infinity);
+  const sharesAt = (t) => softmaxToPercent(values, t);
+
+  let lo = Math.max(minTemperature, Number(initialTemperature) || 1.0);
+  let sharesLo = sharesAt(lo);
+  if (maxOf(sharesLo) <= feasibleCap) return sharesLo;
+
+  let hi = lo;
+  let sharesHi = sharesLo;
+  while (hi < maxTemperature) {
+    hi *= 2;
+    sharesHi = sharesAt(hi);
+    if (maxOf(sharesHi) <= feasibleCap) break;
+  }
+
+  // Si aún no se cumple, devolvemos lo mejor que tenemos (distribución más "plana").
+  if (maxOf(sharesHi) > feasibleCap) return sharesHi;
+
+  // Búsqueda binaria: al subir la temperatura, el máximo share baja (más uniforme).
+  for (let i = 0; i < iterations; i++) {
+    const mid = (lo + hi) / 2;
+    const sharesMid = sharesAt(mid);
+    if (maxOf(sharesMid) > feasibleCap) lo = mid;
+    else {
+      hi = mid;
+      sharesHi = sharesMid;
+    }
+  }
+
+  return sharesHi;
+}
+
+function roundPercentsToTargetSum(values, opts = {}) {
+  const { decimals = 1, targetSum = 100, maxPerItem = Infinity } = opts;
+  if (!values || values.length === 0) return [];
+
+  const factor = Math.pow(10, decimals);
+  const targetUnits = Math.round(targetSum * factor);
+  const capUnits = Math.floor(maxPerItem * factor + 1e-9);
+
+  const rawUnits = values.map(v => {
+    const unit = Math.round((Number(v) || 0) * factor * 1e12) / 1e12;
+    return Number.isFinite(unit) ? unit : 0;
+  });
+
+  const floorUnits = rawUnits.map(u => Math.floor(u));
+  let remaining = targetUnits - floorUnits.reduce((a, b) => a + b, 0);
+
+  const frac = rawUnits.map((u, i) => ({ i, frac: u - floorUnits[i] }));
+  frac.sort((a, b) => b.frac - a.frac);
+
+  // Reparte las décimas restantes priorizando las fracciones más grandes, respetando el tope cuando sea posible.
+  let guard = 0;
+  while (remaining > 0 && guard++ < (values.length * 5 + 1000)) {
+    let progressed = false;
+    for (const { i } of frac) {
+      if (remaining <= 0) break;
+      if (floorUnits[i] + 1 > capUnits) continue;
+      floorUnits[i] += 1;
+      remaining -= 1;
+      progressed = true;
+    }
+    if (!progressed) break;
+  }
+
+  // Si el tope impidió sumar exactamente 100 (raro), prioriza sumar 100 antes que clavar el tope.
+  if (remaining > 0) {
+    for (const { i } of frac) {
+      if (remaining <= 0) break;
+      floorUnits[i] += 1;
+      remaining -= 1;
+    }
+  }
+
+  return floorUnits.map(u => u / factor);
 }
 
 export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {

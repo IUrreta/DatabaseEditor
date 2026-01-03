@@ -2896,6 +2896,10 @@ body.og-theme .main-calendar-section {
   padding: 0 3px;
 }
 
+#regulations .small-regulations .custom-input-number{
+  max-width: 25px;
+}
+
 #regulations .main-viewer-section.small-regulations{
   width: 36%;
 }
@@ -2960,6 +2964,7 @@ body.og-theme .main-calendar-section {
 
 #regulations .viewer-element .stat-number {
   gap: 6px;
+  margin: 0px !important;
 }
 
 #regulations .regulations-table-wrap {
@@ -3036,8 +3041,7 @@ body.og-theme .main-calendar-section {
 }
 
 #regulations #regSpendingCap.custom-input-number {
-  width: 12ch;
-  max-width: 14ch;
+  max-width: 155px;
 }
 
 #regulations .regulations-switch.form-switch {
@@ -9144,7 +9148,7 @@ body.og-theme .records-list {
 #regulationspill:hover .pill-line,
 #regulationspill.active .pill-line,
 #regulationspill.active {
-  width: 160px;
+  width: 158px;
 }
 
 #carpill:hover,
