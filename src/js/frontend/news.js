@@ -2430,6 +2430,11 @@ async function contextualizeQualiResults(newData) {
     gapToPole: row.gapToPole.toFixed(3)
   }));
 
+  prompt += `\n\nHere are the full qualifying results:\n`;
+  qualiResults.forEach(result => {
+    prompt += `${result.position}. ${result.name} (${result.team}) | +${result.gapToPole}s\n`;
+  });
+
   const contextData = buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
 
   return {

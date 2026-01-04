@@ -694,7 +694,7 @@ export function manage_modal(info) {
         document.querySelector(".add-contract").classList.add("d-none")
         document.querySelector("#futureContractTitle").classList.remove("d-none")
         document.querySelector("#futureContractOptions").classList.remove("d-none")
-        document.getElementById("futureYear").innerText = "Contract for " + parseInt(info[2] + 1)
+        document.getElementById("futureYear").innerText = "Contract for " + parseInt(info[4] + 1)
         document.getElementById("futureContract").innerText = getUpdatedName(info[1][6]).toUpperCase()
         document.querySelector("#teamContractButton").dataset.teamid = info[1][6]
         document.getElementById("futureContract").className = "team-contract engine-" + team_dict[info[1][6]]

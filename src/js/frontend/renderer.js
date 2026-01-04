@@ -2263,7 +2263,7 @@ function load_difficulty_warnings(triggerList) {
 
 
 
-document.querySelectorAll(".one-difficulty .bi-plus").forEach(function (elem) {
+document.querySelectorAll(".one-difficulty .bi-plus").forEach(function (elem) { 
     const title = elem.parentNode.parentNode
     const status = title.querySelector(".dif-status")
     const name = title.querySelector(".dif-name")
@@ -2274,17 +2274,20 @@ document.querySelectorAll(".one-difficulty .bi-plus").forEach(function (elem) {
     else{
         options = defaultDifficultiesConfig
     }
-    const maxOptions = Object.keys(options).length;
+    const optionKeys = Object.keys(options).map(Number).sort((a, b) => a - b);
     elem.addEventListener("click", function () {
-        let actualValue = parseInt(status.dataset.value);
-        let newValue = (actualValue + 1) % maxOptions;
+        const actualValue = Number(status.dataset.value);
+        const actualIndex = optionKeys.indexOf(actualValue);
+        const safeIndex = actualIndex === -1 ? 0 : actualIndex;
+        const newKeyIndex = (safeIndex + 1) % optionKeys.length;
+        const newValue = optionKeys[newKeyIndex];
         status.dataset.value = newValue;
         status.textContent = options[newValue].text;
         status.className = `dif-status ${options[newValue].className}`;
     });
 });
 
-document.querySelectorAll(".one-difficulty .bi-dash").forEach(function (elem) {
+document.querySelectorAll(".one-difficulty .bi-dash").forEach(function (elem) { 
     const title = elem.parentNode.parentNode
     const status = title.querySelector(".dif-status")
     const name = title.querySelector(".dif-name")
@@ -2295,10 +2298,13 @@ document.querySelectorAll(".one-difficulty .bi-dash").forEach(function (elem) {
     else{
         options = defaultDifficultiesConfig
     }
-    const maxOptions = Object.keys(options).length;
+    const optionKeys = Object.keys(options).map(Number).sort((a, b) => a - b);
     elem.addEventListener("click", function () {
-        let actualValue = parseInt(status.dataset.value);
-        let newValue = (actualValue - 1 + maxOptions) % maxOptions;
+        const actualValue = Number(status.dataset.value);
+        const actualIndex = optionKeys.indexOf(actualValue);
+        const safeIndex = actualIndex === -1 ? 0 : actualIndex;
+        const newKeyIndex = (safeIndex - 1 + optionKeys.length) % optionKeys.length;
+        const newValue = optionKeys[newKeyIndex];
         status.dataset.value = newValue;
         status.textContent = options[newValue].text;
         status.className = `dif-status ${options[newValue].className}`;
