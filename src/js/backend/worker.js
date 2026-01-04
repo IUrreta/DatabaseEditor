@@ -1,7 +1,8 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
   fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
-  fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
+  fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
+  fetchJuniorTeamDriverNames,
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
@@ -15,7 +16,7 @@ import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, ge
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
-import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
+import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
@@ -33,12 +34,14 @@ import {
   getNewsFromSeason,
   deleteNewByKey,
   checkDoublePointsBug,
-  fixDoublePointsBug
+  fixDoublePointsBug,
+  getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
+import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -121,11 +124,23 @@ const workerCommands = {
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
 
+    const regulations = fetchRegulationsData();
+    postMessage({ responseMessage: "Regulations fetched", content: regulations });
+
     const year = fetchYear();
-    postMessage({ responseMessage: "Year fetched", content: year });
+    postMessage({ responseMessage: "Year fetched", content: year });       
+
+    const previousYear = Number(year) - 1;
+    if (Number.isFinite(previousYear) && previousYear > 0) {
+      const standings = fetchTeamsStandings(previousYear, 1);
+      postMessage({
+        responseMessage: "Previous year teams standings fetched",
+        content: { year: previousYear, standings }
+      });
+    }
 
     const numbers = fetchDriverNumbers();
-    postMessage({ responseMessage: "Numbers fetched", content: numbers });
+    postMessage({ responseMessage: "Numbers fetched", content: numbers });      
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races] });
@@ -214,8 +229,18 @@ const workerCommands = {
     postMessage(designResponse);
   },
   driverRequest: (data, postMessage) => {
-    const contract = fetchDriverContract(data.driverID);
+    const contract = fetchDriverContracts(data.driverID);
     postMessage({ responseMessage: "Contract fetched", content: contract });
+  },
+  juniorTeamDriversRequest: (data, postMessage) => {
+    const teamID = Number(data.teamID);
+    if (!Number.isFinite(teamID) || teamID < 11 || teamID > 31) {
+      postMessage({ responseMessage: "Error", error: "Invalid junior team id" });
+      return;
+    }
+
+    const driverNames = fetchJuniorTeamDriverNames(teamID);
+    postMessage({ responseMessage: "Junior team drivers fetched", content: { teamID, driverNames } });
   },
   partRequest: (data, postMessage) => {
     const partValues = getUnitValueFromOnePart(data.designID);
@@ -321,6 +346,17 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+  editRegulations: (data, postMessage) => {
+    updateRegulations(data);
+    const regulations = fetchRegulationsData();
+    postMessage({
+      responseMessage: "Regulations fetched",
+      content: regulations,
+      noti_msg: "Succesfully updated regulations",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
   configUpdate: (data, postMessage) => {
     updateCustomConfig(data);
     postMessage({
@@ -346,6 +382,20 @@ const workerCommands = {
       isEditCommand: true,
       unlocksDownload: true
     });
+  },
+  juniorTransfer(data, postMessage) {
+    transferJuniorDriver(data.driverID, data.teamID, data.posInTeam, getGlobals().yearIteration);
+    postMessage({
+      responseMessage: "Junior driver transferred",
+      noti_msg: `Succesfully transferred ${data.driver} to ${data.team}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
   },
   autoContract: (data, postMessage) => {
     hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);
@@ -576,9 +626,16 @@ const workerCommands = {
   },
   fullChampionshipDetailsRequest: (data, postMessage) => {
     const season = data.season;
+    const junior = data.junior || false;
 
     const results = getFullChampionSeasonDetails(season);
     postMessage({ responseMessage: "Full championship details fetched", content: results });
+  },
+  fullFeederSeriesDetailsRequest: (data, postMessage) => {
+    const season = data.season;
+
+    const results = getFullFeederSeriesDetails(season, true);
+    postMessage({ responseMessage: "Full feeder series details fetched", content: results });
   },
   recordSelected: (data, postMessage) => {
     const type = data.type;

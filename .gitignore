@@ -22,3 +22,4 @@ test/
 .vercel/
 .env*.local
 AGENTS.md
+*.tsx

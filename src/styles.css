@@ -577,7 +577,7 @@ i.bi-file-text:hover {
   text-align: center;
   color: var(--white-general);
   font-size: 26px;
-  padding: 0px 0 10px 0px;
+  padding: 5px 0 5px 0px;
   flex: 1;
 }
 
@@ -702,6 +702,14 @@ input[role="switch"] {
 
 input[role="switch"]:focus {
   box-shadow: none;
+}
+
+body.light-theme input[role="switch"]:not(:checked) {
+  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
+}
+
+body.light-theme input[role="switch"]:not(:checked):focus {
+  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
 }
 
 input[role="switch"]:not(:checked) {
@@ -856,7 +864,8 @@ input[type="checkbox"]:focus {
 .engine-modal-body::-webkit-scrollbar,
 .news-article::-webkit-scrollbar,
 .main-second-viewer::-webkit-scrollbar,
-.news-edit-textarea::-webkit-scrollbar {
+.news-edit-textarea::-webkit-scrollbar,
+#juniorTeamContractMenu {
   width: 4px;
 }
 
@@ -873,7 +882,8 @@ input[type="checkbox"]:focus {
 .engine-modal-body::-webkit-scrollbar-thumb,
 .news-article::-webkit-scrollbar-thumb,
 .main-second-viewer::-webkit-scrollbar-thumb,
-.news-edit-textarea::-webkit-scrollbar-thumb {
+.news-edit-textarea::-webkit-scrollbar-thumb,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -891,7 +901,8 @@ input[type="checkbox"]:focus {
 .engine-modal-body::-webkit-scrollbar-thumb:hover,
 .news-article::-webkit-scrollbar-thumb:hover,
 .main-second-viewer::-webkit-scrollbar-thumb:hover,
-.news-edit-textarea::-webkit-scrollbar-thumb:hover {
+.news-edit-textarea::-webkit-scrollbar-thumb:hover,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -1519,13 +1530,70 @@ input.comparing-tag {
 .filter-icon {
   color: var(--dark-text);
   font-size: 20px;
+  display: flex;
+  align-items: center;
   cursor: pointer;
-  transition: color 0.15s, transform 0.15s;
+  transition: color 0.15s;
+}
+
+.new-pills-filters{
+  padding: 3px 10px !important;
+  border-radius: 6px !important;
+  background-color: transparent;
+}
+
+.new-pills-filters:hover{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.new-pills-filters:active{
+  transform: scale(0.97);
+}
+
+.new-pills-filters.active{
+  background-color: var(--new-primary-transparent) !important;
+  color: var(--new-primary) !important;
+}
+
+.new-pills-filters.f2-filter:hover{
+  color: var(--f2-back);
+  background-color: color-mix(in srgb, var(--f2-back) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.new-pills-filters.f2-filter:active{
+  transform: scale(0.97);
+}
+
+.new-pills-filters.f2-filter.active{
+  color: var(--f2-back);
+  background-color: color-mix(in srgb, var(--f2-back) 30%, transparent);
+}
+
+.new-pills-filters.f3-filter:hover{
+  color: var(--f3-back);
+  background-color: color-mix(in srgb, var(--f3-back) 30%, transparent);
+  transform: scale(1.05);
+}
+
+.new-pills-filters.f3-filter:active{
+  transform: scale(0.97);
+}
+
+.new-pills-filters.f3-filter.active{
+  color: var(--f3-back);
+  background-color: color-mix(in srgb, var(--f3-back) 30%, transparent);
 }
 
 .filter-icon:hover {
   color: var(--new-primary);
-  transform: scale(1.1);
+  transform: scale(1.05);
+}
+
+.filter-icon:active {
+  color: var(--new-primary);
+  transform: scale(0.97);
 }
 
 .filter-container {
@@ -1534,8 +1602,9 @@ input.comparing-tag {
   box-shadow: 0 0 0 0 var(--box-shadow);
   transition: background-color 0.15s, box-shadow 0.15s;
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
+  font-size: 14px;
   padding: 2px 12px;
 }
 
@@ -1543,26 +1612,10 @@ input.comparing-tag {
   pointer-events: none;
 }
 
-.filter-pills::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 0% !important;
-  height: 0% !important;
-  background: transparent !important;
-  opacity: 0;
-  pointer-events: none;
+.filter-container.focused .filter-icon {
+  color: var(--new-primary);
 }
 
-.filter-pills:hover .basic-label {
-  transform: scale(1.1);
-}
-
-.filter-container.focused {
-  background-color: var(--generals);
-  box-shadow: var(--shadow-s)
-}
 
 .category-filters,
 .order-filters {
@@ -2309,6 +2362,59 @@ body.vaporwave-theme .background {
   transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
+.script-selector .nav-pills > li.nav-item {
+  opacity: 1;
+  transform: none;
+}
+
+.script-selector.hidden .nav-pills > li.nav-item {
+  opacity: 0;
+  transform: translateX(-12px);
+}
+
+@keyframes script-pill-reveal {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+
+  65% {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.script-selector:not(.hidden) .nav-pills > li.nav-item {
+  animation: script-pill-reveal 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(1) { animation-delay: 0ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(2) { animation-delay: 45ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(3) { animation-delay: 90ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(4) { animation-delay: 135ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(5) { animation-delay: 180ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(6) { animation-delay: 225ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(7) { animation-delay: 270ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(8) { animation-delay: 315ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(9) { animation-delay: 360ms; }
+.script-selector:not(.hidden) .nav-pills > li.nav-item:nth-child(10) { animation-delay: 405ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .script-selector .nav-pills > li.nav-item {
+    animation: none;
+    transform: none;
+  }
+
+  .script-selector.hidden .nav-pills > li.nav-item {
+    transform: none;
+  }
+}
+
 .script-selector.hidden,
 .gear-container.hidden,
 .footer.hidden {
@@ -2825,12 +2931,180 @@ body.og-theme .main-calendar-section {
 #edit_stats,
 #car_performance,
 #driver_transfers,
+#regulations,
 #season_viewer,
 #head2head_viewer,
 #car_performance,
 #mod_25,
 #news {
   flex-direction: column;
+}
+
+#regulations .main-viewer-section.points-and-cfd{
+  margin-left: 0px;
+  flex-grow: 1;
+}
+
+#regulations .custom-input-number{
+  padding: 0 3px;
+}
+
+#regulations .small-regulations .custom-input-number{
+  max-width: 25px;
+}
+
+#regulations .main-viewer-section.small-regulations{
+  width: 36%;
+}
+
+#regulations .main-viewer-section.small-regulations .viewer-element{
+  height: 56px;
+}
+
+#regulations .regulations-main {
+  flex: 1;
+  min-height: 0;
+  gap: 14px;
+}
+
+#regulations .regulations-panels {
+  display: flex;
+  gap: 14px;
+  min-height: 0;
+}
+
+#regulations .regulations-panels .viewer-details {
+  min-height: 0;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+#regulations .viewer-details {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#regulations .viewer-title {
+  font-family: 'Formula1Bold';
+  font-size: 18px;
+  color: var(--white-general);
+}
+
+#regulations .viewer-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+#regulations .viewer-element {
+  background-color: var(--elements);
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: var(--shadow-s);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#regulations .viewer-element-name {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+#regulations .viewer-element .stat-number {
+  gap: 6px;
+  margin: 0px !important;
+}
+
+#regulations .regulations-table-wrap {
+  overflow-x: auto;
+}
+
+#regulations .regulations-grid {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.regulations-grid-resources .regulations-grid-header,
+.regulations-grid-resources .regulations-row,
+.regulations-grid-points .regulations-grid-header,
+.regulations-grid-points .regulations-row {
+  justify-content: space-between;
+}
+
+#regulations .regulations-grid-header {
+  display: flex;
+  gap: 8px;
+  padding: 0 10px 6px;
+}
+
+#regulations .regulations-grid-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#regulations .regulations-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background-color: color-mix(in srgb, var(--background) 55%, transparent);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+#regulations .regulations-cell {
+  color: var(--text-general);
+}
+
+#regulations .regulations-colheader {
+  font-family: 'Formula1Bold';
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+#regulations .regulations-keycell {
+  font-family: 'Formula1Bold';
+  color: var(--white-general);
+  white-space: nowrap;
+  text-align: center;
+  width: 45px;
+  text-align: center;
+  cursor: default;
+}
+
+#regulations #regPointSchemeBody input.custom-input-number,
+#regulations #regResourcePackageBody input.custom-input-number,
+.regulations-grid-resources .regulations-grid-header .regulations-colheader,
+.regulations-grid-points .regulations-grid-header .regulations-colheader {
+  width: 45px;
+  text-align: center;
+}
+
+.wind-tunnel-header, .points-header {
+  width: min-content !important;
+}
+
+#regulations #regSpendingCap.custom-input-number {
+  max-width: 155px;
+}
+
+#regulations .regulations-switch.form-switch {
+  padding-left: 0;
+  display: flex;
+  align-items: center;
+}
+
+#regulations .regulations-switch .form-check-input {
+  margin: 0;
 }
 
 #probText {
@@ -3242,11 +3516,11 @@ DRIVERS TABLE
 }
 
 .alpine-team-table-logo {
-  padding: 9px 2px !important
+  padding: 13px 2px !important
 }
 
 .williams-team-table-logo {
-  padding: 10px 6px !important;
+  padding: 2px!important;
 }
 
 .haas-team-table-logo {
@@ -3348,6 +3622,7 @@ phm
   width: 32px;
 }
 
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-team[data-teamid="31"]) img{ 
   width: 70px;
 }
@@ -3356,6 +3631,10 @@ phm
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="27"]) img { 
   width: 38px;
   padding: 3px 0px;
+}
+
+.junior-formula-logo img[data-junior-team-id="16"], .junior-formula-logo img[data-junior-team-id="27"] {
+  width: 38px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="27"]) img { 
@@ -3367,6 +3646,10 @@ phm
   padding: 9px 2px;
 }
 
+.junior-formula-logo img[data-junior-team-id="13"], .junior-formula-logo img[data-junior-team-id="29"] {
+  padding: 5px 2px;
+}
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="29"]) img { 
   width: 55px;
 }
@@ -3374,6 +3657,10 @@ phm
 /*trident*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="23"]) img {
   width: 45px;
+}
+
+.junior-formula-logo img[data-junior-team-id="21"], .junior-formula-logo img[data-junior-team-id="23"] {
+  width: 40px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="23"]) img {
@@ -3385,6 +3672,10 @@ phm
   width: 38px;
 }
 
+.junior-formula-logo img[data-junior-team-id="15"], .junior-formula-logo img[data-junior-team-id="24"] {
+  width: 34px;
+}
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="24"]) img {
   width: 80px;
 }
@@ -3392,6 +3683,10 @@ phm
 /*hitech*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="25"]) img {
   width: 38px;
+}
+
+.junior-formula-logo img[data-junior-team-id="14"], .junior-formula-logo img[data-junior-team-id="25"] {
+  width: 34px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="25"]) img {
@@ -3403,6 +3698,10 @@ phm
   width: 38px;
 }
 
+.junior-formula-logo img[data-junior-team-id="20"], .junior-formula-logo img[data-junior-team-id="26"] {
+  width: 32px;
+}
+
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="26"]) img {
   width: 80px;
 }
@@ -3412,9 +3711,17 @@ phm
   padding: 6px 2px;
 }
 
+.junior-formula-logo img[data-junior-team-id="11"], .junior-formula-logo img[data-junior-team-id="22"] {
+  padding: 3px 1px;
+}
+
 /* campos */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="28"]) img {
   width: 38px;
+}
+
+.junior-formula-logo img[data-junior-team-id="19"], .junior-formula-logo img[data-junior-team-id="28"] {
+  width: 30px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="28"]) img {
@@ -3424,6 +3731,10 @@ phm
 /* invicta */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="12"]) img {
   width: 42px;
+}
+
+.junior-formula-logo img[data-junior-team-id="12"] {
+  width: 32px;
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="12"]) img {
@@ -3448,6 +3759,28 @@ phm
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="30"]) img {
   width: 74px;
+}
+
+.junior-formula-logo {
+  width: 26px;
+  height: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.junior-formula-logo img{
+  width: 26px;
+  height: 22px;
+}
+
+.junior-formula-logo.f2-team{
+  padding-left: 2px;
+  border-left: 2px solid var(--f2-back);
+}
+
+.junior-formula-logo.f3-team{
+  padding-left: 4px;
+  border-left: 2px solid var(--f3-back);
 }
 
 .team-logo-abbr-small {
@@ -3499,6 +3832,15 @@ phm
   padding: 4px;
 }
 
+.wihoverback {
+  width: 30px;
+  height: 30px;
+}
+
+.wihoverback:has(.logo-williams-2026-table) {
+  padding: 0px 0px;
+}
+
 .athoverback {
   width: 30px;
   height: 30px;
@@ -3529,7 +3871,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-hugo-table {
@@ -3540,7 +3881,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 
@@ -3552,7 +3892,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-brawn-table {
@@ -3563,7 +3902,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-alpine-table {
@@ -3574,7 +3912,16 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
+}
+
+.logo-williams-2026-table {
+  width: 100%;
+  height: 100%;
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--williams-primary);
 }
 
 .alhoverback {
@@ -3604,7 +3951,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-renault-table {
@@ -3615,7 +3961,6 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .logo-lotus-table {
@@ -3626,13 +3971,20 @@ phm
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
-  transition: background-color 0.15s;
 }
 
 .drivers-table-row:hover .logo-alpine-table,
 .drivers-table-row:hover .logo-visarb-table,
-.drivers-table-row:hover .logo-alphatauri-table {
-  background-color: #ffffff;
+.drivers-table-row:hover .logo-alphatauri-table,
+.drivers-table-row:hover .logo-williams-2026-table {
+  background-color: #f0f0f0;
+}
+
+.drivers-table-row:hover .logo-renault-table,
+.drivers-table-row:hover .logo-lotus-table,
+.drivers-table-row:hover .logo-andretti-table,
+.drivers-table-row:hover .logo-lotus-table {
+  background-color: #333333;
 }
 
 .logo-reduce {
@@ -3817,8 +4169,13 @@ phm
   background-color: var(--custom-team-primary);
 }
 
+body.light-theme .drivers-table:has(.f2-table-data) .drivers-table-row .drivers-table-logo-div,
+body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-table-logo-div {
+  background-color: var(--white-general);
+}
+
 .drivers-table-row:hover .prehoverback {
-  background-color: #ebebeb;
+  background-color: #ebebeb !important;
 }
 
 .teams-table-row .preiconback {
@@ -3826,7 +4183,7 @@ phm
 }
 
 .drivers-table-row:hover .virhoverback {
-  background-color: #2a2a2a;
+  background-color: #2a2a2a !important;
 }
 
 .teams-table-row .viriconback {
@@ -3834,7 +4191,7 @@ phm
 }
 
 .drivers-table-row:hover .carhoverback {
-  background-color: #1b6fe0;
+  background-color: #1b6fe0 !important;
 }
 
 .teams-table-row .cariconback {
@@ -3842,7 +4199,7 @@ phm
 }
 
 .drivers-table-row:hover .hithoverback {
-  background-color: #9FB4C7;
+  background-color: #9FB4C7 !important;
 }
 
 .teams-table-row .hiticonback {
@@ -3850,7 +4207,7 @@ phm
 }
 
 .drivers-table-row:hover .arthoverback {
-  background-color: #2b2d42;
+  background-color: #2b2d42 !important;
 }
 
 .teams-table-row .articonback {
@@ -3858,7 +4215,7 @@ phm
 }
 
 .drivers-table-row:hover .mphoverback {
-  background-color: #FF9144;
+  background-color: #FF9144 !important;
 }
 
 .teams-table-row .mpiconback {
@@ -3866,7 +4223,7 @@ phm
 }
 
 .drivers-table-row:hover .phmhoverback {
-  background-color: #793118;
+  background-color: #793118 !important;
 }
 
 .teams-table-row .phmiconback {
@@ -3874,7 +4231,7 @@ phm
 }
 
 .drivers-table-row:hover .damhoverback {
-  background-color: #00C8FF;
+  background-color: #00C8FF !important;
 }
 
 .teams-table-row .damiconback {
@@ -3882,7 +4239,7 @@ phm
 }
 
 .drivers-table-row:hover .camhoverback {
-  background-color: #707070;
+  background-color: #707070 !important;
 }
 
 .teams-table-row .camiconback {
@@ -3890,7 +4247,7 @@ phm
 }
 
 .drivers-table-row:hover .varhoverback {
-  background-color: #dfdfdf;
+  background-color: #dfdfdf !important;
 }
 
 .teams-table-row .variconback {
@@ -3898,7 +4255,7 @@ phm
 }
 
 .drivers-table-row:hover .trihoverback {
-  background-color: #7B01FF;
+  background-color: #7B01FF !important;
 }
 
 .teams-table-row .triiconback {
@@ -3906,7 +4263,7 @@ phm
 }
 
 .drivers-table-row:hover .jenhoverback {
-  background-color: #cbcbcb;
+  background-color: #cbcbcb !important;
 }
 
 .teams-table-row .jeniconback {
@@ -4661,20 +5018,23 @@ body.light-theme .flag-header img {
 
 .staff-list::-webkit-scrollbar,
 .news-grid::-webkit-scrollbar,
-.records-list::-webkit-scrollbar {
+.records-list::-webkit-scrollbar,
+#juniorTeamContractMenu::-webkit-scrollbar {
   width: 4px;
 }
 
 .staff-list::-webkit-scrollbar-thumb,
 .news-grid::-webkit-scrollbar-thumb,
-.records-list::-webkit-scrollbar-thumb {
+.records-list::-webkit-scrollbar-thumb,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
 
 .staff-list::-webkit-scrollbar-thumb:hover,
 .news-grid::-webkit-scrollbar-thumb:hover,
-.records-list::-webkit-scrollbar-thumb:hover {
+.records-list::-webkit-scrollbar-thumb:hover,
+#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -4761,21 +5121,31 @@ body.light-theme .flag-header img {
   background-color: red !important;
 }
 
+#mainH2h .col-3.main-viewer-section{
+  padding: 10px;
+}
+
+/*First .one-statH2H with margin top 25 px and no border top*/
+#raceh2h {
+  margin-top: 25px;
+}
+
+#dnfh2h {
+  margin-bottom: 0px;
+}
+
 .one-statH2H {
   padding-top: 5px;
   display: flex;
   flex-direction: column;
   font-size: 20px;
-  border-radius: 10px;
-  margin-top: 10px;
-  margin-left: 10px;
-  margin-right: 10px;
   color: var(--text-general);
-  border: 2px solid transparent;
   transition: border-color 0.15s, background-color 0.15s;
   align-items: center;
   min-height: 66px;
-  border: none;
+  border-top: 2px solid var(--separator);
+  padding: 10px 10px 0px;
+  margin-bottom: 10px;
 }
 
 .one-statH2H:hover .name-H2H .only-name {
@@ -4791,7 +5161,6 @@ body.light-theme .flag-header img {
   display: flex;
   flex-direction: row;
   justify-content: space-around;
-  padding: 10px;
   font-size: 20px;
   height: 110px;
   margin-top: 6px;
@@ -4845,74 +5214,27 @@ body.light-theme .flag-header img {
 .affiliates-and-arrows {
   display: flex;
   flex-direction: row;
-  width: 63%;
-}
-
-.affiliates-and-arrows .bi-chevron-right,
-.affiliates-and-arrows .bi-chevron-left {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-}
-
-.affiliates-and-arrows .bi-chevron-left {
-  left: 0;
-}
-
-.arrow-back {
-  background-color: var(--superficials);
-  height: 100%;
-  position: absolute;
-  right: 0;
-  height: 100%;
-  display: flex;
   align-items: center;
-  width: 20px;
-  justify-content: center;
-  top: 0;
-  z-index: 4;
-}
-
-.affiliates-and-arrows .bi-chevron-right:hover,
-.affiliates-and-arrows .bi-chevron-left:hover {
-  cursor: pointer;
-  color: var(--text-selected);
-  transform: scale(1.1);
-}
-
-.affiliates-and-arrows {
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
+  gap: 2px;
+  width: 60%;
   flex-grow: 1;
-}
-
-.affiliates-and-arrows .bi-chevron-left,
-.affiliates-and-arrows .bi-chevron-right {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s ease-in-out;
-  position: absolute;
-  z-index: 4;
-}
-
-.arrow-left {
-  left: 0;
-}
-
-.arrow-right {
-  right: 0;
 }
 
 .affiliates-space {
   display: flex;
   overflow-x: hidden;
-  flex-grow: 1;
-  max-width: max-content;
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   flex-wrap: nowrap;
-  min-width: 100%;
   min-height: 40px;
   align-items: center;
-  margin-left: 15px;
+}
+
+.affiliates-and-arrows .new-augment-button.affiliates-scroll-disabled {
+  opacity: 0.35;
+  pointer-events: none;
 }
 
 .affiliates-space .free-driver {
@@ -5931,9 +6253,6 @@ body.og-theme .records-list {
   transition: box-shadow 0.15s;
 }
 
-.team.selected {
-  box-shadow: var(--shadow-s);
-}
 
 .car {
   border: 1px solid transparent;
@@ -7105,14 +7424,27 @@ body.og-theme .records-list {
   background-color: var(--ferrari-primary);
 }
 
+.noti-fe-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--ferrari-primary);
+}
+
 .noti-rb {
   background-color: var(--redbull-primary);
 }
 
-
+.noti-rb-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--redbull-primary);
+}
 
 .noti-mc {
   background-color: var(--mclaren-primary);
+}
+
+.noti-mc-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--mclaren-primary);
 }
 
 
@@ -7120,11 +7452,19 @@ body.og-theme .records-list {
   background-color: var(--aston-primary);
 }
 
-
+.noti-as-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--aston-primary);
+}
 
 
 .noti-al {
   background-color: var(--alpine-primary);
+}
+
+.noti-al-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--alpine-primary);
 }
 
 
@@ -7133,34 +7473,58 @@ body.og-theme .records-list {
 }
 
 
+.noti-af-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--alfa-primary);
+}
+
 
 .noti-ha {
   background-color: var(--haas-primary);
 }
 
+.noti-ha-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--haas-primary);
+}
 
 
 .noti-wi {
   background-color: var(--williams-primary);
 }
 
+.noti-wi-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--williams-primary);
+}
 
 .noti-at {
   background-color: var(--alphatauri-primary);
 }
 
+.noti-at-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--alphatauri-primary);
+}
 
 
 .noti-me {
   background-color: var(--mercedes-primary);
 }
 
+.noti-me-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--mercedes-primary);
+}
+
 .noti-ct {
   background-color: var(--custom-team-primary);
 }
 
-
-
+.noti-ct-affiliate{
+  background-color: transparent;
+  border: 1px solid var(--custom-team-primary);
+}
 
 .name-container {
   display: flex;
@@ -8447,13 +8811,52 @@ body.og-theme .records-list {
 
 .input-buttons .bi-chevron-up,
 .input-buttons .bi-chevron-down {
-  font-size: 16px !important;
+  font-size: 14px !important;
 }
 
 
 .team-menu-logo {
   width: 50px;
   height: 42px;
+}
+
+.team-menu-junior-generic {
+  width: 50px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.junior-driver-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 4px 0;
+}
+
+#juniorPosInTeam{
+  width: 30px !important;
+}
+
+.junior-driver-left {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.junior-driver-car {
+  color: var(--text-general);
+  opacity: 0.75;
+  font-size: 12px;
+  min-width: 52px;
+}
+
+.junior-driver-name {
+  color: var(--text-general);
+}
+
+.junior-replacing-tag {
+  color: var(--new-primary);
+  font-weight: 700;
 }
 
 .team-menu-aston {
@@ -8503,6 +8906,11 @@ body.og-theme .records-list {
   padding-left: 7px;
   padding-top: 10px;
   padding-right: 4px;
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--text-general);
 }
 
 .changable-team-menu-brawn {
@@ -8789,6 +9197,13 @@ body.og-theme .records-list {
   width: 130px;
 }
 
+#regulationspill:hover,
+#regulationspill:hover .pill-line,
+#regulationspill.active .pill-line,
+#regulationspill.active {
+  width: 158px;
+}
+
 #carpill:hover,
 #carpill:hover .pill-line,
 #carpill.active .pill-line,
@@ -8820,7 +9235,29 @@ body.og-theme .records-list {
   opacity: 1;
 }
 
+.download-save-controls {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.download-save-progress {
+  width: 160px;
+  min-width: 160px;
+  margin-left: 8px;
+  opacity: 1;
+  transition: width 0.15s, min-width 0.15s, margin-left 0.15s, opacity 0.15s;
+}
+
 .download-save-button.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.download-save-progress.hidden {
+  width: 0;
+  min-width: 0;
+  margin-left: 0;
   opacity: 0;
   pointer-events: none;
 }
@@ -9279,7 +9716,7 @@ input::-webkit-inner-spin-button {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  font-size: 15px;
+  font-size: 13px;
   height: 13.5px;
   padding-bottom: 4px;
 }
@@ -9574,9 +10011,6 @@ input::-webkit-inner-spin-button {
   padding: 0 10px;
 }
 
-#selectImage {
-  margin-top: 0px !important;
-}
 
 .color-selector {
   display: flex;
@@ -9861,7 +10295,7 @@ input::-webkit-inner-spin-button {
 }
 
 #editorPill {
-  width: 70px;
+  width: 81px;
 }
 
 #gamePill {
@@ -10061,7 +10495,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/alpine.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .renaultlogo {
@@ -10069,7 +10503,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/renault.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .andrettilogo {
@@ -10077,7 +10511,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/andretti.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .lotuslogo {
@@ -10085,7 +10519,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/lotus.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .mclarenlogo,
@@ -10213,7 +10647,7 @@ input::-webkit-inner-spin-button {
   mask: url('/assets/images/alphatauri.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--text-general);
+  background-color: var(--logos-general);
 }
 
 .williamslogo,
@@ -10224,6 +10658,15 @@ input::-webkit-inner-spin-button {
   padding-left: 6px;
   padding-top: 8px;
   padding-right: 6px;
+  transition: opacity 0.15s;
+}
+
+.williamslogo {
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--logos-general);
 }
 
 .team1,
@@ -11002,6 +11445,13 @@ body:has(#mentalitySpan.frozen) #driverMentalityAttributes {
 
 input[type="range"] {
   width: 100%;
+  outline: none;
+}
+
+input[type="range"]:focus,
+input[type="range"]:focus-visible {
+  outline: none;
+  box-shadow: none;
 }
 
 datalist {
@@ -11019,24 +11469,73 @@ datalist .my-mark {
   width: 2px;
 }
 
-#difficultySlider::-webkit-slider-thumb {
+.slider-and-label{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  width: 400px;
+}
+
+#turningPointsFrequencyLabel{
+  width: 160px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
   background-color: var(--new-primary-dark);
   z-index: 2;
   box-shadow: none;
 }
 
-#difficultySlider::-webkit-slider-thumb:hover {
+input[type="range"]:focus::-webkit-slider-thumb,
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+  box-shadow: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  background-color: var(--new-primary-dark);
+  box-shadow: none;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
   outline: 1px solid var(--new-primary);
   transform: scale(1.05);
 }
 
-#difficultySlider::-webkit-slider-runnable-track {
+input[type="range"]::-webkit-slider-runnable-track {
+  background-color: var(--text-selected);
+}
+
+input[type="range"]::-moz-range-thumb {
+  background-color: var(--new-primary-dark);
+  border: none;
+  box-shadow: none;
+}
+
+input[type="range"]::-moz-range-thumb:active {
+  background-color: var(--new-primary-dark);
+  box-shadow: none;
+}
+
+input[type="range"]::-moz-range-track {
   background-color: var(--text-selected);
 }
 
 .option-state {
   padding-left: 5px;
   transition: color 0.15s;
+}
+
+#turningPointsFrequencyLabel.tp-default {
+  color: var(--modal-text);
+}
+
+#turningPointsFrequencyLabel.tp-less {
+  color: var(--new-secondary);
+}
+
+#turningPointsFrequencyLabel.tp-more {
+  color: var(--new-primary);
 }
 
 .dif-warning {
@@ -11191,18 +11690,6 @@ span.reduced-weight,
 #blockDiv {
   opacity: 1;
   transition: all 0.15s;
-}
-
-body.light-theme #blockDiv {
-  background-image: url('../assets/images/background2light.svg');
-}
-
-body.og-theme #blockDiv {
-  background-image: url('../assets/images/background2og.svg');
-}
-
-body.vaporwave-theme #blockDiv {
-  background-image: url('../assets/images/background2vaporwave.svg');
 }
 
 #blockDiv.disappear {
@@ -13880,6 +14367,91 @@ body.default-theme .news-article-date {
   z-index: 2;
 }
 
+.reaction-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  z-index: 2;
+}
+
+.news-centered-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  z-index: 2;
+}
+
+.news-centered-overlay .news-centered-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-bottom: 3px solid transparent;
+  color: var(--news-overlays-text);
+  font-family: 'Formula1Bold';
+}
+
+.news-centered-overlay .news-centered-title {
+  font-size: 26px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.news-centered-overlay .news-centered-subtitle {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.news-centered-overlay .news-centered-subtitle.silly-season-names {
+  font-size: 18px;
+  letter-spacing: 1px;
+  opacity: 1;
+}
+
+.reaction-overlay .reaction-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-bottom: 3px solid transparent;
+  color: var(--news-overlays-text);
+  font-family: 'Formula1Bold';
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.reaction-overlay .reaction-title-text {
+  font-size: 26px;
+}
+
+.reaction-overlay .reaction-race-name {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+}
+
 .race-overlay .position {
   font-size: 20px;
   color: var(--news-overlays-text);
@@ -14080,7 +14652,7 @@ p.news-error-api-key {
 
 .loader-div span {
   font-size: 20px;
-  color: color-mix(in srgb, var(--elements) 60%, var(--text-general));
+  color: var(--text-muted)
 }
 
 .ai-progress-bar {
@@ -14088,12 +14660,15 @@ p.news-error-api-key {
   box-shadow: 0 0 0 2px var(--new-primary) inset;
   background-color: transparent;
   min-width: 160px;
+  border-radius: 5px;
+  overflow: hidden;
   outline: none;
 }
 
 .progress-div {
   width: 0%;
   height: 100%;
+  border-radius: 5px;
   background-color: var(--new-primary);
   transition: width 0.15s;
   will-change: width;
@@ -14224,7 +14799,6 @@ p.news-error-api-key {
 }
 
 
-/* --- FONDOS Y EFECTOS --- */
 .tech-grid {
   position: absolute;
   top: 0;
@@ -14234,10 +14808,23 @@ p.news-error-api-key {
   z-index: 0;
   pointer-events: none;
   background-size: 40px 40px;
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-image: linear-gradient(to right, var(--tech-grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tech-grid-line) 1px, transparent 1px);
   mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
   -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+}
+
+.tech-grid::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-size: inherit;
+  background-image: linear-gradient(to right, var(--tech-grid-highlight-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--tech-grid-highlight-color) 1px, transparent 1px);
+  opacity: var(--tech-grid-highlight-opacity);
+  mask-image: radial-gradient(circle var(--tech-grid-highlight-radius) at var(--glow-x) var(--glow-y), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 70%);
+  -webkit-mask-image: radial-gradient(circle var(--tech-grid-highlight-radius) at var(--glow-x) var(--glow-y), rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0) 70%);
 }
 
 .glow-spot {
@@ -14367,7 +14954,18 @@ body:has(.toolbar-title.nightly) .upload-desc input:hover {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  cursor: pointer;
   margin-bottom: 1.5rem;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.badge-version:hover {
+  background-color: var(--new-primary);
+  color: var(--white-general);
+}
+
+.badge-version:active {
+  transform: scale(0.96);
 }
 
 body:has(.toolbar-title.nightly) .badge-version {
@@ -14408,7 +15006,7 @@ body:has(.toolbar-title.nightly) .glow-spot {
 }
 
 body:has(.toolbar-title.nightly) .icon-circle {
-  background-color: var(--new-secondary-transparent);
+  background-color: color-mix(in srgb, var(--new-secondary) 25%, var(--background));
 }
 
 #statusTitle {
@@ -14536,7 +15134,7 @@ body:has(.toolbar-title.nightly) .icon-circle {
   width: 5rem;
   height: 5rem;
   border-radius: 50%;
-  background-color: var(--new-primary-transparent);
+  background-color: color-mix(in srgb, var(--new-primary) 25%, var(--background));
   display: flex;
   align-items: center;
   justify-content: center;
@@ -14545,7 +15143,7 @@ body:has(.toolbar-title.nightly) .icon-circle {
 }
 
 .icon-circle.success-mode {
-  background-color: var(--positive-transparent) !important;
+  background-color: color-mix(in srgb, var(--positive-general) 25%, var(--background)) !important;
 }
 
 .idle-content {
@@ -14646,62 +15244,6 @@ body:has(.toolbar-title.nightly) .icon-circle {
   margin-bottom: 1rem;
 }
 
-/* Barra de Progreso */
-.progress-track {
-  width: 16rem;
-  height: 0.25rem;
-  background-color: #1e293b;
-  border-radius: 9999px;
-  margin-top: 1.5rem;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background-color: var(--new-primary);
-  width: 0%;
-  transition: width 2s ease-in-out;
-}
-
-/* Botón de Éxito */
-.btn-action {
-  background-color: var(--new-primary);
-  color: black;
-  font-weight: 700;
-  padding: 0.75rem 2rem;
-  border-radius: 0.5rem;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 0 20px rgba(200, 158, 252, 0.4);
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.btn-action:hover {
-  background-color: var(--new-primary-dark);
-  transform: scale(1.05);
-}
-
-/* --- FOOTER INFO --- */
-.footer-info {
-  margin-top: 3rem;
-  display: flex;
-  gap: 2rem;
-  color: #475569;
-  font-size: 0.875rem;
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeIn 0.8s ease-out forwards;
-  animation-delay: 0.4s;
-}
-
-.info-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
 
 .drag-active {
   border-color: var(--new-primary);
@@ -14711,11 +15253,6 @@ body:has(.toolbar-title.nightly) .icon-circle {
   box-shadow: inset 0 0 60px 7px var(--new-primary);
 }
 
-.anim-content {
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
-  transform: scale(1);
-  opacity: 1;
-}
 
 
 /* --- Spinner Personalizado --- */
@@ -14784,7 +15321,7 @@ body:has(.toolbar-title.nightly) .loading-spinner {
 }
 
 .file-name:hover {
-  background-color: var(--new-primary-transparent);
+  background-color: color-mix(in srgb, var(--new-primary) 25%, var(--background));
 }
 
 .file-name:active {
@@ -15098,6 +15635,10 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   pointer-events: none;
 }
 
+.script-view.hide *{
+  pointer-events: none;
+}
+
 
 .facilities-pills a::before{
   z-index: 0;
@@ -15238,6 +15779,61 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   margin: 0;
   font-size: 16px;
 }
+
+.junior-driver-right{
+  margin-left: 10px;
+}
+
+#juniorTeamContractMenu{
+  max-height: 300px;
+  min-width: 400px;
+  overflow-y: auto;
+}
+
+#juniorTeamContractMenu a{
+  font-size: 16px;
+  justify-content: flex-start;
+}
+
+.junior-team-drivers-list{
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.contract-categories{
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+  margin-left: 10px;
+  flex-grow: 1;
+}
+
+.contract-categories .contract-category{
+  padding: 2px 5px;
+  border-radius: 5px;
+  background-color: transparent;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.contract-categories .contract-category.active{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.contract-categories .contract-category:hover{
+  background-color: var(--new-primary-transparent);
+  color: var(--new-primary);
+}
+
+.contract-categories .contract-category:active{
+  transform: scale(0.96);
+}
+
 /* customizable snowflake styling */
 .snowflake {
   color: #fff;

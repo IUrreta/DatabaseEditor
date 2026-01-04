@@ -3,7 +3,7 @@ import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
-import { default_dict } from "../../frontend/config.js";
+import { default_dict, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
 
 
@@ -125,14 +125,45 @@ export function fetchNationality(driverID, gameYear) {
 }
 
 export function fetchForFutureContract(driverID) {
-  const teamID = queryDB(`
-      SELECT TeamID 
+  const teamInfo = queryDB(`
+      SELECT TeamID, PosInTeam 
       FROM Staff_Contracts 
       WHERE StaffID = ?
         AND ContractType = 3
-    `, [driverID], 'singleValue');
+    `, [driverID], 'singleRow');
 
-  return teamID ?? -1;
+  let futureTeamInfo = {
+    teamId: -1,
+    posInTeam: -1
+  }
+
+  if (teamInfo) {
+    futureTeamInfo.teamId = teamInfo[0];
+    futureTeamInfo.posInTeam = teamInfo[1];
+  }
+
+  return futureTeamInfo;
+}
+
+function fetchJuniorContracts(driverID) {
+  const juniorContracts = queryDB(`
+    SELECT TeamID, PosInTeam
+    FROM Staff_Contracts
+    WHERE StaffID = ?
+      AND (ContractType = 0 OR ContractType = 3)
+      AND TeamID BETWEEN 11 AND 31
+  `, [driverID], 'allRows');
+  
+  let juniorFormulaInfo = {
+    teamId: -1,
+    posInTeam: -1
+  }
+  if (juniorContracts && juniorContracts.length > 0) {
+    juniorFormulaInfo.teamId = juniorContracts[0][0];
+    juniorFormulaInfo.posInTeam = juniorContracts[0][1];
+  }
+
+  return juniorFormulaInfo;
 }
 
 export function fetchEngines() {
@@ -519,6 +550,7 @@ export function fetchDrivers(gameYear) {
     const [driverNumber, wants1] = fetchDriverNumberDetails(driverID);
     const superlicense = fetchSuperlicense(driverID);
     const futureTeam = fetchForFutureContract(driverID);
+    const juniorContracts = fetchJuniorContracts(driverID);
     const driverCode = fetchDriverCode(driverID);
     const nationality = fetchNationality(driverID, gameYear);
 
@@ -531,6 +563,7 @@ export function fetchDrivers(gameYear) {
     data.superlicense = superlicense;
     data.race_formula = raceFormula;
     data.team_future = futureTeam;
+    data.team_junior = juniorContracts;
     data.driver_code = driverCode;
     data.nationality = nationality;
 
@@ -922,6 +955,7 @@ export function fetchTeamsStandings(year, formula = 1) {
         FROM Races_TeamStandings
         WHERE SeasonID = ?
           AND RaceFormula = ?
+        ORDER BY Position
       `, [year, formula], 'allRows') || [];
 }
 
@@ -1211,6 +1245,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
 
   const rand = seededRandom(raceId);
   const RANDOM_INTENSITY = 0.8;
+  const MAX_WINNER_SHARE = 45; // (%). Evita resultados tipo "99%"
 
   const rowsScored = [];
   for (const row of rows) {
@@ -1245,11 +1280,21 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     });
   }
 
-  // Softmax -> porcentajes que suman 100
-  const shares = softmaxToPercent(rowsScored.map(r => r.scoreRaw), /*temperature*/ 1.0);
-  for (let i = 0; i < rowsScored.length; i++) {
-    rowsScored[i].share = Math.round(shares[i] * 10) / 10; // p.ej., 1 decimal
-  }
+  // Softmax -> porcentajes que suman 100, con tope para evitar picos (p.ej. 99%)
+  const maxShareCap = (rowsScored.length * MAX_WINNER_SHARE >= 100)
+    ? MAX_WINNER_SHARE
+    : (100 / Math.max(1, rowsScored.length));
+
+  const shares = softmaxToPercentBounded(rowsScored.map(r => r.scoreRaw), {
+    maxSharePct: maxShareCap,
+    initialTemperature: 1.0
+  });
+  const sharesRounded = roundPercentsToTargetSum(shares, {
+    decimals: 1,
+    targetSum: 100,
+    maxPerItem: maxShareCap
+  });
+  for (let i = 0; i < rowsScored.length; i++) rowsScored[i].share = sharesRounded[i];
 
   // Orden: mayor share (equivale a mayor scoreRaw)
   rowsScored.sort((a, b) =>
@@ -1265,6 +1310,98 @@ function softmaxToPercent(values, temperature = 1.0) {
   const exps = values.map(v => Math.exp((v - maxV) / temperature));
   const sum = exps.reduce((a, b) => a + b, 0);
   return exps.map(x => (x / sum) * 100);
+}
+
+function softmaxToPercentBounded(values, opts = {}) {
+  const {
+    maxSharePct = 45,
+    initialTemperature = 1.0,
+    maxTemperature = 256,
+    minTemperature = 0.001,
+    iterations = 28
+  } = opts;
+
+  if (!values || values.length === 0) return [];
+  if (values.length === 1) return [100];
+
+  // Si el tope es matemáticamente imposible (p.ej. solo 2 candidatos), usamos el máximo factible.
+  const feasibleCap = (values.length * maxSharePct >= 100) ? maxSharePct : (100 / values.length);
+
+  const maxOf = (arr) => arr.reduce((m, v) => (v > m ? v : m), -Infinity);
+  const sharesAt = (t) => softmaxToPercent(values, t);
+
+  let lo = Math.max(minTemperature, Number(initialTemperature) || 1.0);
+  let sharesLo = sharesAt(lo);
+  if (maxOf(sharesLo) <= feasibleCap) return sharesLo;
+
+  let hi = lo;
+  let sharesHi = sharesLo;
+  while (hi < maxTemperature) {
+    hi *= 2;
+    sharesHi = sharesAt(hi);
+    if (maxOf(sharesHi) <= feasibleCap) break;
+  }
+
+  // Si aún no se cumple, devolvemos lo mejor que tenemos (distribución más "plana").
+  if (maxOf(sharesHi) > feasibleCap) return sharesHi;
+
+  // Búsqueda binaria: al subir la temperatura, el máximo share baja (más uniforme).
+  for (let i = 0; i < iterations; i++) {
+    const mid = (lo + hi) / 2;
+    const sharesMid = sharesAt(mid);
+    if (maxOf(sharesMid) > feasibleCap) lo = mid;
+    else {
+      hi = mid;
+      sharesHi = sharesMid;
+    }
+  }
+
+  return sharesHi;
+}
+
+function roundPercentsToTargetSum(values, opts = {}) {
+  const { decimals = 1, targetSum = 100, maxPerItem = Infinity } = opts;
+  if (!values || values.length === 0) return [];
+
+  const factor = Math.pow(10, decimals);
+  const targetUnits = Math.round(targetSum * factor);
+  const capUnits = Math.floor(maxPerItem * factor + 1e-9);
+
+  const rawUnits = values.map(v => {
+    const unit = Math.round((Number(v) || 0) * factor * 1e12) / 1e12;
+    return Number.isFinite(unit) ? unit : 0;
+  });
+
+  const floorUnits = rawUnits.map(u => Math.floor(u));
+  let remaining = targetUnits - floorUnits.reduce((a, b) => a + b, 0);
+
+  const frac = rawUnits.map((u, i) => ({ i, frac: u - floorUnits[i] }));
+  frac.sort((a, b) => b.frac - a.frac);
+
+  // Reparte las décimas restantes priorizando las fracciones más grandes, respetando el tope cuando sea posible.
+  let guard = 0;
+  while (remaining > 0 && guard++ < (values.length * 5 + 1000)) {
+    let progressed = false;
+    for (const { i } of frac) {
+      if (remaining <= 0) break;
+      if (floorUnits[i] + 1 > capUnits) continue;
+      floorUnits[i] += 1;
+      remaining -= 1;
+      progressed = true;
+    }
+    if (!progressed) break;
+  }
+
+  // Si el tope impidió sumar exactamente 100 (raro), prioriza sumar 100 antes que clavar el tope.
+  if (remaining > 0) {
+    for (const { i } of frac) {
+      if (remaining <= 0) break;
+      floorUnits[i] += 1;
+      remaining -= 1;
+    }
+  }
+
+  return floorUnits.map(u => u / factor);
 }
 
 export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {
@@ -1667,6 +1804,7 @@ export function formatSeasonResults(
       dnf: myDNF,
       fastestLap: parseInt(driverWithFastestLap) === parseInt(driverID),
       qualifyingPos: 99,
+      qualifyingPoints: 0,
       gapToWinner: null,
       gapToPole: null,
       // NUEVOS CAMPOS:
@@ -1687,6 +1825,7 @@ export function formatSeasonResults(
 
     // Quali / parrilla (como antes)
     let QRes;
+    let QPts = 0;
     if (isCurrentYear) {
       const QStage =
         queryDB(`
@@ -1698,16 +1837,18 @@ export function formatSeasonResults(
             AND DriverID = ?
         `, [raceID, season, driverID], "singleValue") || 0;
 
-      QRes =
+      const qRow =
         queryDB(`
-          SELECT FinishingPos
+          SELECT FinishingPos, ChampionshipPoints
           FROM Races_QualifyingResults
           WHERE RaceFormula = 1
             AND RaceID = ?
             AND SeasonID = ?
             AND DriverID = ?
             AND QualifyingStage = ?
-        `, [raceID, season, driverID, QStage], "singleValue") || 99;
+        `, [raceID, season, driverID, QStage], "singleRow") || [];
+      QRes = qRow[0] ?? 99;
+      QPts = qRow[1] ?? 0;
     } else {
       QRes =
         queryDB(`
@@ -1716,8 +1857,30 @@ export function formatSeasonResults(
           WHERE RaceID = ?
             AND DriverID = ?
         `, [raceID, driverID], "singleValue") || 99;
+
+      const QStage =
+        queryDB(`
+          SELECT MAX(QualifyingStage)
+          FROM Races_QualifyingResults
+          WHERE RaceFormula = 1
+            AND RaceID = ?
+            AND SeasonID = ?
+            AND DriverID = ?
+        `, [raceID, season, driverID], "singleValue") || 0;
+
+      QPts =
+        queryDB(`
+          SELECT ChampionshipPoints
+          FROM Races_QualifyingResults
+          WHERE RaceFormula = 1
+            AND RaceID = ?
+            AND SeasonID = ?
+            AND DriverID = ?
+            AND QualifyingStage = ?
+        `, [raceID, season, driverID, QStage], "singleValue") || 0;
     }
     base.qualifyingPos = QRes;
+    base.qualifyingPoints = QPts ?? 0;
 
     // Gaps generales (tus funciones existentes)
     base.gapToWinner = calculateTimeDifference(driverID, raceID);
@@ -1894,14 +2057,15 @@ export function fetchDriverNumbers() {
   return numbers.map(n => n[0]);
 }
 
-export function fetchDriverContract(id) {
+export function fetchDriverContracts(id) {
   // Obtener el contrato actual
   const currentContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, TeamID
         FROM Staff_Contracts
         WHERE ContractType = 0 AND StaffID = ?
+        AND (TeamID BETWEEN 1 AND 10 OR TeamID = 32)
     `, [id], 'singleRow');
-
+    //teamID between 1 and 1 10 (10 included) and alsoc na be 32
   // Obtener el contrato futuro
   const futureContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID
@@ -1915,8 +2079,83 @@ export function fetchDriverContract(id) {
         FROM Player_State
     `, [], 'singleRow');
 
+  const juniorFormulasContract = queryDB(`
+        SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID
+        FROM Staff_Contracts
+        WHERE ContractType = 0 AND StaffID = ?
+        AND (TeamID > 10 AND TeamID <> 32)
+    `, [id], 'singleRow');
+
+  let isDriver = queryDB(`
+        SELECT COUNT(*)
+        FROM Staff_DriverData
+        WHERE StaffID = ?
+    `, [id], 'singleValue');
+  //isDriver has to be true or false
+  isDriver = isDriver > 0 ? true : false;
+
   // Retornar los resultados
-  return [currentContract, futureContract, daySeason ? daySeason[1] : null];
+  return [currentContract, futureContract, juniorFormulasContract, isDriver, daySeason ? daySeason[1] : null];
+}
+
+function formatStaffNameFromLocKeys(firstNameLocKey, lastNameLocKey) {
+  let firstName = "";
+  let lastName = "";
+
+  if (typeof firstNameLocKey === "string") {
+    if (!firstNameLocKey.includes("STRING_LITERAL")) {
+      const m = firstNameLocKey.match(/StaffName_Forename_(?:Male|Female)_(\w+)/);
+      firstName = m ? removeNumber(m[1]) : "";
+    } else {
+      const m = firstNameLocKey.match(/\|([^|]+)\|/);
+      firstName = m ? m[1] : "";
+    }
+  }
+
+  if (typeof lastNameLocKey === "string") {
+    if (!lastNameLocKey.includes("STRING_LITERAL")) {
+      const m = lastNameLocKey.match(/StaffName_Surname_(\w+)/);
+      lastName = m ? removeNumber(m[1]) : "";
+    } else {
+      const m = lastNameLocKey.match(/\|([^|]+)\|/);
+      lastName = m ? m[1] : "";
+    }
+  }
+
+  return `${firstName} ${lastName}`.trim();
+}
+
+export function fetchJuniorTeamDriverNames(teamId) {
+  const maxCars = (teamId >= 11 && teamId <= 21) ? 2 : (teamId >= 22 && teamId <= 31) ? 3 : 0;
+  if (!maxCars) return [];
+
+  const rows = queryDB(`
+      SELECT bas.FirstName, bas.LastName, con.PosInTeam
+      FROM Staff_BasicData bas
+      JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+      JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
+      WHERE con.ContractType = 0
+        AND con.TeamID = ?
+      ORDER BY con.PosInTeam, bas.LastName, bas.FirstName
+    `, [teamId], 'allRows') || [];
+
+  const byPos = new Map();
+
+  rows.forEach(([firstName, lastName, posInTeam]) => {
+    const pos = Number(posInTeam);
+    if (!Number.isFinite(pos) || pos < 1 || pos > maxCars) return;
+    if (byPos.has(pos)) return;
+
+    const name = formatStaffNameFromLocKeys(firstName, lastName);
+    byPos.set(pos, name || "Free driver");
+  });
+
+  const result = [];
+  for (let pos = 1; pos <= maxCars; pos++) {
+    result.push({ name: byPos.get(pos) || "Free driver", posInTeam: pos });
+  }
+
+  return result;
 }
 
 export function checkCustomTables(year) {
@@ -2134,6 +2373,12 @@ export function insertDefualtEnginesData(list, stats, allocations, customSave, e
       const newTeam = teams[key][year];
       queryDB(`INSERT OR REPLACE INTO Custom_Save_Config (key, value) VALUES (?, ?)`, [key, newTeam], 'run');
     }
+
+    queryDB(
+      `INSERT OR IGNORE INTO Custom_Save_Config (key, value) VALUES ('turningPointsFrequencyPreset', ?)`,
+      [String(defaultTurningPointsFrequencyPreset)],
+      'run'
+    );
   }
 
 
@@ -2308,6 +2553,7 @@ export function updateCustomConfig(data) {
   const secondaryColor = data.secondaryColor;
   const difficulty = data.difficulty
   const playerTeam = data.playerTeam
+  const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;
 
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
@@ -2337,6 +2583,14 @@ export function updateCustomConfig(data) {
       VALUES ('secondaryColor', ?)
     `, [secondaryColor], 'run');
   }
+  
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('turningPointsFrequencyPreset', ?)
+  `, [turningPointsFrequencyPreset], 'run');
+  
+
+
   //delete the difficulty key from Custom_Save_Config every time
   queryDB(`DELETE FROM Custom_Save_Config WHERE key = 'difficulty'`, [], 'run');
 
@@ -2377,7 +2631,8 @@ export function fetchCustomConfig() {
   const config = {
     teams: {},
     primaryColor: null,
-    secondaryColor: null
+    secondaryColor: null,
+    turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset
   };
 
   rows.forEach(row => {
@@ -2392,6 +2647,9 @@ export function fetchCustomConfig() {
     }
     else if (key === 'difficulty') {
       config.difficulty = value;
+    } else if (key === 'turningPointsFrequencyPreset') {
+      config.turningPointsFrequencyPreset = parseInt(value, 10);
+      
     }
   });
 

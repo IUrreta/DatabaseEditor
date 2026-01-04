@@ -6,10 +6,11 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
+    loadJuniorTeamDrivers,
     initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
@@ -28,6 +29,7 @@ import {
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
 import { place_news, updateNewsYearsButton } from './news.js';
+import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
@@ -66,13 +68,14 @@ const logos_classes_configs = {
     "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
 }
 
-const driverTransferPill = document.getElementById("transferpill");
+const driverTransferPill = document.getElementById("transferpill");       
 const editStatsPill = document.getElementById("statspill");
 const CalendarPill = document.getElementById("calendarpill");
+const regulationsPill = document.getElementById("regulationspill");
 const carPill = document.getElementById("carpill");
 const viewPill = document.getElementById("viewerpill");
 const h2hPill = document.getElementById("h2hpill");
-const constructorsPill = document.getElementById("constructorspill")
+const constructorsPill = document.getElementById("constructorspill")      
 const newsPill = document.getElementById("newspill")
 const modPill = document.getElementById("modpill")
 
@@ -83,6 +86,7 @@ const patreonPill = document.getElementById("patreonPill")
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
 const customCalendarDiv = document.getElementById("custom_calendar");
+const regulationsDiv = document.getElementById("regulations");
 const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
@@ -98,7 +102,7 @@ const patreonToolLoginButton = document.getElementById('patreonToolLoginButton')
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
 
-const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -108,13 +112,34 @@ const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
-const patreonUnlockables = document.querySelector(".patreon-unlockables")
-const downloadSaveButton = document.querySelector(".download-save-button")
+const patreonUnlockables = document.querySelector(".patreon-unlockables")       
+const downloadSaveButton = document.querySelector(".download-save-button")      
+const downloadSaveProgress = document.getElementById("downloadSaveProgress");
+const downloadSaveProgressFill = document.getElementById("downloadSaveProgressFill");
 
 const patreonThemes = document.querySelector(".patreon-themes");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
+
+const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequencyConfig");
+const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
+const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
+
+function updateTurningPointsFrequencyUI() {
+    if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
+    const idx = parseInt(turningPointsFrequencySlider.value, 10);
+    turningPointsFrequencySlider.value = String(idx);
+    turningPointsFrequencyLabel.textContent = turningPointsFrequencyLabels[idx];
+    const directionClass =
+        idx === defaultTurningPointsFrequencyPreset
+            ? "tp-default"
+            : idx > defaultTurningPointsFrequencyPreset
+                ? "tp-more"
+                : "tp-less";
+    turningPointsFrequencyLabel.className = `option-state ${directionClass}`;
+}
+
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
@@ -459,6 +484,15 @@ function updatePatreonUI(tier) {
     }
 
     manageNewsStatus(tier);
+
+    if (turningPointsFrequencyConfig) {
+        const insiderOrFounder = tier?.tier === "Insider" || tier?.tier === "Founder";
+        if (tier?.isLoggedIn && insiderOrFounder) {
+            turningPointsFrequencyConfig.classList.remove("d-none");
+        } else {
+            turningPointsFrequencyConfig.classList.add("d-none");
+        }
+    }
 }
 
 
@@ -589,6 +623,16 @@ function calendarModeHandler() {
     command.execute();
 }
 
+function regulationsModeHandler() {
+    const data = gather_regulations_data();
+    if (!data) {
+        new_update_notifications("Regulations not loaded", "error");
+        return;
+    }
+    const command = new Command("editRegulations", data);
+    command.execute();
+}
+
 function teamsModeHandler() {
 
     let seasonObjData = document.querySelector("#seasonObjectiveInput").value;
@@ -684,6 +728,7 @@ export function manageSaveButton(show, mode) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
+    button.removeEventListener("click", regulationsModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
 
@@ -699,6 +744,9 @@ export function manageSaveButton(show, mode) {
     }
     else if (mode === "calendar") {
         button.addEventListener("click", calendarModeHandler);
+    }
+    else if (mode === "regulations") {
+        button.addEventListener("click", regulationsModeHandler);
     }
     else if (mode === "teams") {
         button.addEventListener("click", teamsModeHandler);
@@ -776,7 +824,49 @@ export function make_name_prettier(text) {
 
     const lastWord = words.pop();
 
-    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
+    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();  
+}
+
+function orderTeamTemplatesByStandings(standingsRows) {
+    const parent = document.querySelector(".main-columns-drag-section.teams-columns");
+    if (!parent) return;
+
+    const templates = Array.from(parent.querySelectorAll(":scope > .team-template"));
+    if (templates.length === 0) return;
+
+    const positionByTeamId = new Map();
+    if (Array.isArray(standingsRows)) {
+        standingsRows.forEach((row) => {
+            if (!Array.isArray(row) || row.length < 2) return;
+            const teamId = Number(row[0]);
+            const position = Number(row[1]);
+            if (!Number.isFinite(teamId) || !Number.isFinite(position) || position <= 0) return;
+            const prev = positionByTeamId.get(teamId);
+            if (!Number.isFinite(prev) || position < prev) {
+                positionByTeamId.set(teamId, position);
+            }
+        });
+    }
+
+    const decorated = templates.map((el, index) => {
+        const staffSection = el.querySelector(".staff-section[data-teamid]");
+        const teamId = staffSection ? Number(staffSection.dataset.teamid) : NaN;
+        const position = Number.isFinite(teamId) ? positionByTeamId.get(teamId) : undefined;
+        return { el, index, teamId, position };
+    });
+
+    decorated.sort((a, b) => {
+        const aHas = Number.isFinite(a.position);
+        const bHas = Number.isFinite(b.position);
+        if (aHas && bHas) return a.position - b.position;
+        if (aHas) return -1;
+        if (bHas) return 1;
+        return a.index - b.index;
+    });
+
+    const frag = document.createDocumentFragment();
+    decorated.forEach(({ el }) => frag.appendChild(el));
+    parent.appendChild(frag);
 }
 
 
@@ -815,6 +905,9 @@ const messageHandlers = {
     "Calendar fetched": (message) => {
         load_calendar(message)
     },
+    "Regulations fetched": (message) => {
+        load_regulations(message)
+    },
     "Engines fetched": (message) => {
         manage_engineStats(message[0]);
         update_engine_allocations(message);
@@ -822,8 +915,15 @@ const messageHandlers = {
     "Contract fetched": (message) => {
         manage_modal(message);
     },
+    "Junior team drivers fetched": (message) => {
+        loadJuniorTeamDrivers(message);
+    },
     "Year fetched": (message) => {
         generateYearsMenu(message);
+    },
+    "Previous year teams standings fetched": (message) => {
+        const standings = message?.standings || message;
+        orderTeamTemplatesByStandings(standings);
     },
     "Numbers fetched": (message) => {
         loadNumbers(message);
@@ -1001,10 +1101,22 @@ if (glowSpot && blockDiv) {
 
     const isLandingVisible = () => !blockDiv.classList.contains('disappear');
 
+    const rootStyle = document.documentElement.style;
+    const setGlowVars = (x, y) => {
+        rootStyle.setProperty('--glow-x', x);
+        rootStyle.setProperty('--glow-y', y);
+    };
+
+    const syncGlowVarsToGlowSpotCenter = () => {
+        const rect = glowSpot.getBoundingClientRect();
+        setGlowVars(`${rect.left + rect.width / 2}px`, `${rect.top + rect.height / 2}px`);
+    };
+
     const resetGlowSpotPosition = () => {
         glowSpot.style.left = defaultPosition.left;
         glowSpot.style.top = defaultPosition.top;
         glowSpot.style.transform = defaultPosition.transform;
+        syncGlowVarsToGlowSpotCenter();
     };
 
     const updateGlowSpotPosition = (event) => {
@@ -1013,9 +1125,12 @@ if (glowSpot && blockDiv) {
         }
 
         glowSpot.classList.remove('glow-spot--off');
-        glowSpot.style.left = `${event.clientX}px`;
-        glowSpot.style.top = `${event.clientY}px`;
+        const x = `${event.clientX}px`;
+        const y = `${event.clientY}px`;
+        glowSpot.style.left = x;
+        glowSpot.style.top = y;
         glowSpot.style.transform = 'translate(-50%, -50%)';
+        setGlowVars(x, y);
     };
 
     const fadeToDefaultPosition = () => {
@@ -1038,6 +1153,7 @@ if (glowSpot && blockDiv) {
 
     observer.observe(blockDiv, { attributes: true, attributeFilter: ['class'] });
 
+    resetGlowSpotPosition();
     window.addEventListener('mousemove', updateGlowSpotPosition);
 }
 
@@ -1281,6 +1397,10 @@ fileInput.addEventListener('change', (event) => {
 });
 
 function replace_custom_team_logo(path) {
+    //if not image selected, return
+    if (!path) {
+        return;
+    }
     // Si el string base64 no tiene el prefijo, se lo agregamos.
     if (!path.startsWith("data:image/")) {
         // Ajusta el tipo de imagen ("png", "jpeg", etc.) según corresponda.
@@ -1357,6 +1477,15 @@ function manage_config_content(info, year_config = false) {
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+
+        if (turningPointsFrequencySlider) {
+            let presetIndex = info?.turningPointsFrequencyPreset;
+            if (presetIndex === undefined || presetIndex === null) {
+                presetIndex = defaultTurningPointsFrequencyPreset;
+            }
+            turningPointsFrequencySlider.value = String(presetIndex);
+            updateTurningPointsFrequencyUI();
+        }
     }
 }
 
@@ -1412,12 +1541,18 @@ function alphaTauriReplace(info) {
     })
     document.querySelectorAll(".at-name").forEach(function (elem) {
         //if it has the class complete, put names_configs[info], else out VCARB
-        if (info === "visarb" && !elem.classList.contains("complete")) {
-            elem.textContent = "VCARB"
+        let name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : names_configs[info];
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : pretty_names[info];
+                elem.textContent = `${name} ${match[2]}`;
+            }
         }
-        else {
-            elem.textContent = names_configs[info]
+        else{
+            elem.textContent = name
         }
+        
     })
     if (info !== "alphatauri") {
         document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
@@ -1514,7 +1649,17 @@ function alpineReplace(info) {
         elem.dataset.teamshow = pretty_names[info]
     })
     document.querySelectorAll(".alpine-name").forEach(function (elem) {
-        elem.textContent = names_configs[info]
+        let name = names_configs[info]
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = pretty_names[info]
+                elem.textContent = `${name} ${match[2]}`;
+            }
+        }
+        else{
+            elem.textContent = name
+        }
     })
     if (info !== "alpine") {
         document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
@@ -1599,7 +1744,17 @@ function alfaReplace(info) {
         elem.dataset.teamshow = pretty_names[info]
     })
     document.querySelectorAll(".alfa-name").forEach(function (elem) {
-        elem.textContent = names_configs[info]
+        let name = names_configs[info]
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = pretty_names[info]
+                elem.textContent = `${name} ${match[2]}`;
+            }  
+        }
+        else{
+            elem.textContent = name
+        }
     })
     if (info !== "alfa") {
         document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
@@ -1726,6 +1881,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         triggerList: triggerList,
         playerTeam: playerTeam
     }
+
+    const tpPresetIndex = parseInt(turningPointsFrequencySlider.value, 10);
+    data.turningPointsFrequencyPreset = tpPresetIndex;
+
     changeTheme()
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
@@ -1773,19 +1932,137 @@ async function askFixDoublePointsBug(message){
     }
 }
 
-document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
-    dbWorker.postMessage({
-        command: 'exportSave',
-        data: {}
-    });
+let isDownloadingSave = false;
+let downloadSaveProgressStartedAt = 0;
+let downloadSaveProgressValue = 0;
+let downloadSaveProgressIntervalId = null;
+let downloadSaveProgressTimeoutId = null;
+let downloadSaveWorkerHandler = null;
 
-    dbWorker.onmessage = (msg) => {
-        const finalData = msg.data.content.finalData;
-        const metadata = msg.data.content.metadata;
+function setDownloadSaveProgress(percent) {
+    if (!downloadSaveProgressFill) return;
+    const clamped = Math.max(0, Math.min(100, percent));
+    downloadSaveProgressFill.style.width = `${clamped}%`;
+}
 
-        saveAs(new Blob([finalData], { type: "application/binary" }), metadata.filename);
-    };
-})
+function clearDownloadSaveWorkerHandler() {
+    if (!downloadSaveWorkerHandler) return;
+    dbWorker.removeEventListener("message", downloadSaveWorkerHandler);
+    downloadSaveWorkerHandler = null;
+}
+
+function clearDownloadSaveProgressTimers() {
+    if (downloadSaveProgressIntervalId !== null) {
+        window.clearInterval(downloadSaveProgressIntervalId);
+        downloadSaveProgressIntervalId = null;
+    }
+    if (downloadSaveProgressTimeoutId !== null) {
+        window.clearTimeout(downloadSaveProgressTimeoutId);
+        downloadSaveProgressTimeoutId = null;
+    }
+}
+
+function resetDownloadSaveProgress() {
+    clearDownloadSaveProgressTimers();
+    clearDownloadSaveWorkerHandler();
+    isDownloadingSave = false;
+    downloadSaveProgressValue = 0;
+    setDownloadSaveProgress(0);
+    if (downloadSaveProgress) downloadSaveProgress.classList.add("hidden");
+}
+
+function startDownloadSaveProgressSimulation() {
+    if (!downloadSaveProgress || !downloadSaveProgressFill) return;
+
+    clearDownloadSaveProgressTimers();
+
+    isDownloadingSave = true;
+    downloadSaveProgressStartedAt = performance.now();
+    downloadSaveProgressValue = 0;
+
+    setDownloadSaveProgress(0);
+    downloadSaveProgress.classList.remove("hidden");
+
+    downloadSaveProgressIntervalId = window.setInterval(() => {
+        if (!isDownloadingSave) return;
+
+        const elapsed = performance.now() - downloadSaveProgressStartedAt;
+        const fastPhase = Math.min(elapsed / 500, 1) * 45; // 0 -> 45 quickly
+        const slowPhase = Math.min(Math.max(elapsed - 500, 0) / 4500, 1) * 50; // 45 -> 95 slower
+        const target = Math.min(95, fastPhase + slowPhase);
+
+        if (target > downloadSaveProgressValue) {
+            downloadSaveProgressValue = target;
+            setDownloadSaveProgress(downloadSaveProgressValue);
+        }
+    }, 100);
+
+    downloadSaveProgressTimeoutId = window.setTimeout(() => {
+        if (!isDownloadingSave) return;
+        resetDownloadSaveProgress();
+        new_update_notifications("Save export timed out.", "error");
+    }, 20000);
+}
+
+function finishDownloadSaveProgress() {
+    if (!downloadSaveProgress || !downloadSaveProgressFill) return;
+
+    const elapsed = performance.now() - downloadSaveProgressStartedAt;
+    const minVisibleMs = 700;
+    const hideDelayMs = Math.max(250, minVisibleMs - elapsed);
+
+    clearDownloadSaveProgressTimers();
+    clearDownloadSaveWorkerHandler();
+    isDownloadingSave = false;
+
+    setDownloadSaveProgress(100);
+    window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
+}
+
+const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+if (downloadSaveIcon) {
+    downloadSaveIcon.addEventListener("click", function () {
+        if (isDownloadingSave) return;
+
+        startDownloadSaveProgressSimulation();
+
+        downloadSaveWorkerHandler = (msg) => {
+            if (!isDownloadingSave) return;
+
+            const response = msg?.data;
+            if (!response) return;
+
+            if (response.error) {
+                console.error("Error exporting save:", response.error);
+                resetDownloadSaveProgress();
+                new_update_notifications("Error exporting save.", "error");
+                return;
+            }
+
+            if (response.responseMessage !== "Database exported") return;
+
+            try {
+                const finalData = response?.content?.finalData;
+                const metadata = response?.content?.metadata;
+                const filename = metadata?.filename || saveName || "save.sav";
+
+                if (finalData == null) {
+                    throw new Error("Missing exported data");
+                }
+
+                saveAs(new Blob([finalData], { type: "application/binary" }), filename);
+                finishDownloadSaveProgress();
+            } catch (e) {
+                console.error("Failed to download exported save:", e);
+                resetDownloadSaveProgress();
+                new_update_notifications("Error exporting save.", "error");
+            }
+        };
+
+        dbWorker.addEventListener("message", downloadSaveWorkerHandler);
+        dbWorker.postMessage({ command: "exportSave", data: {} });
+    })
+}
 
 
 
@@ -1802,35 +2079,35 @@ function check_selected() {
 
 h2hPill.addEventListener("click", function () {
 
-    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 viewPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 driverTransferPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 editStatsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "stats")
 })
 
 constructorsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "teams")
@@ -1838,37 +2115,44 @@ constructorsPill.addEventListener("click", function () {
 
 
 CalendarPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "calendar")
 })
 
+regulationsPill.addEventListener("click", function () {
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    scriptSelected = 1
+    check_selected()
+    manageSaveButton(true, "regulations")
+})
+
 carPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(!viewingGraph, "performance")
 })
 
 modPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 newsPill.addEventListener("click", function () {
-    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
-    document.getElementById("blockDiv").classList.remove("disappear")
+    document.getElementById("blockDiv").classList.remove("disappear")    
     if (document.querySelector(".scriptPills.active")) {
         document.querySelector(".scriptPills.active").classList.remove("active")
     }
@@ -1893,6 +2177,11 @@ patreonPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
 })
+
+if (turningPointsFrequencySlider) {
+    updateTurningPointsFrequencyUI();
+    turningPointsFrequencySlider.addEventListener("input", updateTurningPointsFrequencyUI);
+}
 
 
 
@@ -2069,7 +2358,7 @@ function manageScripts(...divs) {
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
-    manage_config_content(configCopy[0], false)
+    manage_config_content(configCopy, false)
 })
 
 
@@ -2733,17 +3022,20 @@ export async function confirmModal({
 document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
     dropdown.addEventListener("click", function (e) {
         e.stopPropagation();
+
+        document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+            if (openDropdown !== dropdown) {
+                openDropdown.classList.remove("open");
+            }
+        });
+
         dropdown.classList.toggle("open");
     });
 });
 
-document.addEventListener("click", function (e) {
+document.addEventListener("click", function () {
     document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
-        // Si el click NO ocurre dentro del dropdown ni en su botón
-        if (!openDropdown.contains(e.target)) {
-            openDropdown.classList.remove("open");
-        }
-
+        openDropdown.classList.remove("open");
     });
 });
 

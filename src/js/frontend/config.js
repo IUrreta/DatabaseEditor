@@ -187,7 +187,7 @@ export let logos_disc = {
     3: '../assets/images/redbull.png',
     4: '../assets/images/mercedes.png',
     5: '../assets/images/alpine.png',
-    6: '../assets/images/williams.png',
+    6: '../assets/images/Williams_2026_logo.svg',
     7: '../assets/images/haas.png',
     8: '../assets/images/alphatauri.png',
     9: '../assets/images/alfaromeo.png',
@@ -390,6 +390,11 @@ export function getParamMap(data) {
         19: {
             season_year: data.season_year
         },
+        20: {
+            f2_champion: data.f2_champion,
+            f3_champion: data.f3_champion,
+            season_year: data.season_year
+        },
         100: {
             component: data.component
         },
@@ -512,3 +517,49 @@ export const weightDifConfig = {0 : {text: "Disabled", className: "disabled"}, 1
 export const defaultDifficultiesConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Extra Hard", className: "extra-hard"},
         2 : {text: "Brutal", className: "brutal"}, 3 : {text: "Unfair", className: "unfair"},
         4 : {text: "Insane", className: "insane"}, 5 : {text: "Impossible", className: "impossible"}}
+
+export const defaultTurningPointsFrequencyPreset = 2;
+
+export const turningPointsFrequencyLabels = [
+    "Much less",
+    "Less",
+    "Default",
+    "More",
+    "Most"
+];
+
+export const turningPointsTuningByType = {
+    dsq: {
+        chance: [0.02, 0.05, 0.08, 0.15, 0.25],
+        max: [1, 1, 2, 3, 4],
+    },
+    midSeasonTransfers: {
+        chance: [0.15, 0.3, 0.5, 0.7, 0.9],
+        max: [1, 2, 3, 3, 3],
+    },
+    technicalDirective: {
+        chance: [0.1, 0.25, 0.4, 0.6, 0.8],
+        max: [1, 1, 2, 2, 2],
+    },
+    investment: {
+        chance: [0.02, 0.05, 0.1, 0.2, 0.35],
+        max: [1, 1, 1, 2, 3],
+    },
+    raceSubstitution: {
+        chance: [0.02, 0.05, 0.1, 0.2, 0.35],
+        max: [1, 1, 1, 2, 3],
+    },
+    injury: {
+        chance: [0.05, 0.12, 0.2, 0.35, 0.5],
+        max: [1, 1, 2, 3, 3],
+    },
+    engineRegulation: {
+        chance: [0.15, 0.3, 0.5, 0.75, 0.9],
+        max: [1, 1, 1, 1, 1],
+    },
+    youngDrivers: {
+        chance: [0.25, 0.5, 1, 1, 1],
+        max: [1, 1, 1, 1, 1],
+    },
+};
+

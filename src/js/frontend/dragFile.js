@@ -135,7 +135,6 @@ export async function processSaveFile(file) {
             command.execute();
 
             document.querySelector(".script-selector").classList.remove("hidden");
-            document.querySelector(".gear-container").classList.remove("hidden");
             document.querySelector(".footer").classList.remove("hidden");
 
         } catch (error) {

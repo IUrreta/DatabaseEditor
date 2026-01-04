@@ -703,7 +703,10 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   if (news.type === "race_result" || news.type === "quali_result") {
     newsItem.dataset.type = news.type;
   }
-  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
+  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {   
+    newsItem.dataset.type = "driver_transfers";
+  }
+  else if (news.type === "massive_exit" || news.type === "massive_signing") {
     newsItem.dataset.type = "driver_transfers";
   }
   else if (news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
@@ -1295,6 +1298,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     season_review: contextualizeSeasonReview,
     race_reaction: contextualizeRaceReaction,
     next_season_grid: contextualizeNextSeasonGrid,
+    feeder_series_review: contextualizeFeederSeriesReview,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -2593,6 +2597,47 @@ async function contextualizeRaceReaction(newData) {
   };
 }
 
+async function contextualizeFeederSeriesReview(newData) {
+  let seasonYear = newData.data.season_year;
+  let f2_champion = newData.data.f2_champion.name;
+  let f3_champion = newData.data.f3_champion.name;
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 20).prompt;
+  prompt = prompt.replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*f2_champion\s*}}/g, f2_champion)
+    .replace(/{{\s*f3_champion\s*}}/g, f3_champion);
+
+  const command = new Command("fullFeederSeriesDetailsRequest", {
+    season: seasonYear
+  });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return { instruction: prompt, context: "" };
+  }
+
+  const f2Context = buildContextualPrompt({ enrichedAllTime: [], ...(resp.content?.f2 || {}) }, {
+    seasonYear,
+    timing: "(Formula 2)"
+  });
+  const f3Context = buildContextualPrompt({ enrichedAllTime: [], ...(resp.content?.f3 || {}) }, {
+    seasonYear,
+    timing: "(Formula 3)"
+  });
+
+  const contextData =
+    `For Formula 2 and Formula 3, each race weekend includes a Sprint and a Main race.\n` +
+    `In the driver results strings, the format is: Main result (SPR Sprint result).\n` +
+    `\n\n=== Formula 2 ===\n${f2Context}\n\n=== Formula 3 ===\n${f3Context}`;
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
 async function contextualizeSeasonReview(newData) {
   let seasonYear = newData.data.season;
   let driver1 = newData.data.firstDriver.name;
@@ -2864,6 +2909,50 @@ function ensureEmergencyOverlay(imageContainer) {
 
 function manage_overlay(imageContainer, overlay, data, image) {
   let overlayDiv = null;
+  const teamColorForId = (teamId, fallback = '#ffffff') => {
+    const candidate = Number.parseInt(teamId, 10);
+    if (!Number.isFinite(candidate)) return fallback;
+    return colors_dict?.[`${candidate}0`] ?? fallback;
+  };
+
+  const buildCenteredOverlay = ({ overlayClass, title, subtitle, borderColor, subtitleClass } = {}) => {
+    const centeredOverlay = document.createElement('div');
+    centeredOverlay.classList.add('news-centered-overlay');
+    if (overlayClass) centeredOverlay.classList.add(overlayClass);
+
+    const blockDiv = document.createElement('div');
+    blockDiv.classList.add('news-centered-block');
+    if (borderColor) blockDiv.style.borderBottomColor = borderColor;
+
+    const titleDiv = document.createElement('div');
+    titleDiv.classList.add('news-centered-title');
+    titleDiv.innerText = title ?? '';
+
+    const subtitleDiv = document.createElement('div');
+    subtitleDiv.classList.add('news-centered-subtitle');
+    if (subtitleClass) subtitleDiv.classList.add(subtitleClass);
+    subtitleDiv.innerText = subtitle ?? '';
+
+    blockDiv.appendChild(titleDiv);
+    if (subtitleDiv.innerText) blockDiv.appendChild(subtitleDiv);
+    centeredOverlay.appendChild(blockDiv);
+
+    return centeredOverlay;
+  };
+
+  const pickRandom = (arr) => {
+    if (!Array.isArray(arr) || arr.length === 0) return '';
+    return arr[Math.floor(Math.random() * arr.length)];
+  };
+  const pickUnique = (arr, count) => {
+    const list = Array.isArray(arr) ? [...arr] : [];
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    return list.slice(0, Math.max(0, count));
+  };
+
   if (overlay === "race-overlay" || overlay === "quali-overlay") {
     overlayDiv = document.createElement('div');
     overlayDiv.classList.add('race-overlay');
@@ -2925,6 +3014,159 @@ function manage_overlay(imageContainer, overlay, data, image) {
     overlayDiv.appendChild(secondTeam);
     overlayDiv.appendChild(third);
     overlayDiv.appendChild(thirdTeam);
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "reaction-overlay") {
+    overlayDiv = document.createElement('div');
+    overlayDiv.classList.add('reaction-overlay');
+
+    const candidateTeamId = Number.parseInt(data?.driverTeamIdInTitle, 10);
+    const teamId = Number.isFinite(candidateTeamId) && candidateTeamId >= 1 && candidateTeamId <= 10
+      ? candidateTeamId
+      : (Math.floor(Math.random() * 10) + 1);
+
+    const teamColor = colors_dict?.[`${teamId}0`] ?? '#ffffff';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.classList.add('reaction-title');
+    titleDiv.style.borderBottomColor = teamColor;
+
+    const titleTextDiv = document.createElement('div');
+    titleTextDiv.classList.add('reaction-title-text');
+    titleTextDiv.innerText = 'POST RACE REACTIONS';
+
+    const raceNameDiv = document.createElement('div');
+    const raceGP = countries_data?.[races_names?.[data?.trackId]]?.adjective ?? 'Unknown GP';
+    raceNameDiv.classList.add('reaction-race-name');
+    raceNameDiv.innerText = `${data?.seasonYear ?? ''} ${raceGP} GP`.trim();
+
+    titleDiv.appendChild(titleTextDiv);
+    titleDiv.appendChild(raceNameDiv);
+
+    overlayDiv.appendChild(titleDiv);
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "fake-transfer-overlay") {
+    const driver = data?.drivers?.[0];
+    const driverName = driver?.name ?? '';
+    const teamName = driver?.team ?? 'their current team';
+    const teamId = driver?.teamId;
+
+    const phrases = [
+      `Could be leaving ${teamName}`,
+      `Rumours of a departure from ${teamName}`,
+      `Exit talks at ${teamName}`,
+      `A possible move away from ${teamName}`,
+      `${teamName} future uncertain`,
+      `Departure from ${teamName} speculated`,
+      `Linked with a move away from ${teamName}`,
+      `Considering options beyond ${teamName}`,
+      `Transfer rumours swirl around ${teamName}`,
+      `His manager weighing up options beyond ${teamName}`
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'fake-transfer-overlay',
+      title: driverName,
+      subtitle: pickRandom(phrases),
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "silly-season-overlay") {
+    const drivers = Array.isArray(data?.drivers) ? data.drivers : [];
+    const surnames = drivers
+      .map(d => (typeof d?.name === 'string' ? d.name.trim().split(/\s+/).pop() : ''))
+      .filter(Boolean);
+
+    const shown = pickUnique(surnames, 3);
+    const subtitle = shown.length ? shown.join(' • ') : '';
+
+    const candidateTeamId = drivers.find(d => d?.teamId != null)?.teamId;
+    const borderColor = teamColorForId(candidateTeamId ?? (Math.floor(Math.random() * 10) + 1), '#ffffff');
+
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'silly-season-overlay',
+      title: 'SILLY SEASON',
+      subtitle,
+      subtitleClass: 'silly-season-names',
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "contract-renewal-overlay") {
+    const driverName = data?.driver1 ?? '';
+    const teamName = data?.team1 ?? '';
+    const teamId = data?.team1Id;
+
+    const phrases = [
+      `Stays with ${teamName}`,
+      `Renews with ${teamName}`,
+      `Extends deal at ${teamName}`,
+      `Signs a new contract with ${teamName}`,
+      `Commits future to ${teamName}`
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'contract-renewal-overlay',
+      title: driverName,
+      subtitle: pickRandom(phrases.filter(p => !p.endsWith(' ') && p.trim())),
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "massive-exit-overlay") {
+    const driverName = data?.driver1 ?? '';
+    const teamName = data?.team1 ?? '';
+    const teamId = data?.team1Id;
+
+    const headlines = [
+      'CONFIRMED BREAKING',
+      'BREAKING CONFIRMED',
+      'OFFICIAL BREAKING',
+      'CONFIRMED BREAKING',
+      'OFFICIAL ANNOUNCEMENT',
+      "HERE WE GO",
+      "IT'S OFFICIAL",
+      "EXCLUUSIVE BREAKING",
+      "BREAKING NEWS",
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'massive-exit-overlay',
+      title: pickRandom(headlines),
+      subtitle: `${driverName} leaving ${teamName}`.trim(),
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "massive-signing-overlay") {
+    const driverName = data?.driver1 ?? '';
+    const teamName = data?.team2 ?? '';
+    const teamId = data?.team2Id;
+
+    const headlines = [
+      'CONFIRMED BREAKING',
+      'BREAKING CONFIRMED',
+      'OFFICIAL BREAKING',
+      'CONFIRMED BREAKING',
+      'OFFICIAL ANNOUNCEMENT',
+      "HERE WE GO",
+      "IT'S OFFICIAL",
+      "EXCLUUSIVE BREAKING",
+      "BREAKING NEWS"
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'massive-signing-overlay',
+      title: pickRandom(headlines),
+      subtitle: `${driverName} signing with ${teamName}`.trim(),
+      borderColor
+    });
     imageContainer.appendChild(overlayDiv);
   }
   else if (overlay === "driver-comparison-overlay") {
