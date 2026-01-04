@@ -84,3 +84,4 @@
 
 ## 4th january
 - Added overlays to transfer news
+- Added point for pole position in F1 standings in Records tab

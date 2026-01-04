@@ -1155,16 +1155,15 @@ function get_one_driver_points_format(driver, data) {
 
     driver["races"].forEach(function (elem) {
         d1_races.push(elem["raceId"]);
-        let ptsThatRace = elem["points"];
-        if (ptsThatRace === -1) {
+        let ptsThatRace = Number(elem["points"]);
+        if (!Number.isFinite(ptsThatRace) || ptsThatRace === -1) {
             ptsThatRace = 0;
         }
-        if (elem["sprintPoints"] != null && elem["sprintPoints"] !== -1) {
-            d1_points_provisional.push(ptsThatRace + elem["sprintPoints"])
-        }
-        else {
-            d1_points_provisional.push(ptsThatRace)
-        }
+        const qualiPts = Number(elem["qualifyingPoints"]);
+        const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+        const sprintPts = Number(elem["sprintPoints"]);
+        const sPts = (elem["sprintPoints"] != null && Number.isFinite(sprintPts) && sprintPts !== -1) ? sprintPts : 0;
+        d1_points_provisional.push(ptsThatRace + qPts + sPts);
     })
     data[0].forEach(function (elem) {
         let index1 = d1_races.indexOf(elem[0])
@@ -1258,10 +1257,13 @@ function load_graphs_data(drivers) {
                 let ptsThatRace = Number(r.points);
                 if (ptsThatRace === -1) ptsThatRace = 0;
 
+                const qualiPts = Number(r.qualifyingPoints);
+                const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+
                 const sprintPts = (r.sprintPoints != null && r.sprintPoints !== -1)
                     ? Number(r.sprintPoints) : 0;
 
-                d1_points_provisional.push(ptsThatRace + sprintPts);
+                d1_points_provisional.push(ptsThatRace + qPts + sprintPts);
             });
 
             // --- color del piloto ---

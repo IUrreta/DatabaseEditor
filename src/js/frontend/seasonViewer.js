@@ -904,7 +904,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
             .map((entry, index) => ({
                 entry,
                 index,
-                total: safePoints(entry?.points) + safePoints(entry?.sprintPoints)
+                total: safePoints(entry?.points) + safePoints(entry?.qualifyingPoints) + safePoints(entry?.sprintPoints)
             }))
             .sort((a, b) => b.total - a.total || a.index - b.index);
 
@@ -955,8 +955,8 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                 // Aseguramos 2 elementos (puede faltar uno) y priorizamos los que más puntúan
                 const [d1, d2] = pickTopEntries(pair);
 
-                const d1Points = d1 ? safePoints(d1.points) : 0;
-                const d2Points = d2 ? safePoints(d2.points) : 0;
+                const d1Points = d1 ? (safePoints(d1.points) + safePoints(d1.qualifyingPoints)) : 0;
+                const d2Points = d2 ? (safePoints(d2.points) + safePoints(d2.qualifyingPoints)) : 0;
                 const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
                 const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
 
@@ -970,7 +970,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
                 const s2pos = d2?.sprintPos;
 
                 raceDiv.dataset.points = manage_dataset_info_team(
-                    [d1 ? d1.points : 0, d2 ? d2.points : 0],
+                    [d1Points, d2Points],
                     (typeof s1pts !== "undefined" || typeof s2pts !== "undefined") ? [s1pts ?? 0, s2pts ?? 0] : undefined,
                     "points"
                 );
@@ -1248,6 +1248,11 @@ function new_addDriver(driver, races_done, odd) {
             raceDiv.classList = "drivers-table-normal";
 
             if (races_done.includes(raceid) && race) {
+                const qualiPoints = parseInt(race.qualifyingPoints) || 0;
+                const racePointsRaw = parseInt(race.points);
+                const featurePoints = racePointsRaw === -1
+                    ? -1
+                    : (Number.isFinite(racePointsRaw) ? racePointsRaw : 0) + Math.max(0, qualiPoints);
                 const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
                 const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
 
@@ -1256,9 +1261,9 @@ function new_addDriver(driver, races_done, odd) {
                     hasSprintPos ? race.sprintPos : undefined,
                     "pos"
                 );
-                raceDiv.dataset.points = manage_dataset_info_driver(
-                    race.points,
-                    hasSprintPoints ? race.sprintPoints : undefined,
+                raceDiv.dataset.points = manage_dataset_info_driver(     
+                    featurePoints,
+                    hasSprintPoints ? race.sprintPoints : undefined,     
                     "points"
                 );
                 raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
@@ -1282,8 +1287,9 @@ function new_addDriver(driver, races_done, odd) {
 
                 // Puntos carrera (ignora -1)
                 driverpoints += Math.max(0, parseInt(race.points) || 0);
+                driverpoints += Math.max(0, parseInt(race.qualifyingPoints) || 0);
 
-                raceDiv.textContent = raceDiv.dataset[pointsOrPos];
+                raceDiv.textContent = raceDiv.dataset[pointsOrPos];      
             } else {
                 raceDiv.innerText = "-";
             }

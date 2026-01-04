@@ -1804,6 +1804,7 @@ export function formatSeasonResults(
       dnf: myDNF,
       fastestLap: parseInt(driverWithFastestLap) === parseInt(driverID),
       qualifyingPos: 99,
+      qualifyingPoints: 0,
       gapToWinner: null,
       gapToPole: null,
       // NUEVOS CAMPOS:
@@ -1824,6 +1825,7 @@ export function formatSeasonResults(
 
     // Quali / parrilla (como antes)
     let QRes;
+    let QPts = 0;
     if (isCurrentYear) {
       const QStage =
         queryDB(`
@@ -1835,16 +1837,18 @@ export function formatSeasonResults(
             AND DriverID = ?
         `, [raceID, season, driverID], "singleValue") || 0;
 
-      QRes =
+      const qRow =
         queryDB(`
-          SELECT FinishingPos
+          SELECT FinishingPos, ChampionshipPoints
           FROM Races_QualifyingResults
           WHERE RaceFormula = 1
             AND RaceID = ?
             AND SeasonID = ?
             AND DriverID = ?
             AND QualifyingStage = ?
-        `, [raceID, season, driverID, QStage], "singleValue") || 99;
+        `, [raceID, season, driverID, QStage], "singleRow") || [];
+      QRes = qRow[0] ?? 99;
+      QPts = qRow[1] ?? 0;
     } else {
       QRes =
         queryDB(`
@@ -1853,8 +1857,30 @@ export function formatSeasonResults(
           WHERE RaceID = ?
             AND DriverID = ?
         `, [raceID, driverID], "singleValue") || 99;
+
+      const QStage =
+        queryDB(`
+          SELECT MAX(QualifyingStage)
+          FROM Races_QualifyingResults
+          WHERE RaceFormula = 1
+            AND RaceID = ?
+            AND SeasonID = ?
+            AND DriverID = ?
+        `, [raceID, season, driverID], "singleValue") || 0;
+
+      QPts =
+        queryDB(`
+          SELECT ChampionshipPoints
+          FROM Races_QualifyingResults
+          WHERE RaceFormula = 1
+            AND RaceID = ?
+            AND SeasonID = ?
+            AND DriverID = ?
+            AND QualifyingStage = ?
+        `, [raceID, season, driverID, QStage], "singleValue") || 0;
     }
     base.qualifyingPos = QRes;
+    base.qualifyingPoints = QPts ?? 0;
 
     // Gaps generales (tus funciones existentes)
     base.gapToWinner = calculateTimeDifference(driverID, raceID);
