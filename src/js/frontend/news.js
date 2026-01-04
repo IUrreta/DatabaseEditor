@@ -2472,6 +2472,20 @@ async function contextualizeRaceResults(newData) {
   const numberOfRace = `This was race ${raceNumber} out of ${resp.content.nRaces} in this season.`;
   prompt += `\n\n${numberOfRace}`;
 
+  const raceDetails = resp.content.details.map(row => ({
+    position: row.pos,
+    name: row.name,
+    team: combined_dict[row.teamId],
+    startPos: row.grid,
+    gap: row.gapToWinner > 0 ? `${Number(row.gapToWinner.toFixed(3))}s` : row.gapLaps > 0 ? `${row.gapLaps} laps` : ``,
+    status: row.dnf !== 1 ? `+${row.points} pts` : 'DNF'
+  }));
+
+  prompt += `\n\nHere are the full race results:\n`;
+  raceDetails.forEach(result => {
+    prompt += `${result.position}. ${result.name} (${result.team}) | Started P${result.startPos} | +${result.gap} | ${result.status}\n`;
+  });
+
   const safetyCars = resp.content.details[0].safetyCar;
   const virtualSafetyCars = resp.content.details[0].virtualSafetyCar;
   const safetyCarPhrase = `\n\nThere were ${safetyCars} safety car${safetyCars > 1 ? "s" : ""} and ${virtualSafetyCars} virtual safety car${virtualSafetyCars > 1 ? "s" : ""} during the race.`
