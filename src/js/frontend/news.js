@@ -2903,7 +2903,7 @@ function buildEmergencyOverlay() {
 
 function ensureEmergencyOverlay(imageContainer) {
   if (!imageContainer.querySelector('.breaking-news-overlay')) {
-    imageContainer.appendChild(buildEmergencyOverlay());
+    imageContainer.prepend(buildEmergencyOverlay());
   }
 }
 
@@ -3241,8 +3241,8 @@ function manage_overlay(imageContainer, overlay, data, image) {
         ? (image.currentSrc || image.src)
         : (typeof image === 'string' ? image : null);
 
-    if (!url) return;
-    if (imageContainer.querySelector('.breaking-news-overlay, [class$="-overlay"]')) {
+    if (!url) {
+      ensureEmergencyOverlay(imageContainer);
       return;
     }
     const probe = new Image();

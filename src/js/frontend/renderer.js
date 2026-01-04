@@ -1523,6 +1523,7 @@ function update_difficulty_info(triggerList) {
             value = 0;
         }
         status.dataset.value = value;
+        console.log("UPDATING DIFFICULTY", key, value, options[value])
         status.textContent = options[value].text;
         status.className = `dif-status ${options[value].className}`;
     }
@@ -2436,7 +2437,7 @@ function canShowPatreonModal(lastShown) {
     return diffDays >= 1;
 }
 
-
+init_colors_dict()
 document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");

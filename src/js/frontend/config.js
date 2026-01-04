@@ -512,7 +512,7 @@ export const difficultyConfig = {
 };
 
 export const weightDifConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Lightweight parts", className: "extra-hard"},
-        2 : {text: "ULTRA Lightweight parts", className: "impossible"}}
+        5 : {text: "ULTRA Lightweight parts", className: "impossible"}}
 
 export const defaultDifficultiesConfig = {0 : {text: "Disabled", className: "disabled"}, 1 : {text: "Extra Hard", className: "extra-hard"},
         2 : {text: "Brutal", className: "brutal"}, 3 : {text: "Unfair", className: "unfair"},
