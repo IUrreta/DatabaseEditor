@@ -9529,6 +9529,11 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
+input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 .normal-driver:hover {
   background-color: var(--table-hover);
 }
@@ -14277,7 +14282,7 @@ body.default-theme .news-article-date {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  z-index: 1000;
+  z-index: 1;
   color: white;
   font-weight: bold;
   text-transform: uppercase;
