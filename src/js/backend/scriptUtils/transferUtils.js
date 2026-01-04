@@ -90,12 +90,12 @@ export function transferJuniorDriver(driverID,newTeamID, posInTeam, yearIteratio
   //if teamid is less than 22, then its 2, if more is 3
   const juniorFormula = (newTeamID < 22) ? 2 : 3;
   //check if he is in the standings of that formula
-  let positionInStandings = queryDB(`SELECT MAX(Position) FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = ?`,[year,juniorFormula],"singleValue");
+  let positionInStandings = queryDB(`SELECT Position FROM Races_DriverStandings WHERE SeasonID = ? AND DriverID = ? AND RaceFormula = ?`,[year,driverID,juniorFormula],"singleValue");
   if (!positionInStandings) {
     //insert in position maximum possible
     const actualMaxPosition = queryDB(`SELECT COUNT(*) FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = ?`,[year,juniorFormula],"singleValue");
     positionInStandings = actualMaxPosition + 1;
-    queryDB(`INSERT INTO Races_DriverStandings VALUES (?, ?, ?, 0, 0, 0, 0, 0, 0)`,[year,juniorFormula,positionInStandings],'run');
+    queryDB(`INSERT INTO Races_DriverStandings VALUES (?, ?, 0, ?, 0, 0, ?)`,[year,driverID,positionInStandings,juniorFormula],'run');
   }
 
 }

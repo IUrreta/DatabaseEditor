@@ -33,6 +33,11 @@ function parseIntSafe(val, fallback = 0) {
   return Number.isFinite(n) ? n : fallback;
 }
 
+function formatMoney(val) {
+  const n = Number(val);
+  return Number.isFinite(n) ? n.toLocaleString("en-US") : "0";
+}
+
 function getSchemeName(id) {
   const n = Number(id);
   if (n === 1) return "2010–Present";
@@ -215,11 +220,18 @@ function initHoldControlsOnce() {
   root.dataset.holdInit = "1";
 
   const controls = [
-    { input: spendingCapInput, id: "SpendingCap", step: 1_000_000 },
+    { input: spendingCapInput, id: "SpendingCap", step: 1_000_000, format: (val) => formatMoney(val) },
     { input: engineLimitInput, id: "EngineLimit", step: 1 },
     { input: ersLimitInput, id: "ErsLimit", step: 1 },
     { input: gearboxLimitInput, id: "GearboxLimit", step: 1 },
   ];
+
+  if (spendingCapInput && spendingCapInput.dataset.moneyInit !== "1") {
+    spendingCapInput.dataset.moneyInit = "1";
+    spendingCapInput.addEventListener("blur", () => {
+      spendingCapInput.value = formatMoney(parseIntSafe(spendingCapInput.value, 0));
+    });
+  }
 
   for (const c of controls) {
     const container = c.input?.closest(".stat-number");
@@ -232,11 +244,14 @@ function initHoldControlsOnce() {
     const min = change?.MinValue ?? 0;
     const max = change?.MaxValue ?? Number.POSITIVE_INFINITY;
 
+    const holdOpts = { min, max };
+    if (c.format) holdOpts.format = c.format;
+
     if (plus) {
-      attachHold(plus, c.input, c.step, { min, max });
+      attachHold(plus, c.input, c.step, holdOpts);
     }
     if (minus) {
-      attachHold(minus, c.input, -c.step, { min, max });
+      attachHold(minus, c.input, -c.step, holdOpts);
     }
   }
 }
@@ -297,7 +312,7 @@ export function load_regulations(data) {
     }
   }
 
-  spendingCapInput.value = String(regulationsState.enumChanges.SpendingCap.CurrentValue ?? 0);
+  spendingCapInput.value = formatMoney(regulationsState.enumChanges.SpendingCap.CurrentValue ?? 0);
   engineLimitInput.value = String(regulationsState.enumChanges.EngineLimit.CurrentValue ?? 0);
   ersLimitInput.value = String(regulationsState.enumChanges.ErsLimit.CurrentValue ?? 0);
   gearboxLimitInput.value = String(regulationsState.enumChanges.GearboxLimit.CurrentValue ?? 0);
