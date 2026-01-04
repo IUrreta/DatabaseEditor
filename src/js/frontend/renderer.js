@@ -1,14 +1,16 @@
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
+    loadJuniorTeamDrivers,
     initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
@@ -26,15 +28,17 @@ import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
     reload_h2h_graphs, init_colors_dict, edit_colors_dict, setMidGrid, setMaxRaces, setRelativeGrid
 } from './head2head';
-import { place_news, initAI, getAI } from './news.js';
+import { place_news, updateNewsYearsButton } from './news.js';
+import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
-import { dbWorker } from './dragFile';
+import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
-import { PUBLIC_KEY } from './public_key.js';
+import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
+import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
 
 
 const names_configs = {
@@ -64,13 +68,14 @@ const logos_classes_configs = {
     "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
 }
 
-const driverTransferPill = document.getElementById("transferpill");
+const driverTransferPill = document.getElementById("transferpill");       
 const editStatsPill = document.getElementById("statspill");
 const CalendarPill = document.getElementById("calendarpill");
+const regulationsPill = document.getElementById("regulationspill");
 const carPill = document.getElementById("carpill");
 const viewPill = document.getElementById("viewerpill");
 const h2hPill = document.getElementById("h2hpill");
-const constructorsPill = document.getElementById("constructorspill")
+const constructorsPill = document.getElementById("constructorspill")      
 const newsPill = document.getElementById("newspill")
 const modPill = document.getElementById("modpill")
 
@@ -81,6 +86,7 @@ const patreonPill = document.getElementById("patreonPill")
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
 const customCalendarDiv = document.getElementById("custom_calendar");
+const regulationsDiv = document.getElementById("regulations");
 const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
@@ -90,9 +96,13 @@ const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
 const selectImageButton = document.getElementById('selectImage');
-const patreonKeyButton = document.getElementById('patreonKeyButton');
+const patreonLoginButton = document.getElementById('patreonLoginButton');
+const patreonLogoutButton = document.getElementById('patreonLogoutButton');
+const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
+const userToolButton = document.getElementById('userToolButton');
+const saveFileButton = document.getElementById('saveFileButton');
 
-const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, carPerformanceDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, mod25Div]
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -102,21 +112,40 @@ const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
-const patreonUnlockables = document.querySelector(".patreon-unlockables")
-const downloadSaveButton = document.querySelector(".download-save-button")
+const patreonUnlockables = document.querySelector(".patreon-unlockables")       
+const downloadSaveButton = document.querySelector(".download-save-button")      
+const downloadSaveProgress = document.getElementById("downloadSaveProgress");
+const downloadSaveProgressFill = document.getElementById("downloadSaveProgressFill");
 
 const patreonThemes = document.querySelector(".patreon-themes");
-const apiKeySection = document.getElementById("apiKeySection");
-
-const apiKeyInput = document.getElementById("apiKeyInput");
-const apiKeyStatus = document.getElementById("apiKeyStatus");
-const removeApiKey = document.getElementById("removeApiKey");
 
 const status = document.querySelector(".status-info")
 const updateInfo = document.querySelector(".update-info")
+
+const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequencyConfig");
+const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
+const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
+
+function updateTurningPointsFrequencyUI() {
+    if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
+    const idx = parseInt(turningPointsFrequencySlider.value, 10);
+    turningPointsFrequencySlider.value = String(idx);
+    turningPointsFrequencyLabel.textContent = turningPointsFrequencyLabels[idx];
+    const directionClass =
+        idx === defaultTurningPointsFrequencyPreset
+            ? "tp-default"
+            : idx > defaultTurningPointsFrequencyPreset
+                ? "tp-more"
+                : "tp-less";
+    turningPointsFrequencyLabel.className = `option-state ${directionClass}`;
+}
+
 const fileInput = document.getElementById('fileInput');
-const patreonInput = document.getElementById('patreonInput');
+const saveFileInput = document.getElementById('saveFileInput');
 const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const glowSpot = document.querySelector('.glow-spot');
+const blockDiv = document.getElementById('blockDiv');
+
 let difficulty_dict = {
     "-2": "Custom",
     0: "default",
@@ -142,6 +171,7 @@ let difcultyCustom = "default"
 
 export let game_version = 2023;
 export let custom_team = false;
+export let nightlyBlock = false;
 let firstShow = false;
 let configCopy;
 
@@ -164,6 +194,7 @@ let newsAvailable = {
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
+const versionBadge = document.querySelector('.badge-version');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 let notificationsQueue = [];
@@ -221,11 +252,33 @@ export function setIsShowingNotification(value) {
  */
 async function getPatchNotes() {
     try {
-        if (versionNow.slice(-3) !== "dev") {
+        if (versionNow.slice(-3) !== "dev" && !versionNow.includes("nightly")) {
             let response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/releases/tags/${versionNow}`);
             let data = await response.json();
             let changes = data.body;
-            let changesHTML = marked(changes);
+            let changesHTML = DOMPurify.sanitize(marked(changes));
+            patchNotesBody.innerHTML = changesHTML
+            let h1Elements = patchNotesBody.querySelectorAll("h1");
+
+            h1Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element, h1Element);
+            });
+
+            let h2Elements = patchNotesBody.querySelectorAll("h2");
+            h2Elements.forEach(function (h1Element) {
+                let h4Element = document.createElement("h4");
+                h4Element.textContent = h1Element.textContent;
+                h4Element.classList.add("bold-font")
+                patchNotesBody.replaceChild(h4Element, h1Element);
+            });
+        }
+        else if (versionNow.includes("nightly")) {
+            let response = await fetch('/data/nightly_patch_notes.md');
+            let changes = await response.text();
+            let changesHTML = DOMPurify.sanitize(marked(changes));
             patchNotesBody.innerHTML = changesHTML
             let h1Elements = patchNotesBody.querySelectorAll("h1");
 
@@ -251,28 +304,194 @@ async function getPatchNotes() {
 
 }
 
+// Patreon OAuth Logic
+if (patreonLoginButton) {
+    patreonLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
+
+if (patreonToolLoginButton) {
+    patreonToolLoginButton.addEventListener('click', () => {
+        window.location.href = '/api/auth/patreon/login';
+    });
+}
+
+if (patreonLogoutButton) {
+    patreonLogoutButton.addEventListener('click', () => {
+        handleLogout();
+    });
+}
+
+if (userToolButton) {
+    userToolButton.addEventListener('click', () => {
+        const userToolMenu = document.querySelector('.userToolMenu');
+        if (userToolMenu) {
+            userToolMenu.classList.toggle('hidden');
+        }
+    });
+}
+
+if (saveFileButton && saveFileInput) {
+    saveFileInput.addEventListener('change', async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            await processSaveFile(file);
+        }
+        saveFileInput.value = '';
+    });
+
+    saveFileButton.addEventListener('click', async () => {
+        const ok = await confirmModal({
+            title: "Warning about selecting your save file",
+            body: "Selecting your save file this way (in stead of drag and drop) will not save your save in the Recents section. Are you sure you want to continue?",
+            confirmText: "Continue",
+            cancelText: "Cancel"
+        })
+        if (ok) {
+            saveFileInput.click();
+        }
+    });
+}
+
+
+
+async function handleLogout() {
+    try {
+        const response = await fetch('/api/auth/patreon/logout');
+
+        if (response.ok) {
+            console.log("Logout successful");
+
+            updatePatreonUI({ isLoggedIn: false, tier: 'Free' });
+
+            window.location.reload();
+        }
+    } catch (error) {
+        console.error("Logout failed", error);
+    }
+}
+
 /**
- * Places and manages the notifications that appear in the tool
- * @param {string} noti message of the notification
- * @param {bool} error if the notification is an error or not
+ * Retrieves the user's Patreon tier from the cookie.
+ * @returns {Promise<{paidMember: boolean, tier: string, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
  */
-function update_notifications(noti, code) {
-    let newNoti;
-    newNoti = document.createElement('div');
-    newNoti.className = 'notification';
-    newNoti.textContent = noti;
-    let toast = createToast(noti, code)
-    setTimeout(function () {
-        toast.classList.remove("myShow")
-    }, 150)
-    notificationPanel.appendChild(toast);
-    if (code !== "error") {
-        setTimeout(function () {
-            toast.classList.add("hide")
-            setTimeout(function () {
-                notificationPanel.removeChild(toast);
-            }, 130);
-        }, 4000);
+export async function getUserTier() {
+    try {
+        const response = await fetch('/api/me');
+        const data = await response.json();
+
+        // The structure matches what api/me.js returns
+        return {
+            paidMember: data.paidMember, // true/false
+            tier: data.tier, // "Backer", "Insider", "Free", etc
+            isLoggedIn: data.isLoggedIn,
+            user: { fullName: data.user?.fullName || '' }
+        };
+    } catch (error) {
+        console.error("Failed to check auth status", error);
+        return { paidMember: false, tier: 'Free', isLoggedIn: false };
+    }
+}
+
+async function validateSession() {
+    try {
+        const res = await fetch("/api/check-cookie");
+        const data = await res.json();
+
+        // Only force an OAuth refresh when an existing cookie is detected but invalid/legacy.
+        // Not having a cookie simply means "not logged in" and should not redirect.
+        if (data.valid === false && data.hasCookie === true) {
+            console.log("Old Patreon cookie → redirecting to login");
+            window.location.href = "/api/auth/patreon/login";
+            return false;
+        }
+
+        return true;
+
+    } catch (err) {
+        console.error("Error checking Patreon session:", err);
+        return false;
+    }
+}
+
+// Check for OAuth code
+const urlParams = new URLSearchParams(window.location.search);
+const code = urlParams.get('code');
+
+if (code) {
+    console.log("There is code")
+    // Clear the code from URL to prevent re-submission on refresh
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    fetch(`/api/auth/patreon/verify?code=${code}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                new_update_notifications(`Welcome ${data.user.fullName}! Tier: ${data.tier}`, "success");
+
+                // Update UI
+                updatePatreonUI(data);
+                maybeReloadForNightlyAccess(data);
+            } else {
+                new_update_notifications(`Login failed: ${data.error}`, "error");
+                updatePatreonUI(data);
+            }
+        })
+        .catch(err => {
+            console.error('Patreon verification error:', err);
+            new_update_notifications("Error verifying Patreon status", "error");
+        });
+} else {
+    validateSession().then(() => {
+        getUserTier().then(updatePatreonUI);
+    });
+}
+
+function maybeReloadForNightlyAccess(tierInfo) {
+    const isNightly = window.location.hostname.includes("nightly");
+    if (!isNightly) return;
+
+    const insiderOrFounder = tierInfo?.tier === "Insider" || tierInfo?.tier === "Founder";
+    if (nightlyBlock && tierInfo?.isLoggedIn && insiderOrFounder) {
+        setTimeout(() => window.location.reload(), 50);
+    }
+}
+
+function updatePatreonUI(tier) {
+    init_colors_dict(selectedTheme)
+
+    if (tier.paidMember) {
+        patreonUnlockables.classList.remove("d-none");
+        patreonThemes.classList.remove("d-none");
+        document.getElementById("patreonStatusText").textContent = tier.tier
+        loadTheme();
+    }
+    else {
+        patreonUnlockables.classList.add("d-none");
+        patreonThemes.classList.add("d-none");
+        document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+    }
+
+    if (tier.isLoggedIn) {
+        document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
+        document.getElementById("userToolName").textContent = tier.user.fullName;
+        patreonToolLoginButton.classList.add("d-none");
+    }
+    else {
+        document.querySelector(".user-name-and-logout-tool").classList.add("d-none");
+        patreonToolLoginButton.classList.remove("d-none");
+    }
+
+    manageNewsStatus(tier);
+
+    if (turningPointsFrequencyConfig) {
+        const insiderOrFounder = tier?.tier === "Insider" || tier?.tier === "Founder";
+        if (tier?.isLoggedIn && insiderOrFounder) {
+            turningPointsFrequencyConfig.classList.remove("d-none");
+        } else {
+            turningPointsFrequencyConfig.classList.add("d-none");
+        }
     }
 }
 
@@ -380,8 +599,7 @@ function editModeHandler() {
 }
 
 function calendarModeHandler() {
-    let dataCodesString = '';
-    let raceArray = [];
+    const raceArray = [];
 
     document.querySelectorAll(".race-calendar").forEach((race) => {
         let raceData = {
@@ -390,19 +608,28 @@ function calendarModeHandler() {
             rainQuali: race.dataset.rainQ.toString(),
             rainRace: race.dataset.rainR.toString(),
             type: race.dataset.type.toString(),
-            state: race.dataset.state.toString()
+            state: race.dataset.state.toString(),
+            isF2Race: race.dataset.isf2 ? Number(race.dataset.isf2) : 0,
+            isF3Race: race.dataset.isf3 ? Number(race.dataset.isf3) : 0,
         };
         raceArray.push(raceData);
-        dataCodesString += race.dataset.trackid.toString() + race.dataset.rainP.toString() + race.dataset.rainQ.toString() + race.dataset.rainR.toString() + race.dataset.type.toString() + race.dataset.state.toString() + ' ';
     });
 
-    dataCodesString = dataCodesString.trim();
     let dataCalendar = {
-        calendarCodes: dataCodesString,
         racesData: raceArray
     };
 
     const command = new Command("editCalendar", dataCalendar);
+    command.execute();
+}
+
+function regulationsModeHandler() {
+    const data = gather_regulations_data();
+    if (!data) {
+        new_update_notifications("Regulations not loaded", "error");
+        return;
+    }
+    const command = new Command("editRegulations", data);
     command.execute();
 }
 
@@ -501,6 +728,7 @@ export function manageSaveButton(show, mode) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
+    button.removeEventListener("click", regulationsModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
 
@@ -516,6 +744,9 @@ export function manageSaveButton(show, mode) {
     }
     else if (mode === "calendar") {
         button.addEventListener("click", calendarModeHandler);
+    }
+    else if (mode === "regulations") {
+        button.addEventListener("click", regulationsModeHandler);
     }
     else if (mode === "teams") {
         button.addEventListener("click", teamsModeHandler);
@@ -593,7 +824,49 @@ export function make_name_prettier(text) {
 
     const lastWord = words.pop();
 
-    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();
+    return lastWord.charAt(0).toUpperCase() + lastWord.slice(1).toLowerCase();  
+}
+
+function orderTeamTemplatesByStandings(standingsRows) {
+    const parent = document.querySelector(".main-columns-drag-section.teams-columns");
+    if (!parent) return;
+
+    const templates = Array.from(parent.querySelectorAll(":scope > .team-template"));
+    if (templates.length === 0) return;
+
+    const positionByTeamId = new Map();
+    if (Array.isArray(standingsRows)) {
+        standingsRows.forEach((row) => {
+            if (!Array.isArray(row) || row.length < 2) return;
+            const teamId = Number(row[0]);
+            const position = Number(row[1]);
+            if (!Number.isFinite(teamId) || !Number.isFinite(position) || position <= 0) return;
+            const prev = positionByTeamId.get(teamId);
+            if (!Number.isFinite(prev) || position < prev) {
+                positionByTeamId.set(teamId, position);
+            }
+        });
+    }
+
+    const decorated = templates.map((el, index) => {
+        const staffSection = el.querySelector(".staff-section[data-teamid]");
+        const teamId = staffSection ? Number(staffSection.dataset.teamid) : NaN;
+        const position = Number.isFinite(teamId) ? positionByTeamId.get(teamId) : undefined;
+        return { el, index, teamId, position };
+    });
+
+    decorated.sort((a, b) => {
+        const aHas = Number.isFinite(a.position);
+        const bHas = Number.isFinite(b.position);
+        if (aHas && bHas) return a.position - b.position;
+        if (aHas) return -1;
+        if (bHas) return 1;
+        return a.index - b.index;
+    });
+
+    const frag = document.createDocumentFragment();
+    decorated.forEach(({ el }) => frag.appendChild(el));
+    parent.appendChild(frag);
 }
 
 
@@ -632,6 +905,9 @@ const messageHandlers = {
     "Calendar fetched": (message) => {
         load_calendar(message)
     },
+    "Regulations fetched": (message) => {
+        load_regulations(message)
+    },
     "Engines fetched": (message) => {
         manage_engineStats(message[0]);
         update_engine_allocations(message);
@@ -639,8 +915,15 @@ const messageHandlers = {
     "Contract fetched": (message) => {
         manage_modal(message);
     },
+    "Junior team drivers fetched": (message) => {
+        loadJuniorTeamDrivers(message);
+    },
     "Year fetched": (message) => {
         generateYearsMenu(message);
+    },
+    "Previous year teams standings fetched": (message) => {
+        const standings = message?.standings || message;
+        orderTeamTemplatesByStandings(standings);
     },
     "Numbers fetched": (message) => {
         loadNumbers(message);
@@ -683,6 +966,7 @@ const messageHandlers = {
     },
     "Config": (message) => {
         manage_config(message)
+        document.querySelector("#transferpill").click();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -726,6 +1010,11 @@ const messageHandlers = {
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
+        updateNewsYearsButton(message)
+        askFixDoublePointsBug(message)
+    },
+    "News from season fetched": (message) => {
+        place_news(message, newsAvailable)
     },
     "Save selected finished": async (message) => {
         await migrateLegacyNewsOnce();
@@ -733,110 +1022,179 @@ const messageHandlers = {
     },
     "Record fetched": (message) => {
         loadRecordsList(message)
+    },
+    "Double points bug fixed": (message) => {
+        //TODO CLICK ON THE FIRST EYAR OF yearMenu
     }
 };
 
 function removeLegacyKeys(base) {
-  const lsNewsKey = `${base}_news`;
-  const lsTPKey   = `${base}_tps`;
-  try {
-    console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
-    localStorage.removeItem(lsNewsKey);
-    localStorage.removeItem(lsTPKey);
-  } catch (e) {
-    console.warn("[migrate] Failed to remove legacy keys:", e);
-  }
+    const lsNewsKey = `${base}_news`;
+    const lsTPKey = `${base}_tps`;
+    try {
+        console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
+        localStorage.removeItem(lsNewsKey);
+        localStorage.removeItem(lsTPKey);
+    } catch (e) {
+        console.warn("[migrate] Failed to remove legacy keys:", e);
+    }
 }
 
 async function migrateLegacyNewsOnce() {
-  const base = getSaveName().split('.')[0];
-  const lsFlagKey = `${base}_migration_v1_done`;
-  const lsNewsKey = `${base}_news`;
-  const lsTPKey   = `${base}_tps`;
+    const base = getSaveName().split('.')[0];
+    const lsFlagKey = `${base}_migration_v1_done`;
+    const lsNewsKey = `${base}_news`;
+    const lsTPKey = `${base}_tps`;
 
-  // 1) Si ya está migrado, BORRAR SIEMPRE y salir
-  if (localStorage.getItem(lsFlagKey) === "1") {
-    removeLegacyKeys(base);
-    return;
-  }
-
-  // 2) Leer posibles datos legacy
-  const lsNewsTxt = localStorage.getItem(lsNewsKey);
-  const lsTPTxt   = localStorage.getItem(lsTPKey);
-
-  // 3) Si no hay nada que migrar, marca flag y BORRA igual por si quedaron restos
-  if (!lsNewsTxt && !lsTPTxt) {
-    localStorage.setItem(lsFlagKey, "1");
-    removeLegacyKeys(base);
-    return;
-  }
-
-  // 4) Hay algo que migrar → pide al worker
-  try {
-    const resp = await new Command("migrateFromLocalStorage", {
-      base,
-      lsNewsTxt, // pueden ser null; el worker ya valida
-      lsTPTxt
-    }).promiseExecute();
-
-    // Considera como éxito "Migration done" o "Already migrated" por si reintentas
-    if (resp?.responseMessage === "Migration done" || resp?.responseMessage === "Already migrated") {
-      localStorage.setItem(lsFlagKey, "1");
-      removeLegacyKeys(base); // BORRA tras éxito
-    } else {
-      console.warn("[migrate] Unexpected response:", resp);
-      // Si quieres ser agresivo igualmente:
-      localStorage.setItem(lsFlagKey, "1");
-      removeLegacyKeys(base);
+    // 1) Si ya está migrado, BORRAR SIEMPRE y salir
+    if (localStorage.getItem(lsFlagKey) === "1") {
+        removeLegacyKeys(base);
+        return;
     }
-  } catch (e) {
-    console.error("[migrate] Migration error (front):", e);
-    // No marcamos flag en error para poder reintentar después.
-    // Pero si quieres limpiar sí o sí, podrías optar por:
-    // removeLegacyKeys(base);
-  }
+
+    // 2) Leer posibles datos legacy
+    const lsNewsTxt = localStorage.getItem(lsNewsKey);
+    const lsTPTxt = localStorage.getItem(lsTPKey);
+
+    // 3) Si no hay nada que migrar, marca flag y BORRA igual por si quedaron restos
+    if (!lsNewsTxt && !lsTPTxt) {
+        localStorage.setItem(lsFlagKey, "1");
+        removeLegacyKeys(base);
+        return;
+    }
+
+    // 4) Hay algo que migrar → pide al worker
+    try {
+        const resp = await new Command("migrateFromLocalStorage", {
+            base,
+            lsNewsTxt, // pueden ser null; el worker ya valida
+            lsTPTxt
+        }).promiseExecute();
+
+        // Considera como éxito "Migration done" o "Already migrated" por si reintentas
+        if (resp?.responseMessage === "Migration done" || resp?.responseMessage === "Already migrated") {
+            localStorage.setItem(lsFlagKey, "1");
+            removeLegacyKeys(base); // BORRA tras éxito
+        } else {
+            console.warn("[migrate] Unexpected response:", resp);
+            // Si quieres ser agresivo igualmente:
+            localStorage.setItem(lsFlagKey, "1");
+            removeLegacyKeys(base);
+        }
+    } catch (e) {
+        console.error("[migrate] Migration error (front):", e);
+        // No marcamos flag en error para poder reintentar después.
+        // Pero si quieres limpiar sí o sí, podrías optar por:
+        // removeLegacyKeys(base);
+    }
 }
 
 
+if (glowSpot && blockDiv) {
+    const defaultPosition = {
+        left: '50%',
+        top: '0',
+        transform: 'translateX(-50%)',
+    };
+
+    let restoreTimeout;
+
+    const isLandingVisible = () => !blockDiv.classList.contains('disappear');
+
+    const rootStyle = document.documentElement.style;
+    const setGlowVars = (x, y) => {
+        rootStyle.setProperty('--glow-x', x);
+        rootStyle.setProperty('--glow-y', y);
+    };
+
+    const syncGlowVarsToGlowSpotCenter = () => {
+        const rect = glowSpot.getBoundingClientRect();
+        setGlowVars(`${rect.left + rect.width / 2}px`, `${rect.top + rect.height / 2}px`);
+    };
+
+    const resetGlowSpotPosition = () => {
+        glowSpot.style.left = defaultPosition.left;
+        glowSpot.style.top = defaultPosition.top;
+        glowSpot.style.transform = defaultPosition.transform;
+        syncGlowVarsToGlowSpotCenter();
+    };
+
+    const updateGlowSpotPosition = (event) => {
+        if (!isLandingVisible()) {
+            return;
+        }
+
+        glowSpot.classList.remove('glow-spot--off');
+        const x = `${event.clientX}px`;
+        const y = `${event.clientY}px`;
+        glowSpot.style.left = x;
+        glowSpot.style.top = y;
+        glowSpot.style.transform = 'translate(-50%, -50%)';
+        setGlowVars(x, y);
+    };
+
+    const fadeToDefaultPosition = () => {
+        glowSpot.classList.add('glow-spot--off');
+
+        clearTimeout(restoreTimeout);
+        restoreTimeout = setTimeout(() => {
+            resetGlowSpotPosition();
+            glowSpot.classList.remove('glow-spot--off');
+        }, 200);
+    };
+
+    const observer = new MutationObserver(() => {
+        if (isLandingVisible()) {
+            glowSpot.classList.remove('glow-spot--off');
+        } else {
+            fadeToDefaultPosition();
+        }
+    });
+
+    observer.observe(blockDiv, { attributes: true, attributeFilter: ['class'] });
+
+    resetGlowSpotPosition();
+    window.addEventListener('mousemove', updateGlowSpotPosition);
+}
 
 export async function generateNews() {
-  const isValid = await isPatronSignatureValid();
-  const canGenerate = checkGenerableNews(isValid);
-  if (canGenerate === "no") return;
+    const patreonTier = await getUserTier();
+    const canGenerate = checkGenerableNews(patreonTier);
+    if (canGenerate === "no") return;
 
-  // lanzar sin payload, el worker lee de DB
-  new Command("generateNews", {}).execute();
+    // lanzar sin payload, el worker lee de DB
+    new Command("generateNews", {}).execute();
 
-  // loader UI (igual que antes si quieres)
-  const newsView = document.getElementById("news");
-  const loaderDiv = document.createElement('div');
-  loaderDiv.classList.add('loader-div', 'general-news-loader');
+    // loader UI (igual que antes si quieres)
+    const newsView = document.getElementById("news");
+    const loaderDiv = document.createElement('div');
+    loaderDiv.classList.add('loader-div', 'general-news-loader');
 
-  const loadingSpan = document.createElement('span');
-  loadingSpan.textContent = "Updating news";
-  const loadingDots = document.createElement('span');
-  loadingDots.textContent = ".";
-  loadingDots.classList.add('loading-dots');
-  loadingSpan.textContent = "Updating news";
-  loadingSpan.appendChild(loadingDots);
-  
+    const loadingSpan = document.createElement('span');
+    loadingSpan.textContent = "Updating news";
+    const loadingDots = document.createElement('span');
+    loadingDots.textContent = ".";
+    loadingDots.classList.add('loading-dots');
+    loadingSpan.textContent = "Updating news";
+    loadingSpan.appendChild(loadingDots);
 
-  setInterval(() => {
-    if (loadingDots.textContent.length >= 3) loadingDots.textContent = ".";
-    else loadingDots.textContent += ".";
-  }, 500);
 
-  const progressBar = document.createElement('div');
-  progressBar.classList.add('ai-progress-bar');
-  const progressDiv = document.createElement('div');
-  progressDiv.classList.add('progress-div', 'general-news-progress-div');
+    setInterval(() => {
+        if (loadingDots.textContent.length >= 3) loadingDots.textContent = ".";
+        else loadingDots.textContent += ".";
+    }, 500);
 
-  loaderDiv.appendChild(loadingSpan);
-  progressBar.appendChild(progressDiv);
-  loaderDiv.appendChild(progressBar);
+    const progressBar = document.createElement('div');
+    progressBar.classList.add('ai-progress-bar');
+    const progressDiv = document.createElement('div');
+    progressDiv.classList.add('progress-div', 'general-news-progress-div');
 
-  startGeneralNewsProgress(progressDiv);
-  newsView.appendChild(loaderDiv);
+    loaderDiv.appendChild(loadingSpan);
+    progressBar.appendChild(progressDiv);
+    loaderDiv.appendChild(progressBar);
+
+    startGeneralNewsProgress(progressDiv);
+    newsView.appendChild(loaderDiv);
 }
 
 
@@ -1039,6 +1397,10 @@ fileInput.addEventListener('change', (event) => {
 });
 
 function replace_custom_team_logo(path) {
+    //if not image selected, return
+    if (!path) {
+        return;
+    }
     // Si el string base64 no tiene el prefijo, se lo agregamos.
     if (!path.startsWith("data:image/")) {
         // Ajusta el tipo de imagen ("png", "jpeg", etc.) según corresponda.
@@ -1072,7 +1434,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
 })
 
 function manage_config(info, year_config = false) {
-    document.querySelector(".bi-gear").classList.remove("hidden")
+    document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
     configCopy = info
     manage_config_content(info, year_config)
 }
@@ -1112,18 +1474,18 @@ function manage_config_content(info, year_config = false) {
         }
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
-
+        update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
-        let difficultySlider = document.getElementById("difficultySlider")
-        difficultySlider.value = info["difficulty"] || 0
-        update_difficulty_span(info["difficulty"])
-        if (info["difficulty"] === "-2") {
-            load_difficulty_warnings(info["triggerList"])
-        }
-        else {
-            manage_difficulty_warnings(difficulty_dict[parseInt(info["difficulty"])], info["triggerList"])
-        }
         update_refurbish_span(info["refurbish"])
+
+        if (turningPointsFrequencySlider) {
+            let presetIndex = info?.turningPointsFrequencyPreset;
+            if (presetIndex === undefined || presetIndex === null) {
+                presetIndex = defaultTurningPointsFrequencyPreset;
+            }
+            turningPointsFrequencySlider.value = String(presetIndex);
+            updateTurningPointsFrequencyUI();
+        }
     }
 }
 
@@ -1142,9 +1504,33 @@ document.querySelectorAll(".color-reader").forEach(function (elem) {
     })
 })
 
+function update_difficulty_info(triggerList) {
+    console.log("TRIGGER LIST", triggerList)
+    //iterate through the objetc
+    for (let key in triggerList) {
+        let value = triggerList[key];
+        let nameSpan = document.getElementById(key)
+        if (!nameSpan) continue;
+        let status = nameSpan.parentNode.querySelector(".dif-status")
+        let options;
+        if (key === "lightDif"){
+            options = weightDifConfig
+        }
+        else{
+            options = defaultDifficultiesConfig
+        }
+        if (value < 0) {
+            value = 0;
+        }
+        status.dataset.value = value;
+        status.textContent = options[value].text;
+        status.className = `dif-status ${options[value].className}`;
+    }
+}
+
 
 function alphaTauriReplace(info) {
-    document.querySelector("#alphaTauriReplaceButton").querySelector("button").textContent = names_configs[info]
+    document.querySelector("#alphaTauriReplaceButton").querySelector("button span").textContent = names_configs[info]
     document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
     combined_dict[8] = pretty_names[info]
     abreviations_dict[8] = abreviations_for_replacements[info]
@@ -1155,12 +1541,18 @@ function alphaTauriReplace(info) {
     })
     document.querySelectorAll(".at-name").forEach(function (elem) {
         //if it has the class complete, put names_configs[info], else out VCARB
-        if (info === "visarb" && !elem.classList.contains("complete")) {
-            elem.textContent = "VCARB"
+        let name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : names_configs[info];
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : pretty_names[info];
+                elem.textContent = `${name} ${match[2]}`;
+            }
         }
-        else {
-            elem.textContent = names_configs[info]
+        else{
+            elem.textContent = name
         }
+        
     })
     if (info !== "alphatauri") {
         document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
@@ -1247,7 +1639,7 @@ function alphaTauriReplace(info) {
 }
 
 function alpineReplace(info) {
-    document.querySelector("#alpineReplaceButton").querySelector("button").textContent = names_configs[info]
+    document.querySelector("#alpineReplaceButton").querySelector("button span").textContent = names_configs[info]
     document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
     combined_dict[5] = pretty_names[info]
     abreviations_dict[5] = abreviations_for_replacements[info]
@@ -1257,7 +1649,17 @@ function alpineReplace(info) {
         elem.dataset.teamshow = pretty_names[info]
     })
     document.querySelectorAll(".alpine-name").forEach(function (elem) {
-        elem.textContent = names_configs[info]
+        let name = names_configs[info]
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = pretty_names[info]
+                elem.textContent = `${name} ${match[2]}`;
+            }
+        }
+        else{
+            elem.textContent = name
+        }
     })
     if (info !== "alpine") {
         document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
@@ -1332,7 +1734,7 @@ function alpineReplace(info) {
 }
 
 function alfaReplace(info) {
-    document.querySelector("#alfaReplaceButton").querySelector("button").textContent = names_configs[info]
+    document.querySelector("#alfaReplaceButton").querySelector("button span").textContent = names_configs[info]
     document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
     combined_dict[9] = pretty_names[info]
     abreviations_dict[9] = abreviations_for_replacements[info]
@@ -1342,7 +1744,17 @@ function alfaReplace(info) {
         elem.dataset.teamshow = pretty_names[info]
     })
     document.querySelectorAll(".alfa-name").forEach(function (elem) {
-        elem.textContent = names_configs[info]
+        let name = names_configs[info]
+        if (elem.parentElement.classList.contains("car-title")) {
+            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+            if (match) {
+                name = pretty_names[info]
+                elem.textContent = `${name} ${match[2]}`;
+            }  
+        }
+        else{
+            elem.textContent = name
+        }
     })
     if (info !== "alfa") {
         document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
@@ -1433,7 +1845,7 @@ function replace_modal_teams(version) {
 document.querySelectorAll(".team-change-button").forEach(function (elem) {
     elem.querySelectorAll("a").forEach(function (a) {
         a.addEventListener("click", function () {
-            elem.querySelector("button").textContent = a.textContent
+            elem.querySelector("button span").textContent = a.textContent
             elem.querySelector("button").dataset.value = a.dataset.value
         })
     })
@@ -1452,37 +1864,27 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         refurbish = 1;
     }
     let difficulty = 0;
-    let difficultySlider = document.getElementById("difficultySlider")
-    let difficultyValue = document.getElementById("difficultySpan").textContent === "Custom" ? -2 : parseInt(difficultySlider.value)
     let disabledList = {}
     let triggerList = {}
     let playerTeam = managingTeamChanged ? document.querySelector(".team-logo-container.active").dataset.teamid : -1
-    document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
-        let id = elem.id
-        if (elem.classList.contains("disabled") || elem.classList.contains("d-none")) {
-            disabledList[id] = 1
-        }
-        else {
-            disabledList[id] = 0
-        }
-        if (elem.className === "dif-warning") {
-            triggerList[id] = 0;
-        }
-        else {
-            triggerList[id] = elem.classList && (elem.classList.contains("d-none") || elem.classList.contains("disabled")) ? -1 : inverted_difficulty_dict[elem.className.split(" ")[1]];
-        }
+    document.querySelectorAll(".dif-status").forEach(function (elem) {
+        let id = elem.parentNode.querySelector(".dif-name").id
+        triggerList[id] = elem.dataset.value
     })
     let data = {
         alphatauri: alphatauri,
         alpine: alpine,
         alfa: alfa,
         frozenMentality: mentalityFrozen,
-        difficulty: difficultyValue,
         refurbish: refurbish,
         disabled: disabledList,
         triggerList: triggerList,
         playerTeam: playerTeam
     }
+
+    const tpPresetIndex = parseInt(turningPointsFrequencySlider.value, 10);
+    data.turningPointsFrequencyPreset = tpPresetIndex;
+
     changeTheme()
     if (custom_team) {
         data["primaryColor"] = document.getElementById("primarySelector").value
@@ -1505,30 +1907,162 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
 
-    //if apiKeyInput has a value, save it to localStorage
-    let apiKeyValue = apiKeyInput.value.trim();
-    if (apiKeyValue) {
-        localStorage.setItem("apiKey", apiKeyValue);
-        apiKeyStatus.classList.add("api-loaded")
-        apiKeyInput.value = ""
-        initAI(apiKeyValue);
+
+})
+
+async function askFixDoublePointsBug(message){
+    const bugInfo = message.doublePointsBug;
+    if (!bugInfo.result) return;
+    if (localStorage.getItem(`${saveName}_doublePointsBugIgnored_${bugInfo.raceId}`) === 'true') {
+        return;
     }
+    const ok = await confirmModal({
+        title: 'Fix Double Points Bug',
+        body: 'The current save has a known issue with double points being awarded in certain races where a double DSQ Turning point happened. Do you want to fix this issue now?',
+        confirmText: 'Yes, fix it',
+        cancelText: 'No, ignore',
+    })
+    if (ok) {
+        const command = new Command("fixDoublePointsBug", { raceId: bugInfo.raceId });
+        command.execute();
+    }
+    else{
+        //save in lcoalstorage a flag that he didn't want to fix the bug with raceid bugInfo.raceId
+        localStorage.setItem(`${saveName}_doublePointsBugIgnored_${bugInfo.raceId}`, 'true');
+    }
+}
 
-})
+let isDownloadingSave = false;
+let downloadSaveProgressStartedAt = 0;
+let downloadSaveProgressValue = 0;
+let downloadSaveProgressIntervalId = null;
+let downloadSaveProgressTimeoutId = null;
+let downloadSaveWorkerHandler = null;
 
-document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", function () {
-    dbWorker.postMessage({
-        command: 'exportSave',
-        data: {}
-    });
+function setDownloadSaveProgress(percent) {
+    if (!downloadSaveProgressFill) return;
+    const clamped = Math.max(0, Math.min(100, percent));
+    downloadSaveProgressFill.style.width = `${clamped}%`;
+}
 
-    dbWorker.onmessage = (msg) => {
-        const finalData = msg.data.content.finalData;
-        const metadata = msg.data.content.metadata;
+function clearDownloadSaveWorkerHandler() {
+    if (!downloadSaveWorkerHandler) return;
+    dbWorker.removeEventListener("message", downloadSaveWorkerHandler);
+    downloadSaveWorkerHandler = null;
+}
 
-        saveAs(new Blob([finalData], { type: "application/binary" }), metadata.filename);
-    };
-})
+function clearDownloadSaveProgressTimers() {
+    if (downloadSaveProgressIntervalId !== null) {
+        window.clearInterval(downloadSaveProgressIntervalId);
+        downloadSaveProgressIntervalId = null;
+    }
+    if (downloadSaveProgressTimeoutId !== null) {
+        window.clearTimeout(downloadSaveProgressTimeoutId);
+        downloadSaveProgressTimeoutId = null;
+    }
+}
+
+function resetDownloadSaveProgress() {
+    clearDownloadSaveProgressTimers();
+    clearDownloadSaveWorkerHandler();
+    isDownloadingSave = false;
+    downloadSaveProgressValue = 0;
+    setDownloadSaveProgress(0);
+    if (downloadSaveProgress) downloadSaveProgress.classList.add("hidden");
+}
+
+function startDownloadSaveProgressSimulation() {
+    if (!downloadSaveProgress || !downloadSaveProgressFill) return;
+
+    clearDownloadSaveProgressTimers();
+
+    isDownloadingSave = true;
+    downloadSaveProgressStartedAt = performance.now();
+    downloadSaveProgressValue = 0;
+
+    setDownloadSaveProgress(0);
+    downloadSaveProgress.classList.remove("hidden");
+
+    downloadSaveProgressIntervalId = window.setInterval(() => {
+        if (!isDownloadingSave) return;
+
+        const elapsed = performance.now() - downloadSaveProgressStartedAt;
+        const fastPhase = Math.min(elapsed / 500, 1) * 45; // 0 -> 45 quickly
+        const slowPhase = Math.min(Math.max(elapsed - 500, 0) / 4500, 1) * 50; // 45 -> 95 slower
+        const target = Math.min(95, fastPhase + slowPhase);
+
+        if (target > downloadSaveProgressValue) {
+            downloadSaveProgressValue = target;
+            setDownloadSaveProgress(downloadSaveProgressValue);
+        }
+    }, 100);
+
+    downloadSaveProgressTimeoutId = window.setTimeout(() => {
+        if (!isDownloadingSave) return;
+        resetDownloadSaveProgress();
+        new_update_notifications("Save export timed out.", "error");
+    }, 20000);
+}
+
+function finishDownloadSaveProgress() {
+    if (!downloadSaveProgress || !downloadSaveProgressFill) return;
+
+    const elapsed = performance.now() - downloadSaveProgressStartedAt;
+    const minVisibleMs = 700;
+    const hideDelayMs = Math.max(250, minVisibleMs - elapsed);
+
+    clearDownloadSaveProgressTimers();
+    clearDownloadSaveWorkerHandler();
+    isDownloadingSave = false;
+
+    setDownloadSaveProgress(100);
+    window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
+}
+
+const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+if (downloadSaveIcon) {
+    downloadSaveIcon.addEventListener("click", function () {
+        if (isDownloadingSave) return;
+
+        startDownloadSaveProgressSimulation();
+
+        downloadSaveWorkerHandler = (msg) => {
+            if (!isDownloadingSave) return;
+
+            const response = msg?.data;
+            if (!response) return;
+
+            if (response.error) {
+                console.error("Error exporting save:", response.error);
+                resetDownloadSaveProgress();
+                new_update_notifications("Error exporting save.", "error");
+                return;
+            }
+
+            if (response.responseMessage !== "Database exported") return;
+
+            try {
+                const finalData = response?.content?.finalData;
+                const metadata = response?.content?.metadata;
+                const filename = metadata?.filename || saveName || "save.sav";
+
+                if (finalData == null) {
+                    throw new Error("Missing exported data");
+                }
+
+                saveAs(new Blob([finalData], { type: "application/binary" }), filename);
+                finishDownloadSaveProgress();
+            } catch (e) {
+                console.error("Failed to download exported save:", e);
+                resetDownloadSaveProgress();
+                new_update_notifications("Error exporting save.", "error");
+            }
+        };
+
+        dbWorker.addEventListener("message", downloadSaveWorkerHandler);
+        dbWorker.postMessage({ command: "exportSave", data: {} });
+    })
+}
 
 
 
@@ -1536,52 +2070,44 @@ document.querySelector(".bi-file-earmark-arrow-down").addEventListener("click", 
  * checks if a save and a script have been selected to unlock the tool
  */
 function check_selected() {
-    if (scriptSelected === 1) {
-        document.getElementById("scriptSelected").classList.add("completed")
+    if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
+        document.getElementById("blockDiv").classList.add("disappear")
+        divBlocking = 0;
     }
-    else {
-        document.getElementById("scriptSelected").classList.remove("completed")
-    }
-    setTimeout(function () {
-        if (isSaveSelected == 1 && scriptSelected == 1 && divBlocking == 1) {
-            document.getElementById("blockDiv").classList.add("disappear")
-            divBlocking = 0;
-        }
-    }, 150)
 
 }
 
 h2hPill.addEventListener("click", function () {
 
-    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 viewPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 driverTransferPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 editStatsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "stats")
 })
 
 constructorsPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "teams")
@@ -1589,37 +2115,44 @@ constructorsPill.addEventListener("click", function () {
 
 
 CalendarPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(true, "calendar")
 })
 
+regulationsPill.addEventListener("click", function () {
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide", "hide")
+    scriptSelected = 1
+    check_selected()
+    manageSaveButton(true, "regulations")
+})
+
 carPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(!viewingGraph, "performance")
 })
 
 modPill.addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "show")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 newsPill.addEventListener("click", function () {
-    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("show", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
     manageSaveButton(false)
 })
 
 document.querySelector(".toolbar-logo-and-title").addEventListener("click", function () {
-    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
+    manageScripts("hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 0
-    document.getElementById("blockDiv").classList.remove("disappear")
+    document.getElementById("blockDiv").classList.remove("disappear")    
     if (document.querySelector(".scriptPills.active")) {
         document.querySelector(".scriptPills.active").classList.remove("active")
     }
@@ -1645,32 +2178,13 @@ patreonPill.addEventListener("click", function () {
     document.querySelector("#gameChanges").classList.add("d-none")
 })
 
-
-
-document.getElementById("difficultySlider").addEventListener("input", function () {
-    let value = this.value;
-    update_difficulty_span(value)
-    manage_difficulty_warnings(difficulty_dict[parseInt(value)])
-    difcultyCustom = "default"
-    document.getElementById("customGearButton").classList.remove("custom")
-});
-
-function update_difficulty_span(value = 0) {
-    let span = document.querySelector("#difficultySpan")
-    let difficulty = difficulty_dict[parseInt(value)]
-    if (difficulty === "reduced weight") {
-        span.className = "option-state reduced-weight"
-    }
-    else if (difficulty === "Custom") {
-        span.className = "option-state custom"
-        document.getElementById("customGearButton").classList.remove("custom")
-        document.getElementById("customGearButton").click()
-    }
-    else {
-        span.className = "option-state " + difficulty
-    }
-    span.textContent = difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
+if (turningPointsFrequencySlider) {
+    updateTurningPointsFrequencyUI();
+    turningPointsFrequencySlider.addEventListener("input", updateTurningPointsFrequencyUI);
 }
+
+
+
 
 document.getElementById("freezeMentalityToggle").addEventListener("change", function () {
     let value = this.checked;
@@ -1746,97 +2260,50 @@ function load_difficulty_warnings(triggerList) {
     }
 }
 
-document.getElementById("customGearButton").addEventListener("click", function () {
-    this.classList.toggle("custom")
-    if (this.classList.contains("custom")) {
-        difcultyCustom = "custom"
-        document.querySelector("#difficultySpan").textContent = "Custom"
-        document.querySelector("#difficultySpan").className = "option-state custom"
-        document.querySelector(".custom-description").textContent = "cycle through its states"
-        let warnigs = document.querySelectorAll(".dif-warning")
-        warnigs.forEach(function (elem) {
-            if (elem.id !== "defaultDif") {
-                for (let level in difficultyConfig) {
-                    if (difficultyConfig[level].visible.includes(elem.id)) {
-                        elem.className = difficultyConfig[level][elem.id]?.className || "dif-warning";
-                        elem.textContent = difficultyConfig[level][elem.id]?.text || "";
-                        break;
-                    }
-                }
-            }
-            else {
-                elem.classList.add("d-none")
-            }
-        })
+
+
+document.querySelectorAll(".one-difficulty .bi-plus").forEach(function (elem) {
+    const title = elem.parentNode.parentNode
+    const status = title.querySelector(".dif-status")
+    const name = title.querySelector(".dif-name")
+    let options;
+    if (name.id === "lightDif") {
+        options = weightDifConfig
     }
-    else {
-        difcultyCustom = "default"
-        document.querySelector(".custom-description").textContent = "remove/add it"
-        actualDifficulty = document.getElementById("difficultySlider").value
-        manage_difficulty_warnings(difficulty_dict[parseInt(actualDifficulty)])
-        update_difficulty_span(actualDifficulty)
+    else{
+        options = defaultDifficultiesConfig
     }
-})
-
-function rotateDifficultyLevel(elementId) {
-    const levels = ["extra-hard", "brutal", "unfair", "insane", "impossible"];
-    const element = document.getElementById(elementId);
-
-    // Detectar si el elemento está en estado "disabled" actualmente
-    if (element.classList.contains("disabled")) {
-        let nextConfig;
-        for (let level in difficultyConfig) {
-            if (difficultyConfig[level].visible.includes(elementId)) {
-                nextConfig = difficultyConfig[level][elementId]
-                break
-            }
-        }
-        if (nextConfig) {
-            element.className = nextConfig.className;
-            element.textContent = nextConfig.text;
-        }
-        return;
-    }
-
-    let currentLevelIndex = levels.findIndex(level => {
-        return difficultyConfig[level][elementId] &&
-            element.classList.contains(difficultyConfig[level][elementId].className.split(" ")[1]);
-    });
-
-    if (currentLevelIndex === levels.length - 1) {
-        element.className = "dif-warning disabled";
-        return;
-    }
-
-    let nextLevelIndex = (currentLevelIndex + 1) % levels.length;
-    let nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
-
-
-    while (
-        (!nextConfig ||
-            (nextConfig.className === element.className && nextConfig.text === element.textContent) ||
-            !difficultyConfig[levels[nextLevelIndex]].visible.includes(elementId)) &&
-        nextLevelIndex !== currentLevelIndex
-    ) {
-        nextLevelIndex = (nextLevelIndex + 1) % levels.length;
-        nextConfig = difficultyConfig[levels[nextLevelIndex]][elementId];
-    }
-
-    if (nextConfig) {
-        element.className = nextConfig.className;
-        element.textContent = nextConfig.text;
-    }
-}
-
-document.querySelectorAll(".dif-warning:not(.default)").forEach(function (elem) {
+    const maxOptions = Object.keys(options).length;
     elem.addEventListener("click", function () {
-        if (difcultyCustom === "custom") {
-            rotateDifficultyLevel(elem.id);
-        } else {
-            elem.classList.toggle("disabled");
-        }
+        let actualValue = parseInt(status.dataset.value);
+        let newValue = (actualValue + 1) % maxOptions;
+        status.dataset.value = newValue;
+        status.textContent = options[newValue].text;
+        status.className = `dif-status ${options[newValue].className}`;
     });
 });
+
+document.querySelectorAll(".one-difficulty .bi-dash").forEach(function (elem) {
+    const title = elem.parentNode.parentNode
+    const status = title.querySelector(".dif-status")
+    const name = title.querySelector(".dif-name")
+    let options;
+    if (name.id === "lightDif"){
+        options = weightDifConfig
+    }
+    else{
+        options = defaultDifficultiesConfig
+    }
+    const maxOptions = Object.keys(options).length;
+    elem.addEventListener("click", function () {
+        let actualValue = parseInt(status.dataset.value);
+        let newValue = (actualValue - 1 + maxOptions) % maxOptions;
+        status.dataset.value = newValue;
+        status.textContent = options[newValue].text;
+        status.className = `dif-status ${options[newValue].className}`;
+    });
+});
+
 
 /**
  * Manages the stats of the divs associated with the pills
@@ -1891,104 +2358,17 @@ function manageScripts(...divs) {
 }
 
 document.querySelector("#cancelDetailsButton").addEventListener("click", function () {
-    manage_config_content(configCopy[0], false)
+    manage_config_content(configCopy, false)
 })
 
-patreonKeyButton.addEventListener('click', () => {
-    patreonInput.click();
-});
-
-patreonInput.addEventListener('change', async (e) => {
-    if (!e.target.files?.length) return;
-
-    const file = e.target.files[0];
-    const text = await file.text();
-    let parsed;
-
-    try {
-        parsed = JSON.parse(text);
-    } catch (err) {
-        alert('Invalid file');
-        return;
-    }
-
-    const { dataString, signature } = parsed;
-    if (!dataString || !signature) {
-        alert('Error');
-        return;
-    }
-
-    const isValid = await verifySignature(dataString, signature, PUBLIC_KEY);
-    if (isValid) {
-        const dataObj = JSON.parse(dataString);
-
-        localStorage.setItem('patreonKey', JSON.stringify({ dataString, signature }));
-        checkPatreonStatus();
-    } else {
-        alert('Invalid file');
-    }
-});
 
 
-async function isPatronSignatureValid() {
-    const stored = localStorage.getItem('patreonKey');
-    if (!stored) return { status: "missing", role: null };
 
-    try {
-        const { dataString, signature } = JSON.parse(stored);
-        if (!dataString || !signature) return { status: "invalid", role: null };
 
-        const valid = await verifySignature(dataString, signature, PUBLIC_KEY);
-        const role = valid ? JSON.parse(dataString).role : null;
-        return { status: valid ? "valid" : "invalid", role };
-    } catch (err) {
-        console.error("Error verificando firma:", err);
-        return { status: "invalid", role: null };
-    }
-}
 
-async function checkPatreonStatus() {
-    const validSignature = await isPatronSignatureValid();
-    init_colors_dict(selectedTheme)
-
-    if (validSignature.status === "valid") {
-        document.querySelector(".patreon-status").classList.remove("negative")
-        document.querySelector(".patreon-status").classList.add("positive");
-        patreonUnlockables.classList.remove("d-none");
-        patreonThemes.classList.remove("d-none");
-        document.querySelector(".patreonCheck").classList.remove("d-none");
-        document.getElementById("patreonKeyText").textContent = validSignature.role.charAt(0).toUpperCase() + validSignature.role.slice(1);
-        document.querySelector(".patreonX").classList.add("d-none");
-        console.log("Patreon key valid");
-        loadTheme();
-    }
-    else if (validSignature.status === "invalid") {
-        //put the text saying that maybe the old key is invalid
-        document.querySelector(".patreon-status").classList.remove("positive")
-        document.querySelector(".patreon-status").classList.add("negative");
-        document.getElementById("patreonKeyText").textContent = "Invalid";
-        document.querySelector(".patreonCheck").classList.add("d-none");
-        document.querySelector(".patreonX").classList.remove("d-none");
-        console.log("Patreon key invalid or expired");
-    }
-    else if (validSignature.status === "missing") {
-        document.querySelector(".patreon-status").classList.remove("positive")
-        document.querySelector(".patreon-status").classList.remove("negative");
-        document.getElementById("patreonKeyText").textContent = "Not set";
-        document.querySelector(".patreonCheck").classList.add("d-none");
-        document.querySelector(".patreonX").classList.add("d-none");
-        console.log("No patreon key found");
-    }
-    manageNewsStatus(validSignature);
-}
-
-function manageNewsStatus(valid) {
-    const generateNews = checkGenerableNews(valid);
+function manageNewsStatus(patreonTier) {
+    const generateNews = checkGenerableNews(patreonTier);
     if (generateNews === "yes") {
-        const extraApiKeySection = document.querySelector('#extraApiKeySection');
-        if (extraApiKeySection) {
-            extraApiKeySection.remove();
-        }
         const newsgenerationEnded = document.querySelector('.news-generation-ended');
         if (newsgenerationEnded) {
             newsgenerationEnded.remove();
@@ -1998,72 +2378,19 @@ function manageNewsStatus(valid) {
             generateNews();
         }
     }
-    else {
-        if (generateNews === "provisional") {
-            const apiKeySection = document.querySelector('.api-key-section');
-
-            patreonUnlockables.classList.remove("d-none");
-            patreonThemes.classList.add("d-none");
-
-
-            let diffDays = 0;
-            const firstNewsEntered = localStorage.getItem('firstNewsEntered');
-            if (firstNewsEntered) {
-                const firstDate = new Date(firstNewsEntered);
-                const now = new Date();
-                const diffTime = Math.abs(now - firstDate);
-                diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            }
-
-            if (apiKeySection) {
-                const timeRemainingSpan = document.createElement('span');
-                timeRemainingSpan.className = 'modal-text';
-                timeRemainingSpan.innerHTML = `You have: <span class="important-text bold-font">${8 - diffDays} days </span> left of free news generation. Become a <a href="https://www.patreon.com/f1dbeditor" target="_blank">patreon member</a> to continue using this feature!`;
-
-                //insert after modal-subtitle in apiKeySection
-                const subtitle = apiKeySection.querySelector('.modal-subtitle');
-                if (subtitle) {
-                    subtitle.insertAdjacentElement('afterend', timeRemainingSpan);
-                }
-            }
-        }
-    }
 
 }
 
-function checkGenerableNews(validSignature) {
+function checkGenerableNews(patreonTier) {
     let canGenerate = "no";
-    if (validSignature.status === "valid") {
+    if (patreonTier.paidMember) {
         canGenerate = "yes";
-        if (validSignature.role === "insider") {
+        if (patreonTier.tier === "Insider" || patreonTier.tier === "Founder") {
             newsAvailable.normal = true;
             newsAvailable.turning = true;
         }
-        else {
+        else if (patreonTier.tier === "Backer") {
             newsAvailable.normal = true;
-            newsAvailable.turning = false;
-        }
-    }
-    else {
-        const firstNewsEntered = localStorage.getItem('firstNewsEntered');
-        if (!firstNewsEntered) {
-            const today = new Date().toISOString().split('T')[0];
-            localStorage.setItem('firstNewsEntered', today);
-            canGenerate = "provisional";
-        }
-        else {
-            const firstDate = new Date(firstNewsEntered);
-            const now = new Date();
-            const diffTime = Math.abs(now - firstDate);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            canGenerate = diffDays < 8 ? "provisional" : "hiding";
-        }
-        if (canGenerate === "provisional") {
-            newsAvailable.normal = true;
-            newsAvailable.turning = false;
-        }
-        else if (canGenerate === "hiding") {
-            newsAvailable.normal = false;
             newsAvailable.turning = false;
         }
     }
@@ -2072,11 +2399,11 @@ function checkGenerableNews(validSignature) {
 
 
 async function checkOpenSlideUp() {
-    const validSignature = await isPatronSignatureValid();
-
+    const tier = await getUserTier();
+    if (tier.paidMember) return;
 
     const lastShownStr = localStorage.getItem('patreonModalLastShown');
-    if (!canShowPatreonModal(lastShownStr) || validSignature.status === "valid") {
+    if (!canShowPatreonModal(lastShownStr)) {
         return;
     }
 
@@ -2109,53 +2436,8 @@ function canShowPatreonModal(lastShown) {
     return diffDays >= 1;
 }
 
-/**
- * @param {string} dataString - Cadena JSON que se firmó en Node
- * @param {string} signatureHex - Firma en hex
- * @param {string} spkiPublicKey - Clave pública en formato PEM (SPKI)
- * @returns {Promise<boolean>}
- */
-async function verifySignature(dataString, signatureHex, spkiPublicKey) {
-    const keyBuffer = pemToArrayBuffer(spkiPublicKey);
-    const publicKey = await crypto.subtle.importKey(
-        "spki",
-        keyBuffer,
-        { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
-        false,
-        ["verify"]
-    );
 
-    const sigBuffer = hexToArrayBuffer(signatureHex);
-    const dataBuffer = new TextEncoder().encode(dataString);
-
-    return crypto.subtle.verify("RSASSA-PKCS1-v1_5", publicKey, sigBuffer, dataBuffer);
-}
-
-
-function pemToArrayBuffer(pem) {
-    const b64 = pem
-        .replace("-----BEGIN PUBLIC KEY-----", "")
-        .replace("-----END PUBLIC KEY-----", "")
-        .replace(/\s+/g, "");
-    const raw = atob(b64);
-    const buffer = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) {
-        buffer[i] = raw.charCodeAt(i);
-    }
-    return buffer.buffer;
-}
-
-
-function hexToArrayBuffer(hex) {
-    const length = hex.length / 2;
-    const array = new Uint8Array(length);
-    for (let i = 0; i < length; i++) {
-        array[i] = parseInt(hex.substr(i * 2, 2), 16);
-    }
-    return array.buffer;
-}
-
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
     versionNow = APP_VERSION;
@@ -2172,30 +2454,56 @@ document.addEventListener('DOMContentLoaded', () => {
         moonIcon.className = "bi bi-moon-fill nightly-icon";
         document.querySelector(".toolbar-title").appendChild(moonIcon);
 
+        const tierInfo = await getUserTier();
+        let restrictionMessage = null;
+        const insiderOrFounder = tierInfo.tier === "Insider" || tierInfo.tier === "Founder";
+
+        if (tierInfo.isLoggedIn && !insiderOrFounder) {
+            restrictionMessage = "Please upgrade to the Insider or Founder tier on Patreon to access the nightly version.";
+        } else if (!tierInfo.isLoggedIn) {
+            restrictionMessage = "Please log in with your Patreon account to access the nightly version.";
+        }
+
+        if (restrictionMessage !== null) {
+            nightlyBlock = true;
+            const dropDiv = document.querySelector(".drop-div");
+            dropDiv.removeEventListener("dragover", handleDragOver);
+            dropDiv.removeEventListener("dragenter", handleDragEnter);
+            dropDiv.removeEventListener("dragleave", handleDragLeave);
+            dropDiv.removeEventListener("drop", handleDrop);
+            document.getElementById("statusIcon").className = "bi bi-lock";
+            document.getElementById("statusTitle").textContent = "Nightly version is only available for patrons.";
+            document.getElementById("statusDesc").textContent = restrictionMessage;
+
+            const recentsContainer = document.querySelector(".recents-container");
+            if (recentsContainer) recentsContainer.remove();
+
+            document.querySelectorAll(".script-view").forEach(div => {
+                div.remove();
+            });
+        }
+
         const now = new Date();
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = String(now.getFullYear());
+        const shortBuildId = BUILD_ID.startsWith("dpl_")
+
+            ? BUILD_ID.replace("dpl_", "").slice(0, 7)
+            : BUILD_ID.slice(0, 7);
+        versionNow = `${APP_VERSION.replace("-dev", "")}.nightly.${day}-${month}-${year}.${shortBuildId}`;
         //remove -dev from APP_VERSION
-        versionNow = `${APP_VERSION.replace("-dev", "")}-nightly-${day}-${month}-${year}`;
+
         versionPanel.classList.add("nightly");
     }
 
-
-    const aiModel = localStorage.getItem("ai-model") ?? "gemini-2.5-flash"
-    if (aiModel) {
-        document.querySelector(`.dropdown-item[data-value="${aiModel}"]`).click();
-    }
-
+    updateRateLimitsDisplay();
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
+    versionBadge.textContent = `Version ${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
-    document.querySelector(".splash-box").classList.add("appear")
-    document.querySelector(".socials-box").classList.add("appear")
     getPatchNotes()
-    checkPatreonStatus();
-    populateMarquee();
 
     if (shouldShowPatchModal(storedVersion, versionNow)) {
         localStorage.setItem('lastVersion', versionNow); // Guardar nueva versión
@@ -2203,48 +2511,221 @@ document.addEventListener('DOMContentLoaded', () => {
         patchModal.show();
     }
 
-    //check if apiKey in localStorage
-    const apiKey = localStorage.getItem("apiKey");
-    if (apiKey) {
-        apiKeyStatus.classList.add("api-loaded")
-        initAI(apiKey);
+    let recents = await getRecentHandles();
+    populateRecentHandles(recents);
+
+
+    let phrases = [
+        "Change the contract of every staff available in game",
+        "Customize your calendar however you want it",
+        "Edit the attributes of each driver just how you want them",
+        "Create your own custom engines",
+        "Get stories from your save using AI",
+        "Compare drivers and teams with detailed graphs",
+        "Modify car performance to your liking",
+        "Fix game-breaking issues with ease",
+        "No installation required, works in your browser",
+    ];
+
+    //reorder them randomly
+    phrases = phrases.sort(() => Math.random() - 0.5);
+
+    const animatedText = document.getElementById('animatedText');
+    const fakeText = document.querySelector('.fake-text');
+    let phraseIndex = 0;
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+    async function animateTextLoop() {
+        while (true) {
+            const currentPhrase = phrases[phraseIndex];
+            fakeText.textContent = currentPhrase;
+
+            // Typing phase
+            for (let i = 0; i < currentPhrase.length; i++) {
+                const char = currentPhrase[i];
+                const span = document.createElement('span');
+                span.className = 'char';
+                span.textContent = char;
+                animatedText.appendChild(span);
+                await sleep(10); // Typing speed
+            }
+
+            // Wait phase (read time)
+            await sleep(5000);
+
+            // Deleting phase
+            while (animatedText.firstChild) {
+                if (animatedText.lastChild) {
+                    animatedText.removeChild(animatedText.lastChild);
+                }
+                await sleep(8); // Deleting speed
+            }
+
+            // Move to next phrase
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+
+            // Small pause before typing next one
+            await sleep(200);
+        }
     }
 
+    // Clear initial text and start animation loop
+    animatedText.innerHTML = '';
+    animateTextLoop();
 });
 
-removeApiKey.addEventListener('click', () => {
-    localStorage.removeItem("apiKey");
-    apiKeyStatus.classList.remove("api-loaded")
-    initAI(null);
-});
+export async function updateRateLimitsDisplay() {
+  try {
+    const res = await fetch("/api/usage-today");
+    if (!res.ok) return;
+
+    const { used, limit, percentage } = await res.json();
+
+    const fill = document.getElementById("limitBarFill");
+    const text = document.getElementById("limitText");
+    const container = document.getElementById("rateLimitContainer");
+
+    //100% corresponds to not using any
+    fill.style.width = `${100 - percentage}%`;
+
+    // limpiar estados previos
+    container.classList.remove(
+      "rate-ok",
+      "rate-warning",
+      "rate-danger",
+      "rate-blocked"
+    );
+
+    let message = "";
+    let state = "";
+
+    if (percentage === 0) {
+        state = "rate-ok";
+        message = "All requests available";
+    } else if (percentage < 50) {
+        state = "rate-ok";
+        message = "Plenty of requests available";
+    } else if (percentage < 80) {
+        state = "rate-warning";
+        message = "You're halfway through today's limit";
+    } else if (percentage < 100) {
+        state = "rate-danger";
+        message = "Only a few requests left today";
+    } else {
+        state = "rate-blocked";
+        message = "Daily limit reached";
+    }
+
+    container.classList.add(state);
+    text.textContent = message;
+
+  } catch (err) {
+    console.error("Failed to update rate limits display:", err);
+  }
+}
+
+
+const MS_PER_DAY = 24 * 60 * 60 * 1000;
+
+function getRecentsTimeLabel(openedDate, now = new Date()) {
+    const startNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOpened = new Date(openedDate.getFullYear(), openedDate.getMonth(), openedDate.getDate());
+    let diffDays = Math.round((startNow - startOpened) / MS_PER_DAY);
+    if (diffDays < 0) diffDays = 0;
+
+    if (diffDays === 0) {
+        return "Today";
+    }
+    if (diffDays === 1) {
+        return "Yesterday";
+    }
+    return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+}
+
+function populateRecentHandles(recents) {
+    if (recents.length === 0) {
+        const recentsContainer = document.querySelector(".recents-container");
+        if (recentsContainer) recentsContainer.classList.add("d-none");
+        return;
+    }
+    const recentList = document.getElementById("recentsList");
+    recentList.innerHTML = ""; // Clear existing items
+
+    recents.forEach(handle => {
+        const listItem = document.createElement("div");
+        listItem.className = "recent-file";
+
+        const fileName = document.createElement("span");
+        fileName.classList.add("file-name");
+        fileName.textContent = handle.name;
+        fileName.addEventListener("click", async () => {
+            const fileHandle = handle.handle;
+            const hasPermission = await verifyPermission(fileHandle, false);
+
+            if (!hasPermission) {
+                console.error("No permission to access the file:", handle.name);
+                return;
+            }
+            const file = await fileHandle.getFile();
+            await saveHandleToRecents(fileHandle);
+            handle.lastOpened = new Date();
+            updateTimeLabel();
+            processSaveFile(file);
+
+        });
+
+        const lastOpened = document.createElement("span");
+        lastOpened.classList.add("last-opened-time");
+        const updateTimeLabel = () => {
+            const openedDate = new Date(handle.lastOpened);
+            lastOpened.textContent = getRecentsTimeLabel(openedDate);
+        };
+
+        updateTimeLabel();
+
+        lastOpened.addEventListener("mouseenter", () => {
+            lastOpened.textContent = "Remove";
+        });
+
+        lastOpened.addEventListener("mouseleave", () => {
+            updateTimeLabel();
+        });
+
+        lastOpened.addEventListener("click", async () => {
+            await removeRecentHandle(handle.name);
+            listItem.remove();
+            if (recentList.children.length === 0) {
+                const recentsContainer = document.querySelector(".recents-container");
+                if (recentsContainer) recentsContainer.classList.add("d-none");
+            }
+        });
+
+        listItem.appendChild(fileName);
+        listItem.appendChild(lastOpened);
+        recentList.appendChild(listItem);
+    });
+}
+
+async function verifyPermission(fileHandle) {
+    const options = { mode: 'read' };
+
+    if ((await fileHandle.queryPermission(options)) === 'granted') {
+        return true;
+    }
+
+    if ((await fileHandle.requestPermission(options)) === 'granted') {
+        return true;
+    }
+
+    return false;
+}
 
 function createMarqueeItem(name, tier) {
     const span = document.createElement("span");
     span.textContent = name;
     span.classList.add(tier);
     return span;
-}
-
-function populateMarquee() {
-    const marqueeInner = document.querySelector(".marquee__inner");
-
-    // Crear dos grupos de nombres para el scroll infinito
-    const group1 = document.createElement("div");
-    group1.classList.add("marquee__group");
-
-    const group2 = document.createElement("div");
-    group2.classList.add("marquee__group", "second-group");
-
-    let randomizedMembers = members.sort(() => Math.random() - 0.5);
-
-    randomizedMembers.forEach(member => {
-        const item = createMarqueeItem(member.name, member.tier);
-        group1.appendChild(item.cloneNode(true));
-        group2.appendChild(item.cloneNode(true));
-    });
-
-    marqueeInner.appendChild(group1);
-    marqueeInner.appendChild(group2);
 }
 
 document.querySelectorAll(".one-theme").forEach(function (elem) {
@@ -2538,6 +3019,26 @@ export async function confirmModal({
     });
 }
 
+document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
+    dropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+
+        document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+            if (openDropdown !== dropdown) {
+                openDropdown.classList.remove("open");
+            }
+        });
+
+        dropdown.classList.toggle("open");
+    });
+});
+
+document.addEventListener("click", function () {
+    document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+        openDropdown.classList.remove("open");
+    });
+});
+
 export function attachHold(btn, el, step = 1, opts = {}) {
     const min = opts.min ?? -Infinity;
     const max = opts.max ?? Infinity;
@@ -2546,6 +3047,8 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     const loop = !!opts.loop;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
 
+    // NUEVO: Permitimos pasar una función de formateo
+    const format = opts.format || ((v) => v);
 
     const initialDelay = opts.initialDelay ?? 400;
     const tiers = opts.tiers ?? [
@@ -2558,25 +3061,36 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     let timer, start;
 
     const getText = () => (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') ? (el.value ?? '') : (el.innerText ?? '');
+
     const setText = (txt) => {
+        // NUEVO: Aplicamos el formato si es un número
+        const valToDisplay = (typeof txt === 'number') ? format(txt) : txt;
+
         if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-            el.value = String(txt);
+            el.value = String(valToDisplay);
             el.dispatchEvent(new Event('input', { bubbles: true }));
         } else {
             const current = el.innerText || '';
-            // si contiene un número, sustituimos solo el primero; si no, ponemos el texto entero
             if (/-?\d+(\.\d+)?/.test(current) && typeof txt === 'number') {
-                el.innerText = current.replace(/-?\d+(\.\d+)?/, String(txt));
+                // Nota: Aquí el replace es delicado con formatos, 
+                // para tu caso de Input suele bastar con la línea de arriba (el.value = ...)
+                // pero si usas span, reemplazamos todo para evitar romper el formato parcial.
+                el.innerText = String(valToDisplay);
             } else {
-                el.innerText = String(txt);
+                el.innerText = String(valToDisplay);
             }
         }
     };
 
     const getNum = () => {
-        if (values) return NaN; // no aplica
-        const raw = getText();
-        const m = String(raw).match(/-?\d+(\.\d+)?/);
+        if (values) return NaN;
+        let raw = getText();
+
+        // NUEVO: Eliminamos las comas antes de intentar parsear el número
+        // Esto permite que "100,000" se convierta en "100000" para el cálculo
+        raw = String(raw).replace(/,/g, '');
+
+        const m = raw.match(/-?\d+(\.\d+)?/);
         return m ? parseFloat(m[0]) : 0;
     };
 
@@ -2584,16 +3098,17 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         const clamped = Math.max(min, Math.min(max, val));
         setText(clamped);
         updateProgress(clamped);
-        onChange(clamped, currentPercent(clamped));
+        onChange(clamped, currentPercent(clamped)); // Devuelve el valor numérico limpio
     };
+
+    // ... El resto de funciones (findCurrentIndex, setIndex, etc.) se mantienen igual ...
+    // Solo asegúrate de copiar el resto de tu lógica original aquí abajo.
 
     const findCurrentIndex = () => {
         const raw = String(getText()).trim();
-        // intentamos match estricto; si values numéricos y en el el hay número suelto, los comparamos como string también
         let idx = values.findIndex(v => String(v) === raw);
         if (idx === -1) {
-            // si no coincide textual y hay número en el elemento y values son numéricos, intentamos por número
-            const numMatch = raw.match(/-?\d+(\.\d+)?/);
+            const numMatch = raw.replace(/,/g, '').match(/-?\d+(\.\d+)?/); // Ajuste aquí también por si acaso
             if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
                 const num = parseFloat(numMatch[0]);
                 idx = values.findIndex(v => Number(v) === num);
@@ -2606,14 +3121,14 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         const len = values.length;
         let next = i;
         if (loop) {
-            next = ((i % len) + len) % len; // wrap-around
+            next = ((i % len) + len) % len;
         } else {
             next = Math.max(0, Math.min(len - 1, i));
         }
         const val = values[next];
         setText(val);
-        updateProgress(next, /*isIndex*/true);
-        onChange(val, currentPercent(val, /*isIndex*/true));
+        updateProgress(next, true);
+        onChange(val, currentPercent(val, true));
         return next;
     };
 
@@ -2626,7 +3141,6 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     };
 
     const currentPercent = (valOrIdx, isIndex = false) => {
-        // si hay values => % por índice
         if (values) {
             const len = values.length;
             if (len <= 1) return 100;
@@ -2634,13 +3148,12 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
-        // numérico => % por min/max si finitos
         if (isFinite(min) && isFinite(max) && max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
             return Math.round(Math.max(0, Math.min(100, p)));
         }
-        return 0; // sin rango definido no podemos mapear bien
+        return 0;
     };
 
     const updateProgress = (valOrIdx, isIndex = false) => {
@@ -2662,7 +3175,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
 
     const startLoop = () => {
         start = performance.now();
-        tick(); // clic inmediato
+        tick();
         const loopFn = () => {
             const held = performance.now() - start;
             timer = setTimeout(() => {

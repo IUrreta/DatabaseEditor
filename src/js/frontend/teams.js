@@ -1,30 +1,34 @@
-import {  team_dict  } from "./config";
+import { team_dict } from "./config";
 import { Command } from "../backend/command.js";
 import { manage_stat_bar } from "./stats";
+import { attachHold } from "./renderer.js";
 
 export let teamCod;
 let currYear;
 export let originalCostCap;
 export let longTermObj;
 
+const MAX_ARC_LENGTH = 212; 
 
 /**
  * Listener for the team menu buttons
  */
 document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#teamButton").innerText = elem.querySelector(".team-menu-name").innerText;
+        document.querySelector("#teamButton span").innerText = elem.querySelector(".team-menu-name").innerText;
         teamCod = elem.dataset.teamid;
         let data = {
             teamID: teamCod,
         }
 
-        const command = new Command("teamRequest",  data);
+        document.querySelector("#teamButton").classList.remove("open")
+
+        const command = new Command("teamRequest", data);
         command.execute();
 
         document.querySelector(".team-viewer").classList.remove("d-none")
     })
-    
+
 })
 
 
@@ -34,7 +38,7 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
 document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
         document.querySelector(".objective-label").innerText = elem.textContent
-        longTermObj = elem.id[elem.id.length-1]
+        longTermObj = elem.id[elem.id.length - 1]
     })
 
 })
@@ -44,8 +48,8 @@ document.querySelector("#objectiveMenu").querySelectorAll("a").forEach(function 
  */
 function addContinuousListener(element, selector, incrementCallback, decrementCallback) {
     let intervalId;
-    element.querySelectorAll(selector).forEach(function(elem) {
-        elem.addEventListener('mousedown', function() {
+    element.querySelectorAll(selector).forEach(function (elem) {
+        elem.addEventListener('mousedown', function () {
             let input = this.parentNode.parentNode.querySelector("input");
             if (this.classList.contains('bi-chevron-up') || this.classList.contains('bi-plus-lg')) {
                 incrementCallback(input);
@@ -60,209 +64,105 @@ function addContinuousListener(element, selector, incrementCallback, decrementCa
             }
         });
 
-        elem.addEventListener('mouseup', function() {
+        elem.addEventListener('mouseup', function () {
             clearInterval(intervalId);
         });
 
-        elem.addEventListener('mouseleave', function() {
+        elem.addEventListener('mouseleave', function () {
             clearInterval(intervalId);
         });
     });
 }
 
-/**
- * Listeners for the long term input year
- */
-addContinuousListener(document.querySelector("#objAndYear"), ".bi-chevron-up, .bi-chevron-down",
-    function(input) { input.value = Number(input.value) + 1; },
-    function(input) {
-        let value = Number(input.value) - 1;
-        if (value <= currYear) {
-            value = currYear;
-        }
-        input.value = value;
+attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-plus"), document.querySelector("#longTermInput"), +1, { min: 2023, max: 2023 + 1000 });
+attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-dash"), document.querySelector("#longTermInput"), -1, { min: 2023, max: 2023 + 1000 });
+
+
+attachHold(document.querySelector("#seasonObjective .bi-plus"), document.querySelector("#seasonObjectiveInput"), -1, { min: 1, max: 10 });
+attachHold(document.querySelector("#seasonObjective .bi-dash"), document.querySelector("#seasonObjectiveInput"), +1, { min: 1, max: 10 });
+
+
+attachHold(document.querySelector("#confidence .bi-plus"), document.querySelector("#confidence input"), +5, { min: 0, max: 100 });
+attachHold(document.querySelector("#confidence .bi-dash"), document.querySelector("#confidence input"), -5, { min: 0, max: 100 });
+
+
+attachHold(document.querySelector("#costCap .bi-plus"), document.querySelector("#costCap input"), +100000,
+    {
+        min: -9999999999,
+        max: 1000000000,
+        format: (val) => val.toLocaleString("en-US")
+    });
+
+attachHold(document.querySelector("#costCap .bi-dash"), document.querySelector("#costCap input"), -100000,
+    {
+        min: -9999999999,
+        max: 1000000000,
+        format: (val) => val.toLocaleString("en-US")
+    });
+
+
+attachHold(
+    document.querySelector("#teamBudget .bi-plus"),
+    document.querySelector("#teamBudget input"),
+    +100000,
+    {
+        min: -9999999999,
+        max: 1000000000,
+        format: (val) => val.toLocaleString("en-US")
     }
 );
 
-/**
- * Listeners for the season objective input
- */
-addContinuousListener(document.querySelector("#seasonObjective"), ".bi-chevron-up, .bi-chevron-down",
-    function(input) {
-        let value = Number(input.value) - 1;
-        if (value <= 1) {
-            value = 1;
-        }
-        input.value = value;
-    },
-    function(input) {
-        let value = Number(input.value) + 1;
-        if (value >= 10) {
-            value = 10;
-        }
-        input.value = value;
+attachHold(document.querySelector("#teamBudget .bi-dash"),
+    document.querySelector("#teamBudget input"),
+    -100000,
+    {
+        min: -9999999999,
+        max: 1000000000,
+        format: (val) => val.toLocaleString("en-US")
     }
 );
 
-/**
- * Listeners for the board confidence input
- */
-addContinuousListener(document.querySelector("#confidence"), ".bi-plus-lg, .bi-dash-lg",
-    function(input) {
-        let value = Number(input.value) + 5;
-        if (value >= 100) {
-            value = 100;
+document.querySelectorAll(".gauge-and-buttons .bi-plus").forEach(btn => {
+    const wrapper = btn.closest('.gauge-and-buttons');
+    const textSpan = wrapper.querySelector('.gauge-indicator');
+    const gaugeContainer = wrapper.querySelector('.gauge-container');
+
+    attachHold(btn, textSpan, +1, {
+        min: 0,
+        max: 100,
+        format: v => v + '%', // Formato con porcentaje
+        onChange: (val) => {
+            updateGaugeVisual(gaugeContainer, val);
         }
-        input.value = value;
-    },
-    function(input) {
-        let value = Number(input.value) - 5;
-        if (value <= 0) {
-            value = 0;
+    });
+});
+
+document.querySelectorAll(".gauge-and-buttons .bi-dash").forEach(btn => {
+    const wrapper = btn.closest('.gauge-and-buttons');
+    const textSpan = wrapper.querySelector('.gauge-indicator');
+    const gaugeContainer = wrapper.querySelector('.gauge-container');
+
+    attachHold(btn, textSpan, -1, {
+        min: 0,
+        max: 100,
+        format: v => v + '%',
+        onChange: (val) => {
+            updateGaugeVisual(gaugeContainer, val);
         }
-        input.value = value;
+    });
+});
+
+function updateGaugeVisual(container, value) {
+    container.style.setProperty('--perc', value);
+    //if value is 100 set font-size to 12px
+    const textSpan = container.querySelector('.gauge-indicator');
+    if (value === 100) {
+        textSpan.style.fontSize = '10px';
+    } else {
+        textSpan.style.fontSize = '';
     }
-);
-
-/**
- * Listeners for the cost cap input
- */
-addContinuousListener(document.querySelector("#costCap"), ".bi-plus-lg, .bi-dash-lg",
-    function(input) {
-        let valorActual = input.value.replace(/[$,]/g, "");
-        let nuevoValor = Number(valorActual) + 100000;
-        input.value = nuevoValor.toLocaleString('en-US') + '$';
-    },
-    function(input) {
-        let valorActual = input.value.replace(/[$,]/g, "");
-        let nuevoValor = Number(valorActual) - 100000;
-        input.value = nuevoValor.toLocaleString('en-US') + '$';
-    }
-);
-
-/**
- * Listeners for the team budget input
- */
-addContinuousListener(document.querySelector("#teamBudget"), ".bi-plus-lg, .bi-dash-lg",
-    function(input) {
-        let valorActual = input.value.replace(/[$,]/g, "");
-        let nuevoValor = Number(valorActual) + 100000;
-        input.value = nuevoValor.toLocaleString('en-US') + '$';
-    },
-    function(input) {
-        let valorActual = input.value.replace(/[$,]/g, "");
-        let nuevoValor = Number(valorActual) - 100000;
-        input.value = nuevoValor.toLocaleString('en-US') + '$';
-    }
-);
-
-
-function updateCondition(input, increment, bar) {
-    let actual = input.innerText.split("%")[0];
-    let val = parseInt(actual) + increment;
-    if (val > 100) val = 100;
-    if (val < 0) val = 0;
-    input.innerText = val + "%";
-    bar.style.width = val + "%";
 }
 
-document.querySelectorAll(".condition-container .bi-plus").forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function () {
-        let input = button.parentNode.parentNode.querySelector(".condition-container-value");
-        let bar = button.parentNode.parentNode.querySelector(".condition-container-bar-progress");
-        updateCondition(input, 1, bar);
-        intervalId = setInterval(() => {
-            updateCondition(input, 1, bar);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-document.querySelectorAll(".condition-container .bi-dash").forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function () {
-        let input = button.parentNode.parentNode.querySelector(".condition-container-value");
-        let bar = button.parentNode.parentNode.querySelector(".condition-container-bar-progress");
-        updateCondition(input, -1, bar);
-        intervalId = setInterval(() => {
-            updateCondition(input, -1, bar);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-/**
- * Listeners for the show and hide buttons facilities
- */
-document.querySelector("#carDevButton").addEventListener("click", function () {
-    if (document.querySelector("#operationButton").dataset.state === "show") {
-        document.querySelector("#operationButton").click()
-    }
-    if (document.querySelector("#staffButton").dataset.state === "show"){
-        document.querySelector("#staffButton").click()
-    }
-    if (document.querySelector("#carDevButton").dataset.state === "show") {
-        document.querySelector("#carDevButton").dataset.state = "hide"
-        document.querySelector("#carDevButton").querySelector(".front-gradient").innerText = "Show"
-    }
-    else {
-        document.querySelector("#carDevButton").dataset.state = "show"
-        document.querySelector("#carDevButton").querySelector(".front-gradient").innerText = "Hide"
-    }
-
-
-})
-
-document.querySelector("#operationButton").addEventListener("click", function () {
-    if (document.querySelector("#carDevButton").dataset.state === "show") {
-        document.querySelector("#carDevButton").click()
-    }
-    if (document.querySelector("#staffButton").dataset.state === "show"){
-        document.querySelector("#staffButton").click()
-    }
-    if (document.querySelector("#operationButton").dataset.state === "show") {
-        document.querySelector("#operationButton").dataset.state = "hide"
-        document.querySelector("#operationButton").querySelector(".front-gradient").innerText = "Show"
-    }
-    else {
-        document.querySelector("#operationButton").dataset.state = "show"
-        document.querySelector("#operationButton").querySelector(".front-gradient").innerText = "Hide"
-    }
-
-
-})
-
-document.querySelector("#staffButton").addEventListener("click", function () {
-    if (document.querySelector("#operationButton").dataset.state === "show") {
-        document.querySelector("#operationButton").click()
-    }
-    if (document.querySelector("#carDevButton").dataset.state === "show") {
-        document.querySelector("#carDevButton").click()
-    }
-    if (document.querySelector("#staffButton").dataset.state === "show") {
-        document.querySelector("#staffButton").dataset.state = "hide"
-        document.querySelector("#staffButton").querySelector(".front-gradient").innerText = "Show"
-    }
-    else {
-        document.querySelector("#staffButton").dataset.state = "show"
-        document.querySelector("#staffButton").querySelector(".front-gradient").innerText = "Hide"
-    }
-})
 
 
 /**
@@ -276,11 +176,24 @@ export function fillLevels(teamData) {
         let facilityID = Math.floor(num / 10);
         let facility = document.querySelector("#facility" + facilityID)
         let indicator = facility.querySelector('.facility-level-indicator')
-        let condition_container = facility.querySelector('.condition-container')
-        let bar = condition_container.querySelector('.condition-container-bar-progress')
-        let condition_value = condition_container.querySelector('.condition-container-value')
-        bar.style.width = elem[1] * 100 + "%"
-        condition_value.innerText = parseInt(elem[1] * 100) + "%"
+        
+
+        let gaugeElement = facility.querySelector('.gauge-container');
+
+        if (gaugeElement) {
+            let percentage = parseInt(elem[1] * 100);
+            gaugeElement.style.setProperty('--perc', percentage);
+            let gaugeText = gaugeElement.querySelector('.gauge-indicator');
+            if (gaugeText) {
+                gaugeText.innerText = percentage + '%';
+            }
+            if (percentage === 100) {
+                gaugeText.style.fontSize = '10px';
+            } else {
+                gaugeText.style.fontSize = '';
+            }
+        }
+
         indicator.dataset.value = level
         let value = level
         let levels = indicator.querySelectorAll('.level');
@@ -295,17 +208,17 @@ export function fillLevels(teamData) {
     document.querySelector("#seasonObjectiveInput").value = teamData[16]
     document.querySelector("#longTermObj" + teamData[17][0]).click()
     document.querySelector("#longTermInput").value = teamData[17][1]
-    document.querySelector("#teamBudgetInput").value = teamData[18].toLocaleString("en-US") + "$"
-    document.querySelector("#costCapInput").value = Math.abs(teamData[19][0]).toLocaleString("en-US") + "$"
+    document.querySelector("#teamBudgetInput").value = teamData[18].toLocaleString("en-US")
+    document.querySelector("#costCapInput").value = Math.abs(teamData[19][0]).toLocaleString("en-US")
     manageConfidence(teamData[20])
     document.querySelector("#confidenceInput").value = teamData[20]
     currYear = teamData[21]
     originalCostCap = Math.abs(teamData[19][0])
-    for (let key in teamData[22]){
+    for (let key in teamData[22]) {
         let pitCrewStat = document.querySelector(`.pit-crew-details .one-stat-panel[data-crewStat='${key}']`);
         let input = pitCrewStat.querySelector("input");
         let value = Math.round(teamData[22][key]);
-        if (key === "38"){
+        if (key === "38") {
             value = value / 10;
         }
         input.value = value + "%";
@@ -315,24 +228,16 @@ export function fillLevels(teamData) {
     let engineManufacturer = teamData[23];
     document.querySelector(`#engineMenu a[data-engine='${engineManufacturer}']`).click();
     let bars = document.querySelector(".pit-crew-details").querySelectorAll(".one-stat-progress");
-    bars.forEach(function(elem){
+    bars.forEach(function (elem) {
         elem.classList = "one-stat-progress " + team_dict[teamCod] + "bar-primary";
     })
 }
 
-document.querySelectorAll(".facility-refurbish svg").forEach(function(elem){
-    elem.addEventListener("click", function(){
-        let facility = elem.parentNode.parentNode;
-        let condition_value = facility.querySelector('.condition-container-value');
-        let bar = facility.querySelector('.condition-container-bar-progress');
-        condition_value.innerText = "100%";
-        bar.style.width = "100%";
-    })
-})
 
 
-document.querySelectorAll("#engineMenu a").forEach(function(elem){
-    elem.addEventListener("click", function(){
+
+document.querySelectorAll("#engineMenu a").forEach(function (elem) {
+    elem.addEventListener("click", function () {
         let engineiD = elem.dataset.engine;
         let engine = elem.innerText;
         document.querySelector("#engineLabel").innerText = engine;
@@ -343,7 +248,7 @@ document.querySelectorAll("#engineMenu a").forEach(function(elem){
 /**
  * Resets the view
  */
-export function resetTeamEditing(){
+export function resetTeamEditing() {
     document.querySelector(".team-viewer").classList.add("d-none");
     teamCod = null;
     document.querySelector("#teamButton").innerText = "Team";
@@ -360,54 +265,46 @@ function updatePitStat(input, increment) {
 }
 
 
-document.querySelector(".pit-crew-details").querySelectorAll(".bi-plus-lg").forEach(function(elem){
-    let intervalId;
-    elem.addEventListener('mousedown', function() {
-        let input = this.parentNode.parentNode.querySelector("input");
-        updatePitStat(input, 1);
-        intervalId = setInterval(() => {
-            updatePitStat(input, 1);
-        }, 100);
-    });
+document.querySelector(".pit-crew-details").querySelectorAll(".bi-plus").forEach(function (elem) {
+    // Guardamos referencia al input una sola vez para no buscarlo a cada clic
+    const input = elem.parentNode.querySelector("input");
 
-    elem.addEventListener('mouseup', function() {
-        clearInterval(intervalId);
+    attachHold(elem, input, +1, {
+        min: 0,
+        max: 100,
+        // 1. Añadimos el símbolo % visualmente
+        format: (v) => v + '%', 
+        // 2. Corregimos el onChange para que reciba el valor nuevo (val)
+        onChange: function (val) {
+            manage_stat_bar(input, val);
+        }
     });
+});
 
-    elem.addEventListener('mouseleave', function() {
-        clearInterval(intervalId);
-    });
-})
+// Configuración para el botón - (DASH)
+document.querySelector(".pit-crew-details").querySelectorAll(".bi-dash").forEach(function (elem) {
+    const input = elem.parentNode.querySelector("input");
 
-document.querySelector(".pit-crew-details").querySelectorAll(".bi-dash-lg").forEach(function(elem){
-    let intervalId;
-    elem.addEventListener('mousedown', function() {
-        let input = this.parentNode.parentNode.querySelector("input");
-        updatePitStat(input, -1);
-        intervalId = setInterval(() => {
-            updatePitStat(input, -1);
-        }, 100);
+    attachHold(elem, input, -1, {
+        min: 0,
+        max: 100,
+        format: (v) => v + '%',
+        onChange: function (val) {
+            manage_stat_bar(input, val);
+        }
     });
-
-    elem.addEventListener('mouseup', function() {
-        clearInterval(intervalId);
-    });
-
-    elem.addEventListener('mouseleave', function() {
-        clearInterval(intervalId);
-    });
-})
+});
 
 /**
  * Manages state of blocking div for confidence
  * @param {Number} data Confidence number. If -1, blocking div is activated
  */
-function manageConfidence(data){
-    if(Number(data[0]) !== -1){
-        document.querySelector(".blocking-confidence").classList.add("d-none")
+function manageConfidence(data) {
+    if (Number(data[0]) === -1) {
+        document.querySelector("#confidence").classList.add("d-none")
     }
-    else{
-        document.querySelector(".blocking-confidence").classList.remove("d-none")
+    else {
+        document.querySelector("#confidence").classList.remove("d-none")
     }
 }
 
@@ -464,20 +361,20 @@ export function gather_team_data() {
         let levelIndicator = facility.getElementsByClassName('facility-level-indicator')[0];
         let level = levelIndicator.getAttribute('data-value');
         let number = id + level; // Compone el número concatenando los strings
-        let condition = facility.querySelector('.condition-container-value').innerText.split("%")[0] / 100;
+        let condition = facility.querySelector('.gauge-indicator').innerText.split("%")[0] / 100;
         result.push([number, condition]); // Añade la tupla a la lista
     }
 
     return result
 }
 
-export function gather_pit_crew(){
+export function gather_pit_crew() {
     let pitCrewStats = document.querySelectorAll(".pit-crew-details .one-stat-panel");
     let result = {};
-    pitCrewStats.forEach(function(elem){
+    pitCrewStats.forEach(function (elem) {
         let key = elem.dataset.crewstat;
         let value = elem.querySelector("input").value.split("%")[0];
-        if (key === "38"){
+        if (key === "38") {
             value = value * 10;
         }
         result[key] = value;

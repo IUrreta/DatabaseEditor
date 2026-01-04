@@ -7,7 +7,7 @@ const packageJson = require('./package.json');
 
 
 module.exports = {
-  mode: 'production', // Cambia a 'production' para producción
+  mode: process.env.NODE_ENV || 'development',
 
   entry: './src/index.js',  // Archivo de entrada principal
 
@@ -29,12 +29,25 @@ module.exports = {
         {
           from: 'assets/images', // ajusta esta ruta a donde tengas tus imágenes
           to: 'assets/images'
+        },
+        {
+          from: 'src/data',
+          to: 'data'
         }
+
       ]
     }),
     new webpack.DefinePlugin({
       APP_VERSION: JSON.stringify(packageJson.version),
-    }),
+        BUILD_ID: JSON.stringify(
+          process.env.BUILD_ID ||
+          process.env.VERCEL_DEPLOYMENT_ID ||
+          'local'
+        ),
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.PATREON_CLIENT_ID': JSON.stringify(process.env.PATREON_CLIENT_ID),
+      'process.env.PATREON_REDIRECT_URI': JSON.stringify(process.env.PATREON_REDIRECT_URI),
+    })
   ],
 
   resolve: {

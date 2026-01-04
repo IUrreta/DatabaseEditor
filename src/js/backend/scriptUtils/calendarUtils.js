@@ -9,8 +9,46 @@ const weatherDict = {
   "5": 32
 };
 
-export function editCalendar(calendarStr, year_iteration, racesData) {
-  const calendar = calendarStr.toLowerCase();
+export function fetchCalendar() {
+  const daySeason = queryDB(`
+    SELECT Day, CurrentSeason
+    FROM Player_State
+  `, [], 'singleRow');
+
+  if (!daySeason) {
+    console.warn("No data found in Player_State.");
+    return [];
+  }
+
+  const currentSeason = daySeason[1];
+
+  const calendarRows = queryDB(`
+    SELECT r.TrackID,
+           r.WeatherStatePractice,
+           r.WeatherStateQualifying,
+           r.WeatherStateRace,
+           r.WeekendType,
+           r.State,
+           t.isF2Race,
+           t.IsF3Race AS isF3Race
+    FROM Races r
+    LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
+    WHERE r.SeasonID = ?
+  `, [currentSeason], 'allRows') || [];
+
+  return calendarRows.map((row) => ({
+    trackId: row[0],
+    weatherStatePractice: row[1],
+    weatherStateQualifying: row[2],
+    weatherStateRace: row[3],
+    weekendType: row[4],
+    state: row[5],
+    isF2Race: row[6] ?? 0,
+    isF3Race: row[7] ?? 0,
+  }));
+}
+
+export function editCalendar(year_iteration, racesData) {
   const yearIteration = year_iteration;
 
   let maxRaces;
@@ -32,13 +70,13 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
   const daySeason = queryDB(`
     SELECT Day, CurrentSeason
     FROM Player_State
-  `, 'singleRow');
+  `, [], 'singleRow');
 
   let actualCalendar = queryDB(`
     SELECT TrackID
     FROM Races
-    WHERE SeasonID = ${daySeason[1]}
-  `, 'allRows') || [];
+    WHERE SeasonID = ?
+  `, [daySeason[1]], 'allRows') || [];
 
   actualCalendar = actualCalendar.map(row => row[0]);
   //build newCalendar with trackId from each element from the array racesData
@@ -48,8 +86,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     const ids = queryDB(`
       SELECT RaceID
       FROM Races
-      WHERE SeasonID = ${daySeason[1]}
-    `, 'allRows') || [];
+      WHERE SeasonID = ?
+    `, [daySeason[1]], 'allRows') || [];
     const raceIDs = ids.map(row => row[0]);
 
     for (let i = 0; i < racesData.length; i++) {
@@ -62,20 +100,31 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const rainQBool = (parseFloat(rainQ) >= 8) ? 1 : 0;
       const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
+      const isF2Race = parseInt(race.isF2Race, 10) || 0;
+      const isF3Race = parseInt(race.isF3Race, 10) || 0;
+      const trackId = parseInt(race.trackId, 10);
       // race_code = race.slice(0, -5); // en Python, no lo usas aquí para nada
 
       queryDB(`
         UPDATE Races
         SET
-          RainPractice = ${rainPBool},
-          WeatherStatePractice = ${rainP},
-          RainQualifying = ${rainQBool},
-          WeatherStateQualifying = ${rainQ},
-          RainRace = ${rainRBool},
-          WeatherStateRace = ${rainR},
-          WeekendType = ${format}
-        WHERE RaceID = ${raceIDs[i]}
-      `);
+          RainPractice = ?,
+          WeatherStatePractice = ?,
+          RainQualifying = ?,
+          WeatherStateQualifying = ?,
+          RainRace = ?,
+          WeatherStateRace = ?,
+          WeekendType = ?
+        WHERE RaceID = ?
+      `, [rainPBool, rainP, rainQBool, rainQ, rainRBool, rainR, format, raceIDs[i]], 'run');
+
+      queryDB(`
+        UPDATE Races_Tracks
+        SET
+          isF2Race = ?,
+          IsF3Race = ?
+        WHERE TrackID = ?
+      `, [isF2Race, isF3Race, trackId], 'run');
     }
   } else {
     const randomBlanks = [];
@@ -108,14 +157,14 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     const lastRaceLastSeason = queryDB(`
       SELECT MAX(RaceID)
       FROM Races
-      WHERE SeasonID = ${daySeason[1] - 1}
-    `, 'singleValue');
+      WHERE SeasonID = ?
+    `, [daySeason[1] - 1], 'singleValue');
 
     const firstRaceThisSeason = queryDB(`
       SELECT MIN(RaceID)
       FROM Races
-      WHERE SeasonID = ${daySeason[1]}
-    `, 'singleValue');
+      WHERE SeasonID = ?
+    `, [daySeason[1]], 'singleValue');
 
     let raceid;
     if (parseInt(lastRaceLastSeason, 10) === (parseInt(firstRaceThisSeason, 10) - 1)) {
@@ -127,8 +176,8 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
     queryDB(`
       DELETE FROM Races
       WHERE State != 2
-        AND SeasonID = ${daySeason[1]}
-    `);
+        AND SeasonID = ?
+    `, [daySeason[1]], 'run');
 
     for (let i = 0; i < racesData.length; i++) {
       const race = racesData[i];
@@ -141,12 +190,14 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
       const rainP = weatherDict[race.rainPractice];
       const rainPBool = (parseFloat(rainP) >= 8) ? 1 : 0;
       const raceCode = parseInt(race.trackId);
+      const isF2Race = parseInt(race.isF2Race, 10) || 0;
+      const isF3Race = parseInt(race.isF3Race, 10) || 0;
 
       const temps = queryDB(`
         SELECT TemperatureMin, TemperatureMax
         FROM Races_Templates
-        WHERE TrackID = ${raceCode}
-      `, 'singleRow');
+        WHERE TrackID = ?
+      `, [raceCode], 'singleRow');
 
       const tempP = randomInt(temps[0], temps[1]);
       const tempQ = randomInt(temps[0], temps[1]);
@@ -159,24 +210,48 @@ export function editCalendar(calendarStr, year_iteration, racesData) {
         queryDB(`
           INSERT INTO Races
           VALUES (
-            ${raceid},
-            ${daySeason[1]},
-            ${day},
-            ${raceCode},
-            ${state},
-            ${rainPBool},
-            ${tempP},
-            ${rainP},
-            ${rainQBool},
-            ${tempQ},
-            ${rainQ},
-            ${rainRBool},
-            ${tempR},
-            ${rainR},
-            ${format}
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?,
+            ?
           )
-        `);
+        `, [
+          raceid,
+          daySeason[1],
+          day,
+          raceCode,
+          state,
+          rainPBool,
+          tempP,
+          rainP,
+          rainQBool,
+          tempQ,
+          rainQ,
+          rainRBool,
+          tempR,
+          rainR,
+          format
+        ], 'run');
       }
+
+      queryDB(`
+        UPDATE Races_Tracks
+        SET
+          isF2Race = ?,
+          IsF3Race = ?
+        WHERE TrackID = ?
+      `, [isF2Race, isF3Race, raceCode], 'run');
     }
   }
 }

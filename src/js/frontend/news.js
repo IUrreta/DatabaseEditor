@@ -1,41 +1,54 @@
 import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors } from "./config";
 import { Command } from "../backend/command";
-import { GoogleGenAI } from "@google/genai";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import turningPointsTemplates from "../../data/news/turning_points_prompts_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
-import { generateNews, getSaveName, confirmModal } from "./renderer";
+import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay } from "./renderer";
 import { marked } from 'marked';
+import TurndownService from "turndown";
 import DOMPurify from "dompurify";
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 const newsGrid = document.querySelector('.news-grid');
 const newsModalEl = document.getElementById('newsModal');
 const closeBtn = document.getElementById('closeNewsArticle');
+const newsOptionsBtn = document.querySelector('.news-options');
+const copyArticleBtn = document.getElementById('copyArticle');
+const deleteArticleBtn = document.getElementById('deleteArticle');
+const editArticleBtn = document.getElementById('editArticle');
 
-let ai = null;
 let interval2 = null;
 let cleaning = false;
 
-let errorCount = 0;
-const MAX_ERRORS = 2;
+let currentModalNews = null;
+let isEditingArticle = false;
+let originalArticleHTML = '';
+let editTextarea = null;
+let editTitleInput = null;
+let saveArticleBtn = null;
+let cancelArticleBtn = null;
+let originalTitleText = '';
 
-export function initAI(apiKeyParam) {
-  if (!apiKeyParam) {
-    console.warn("No API key configured yet");
-    ai = null;
-    return null;
-  }
-  ai = new GoogleGenAI({ apiKey: apiKeyParam });
-  return ai;
-}
+const DEFAULT_NEWS_LANGUAGE = "English";
+const NEWS_LANGUAGE_STORAGE_KEY = "newsLanguage";
+const NEWS_LANGUAGE_OPTIONS = [
+  { value: "English", label: "English" },
+  { value: "Spanish", label: "Spanish" },
+  { value: "Italian", label: "Italian" },
+  { value: "French", label: "French" },
+  { value: "German", label: "German" },
+  { value: "Dutch", label: "Dutch" },
+  { value: "Polish", label: "Polish" },
+  { value: "Portuguese", label: "Portuguese" },
+  { value: "Russian", label: "Russian" },
+  { value: "Chinese", label: "Chinese" },
+  { value: "Japanese", label: "Japanese" },
 
-export function getAI() {
-  return ai;
-}
+];
+
 
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 const onTransitionEnd = (el, propName, timeoutMs) =>
@@ -86,6 +99,78 @@ async function finishGeneralLoader() {
   pageLoaderDiv.remove();
 }
 
+function getNewsLanguage() {
+  try {
+    return localStorage.getItem(NEWS_LANGUAGE_STORAGE_KEY) || DEFAULT_NEWS_LANGUAGE;
+  } catch {
+    return DEFAULT_NEWS_LANGUAGE;
+  }
+}
+
+function replaceLanguagePlaceholder(text, language) {
+  if (typeof text !== 'string') return text;
+  return text.replace(/{{\s*language\s*}}/gi, language);
+}
+
+function syncNewsLanguageDropdown(selectedLanguage) {
+  const menu = document.getElementById('newsLanguageMenu');
+  const button = document.getElementById('newsLanguageButton');
+
+  if (button) {
+    const label = button.querySelector('span');
+    if (label) {
+      label.innerText = selectedLanguage;
+    }
+  }
+
+  if (menu) {
+    menu.querySelectorAll('.redesigned-dropdown-item').forEach(item => {
+      const isSelected = item.dataset.value === selectedLanguage;
+      item.querySelector('i')?.classList.toggle('unactive', !isSelected);
+    });
+  }
+}
+
+function setNewsLanguage(language) {
+  const selected = NEWS_LANGUAGE_OPTIONS.find(opt => opt.value === language)?.value || DEFAULT_NEWS_LANGUAGE;
+  try {
+    localStorage.setItem(NEWS_LANGUAGE_STORAGE_KEY, selected);
+  } catch {
+    // Ignore storage errors and keep using the selected value in memory
+  }
+  syncNewsLanguageDropdown(selected);
+}
+
+function setupNewsLanguageDropdown() {
+  const menu = document.getElementById('newsLanguageMenu');
+  const button = document.getElementById('newsLanguageButton');
+  if (!menu || !button) return;
+
+  menu.innerHTML = '';
+
+  NEWS_LANGUAGE_OPTIONS.forEach(({ value, label }) => {
+    const item = document.createElement('a');
+    item.classList.add('redesigned-dropdown-item');
+    item.dataset.value = value;
+    item.href = '#';
+    item.innerText = label;
+
+    const checkIcon = document.createElement('i');
+    checkIcon.classList.add('bi', 'bi-check');
+    item.appendChild(checkIcon);
+
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setNewsLanguage(value);
+    });
+
+    menu.appendChild(item);
+  });
+
+  syncNewsLanguageDropdown(getNewsLanguage());
+}
+
 async function cleanupOpenedNewsItem() {
   if (cleaning) return;
   cleaning = true;
@@ -113,8 +198,38 @@ closeBtn.addEventListener('click', async () => {
 
 
 newsModalEl.addEventListener('hide.bs.modal', () => {
+  exitArticleEditMode();
   cleanupOpenedNewsItem();
 });
+
+function exitArticleEditMode(opts = {}) {
+  const { restoreOriginal = true } = opts;
+  if (!isEditingArticle) return;
+
+  const newsArticle = document.querySelector('#newsModal .news-article');
+  const modalTitle = document.querySelector('#newsModal .modal-title');
+
+  if (newsArticle && restoreOriginal) {
+    newsArticle.innerHTML = originalArticleHTML;
+  }
+
+  if (modalTitle && restoreOriginal) {
+    modalTitle.innerHTML = originalTitleText;
+  }
+
+  if (saveArticleBtn) saveArticleBtn.remove();
+  if (cancelArticleBtn) cancelArticleBtn.remove();
+
+  closeBtn?.classList.remove('d-none');
+
+  isEditingArticle = false;
+  originalArticleHTML = '';
+  editTextarea = null;
+  editTitleInput = null;
+  saveArticleBtn = null;
+  cancelArticleBtn = null;
+  originalTitleText = '';
+}
 
 function hashStr(str) {
   let h = 2166136261 >>> 0;
@@ -130,10 +245,21 @@ const BUCKET_NORMAL = 7;
 
 function addReadButtonListener(readButton, newsItem, news, newsList) {
   readButton.addEventListener('click', async () => {
+    exitArticleEditMode();
+    currentModalNews = news;
     newsItem.classList.add('with-transition', 'opened');
     const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
       keyboard: false
     });
+
+    if (!news.text){
+      newsOptionsBtn.classList.add('d-none');
+    }
+    else{
+      newsOptionsBtn.classList.remove('d-none');
+    }
+
+    newsModal._element.setAttribute("data-article-id", news.id || '');
 
     newsModal.show();
     const modalTitle = document.querySelector('#newsModal .modal-title');
@@ -166,12 +292,6 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       }
     })();
 
-
-
-
-
-
-    if (ai) {
       await generateAndRenderArticle(news, newsList, "Generating", false);
 
       const regenerateButton = document.getElementById('regenerateArticle');
@@ -184,29 +304,12 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
           await generateAndRenderArticle(news, newsList, "Regenerating", true);
         });
       }
-    }
-    else {
-      const noApiFoundSpan = document.createElement('span');
-      noApiFoundSpan.classList.add('news-error');
-      noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-      newsArticle.appendChild(noApiFoundSpan);
-      const googleAIStudioSpan = document.createElement('p');
-      googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
-      googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
-                from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
-                <span class="important-text bold-font">Create API Key</span> on the top right corner`
-      newsArticle.appendChild(googleAIStudioSpan);
-    }
 
   });
 }
 
 async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model) {
-  if (!ai) {
-    console.warn("AI not initialized");
-    return;
-  }
-
+  exitArticleEditMode();
   const newsArticle = document.querySelector('#newsModal .news-article');
   newsArticle.innerHTML = '';
 
@@ -237,13 +340,13 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
 
   let progress = 0;
   const interval = setInterval(() => {
-    progress += 3;
+    progress += 2;
     if (progressDiv) progressDiv.style.width = progress + '%';
-    if (progress >= 30) clearInterval(interval);
+    if (progress >= 20) clearInterval(interval);
   }, 150);
 
   try {
-    const articleText = await manageRead(news, newsList, progressDiv, interval, { force, model });
+    const articleText = await manageRead(news, newsList, progressDiv, interval, { force });
 
     clearInterval(interval);
     clearInterval(dotsInterval);
@@ -258,48 +361,26 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
         const cleanHtml = DOMPurify.sanitize(rawHtml);
         newsArticle.innerHTML = cleanHtml;
         newsArticle.style.opacity = '1';
+        newsOptionsBtn.classList.remove('d-none');
       }, 150);
     }, 200);
   } catch (err) {
-    errorCount++;
     console.error("Error generating article:", err);
+
     clearInterval(interval);
     clearInterval(dotsInterval);
-    loaderDiv.remove();
-    const actualModel = localStorage.getItem('ai-model');
-    //put text telling to retry using the Regenerate article button, if error code is 503 put that the model is overloaded
-    if (errorCount < MAX_ERRORS || actualModel === 'gemini-2.5-flash-lite') {
-      const errorSpan = document.createElement('span');
-      errorSpan.classList.add('news-error', 'model-error');
-      if (err.message?.includes("503") || err.message?.includes("overloaded") || err.status === 503) {
-        errorSpan.textContent = "The model is currently overloaded. Please try again later.";
-      } else if (err.message?.includes("429") || err.message?.includes("rate limit")) {
-        errorSpan.textContent = "Rate limit reached. Please wait until tomorrow to generate more articles.";
-      } else if (err.message?.includes("network") || err.message?.includes("fetch")) {
-        errorSpan.textContent = "Network error. Please check your connection and try again.";
-      } else {
-        errorSpan.textContent = "Error generating article. Please try again using the Regenerate button.";
-      }
-      newsArticle.appendChild(errorSpan);
-    } else {
-      const changeModalSpan = document.createElement('span');
-      changeModalSpan.classList.add('news-error', 'model-retry');
-      changeModalSpan.textContent = "Gemini 2.5 Flash seems to be having issues. Would you like to try the Gemini 2.5 Flash Lite model instead? It offers faster responses with slightly lower quality.";
-      newsArticle.appendChild(changeModalSpan);
-      const retryWithLiteButton = document.createElement('div');
-      const retrySpan = document.createElement('span');
-      retryWithLiteButton.classList.add('button-with-icon', 'retry-with-lite');
-      retrySpan.textContent = "Retry with Gemini 2.5 Flash Lite";
-      const retryIcon = document.createElement('i');
-      retryIcon.classList.add('bi', 'bi-arrow-clockwise');
-      retryWithLiteButton.appendChild(retryIcon);
-      retryWithLiteButton.appendChild(retrySpan);
-      newsArticle.appendChild(retryWithLiteButton);
-      retryWithLiteButton.addEventListener('click', async () => {
-        generateAndRenderArticle(news, newsList, "Regenerating with Gemini 2.5 Flash Lite", true, "gemini-2.5-flash-lite");
-      });
-      changeModalSpan.appendChild(retryWithLiteButton);
 
+    loaderDiv.remove();
+
+    const errorDiv = document.createElement('div');
+    errorDiv.classList.add('news-error', 'model-error');
+    
+    if (err.status === 429) {
+      errorDiv.innerText = "Daily limit reached. Tomorrow you'll be able to generate more articles.";
+      newsArticle.appendChild(errorDiv);
+    } else {
+      errorDiv.innerText = "Error generating article. Please try again.";
+      newsArticle.appendChild(errorDiv);
     }
   }
 }
@@ -400,7 +481,8 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       const newResp = await command.promiseExecute();
       place_turning_outcome(newResp.content, newsList);
 
-      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury") {
+      if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" ||
+         news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -418,7 +500,10 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         const commandCalendar = new Command("calendarRefresh", {});
         commandCalendar.execute();
       }
-
+      else if (news.type === "turning_point_engine_regulation") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+      }
     });
 
 
@@ -497,7 +582,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
   }
 }
 
-function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
+function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, isCurrentSeason = true) {
   const isTurning =
     news.turning_point_type === 'original' ||
     news.turning_point_type === 'approved' ||
@@ -529,7 +614,6 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
-  readButtonSpan.classList.add('gradient-text');
   readButtonSpan.innerText = "Read";
   readButton.appendChild(readButtonSpan);
 
@@ -606,13 +690,23 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate) {
 
   }
 
+  //if news has .isCurrentSeason and its false, remove read button and turning point buttons
+  if (isCurrentSeason === false && (news.text === undefined || news.text === null)) {
+    readButton.remove();
+    const tpDiv = readbuttonContainer.querySelector('.turning-point-div');
+    if (tpDiv) tpDiv.remove();
+  }
+
 
   newsItem.appendChild(newsBody);
 
   if (news.type === "race_result" || news.type === "quali_result") {
     newsItem.dataset.type = news.type;
   }
-  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
+  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {   
+    newsItem.dataset.type = "driver_transfers";
+  }
+  else if (news.type === "massive_exit" || news.type === "massive_signing") {
     newsItem.dataset.type = "driver_transfers";
   }
   else if (news.type === "potential_champion" || news.type === "world_champion" || news.type === "season_review" || news.type === "team_comparison" || news.type === "driver_comparison") {
@@ -634,6 +728,7 @@ function computeStableKey(n) {
 export async function place_news(newsAndTurningPoints, newsAvailable) {
   let newsList = newsAndTurningPoints.newsList;
   let turningPointState = newsAndTurningPoints.turningPointState;
+  let isCurrentSeason = newsAndTurningPoints.isCurrentSeason;
   await finishGeneralLoader();
 
   let maxDate;
@@ -666,7 +761,7 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
 
     if (!maxDate || news.date > maxDate) maxDate = news.date;
 
-    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate);
+    const newsItem = createNewsItemElement(news, i, newsAvailable, newsList, maxDate, isCurrentSeason);
     newsGrid.appendChild(newsItem);
     setTimeout(() => {
       newsItem.classList.remove('fade-in');
@@ -674,9 +769,19 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       newsItem.style.opacity = '1';
     }, 1500);
   }
+
+  if (!isCurrentSeason && isCurrentSeason !== undefined){ //if it's undefined it should go to else
+    document.querySelector("#reloadNews").classList.add("d-none");
+    document.querySelector("#regenerateArticle").classList.add("d-none");
+  }
+  else{
+    document.querySelector("#reloadNews").classList.remove("d-none");
+    document.querySelector("#regenerateArticle").classList.remove("d-none");
+  }
 }
 
 export async function place_turning_outcome(turningPointResponse, newsList) {
+  if (!turningPointResponse) return;
   let saveName = getSaveName();
   saveName = saveName.split('.')[0];
 
@@ -708,15 +813,25 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
-  readButtonSpan.classList.add('gradient-text');
   readButtonSpan.innerText = "Read";
   readButton.appendChild(readButtonSpan);
 
   readButton.addEventListener('click', async () => {
+    exitArticleEditMode();
+    currentModalNews = turningPointResponse;
     const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
       keyboard: false
     });
     newsModal.show();
+
+    if (!turningPointResponse.text){
+      newsOptionsBtn.classList.add('d-none');
+    }
+    else{
+      newsOptionsBtn.classList.remove('d-none');
+    }
+
+    newsModal._element.setAttribute("data-article-id", turningPointResponse.id || '');
 
     const modalTitle = document.querySelector('#newsModal .modal-title');
     modalTitle.textContent = turningPointResponse.title;
@@ -737,30 +852,16 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     const image = document.querySelector('#newsModal .news-image-background');
     image.src = turningPointResponse.image;
 
-    if (ai) {
-      await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
+    await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
 
-      // Hook para REGENERAR (misma lógica, forzando)
-      const regenBtn = document.getElementById('regenerateArticle');
-      if (regenBtn) {
-        regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
-        const newRegenBtn = document.getElementById('regenerateArticle');
-        newRegenBtn.addEventListener('click', () => {
-          generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
-        });
-      }
-    }
-    else {
-      const noApiFoundSpan = document.createElement('span');
-      noApiFoundSpan.classList.add('news-error');
-      noApiFoundSpan.textContent = "No API key found. Please set it in the settings.";
-      newsArticle.appendChild(noApiFoundSpan);
-      const googleAIStudioSpan = document.createElement('p');
-      googleAIStudioSpan.classList.add('news-error', 'news-error-api-key');
-      googleAIStudioSpan.innerHTML = `If you want to read AI-generated articles from the news section, please enter your API key here. You can get one for free
-                  from <a href="https://aistudio.google.com/apikey" target="_blank">Google AI Studio</a> clicking on
-                  <span class="important-text bold-font">Create API Key</span> on the top right corner`
-      newsArticle.appendChild(googleAIStudioSpan);
+    // Hook para REGENERAR (misma lógica, forzando)
+    const regenBtn = document.getElementById('regenerateArticle');
+    if (regenBtn) {
+      regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
+      const newRegenBtn = document.getElementById('regenerateArticle');
+      newRegenBtn.addEventListener('click', () => {
+        generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
+      });
     }
 
   });
@@ -862,7 +963,7 @@ function prependAnimated(container, newEl, duration = 250, easing = 'ease') {
   newEl.addEventListener('transitionend', newFn);
 }
 
-async function addTurningPointContexts(prompt, date) {
+async function getTurningPointEvents(date) {
   const command = new Command("getNews", {});
   let resp = await command.promiseExecute();
   let news = resp.content;
@@ -870,43 +971,173 @@ async function addTurningPointContexts(prompt, date) {
   const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
   const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
 
+  const events = [];
+
   if (turningPointsOutcomes.length > 0) {
-    let number = 1;
-    let turningOutcomesText = ``;
-    turningOutcomesText += turningPointsOutcomes.map(tp => {
+    turningPointsOutcomes.forEach(tp => {
       const turningDate = tp.date;
       if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
         if (tp.id.includes("investment")) {
-          return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
+          events.push({
+            type: "investment",
+            country: tp.data.country,
+            amount: tp.data.investmentAmount,
+            team: tp.data.teamName,
+            share: tp.data.investmentShare
+          });
         }
         else if (tp.id.includes("technical_directive")) {
-          return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
+          events.push({
+            type: "technical_directive",
+            component: tp.data.component,
+            reason: tp.data.reason
+          });
         }
         else if (tp.id.includes("dsq")) {
-          return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
+          events.push({
+            type: "disqualification",
+            country: tp.data.country,
+            team: tp.data.team,
+            component: tp.data.component
+          });
         }
         else if (tp.id.includes("substitution")) {
-          return `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
+          events.push({
+            type: "race_substitution",
+            original: tp.data.originalCountry,
+            reason: tp.data.reason,
+            substitute: tp.data.substituteCountry
+          });
         }
         else if (tp.id.includes("transfer")) {
-          return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
+          events.push({
+            type: "driver_transfer",
+            driverOut: tp.data.driver_out?.name,
+            team: tp.data.team,
+            driverIn: tp.data.driver_in?.name
+          });
         }
         else if (tp.id.includes("injury")) {
-          return `${number++}. ${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`;
+          events.push({
+            type: "driver_injury",
+            driver: tp.data.driver_affected?.name,
+            condition: tp.data.condition?.condition,
+            reason: tp.data.condition?.reason,
+            racesMissed: tp.data.condition?.races_affected?.length || 1,
+            replacement: tp.data.reserve_driver?.name
+          });
         }
         else if (tp.id.includes("_world_champion")) {
-          return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
+          events.push({
+            type: "world_champion_crowned",
+            driver: tp.data.driver_name,
+            team: combined_dict[tp.data.driver_team_id],
+            season: tp.data.season_year,
+            race: tp.data.adjective
+          });
         }
       }
-    }).join("\n");
-    if (turningOutcomesText) {
-      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${turningOutcomesText}`;
-    }
+    });
   }
-  return prompt;
+  return events;
 }
 
 
+
+function buildContextData(data, config = {}) {
+  const {
+    driverStandings,
+    teamStandings,
+    driversResults,
+    racesNames,
+    champions,
+    driverQualiResults,
+    enrichedAllTime
+  } = data;
+  const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
+
+  const contextData = {
+    timing,
+    seasonYear
+  };
+
+  if (driverStandings) {
+    contextData.driverStandings = driverStandings.map((d, i) => ({
+      position: i + 1,
+      name: d.name,
+      team: combined_dict[d.teamId],
+      points: d.points,
+      gapToLeader: d.gapToLeader || 0
+    }));
+  }
+
+  if (teamStandings) {
+    contextData.teamStandings = teamStandings.map((t, i) => ({
+      position: i + 1,
+      name: combined_dict[t.teamId] || `Team ${t.teamId}`,
+      points: t.points
+    }));
+  }
+
+  if (racesNames && racesNames.length > 0) {
+    contextData.previousRaces = racesNames;
+  }
+
+  if (driversResults) {
+    let resultsToProcess = driversResults;
+    if (teamId) {
+      resultsToProcess = driversResults.filter(d => d.teamId === teamId);
+    }
+    contextData.driverRaceResults = resultsToProcess.map(d => ({
+      name: d.name,
+      wins: d.nWins,
+      podiums: d.nPodiums,
+      pointsFinishes: d.nPointsFinishes,
+      resultsHistory: d.resultsString
+    }));
+  }
+
+  if (driverQualiResults) {
+    let resultsToProcess = driverQualiResults;
+    if (teamId) {
+      resultsToProcess = driverQualiResults.filter(d => d.teamId === teamId);
+    }
+    contextData.driverQualiResults = resultsToProcess.map(d => ({
+      name: d.name,
+      wins: d.nWins,
+      podiums: d.nPodiums,
+      pointsFinishes: d.nPointsFinishes,
+      resultsHistory: d.resultsString
+    }));
+  }
+
+  if (champions) {
+    contextData.championsHistory = Object.values(
+      champions.reduce((acc, { season, pos, name, points }) => {
+        if (!acc[season]) acc[season] = { season, drivers: [] };
+        acc[season].drivers.push({ position: pos, name, points });
+        return acc;
+      }, {})
+    ).sort((a, b) => b.season - a.season);
+  }
+
+  if (enrichedAllTime && enrichedAllTime.length > 0) {
+    let list = enrichedAllTime;
+    if (teamId && 'teamId' in (list[0] || {})) {
+      list = list.filter(d => d.teamId === teamId);
+    }
+    contextData.driverCareerStats = list.map(d => ({
+      name: d.name || `Driver ${d.id}`,
+      championships: d.totalChampionshipWins ?? 0,
+      wins: d.totalWins ?? 0,
+      podiums: d.totalPodiums ?? 0,
+      starts: d.totalStarts ?? 0,
+      isRookie: Number(seasonYear) === Number(d.firstRace.season)
+    }));
+  }
+
+  return contextData;
+}
 
 function buildContextualPrompt(data, config = {}) {
   const {
@@ -920,13 +1151,12 @@ function buildContextualPrompt(data, config = {}) {
     driverRaceResults
   } = data;
   const { timing = '', teamId = null, teamName = '', seasonYear = '' } = config;
-  console.log("Building contextual prompt with data:", data, "and config:", config);
 
   let prompt = '';
 
   if (driverStandings) {
     const driversChamp = driverStandings
-      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts`)
+      .map((d, i) => `${i + 1}. ${d.name} (${combined_dict[d.teamId]}) — ${d.points} pts (${d.gapToLeader ? `+${d.gapToLeader} pts to leader` : ''})`)
       .join("\n");
     prompt += `\n\nCurrent Drivers' Championship standings ${timing}:\n${driversChamp}`;
   }
@@ -943,7 +1173,7 @@ function buildContextualPrompt(data, config = {}) {
 
   if (racesNames && racesNames.length > 0) {
     let previousRaces = racesNames.join(', ');
-    prompt += `\n\nThe races that have already taken place in ${seasonYear} are: ${previousRaces}\n`;
+    prompt += `\n\nThe races that have already taken place before this one in ${seasonYear} are: ${previousRaces}\n`;
   }
 
   if (driversResults) {
@@ -1041,7 +1271,8 @@ function buildContextualPrompt(data, config = {}) {
 }
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
-  const { force = false, model } = opts;
+  const { force = false } = opts;
+  const stableKey = newData.stableKey ?? newData.id ?? computeStableKey(newData);
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1059,10 +1290,15 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     potential_champion: contextualizePotentialChampion,
     world_champion: contextualizeWorldChampion,
     big_transfer: contextualizeBigTransferConfirm,
+    massive_exit: contextualizeBigTransferConfirm,
+    massive_signing: contextualizeBigTransferConfirm,
     contract_renewal: contextualizeRenewalNews,
     team_comparison: contextualizeTeamComparison,
     driver_comparison: contextualizeDriverComparison,
     season_review: contextualizeSeasonReview,
+    race_reaction: contextualizeRaceReaction,
+    next_season_grid: contextualizeNextSeasonGrid,
+    feeder_series_review: contextualizeFeederSeriesReview,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -1071,6 +1307,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_investment: (nd) => contextualizeTurningPointInvestment(nd, nd.turning_point_type),
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
+    turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
+    turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1089,48 +1327,100 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
   clearInterval(interval); // detenemos el anterior
   let progressInterval;
   try {
-    if (barProgressDiv) barProgressDiv.style.width = '50%';
-    let progress = 50;
+    if (barProgressDiv) barProgressDiv.style.width = '30%';
+    let progress = 30;
     progressInterval = setInterval(() => {
       progress = Math.min(progress + 1, 98);
       if (barProgressDiv) barProgressDiv.style.width = progress + '%';
       if (progress >= 98) clearInterval(progressInterval);
-    }, 350);
+    }, 450);
 
     // 5) Construir prompt SOLO si hace falta
-    let prompt = "";
+    let messages = [];
+    const selectedLanguage = getNewsLanguage();
+    const expectsJson = selectedLanguage !== DEFAULT_NEWS_LANGUAGE;
     if (handler) {
-      const base = await handler(newData);
-      const normalDate = excelToDate(newData.date); // ya la tienes
+      let { instruction, context } = await handler(newData);
+      const normalDate = excelToDate(newData.date);
       const isoDate = new Date(
         normalDate.getFullYear(),
         normalDate.getMonth(),
         normalDate.getDate()
-      ).toISOString().split("T")[0]; // evita sorpresas de TZ en toISOString
+      ).toISOString().split("T")[0];
 
-      prompt =
-        `The current date is ${isoDate}\n\n` +
-        base +
+      // Add turning point events to context
+      let date = newData.date;
+      context = await addTurningPointContexts(context, date);
+
+      // Add additional contextual info to the prompt template
+      let finalInstruction = `The current date is ${isoDate}\n\n` +
+        instruction +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      // Contextos extra de Turning Points (si tu helper ya es idempotente, no pasa nada por llamarlo siempre)
-      prompt = await addTurningPointContexts(prompt, newData.date);
-      prompt += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      finalInstruction += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
+      if (expectsJson) {
+        finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
+          ` The "title" must be the translated headline in ${selectedLanguage}.` +
+          ` The "body" must be the full article in ${selectedLanguage} using Markdown.` +
+          ` Do not include the title inside the body. Do not add extra keys or wrap the JSON in code fences.`;
+      }
+
+      finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
+
+      // Message 1: Context Data
+      messages.push({
+        role: "user",
+        content: `Here is context about  results, championship standings, driver stats and important events that happened throughout the season:\n\n${context}`
+      });
+
+      // Message 2: Instruction
+      messages.push({
+        role: "user",
+        content: finalInstruction
+      });
     }
 
-
-    console.log("Final prompt for AI:", prompt);
+    console.log("Final messages for AI:", messages);
 
     // 6) Llama a la IA y guarda
-    const articleText = await askGenAI(prompt, { model });
-    const cleanedArticleText = cleanArticleOutput(articleText);
+    const articleText = await askGenAI(messages);
+    const parsedJson = tryParseJsonObject(articleText);
+    let translatedTitle = "";
+    let cleanedArticleText = "";
+
+    if (parsedJson && typeof parsedJson.body === "string" && parsedJson.body.trim()) {
+      cleanedArticleText = cleanArticleOutput(parsedJson.body);
+      if (typeof parsedJson.title === "string") {
+        translatedTitle = parsedJson.title.trim();
+      }
+    } else {
+      cleanedArticleText = cleanArticleOutput(articleText);
+    }
+
     newData.text = cleanedArticleText;
+    if (translatedTitle) {
+      newData.title = translatedTitle;
+      const modalTitle = document.querySelector('#newsModal .modal-title');
+      if (modalTitle) {
+        modalTitle.textContent = translatedTitle;
+      }
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle) {
+        openedNewsTitle.textContent = translatedTitle;
+      }
+    }
+    updateRateLimitsDisplay();
+
+    const patch = { text: cleanedArticleText };
+    if (translatedTitle) {
+      patch.title = translatedTitle;
+    }
 
     new Command("updateNews", {
-      stableKey: newData.id ?? computeStableKey(newData),
-      patch: { text: cleanedArticleText }
+      stableKey,
+      patch
     }).execute();
 
     if (barProgressDiv) barProgressDiv.style.width = '100%';
@@ -1148,6 +1438,43 @@ function cleanArticleOutput(rawMd) {
   md = italicizeQuotes(md);
 
   return md.trim();
+}
+
+function safeJsonParse(raw) {
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+function tryParseJsonObject(raw) {
+  if (typeof raw !== "string") return null;
+  let text = raw.trim();
+  if (!text) return null;
+
+  if (text.startsWith("```")) {
+    text = text
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/```\s*$/i, "")
+      .trim();
+  }
+
+  let parsed = safeJsonParse(text);
+  if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    return parsed;
+  }
+
+  const first = text.indexOf("{");
+  const last = text.lastIndexOf("}");
+  if (first !== -1 && last !== -1 && last > first) {
+    parsed = safeJsonParse(text.slice(first, last + 1));
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed;
+    }
+  }
+
+  return null;
 }
 
 function removeLeading(md) {
@@ -1231,9 +1558,12 @@ async function contextualizeTurningPointInjury(newData, turningPointType) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 
@@ -1266,9 +1596,12 @@ async function contextualizeTurningPointRaceSubstitution(newData, turningPointTy
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeTurningPointInvestment(newData, turningPointType) {
@@ -1302,9 +1635,12 @@ async function contextualizeTurningPointInvestment(newData, turningPointType) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeDSQ(newData, type) {
@@ -1346,9 +1682,12 @@ async function contextualizeDSQ(newData, type) {
   }
 
   const timing = type.includes("positive") ? "after the disqualification" : "";
-  prompt += buildContextualPrompt(resp.content, { timing, teamId, teamName, seasonYear: currentSeason });
+  const contextData = buildContextualPrompt(resp.content, { timing, teamId, teamName, seasonYear: currentSeason });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 
 }
 
@@ -1396,12 +1735,138 @@ async function contextualizeTurningPointTechnicalDirective(newData, turningPoint
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
-async function contextualizeTurningPointTransfer(newData, turningPointType) {
+async function contextualizeTurningPointEngineRegulation(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 107);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const seasonYear = newData.data.season;
+  const changeType = newData.data.changeType || "minor";
+  const changeArea = newData.data.mainChangeArea || "engine regulations";
+  const winners = Array.isArray(newData.data.winnerNames) ? newData.data.winnerNames : [];
+  const losers = Array.isArray(newData.data.loserNames) ? newData.data.loserNames : [];
+
+  const formatList = (list, fallback) => {
+    if (!list.length) return fallback;
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return `${list[0]} and ${list[1]}`;
+    return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+  };
+
+  const winnerNames = formatList(winners, "several manufacturers");
+  const loserNames = formatList(losers, "a few rivals");
+
+  prompt = prompt
+    .replace(/{{\s*type\s*}}/g, changeType)
+    .replace(/{{\s*change_area\s*}}/g, changeArea)
+    .replace(/{{\s*winner_names\s*}}/g, winnerNames)
+    .replace(/{{\s*loser_names\s*}}/g, loserNames);
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointYoungDrivers(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 108);
+  let prompt;
+  if (turningPointType.includes("positive")) {
+    prompt = promptTemplateEntry.positive_prompt;
+  }
+  else if (turningPointType.includes("negative")) {
+    prompt = promptTemplateEntry.negative_prompt;
+  }
+  else {
+    prompt = promptTemplateEntry.prompt;
+  }
+
+  const prospects = Array.isArray(newData.data.prospects) ? newData.data.prospects : [];
+  const prospectsList = prospects.map(p => {
+    const series = p.series || "Junior";
+    const age = p.age != null ? `age ${p.age}` : "age unknown";
+    const pos = p.position != null ? `P${p.position}` : "";
+    const points = p.points != null ? `${p.points} pts` : "";
+    return `${p.name} (${series}, ${age}, ${pos}, ${points})`;
+  }).join("\n");
+
+  const seriesSet = new Set(prospects.map(p => p.series).filter(Boolean));
+  const seriesList = Array.from(seriesSet).filter(s => s !== "Free");
+  let seriesContext = "";
+  if (seriesSet.size === 0) {
+    seriesContext = "There is no confirmed series breakdown for these prospects.";
+  } else if (seriesSet.size === 1 && seriesSet.has("Free")) {
+    seriesContext = "The standout names this year are drivers from regional formulas outside the main junior championships.";
+  } else if (seriesSet.has("Free") && seriesList.length) {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")} as well as drivers from regional formulas outside those championships.`;
+  } else {
+    seriesContext = `The shortlist includes drivers from ${seriesList.join(" and ")}.`;
+  }
+
+  prompt = prompt
+    .replace(/{{\s*driver1\s*}}/g, newData.data.driver1 || "a leading prospect")
+    .replace(/{{\s*driver2\s*}}/g, newData.data.driver2 || "another leading prospect")
+    .replace(/{{\s*prospects_list\s*}}/g, prospectsList || "No prospect data available.");
+
+  if (seriesContext) {
+    prompt += `\n\n${seriesContext}`;
+  }
+
+  const seasonYear = newData.data.season;
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  let contextData = buildContextualPrompt(resp.content, { seasonYear });
+  if (prospectsList) {
+    contextData += `\n\nYoung prospects summary:\n${prospectsList}`;
+  }
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointTransfer(newData, turningPointType) {   
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 101);
   let prompt;
   if (turningPointType.includes("positive")) {
@@ -1475,11 +1940,12 @@ async function contextualizeTurningPointTransfer(newData, turningPointType) {
     prompt = prompt.replace(/{{\s*driver_substitute_part\s*}}/g, '');
   }
 
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
-
-  return prompt;
-
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeWorldChampion(newData) {
@@ -1501,7 +1967,9 @@ async function contextualizeWorldChampion(newData) {
     raceid: newData.data.raceId,
   });
 
-  let standingsResp, previousRaces = '';
+  let standingsResp = '';
+  let contextData = "";
+
   try {
     standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
@@ -1512,7 +1980,7 @@ async function contextualizeWorldChampion(newData) {
 
       prompt += `\n\n${numberOfRace}`;
 
-      prompt += buildContextualPrompt(standingsResp.content, { timing: "after this race", seasonYear: newData.data.season_year });
+      contextData = buildContextualPrompt(standingsResp.content, { timing: "after this race", seasonYear: newData.data.season_year });
     } else {
       prompt += "\n\nCould not retrieve current championship standings.";
     }
@@ -1521,7 +1989,10 @@ async function contextualizeWorldChampion(newData) {
     prompt += "\n\nError fetching championship standings.";
   }
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizePotentialChampion(newData) {
@@ -1547,6 +2018,8 @@ async function contextualizePotentialChampion(newData) {
   });
 
   let standingsResp, previousRaces = '';
+  let contextData = "";
+
   try {
     standingsResp = await command.promiseExecute();
     if (standingsResp && standingsResp.content) {
@@ -1558,7 +2031,7 @@ async function contextualizePotentialChampion(newData) {
       prompt += `\n\n${numberOfRace}`;
 
       // Contexto antes de esta carrera
-      prompt += buildContextualPrompt(c, { timing: "before this race", seasonYear: newData.data.season_year });
+      contextData = buildContextualPrompt(c, { timing: "before this race", seasonYear: newData.data.season_year });
 
       // Reglas de puntos (tal cual las comunicas)
       prompt += `\n\nThe maximum amount of points for the winner in each race is ${c.pointsSchema.twoBiggestPoints[0]}.
@@ -1609,7 +2082,10 @@ async function contextualizePotentialChampion(newData) {
     prompt += "\n\nError fetching championship standings.";
   }
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeSillySeasonTransferNews(newData) {
@@ -1633,30 +2109,12 @@ async function contextualizeSillySeasonTransferNews(newData) {
     return;
   }
 
-  prompt += `\n\nHere are the transfers that you have to talk about:\n`;
+  const contextData = buildContextualPrompt(resp.content, { seasonYear: season });
 
-  newData.data.drivers.forEach((d) => {
-    prompt += `${d.name} could be leaving ${d.actualTeam}\n`;
-
-    prompt += `\n\nHere are the offers that ${d.name} has:\n`;
-    d.offers.forEach((o) => {
-      prompt += `${o.potentialTeam} with an expected salary of around ${o.salary}€ per year until ${o.endSeason}, targeting ${o.driverAtRisk}'s seat. ${d.name}'s opinion on salary is ${o.salaryOpinion} and on length is ${o.lengthOpinion}\n`;
-    });
-
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.previousResultsTeam.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has drivern for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-  prompt += buildContextualPrompt(resp.content, { seasonYear: season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeFakeTransferNews(newData) {
@@ -1698,10 +2156,63 @@ async function contextualizeFakeTransferNews(newData) {
     });
   });
 
+  const contextData = buildContextualPrompt(resp.content, { timing: "after the last race", seasonYear: resp.content.season });
 
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
 
-  return prompt;
+async function contextualizeNextSeasonGrid(newData) {
+  let season = newData.data.season_year;
+  const date = newData.date || null;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 19).prompt;
+  prompt = prompt.replace(/{{\s*season_year\s*}}/g, season);
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: season,
+    date: date
+  }
+  );
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching race details:", err);
+    return;
+  }
+
+  function buildTeamLineupSection(title, teams, driversKey) {
+    return [
+      `\n\n${title}\n`,
+      ...Object.values(teams).map(team =>
+        [
+          `\n**${team.name}**:\n`,
+          team[driversKey].map(d => `- ${d.name}`).join('\n'),
+        ].join('')
+      )
+    ].join('');
+  }
+
+  prompt += buildTeamLineupSection(
+    `Here is the confirmed team lineup for each team for the next season (${season}):`,
+    newData.data.teams,
+    'driversNextSeason'
+  );
+
+  prompt += buildTeamLineupSection(
+    `Here are the driver line ups for each team in the season that just ended (${season - 1}):`,
+    newData.data.teams,
+    'driversThisSeason'
+  );
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear: season - 1 });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeBigTransferConfirm(newData) {
@@ -1710,7 +2221,12 @@ async function contextualizeBigTransferConfirm(newData) {
   let originalTeam = newData.data.team2
   const date = newData.date || null;
 
-  let prompt = newsPromptsTemaplates.find(t => t.new_type === 6).prompt;
+  let newType = 6;
+  if (newData.type.includes("massive_exit")) {
+    newType = 18;
+  }
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === newType).prompt;
   prompt = prompt.replace(/{{\s*driver1\s*}}/g, driverName)
     .replace(/{{\s*team1\s*}}/g, potentialTeam)
     .replace(/{{\s*team2\s*}}/g, originalTeam);
@@ -1740,26 +2256,28 @@ async function contextualizeBigTransferConfirm(newData) {
     return;
   }
 
-  prompt += `\n\nHere is the confirmed transfer that you have to talk about:\n`;
+  const confirmedTransfer = resp.content.driverMap.map(d => ({
+    driver: d.name,
+    leavingTeam: d.actualTeam,
+    joiningTeam: d.potentialTeam,
+    salary: d.potentialSalary,
+    currentTeamRecentHistory: d.actualTeamPreviousResults.map(t => ({
+      season: t.season,
+      position: t.position,
+      points: t.points
+    })),
+    driverHistory: d.previouslyDrivenTeams.map(t => ({
+      season: t.season,
+      team: t.teamName
+    }))
+  }));
 
-  resp.content.driverMap.forEach((d) => {
-    prompt += `${d.name} will be leaving ${d.actualTeam} ${d.potentialTeam ? " for " + d.potentialTeam : ""} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary : ""}\n`;
+  const contextData = buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.actualTeamPreviousResults.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeRenewalNews(newData) {
@@ -1798,26 +2316,12 @@ async function contextualizeRenewalNews(newData) {
     return;
   }
 
-  prompt += `\n\nHere is the confirmed contract renewal that you have to talk about:\n`;
+  const contextData = buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
 
-  resp.content.driverMap.forEach((d) => {
-    prompt += `${d.name} will be staying at ${d.actualTeam} ${d.potentialSalary ? "with an expected salary of around " + d.potentialSalary + "€" : ""} ${d.potentialYearEnd ? "until the end of " + d.potentialYearEnd : ""}\n`;
-
-    prompt += `\n\nHere are the previous results of ${d.actualTeam} in recent years:\n`;
-    d.actualTeamPreviousResults.forEach((t) => {
-      prompt += `${t.season} - ${getOrdinalSuffix(t.position)} ${t.points}pts\n`;
-    })
-
-    prompt += `\n\nHere are the teams that ${d.name} has driven for in recent years:\n`;
-    d.previouslyDrivenTeams.forEach((t) => {
-      prompt += `${t.season} - ${t.teamName}\n`;
-    });
-  });
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear: resp.content.season });
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeTeamComparison(newData) {
@@ -1846,13 +2350,6 @@ async function contextualizeTeamComparison(newData) {
   }
   );
 
-  if (compType === "good") {
-    prompt += `\n\n${team1} has scored ${ptsDif} more points compared to last season at the same point of the season.`;
-  }
-  else {
-    prompt += `\n\n${team1} has scored ${ptsDif} fewer points compared to last season at the same point of the season.`;
-  }
-
   let resp;
   try {
     resp = await command.promiseExecute();
@@ -1868,8 +2365,8 @@ async function contextualizeTeamComparison(newData) {
     racesNames: resp.content.currentRacesNames,
     enrichedAllTime: resp.content.enrichedAllTime
   };
-  prompt += buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1, seasonYear });
 
+  const contextData = buildContextualPrompt(currentContextData, { teamId: newData.data.team.teamId, teamName: team1, seasonYear });
 
   const oldRacesNames = resp.content.oldRacesNames.join(', ');
   const oldSeasonResults = resp.content.oldDriversResults
@@ -1887,7 +2384,11 @@ async function contextualizeTeamComparison(newData) {
     }
   });
 
-  return prompt;
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeQualiResults(newData) {
@@ -1918,27 +2419,23 @@ async function contextualizeQualiResults(newData) {
 
   const raceNumber = resp.content.racesNames.length + 1;
 
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
-
   const numberOfRace = `This was qualifying ${raceNumber} out of ${resp.content.nRaces} in this season.`;
 
   prompt += `\n\n${numberOfRace}`;
 
-  const qualiResults = resp.content.details.map(row => {
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) +${row.gapToPole.toFixed(3)} seconds`;
-  }).join("\n");
+  const qualiResults = resp.content.details.map(row => ({
+    position: row.pos,
+    name: row.name,
+    team: combined_dict[row.teamId],
+    gapToPole: row.gapToPole.toFixed(3)
+  }));
 
-  prompt += "\n\nHere are the full qualifying results:\n" + qualiResults;
+  const contextData = buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
 
-  prompt += buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
-
-
-  return prompt;
-
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 
@@ -1967,70 +2464,35 @@ async function contextualizeRaceResults(newData) {
   }
 
   const raceNumber = resp.content.racesNames.length + 1;
-
-  let previousRaces = '';
-  resp.content.racesNames.forEach((r) => {
-    previousRaces += `${r}, `;
-  });
-  previousRaces = previousRaces.slice(0, -2);
+  const numberOfRace = `This was race ${raceNumber} out of ${resp.content.nRaces} in this season.`;
+  prompt += `\n\n${numberOfRace}`;
 
   const safetyCars = resp.content.details[0].safetyCar;
   const virtualSafetyCars = resp.content.details[0].virtualSafetyCar;
-
-  const numberOfRace = `This was race ${raceNumber} out of ${resp.content.nRaces} in this season.`;
-
-  prompt += `\n\n${numberOfRace}`;
-
   const safetyCarPhrase = `\n\nThere were ${safetyCars} safety car${safetyCars > 1 ? "s" : ""} and ${virtualSafetyCars} virtual safety car${virtualSafetyCars > 1 ? "s" : ""} during the race.`
-
   prompt += safetyCarPhrase;
 
-
-  //generate a random number from 35 to 62 both included
   const top3 = resp.content.driverOfTheDayInfo;
-
   if (Array.isArray(top3) && top3.length > 0) {
     const first = top3[0];
     const second = top3[1];
     const third = top3[2];
-
     const driverOfTheDayPhrase = `
       \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
     `;
-
     prompt += driverOfTheDayPhrase;
   }
 
-
   if (resp.content.sprintDetails.length > 0) {
     prompt += `\n\nThere was a sprint race held on Saturday, which was won by ${resp.content.sprintDetails[0].name} (${combined_dict[resp.content.sprintDetails[0].teamId]}). Dedicate a paragraph discussing the sprint results`;
-
-    const sprintResults = resp.content.sprintDetails.map(row => {
-      return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) +${row.gapToWinner.toFixed(3)} seconds (+${row.points} pts)`;
-    }).join("\n");
-
-    prompt += `\n\nHere are the sprint results:\n${sprintResults}`;
   }
 
-  const raceResults = resp.content.details.map(row => {
-    const gapStr =
-      row.gapToWinner > 0
-        ? `${Number(row.gapToWinner.toFixed(3))} seconds`
-        : row.gapLaps > 0
-          ? `${row.gapLaps} laps`
-          : `0 seconds`;
-    return `${row.pos}. ${row.name} (${combined_dict[row.teamId]}) (Started P${row.grid}) +${gapStr} (+${row.points} pts)`;
-  }).join("\n");
+  const contextData = buildContextualPrompt(resp.content, { timing: "after this race", seasonYear });
 
-
-  prompt += "\n\nHere are the full race results:\n" + raceResults;
-
-
-
-  prompt += buildContextualPrompt(resp.content, { timing: "after this race", seasonYear });
-
-
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeDriverComparison(newData) {
@@ -2056,9 +2518,124 @@ async function contextualizeDriverComparison(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear });
+  const contextData = buildContextualPrompt(resp.content, { teamId, teamName: combined_dict[teamId], seasonYear });
 
-  return prompt;
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeRaceReaction(newData) {
+  let adjective = newData.data.adjective;
+  let seasonYear = newData.data.seasonYear;
+  let happyDriver = newData.data.randomHappyDriver.name;
+  let unhappyDriver = newData.data.randomUnHappyDriver.name;
+  let circuit = newData.data.circuit;
+
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 16).prompt;
+  prompt = prompt.replace(/{{\s*adjective\s*}}/g, adjective)
+    .replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*happy_driver\s*}}/g, happyDriver)
+    .replace(/{{\s*unhappy_driver\s*}}/g, unhappyDriver)
+    .replace(/{{\s*circuit\s*}}/g, circuit);
+
+  const command = new Command("raceDetailsRequest", {
+    raceid: newData.data.raceId,
+  });
+  let resp;
+
+  try {
+    resp = await command.promiseExecute();
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const raceResults = resp.content.details.map(row => {
+    const gapStr =
+      row.gapToWinner > 0
+        ? `${Number(row.gapToWinner.toFixed(3))} seconds`
+        : row.gapLaps > 0
+          ? `${row.gapLaps} laps`
+          : `0 seconds`;
+    return {
+      position: row.pos,
+      name: row.name,
+      team: combined_dict[row.teamId],
+      startPos: row.grid,
+      gap: gapStr,
+      status: row.dnf !== 1 ? `+${row.points} pts` : 'DNF'
+    };
+  });
+
+  prompt += `\n\nHere are the race results:\n`;
+  raceResults.forEach(r => {
+    prompt += `${r.position}. ${r.name} (${r.team}) - Started: P${r.startPos}, Gap: ${r.gap}, Status: ${r.status}\n`;
+  });
+
+  const top3 = resp.content.driverOfTheDayInfo;
+
+  if (Array.isArray(top3) && top3.length > 0) {
+    const first = top3[0];
+    const second = top3[1];
+    const third = top3[2];
+
+    const driverOfTheDayPhrase = `
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+    `;
+
+    prompt += driverOfTheDayPhrase;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeFeederSeriesReview(newData) {
+  let seasonYear = newData.data.season_year;
+  let f2_champion = newData.data.f2_champion.name;
+  let f3_champion = newData.data.f3_champion.name;
+  let prompt = newsPromptsTemaplates.find(t => t.new_type === 20).prompt;
+  prompt = prompt.replace(/{{\s*season_year\s*}}/g, seasonYear)
+    .replace(/{{\s*f2_champion\s*}}/g, f2_champion)
+    .replace(/{{\s*f3_champion\s*}}/g, f3_champion);
+
+  const command = new Command("fullFeederSeriesDetailsRequest", {
+    season: seasonYear
+  });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  }
+  catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return { instruction: prompt, context: "" };
+  }
+
+  const f2Context = buildContextualPrompt({ enrichedAllTime: [], ...(resp.content?.f2 || {}) }, {
+    seasonYear,
+    timing: "(Formula 2)"
+  });
+  const f3Context = buildContextualPrompt({ enrichedAllTime: [], ...(resp.content?.f3 || {}) }, {
+    seasonYear,
+    timing: "(Formula 3)"
+  });
+
+  const contextData =
+    `For Formula 2 and Formula 3, each race weekend includes a Sprint and a Main race.\n` +
+    `In the driver results strings, the format is: Main result (SPR Sprint result).\n` +
+    `\n\n=== Formula 2 ===\n${f2Context}\n\n=== Formula 3 ===\n${f3Context}`;
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeSeasonReview(newData) {
@@ -2093,7 +2670,7 @@ async function contextualizeSeasonReview(newData) {
     return;
   }
 
-  prompt += buildContextualPrompt(resp.content, { seasonYear });
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
 
   const carPerformanceStart = Object.entries(resp.content.carsPerformance[0])
     .sort((a, b) => b[1] - a[1])
@@ -2110,39 +2687,197 @@ async function contextualizeSeasonReview(newData) {
   prompt += `\n\nHere is the performance of each car at the start of the season:\n${carPerformanceStart}`;
   prompt += `\n\nHere is the performance of each car at the latest race:\n${carPerformanceEnd}`;
 
-  return prompt;
-
-
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 
+async function askGenAI(messages, opts = {}) {
+  const aiModel = opts.model || "gpt-5-mini";
 
-function saveTurningPoints(turningPoints) {
-  let saveName = getSaveName();
-  //remove file extension if any
-  saveName = saveName.split('.')[0];
-  let tpName = `${saveName}_tps`;
-  localStorage.setItem(tpName, JSON.stringify(turningPoints));
-}
-
-async function askGenAI(prompt, opts = {}) {
-  const localStorageModel = localStorage.getItem("ai-model");
-  const fallbackModel = "gemini-2.5-flash";
-
-  // Priority:
-  // 1. opts.model
-  // 2. localStorageModel
-  // 3. fallbackModel
-  console.log(opts.model, localStorageModel, fallbackModel);
-  const aiModel = opts.model || localStorageModel || fallbackModel;
-
-  const response = await ai.models.generateContent({
-    model: aiModel,
-    contents: prompt,
+  const response = await fetch("/api/ask-openai", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      messages,
+      model: aiModel,
+      max_tokens: opts.max_tokens || 5000
+    })
   });
 
-  return response.text;
+  let data = {};
+  try {
+    data = await response.json();
+  } catch {
+    // ignore JSON parse errors
+  }
+
+  if (!response.ok) {
+    const error = new Error(data.error || "AI request failed");
+    error.status = response.status;
+    throw error;
+  }
+
+  return data.text;
 }
+
+newsOptionsBtn.addEventListener("click", (e) => {
+  e.target.classList.toggle("active");
+});
+
+deleteArticleBtn.addEventListener("click", async () => {
+  const articleId = document.querySelector("#newsModal").getAttribute("data-article-id");
+  const command = new Command("deleteNewsArticle", { articleId });
+  command.promiseExecute().then(() => {
+    const openedNewsItem = document.querySelector('.news-item.opened');
+    if (openedNewsItem) {
+      openedNewsItem.remove();
+    }
+    closeBtn?.click();
+  });
+});
+  
+
+copyArticleBtn.addEventListener("click", async () => {
+  const titleEl = document.querySelector("#newsModalTitle");
+  const articleEl = document.querySelector("#newsModal .news-article");
+
+  if (!titleEl || !articleEl) return;
+
+  const title = titleEl.innerText.trim();
+
+  const turndownService = new TurndownService({
+    headingStyle: "atx",
+    bulletListMarker: "-",
+    codeBlockStyle: "fenced",
+  });
+
+  const articleMarkdown = turndownService.turndown(articleEl.innerHTML);
+
+  const finalText = `# ${title}\n\n${articleMarkdown}`;
+
+  await navigator.clipboard.writeText(finalText);
+});
+
+function createEditFooterButtons(articleEl) {
+  const buttonsWrapper = closeBtn?.parentElement;
+  if (!buttonsWrapper) return;
+
+  closeBtn.classList.add('d-none');
+
+  saveArticleBtn = document.createElement('button');
+  saveArticleBtn.type = 'button';
+  saveArticleBtn.classList.add('confirm-modal');
+  saveArticleBtn.textContent = 'Save';
+
+  cancelArticleBtn = document.createElement('button');
+  cancelArticleBtn.type = 'button';
+  cancelArticleBtn.classList.add('close-modal');
+  cancelArticleBtn.textContent = 'Cancel';
+
+  buttonsWrapper.appendChild(cancelArticleBtn);
+  buttonsWrapper.appendChild(saveArticleBtn);
+  
+
+  cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
+
+  saveArticleBtn.addEventListener('click', async () => {
+    if (!editTextarea || !editTitleInput) return;
+
+    const markdownText = editTextarea.value.trim();
+    const newTitle = editTitleInput.value.trim();
+    const parsedHtml = marked.parse(markdownText);
+    const safeHtml = DOMPurify.sanitize(parsedHtml);
+    const modalTitle = document.querySelector('#newsModal .modal-title');
+
+    articleEl.innerHTML = safeHtml;
+
+    if (modalTitle && newTitle) {
+      modalTitle.textContent = newTitle;
+    }
+
+    if (currentModalNews) {
+      if (newTitle) {
+        currentModalNews.title = newTitle;
+      }
+      currentModalNews.text = markdownText;
+
+      new Command("updateNews", {
+        stableKey: currentModalNews.id ?? computeStableKey(currentModalNews),
+        patch: { text: markdownText, title: newTitle || currentModalNews.title }
+      }).execute();
+
+      const openedNewsTitle = document.querySelector('.news-item.opened .news-title');
+      if (openedNewsTitle && newTitle) {
+        openedNewsTitle.textContent = newTitle;
+      }
+    }
+    else {
+      new Command("updateNews", {
+        stableKey: computeStableKey({ title: newTitle, date: null }),
+        patch: { text: markdownText, title: newTitle }
+      }).execute();
+    }
+
+    exitArticleEditMode({ restoreOriginal: false });
+    originalArticleHTML = articleEl.innerHTML;
+  });
+}
+
+function startArticleEditMode() {
+  if (isEditingArticle) return;
+
+  const articleEl = document.querySelector("#newsModal .news-article");
+  if (!articleEl || !currentModalNews) return;
+
+  newsOptionsBtn?.classList.remove('active');
+
+  const turndownService = new TurndownService({
+    headingStyle: "atx",
+    bulletListMarker: "-",
+    codeBlockStyle: "fenced",
+  });
+
+  const markdownText = turndownService.turndown(
+    articleEl.innerHTML || currentModalNews.text || ''
+  );
+
+  const modalTitle = document.querySelector('#newsModal .modal-title');
+  const currentTitle = modalTitle?.textContent?.trim() || currentModalNews.title || '';
+  originalTitleText = currentTitle;
+
+  originalArticleHTML = articleEl.innerHTML;
+  articleEl.innerHTML = '';
+
+  const actualTitle = document.querySelector("#newsModalTitle");
+  editTitleInput = document.createElement('textarea');
+  editTitleInput.rows = 1;
+  editTitleInput.classList.add('news-edit-title');
+  editTitleInput.value = currentTitle;
+  actualTitle.innerHTML = '';
+  actualTitle.appendChild(editTitleInput);
+
+  //get width of newsModal .modal-header
+  const modalHeader = document.querySelector('#newsModal .modal-header');
+  if (modalHeader) {
+    editTitleInput.style.maxWidth = (modalHeader.clientWidth - 60) + 'px';
+  }
+
+  editTextarea = document.createElement('textarea');
+  editTextarea.classList.add('news-edit-textarea');
+  editTextarea.value = markdownText;
+
+  articleEl.appendChild(editTextarea);
+
+  isEditingArticle = true;
+
+  createEditFooterButtons(articleEl);
+}
+
+editArticleBtn?.addEventListener("click", startArticleEditMode);
+
 
 function buildEmergencyOverlay() {
   const overlayDiv = document.createElement('div');
@@ -2174,6 +2909,50 @@ function ensureEmergencyOverlay(imageContainer) {
 
 function manage_overlay(imageContainer, overlay, data, image) {
   let overlayDiv = null;
+  const teamColorForId = (teamId, fallback = '#ffffff') => {
+    const candidate = Number.parseInt(teamId, 10);
+    if (!Number.isFinite(candidate)) return fallback;
+    return colors_dict?.[`${candidate}0`] ?? fallback;
+  };
+
+  const buildCenteredOverlay = ({ overlayClass, title, subtitle, borderColor, subtitleClass } = {}) => {
+    const centeredOverlay = document.createElement('div');
+    centeredOverlay.classList.add('news-centered-overlay');
+    if (overlayClass) centeredOverlay.classList.add(overlayClass);
+
+    const blockDiv = document.createElement('div');
+    blockDiv.classList.add('news-centered-block');
+    if (borderColor) blockDiv.style.borderBottomColor = borderColor;
+
+    const titleDiv = document.createElement('div');
+    titleDiv.classList.add('news-centered-title');
+    titleDiv.innerText = title ?? '';
+
+    const subtitleDiv = document.createElement('div');
+    subtitleDiv.classList.add('news-centered-subtitle');
+    if (subtitleClass) subtitleDiv.classList.add(subtitleClass);
+    subtitleDiv.innerText = subtitle ?? '';
+
+    blockDiv.appendChild(titleDiv);
+    if (subtitleDiv.innerText) blockDiv.appendChild(subtitleDiv);
+    centeredOverlay.appendChild(blockDiv);
+
+    return centeredOverlay;
+  };
+
+  const pickRandom = (arr) => {
+    if (!Array.isArray(arr) || arr.length === 0) return '';
+    return arr[Math.floor(Math.random() * arr.length)];
+  };
+  const pickUnique = (arr, count) => {
+    const list = Array.isArray(arr) ? [...arr] : [];
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    return list.slice(0, Math.max(0, count));
+  };
+
   if (overlay === "race-overlay" || overlay === "quali-overlay") {
     overlayDiv = document.createElement('div');
     overlayDiv.classList.add('race-overlay');
@@ -2235,6 +3014,159 @@ function manage_overlay(imageContainer, overlay, data, image) {
     overlayDiv.appendChild(secondTeam);
     overlayDiv.appendChild(third);
     overlayDiv.appendChild(thirdTeam);
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "reaction-overlay") {
+    overlayDiv = document.createElement('div');
+    overlayDiv.classList.add('reaction-overlay');
+
+    const candidateTeamId = Number.parseInt(data?.driverTeamIdInTitle, 10);
+    const teamId = Number.isFinite(candidateTeamId) && candidateTeamId >= 1 && candidateTeamId <= 10
+      ? candidateTeamId
+      : (Math.floor(Math.random() * 10) + 1);
+
+    const teamColor = colors_dict?.[`${teamId}0`] ?? '#ffffff';
+
+    const titleDiv = document.createElement('div');
+    titleDiv.classList.add('reaction-title');
+    titleDiv.style.borderBottomColor = teamColor;
+
+    const titleTextDiv = document.createElement('div');
+    titleTextDiv.classList.add('reaction-title-text');
+    titleTextDiv.innerText = 'POST RACE REACTIONS';
+
+    const raceNameDiv = document.createElement('div');
+    const raceGP = countries_data?.[races_names?.[data?.trackId]]?.adjective ?? 'Unknown GP';
+    raceNameDiv.classList.add('reaction-race-name');
+    raceNameDiv.innerText = `${data?.seasonYear ?? ''} ${raceGP} GP`.trim();
+
+    titleDiv.appendChild(titleTextDiv);
+    titleDiv.appendChild(raceNameDiv);
+
+    overlayDiv.appendChild(titleDiv);
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "fake-transfer-overlay") {
+    const driver = data?.drivers?.[0];
+    const driverName = driver?.name ?? '';
+    const teamName = driver?.team ?? 'their current team';
+    const teamId = driver?.teamId;
+
+    const phrases = [
+      `Could be leaving ${teamName}`,
+      `Rumours of a departure from ${teamName}`,
+      `Exit talks at ${teamName}`,
+      `A possible move away from ${teamName}`,
+      `${teamName} future uncertain`,
+      `Departure from ${teamName} speculated`,
+      `Linked with a move away from ${teamName}`,
+      `Considering options beyond ${teamName}`,
+      `Transfer rumours swirl around ${teamName}`,
+      `His manager weighing up options beyond ${teamName}`
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'fake-transfer-overlay',
+      title: driverName,
+      subtitle: pickRandom(phrases),
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "silly-season-overlay") {
+    const drivers = Array.isArray(data?.drivers) ? data.drivers : [];
+    const surnames = drivers
+      .map(d => (typeof d?.name === 'string' ? d.name.trim().split(/\s+/).pop() : ''))
+      .filter(Boolean);
+
+    const shown = pickUnique(surnames, 3);
+    const subtitle = shown.length ? shown.join(' • ') : '';
+
+    const candidateTeamId = drivers.find(d => d?.teamId != null)?.teamId;
+    const borderColor = teamColorForId(candidateTeamId ?? (Math.floor(Math.random() * 10) + 1), '#ffffff');
+
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'silly-season-overlay',
+      title: 'SILLY SEASON',
+      subtitle,
+      subtitleClass: 'silly-season-names',
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "contract-renewal-overlay") {
+    const driverName = data?.driver1 ?? '';
+    const teamName = data?.team1 ?? '';
+    const teamId = data?.team1Id;
+
+    const phrases = [
+      `Stays with ${teamName}`,
+      `Renews with ${teamName}`,
+      `Extends deal at ${teamName}`,
+      `Signs a new contract with ${teamName}`,
+      `Commits future to ${teamName}`
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'contract-renewal-overlay',
+      title: driverName,
+      subtitle: pickRandom(phrases.filter(p => !p.endsWith(' ') && p.trim())),
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "massive-exit-overlay") {
+    const driverName = data?.driver1 ?? '';
+    const teamName = data?.team1 ?? '';
+    const teamId = data?.team1Id;
+
+    const headlines = [
+      'CONFIRMED BREAKING',
+      'BREAKING CONFIRMED',
+      'OFFICIAL BREAKING',
+      'CONFIRMED BREAKING',
+      'OFFICIAL ANNOUNCEMENT',
+      "HERE WE GO",
+      "IT'S OFFICIAL",
+      "EXCLUUSIVE BREAKING",
+      "BREAKING NEWS",
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'massive-exit-overlay',
+      title: pickRandom(headlines),
+      subtitle: `${driverName} leaving ${teamName}`.trim(),
+      borderColor
+    });
+    imageContainer.appendChild(overlayDiv);
+  }
+  else if (overlay === "massive-signing-overlay") {
+    const driverName = data?.driver1 ?? '';
+    const teamName = data?.team2 ?? '';
+    const teamId = data?.team2Id;
+
+    const headlines = [
+      'CONFIRMED BREAKING',
+      'BREAKING CONFIRMED',
+      'OFFICIAL BREAKING',
+      'CONFIRMED BREAKING',
+      'OFFICIAL ANNOUNCEMENT',
+      "HERE WE GO",
+      "IT'S OFFICIAL",
+      "EXCLUUSIVE BREAKING",
+      "BREAKING NEWS"
+    ];
+
+    const borderColor = teamColorForId(teamId, '#ffffff');
+    overlayDiv = buildCenteredOverlay({
+      overlayClass: 'massive-signing-overlay',
+      title: pickRandom(headlines),
+      subtitle: `${driverName} signing with ${teamName}`.trim(),
+      borderColor
+    });
     imageContainer.appendChild(overlayDiv);
   }
   else if (overlay === "driver-comparison-overlay") {
@@ -2341,7 +3273,9 @@ function getOrdinalSuffix(n) {
   return n + "th";
 }
 
-document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
+setupNewsLanguageDropdown();
+
+document.querySelectorAll('#newsTypeMenu .redesigned-dropdown-item').forEach(item => {
   item.addEventListener('click', function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -2360,43 +3294,7 @@ document.querySelectorAll('#newsTypeMenu .dropdown-item').forEach(item => {
   });
 });
 
-document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(item => {
-  item.addEventListener("click", function (e) {
-    //do not close the dropdown
-    e.preventDefault();
-    e.stopPropagation();
-
-    console.log(e.target)
-    const selectedModel = e.target.dataset.value;
-    const selectedText = e.target.querySelector(".model-name").innerText;
-
-    document.getElementById("modelSelectorButton").innerText = selectedText;
-    document.getElementById("modelSelectorButton").dataset.value = selectedModel;
-
-    item.classList.toggle("inactive");
-
-    const icon = item.querySelector("i");
-
-    //put all the others i as unactive
-    document.querySelectorAll("#aiModelmenu .dropdown-item").forEach(otherItem => {
-      if (otherItem !== item) {
-        const icon = otherItem.querySelector("i");
-        if (icon) {
-          icon.classList.add("unactive");
-        }
-      }
-      else {
-        if (icon) {
-          icon.classList.remove("unactive");
-        }
-      }
-    });
-
-    localStorage.setItem("ai-model", selectedModel);
-  });
-});
-
-document.querySelector(".reload-news").addEventListener("click", async () => {
+document.querySelector("#reloadNews").addEventListener("click", async () => {
   const newsGrid = document.querySelector(".news-grid");
   newsGrid.innerHTML = '';
 
@@ -2405,3 +3303,73 @@ document.querySelector(".reload-news").addEventListener("click", async () => {
 
   generateNews();
 });
+
+export function updateNewsYearsButton(message){
+  let years = message.yearsAvailable;
+  const newsYearsMenu = document.getElementById("newsSeasonMenu");
+  const newsYearsButton = document.getElementById("newsSeasonButton");
+  newsYearsMenu.innerHTML = '';
+
+  years.forEach((year) => {
+    const item = document.createElement("a");
+    item.classList.add("redesigned-dropdown-item");
+    item.href = "#";
+    item.dataset.value = year;
+    item.innerText = year;
+    item.addEventListener("click", function (e) {
+      console.log("Selected news year:", year);
+      newsYearsButton.querySelector("span").innerText = year;
+      const command = new Command("getNewsFromSeason", { season: year });
+      command.execute();
+    });
+    newsYearsMenu.appendChild(item);
+  });
+  //set the text in the button to the current year
+  const lastYear = Math.max(...years);
+  newsYearsButton.querySelector("span").innerText = lastYear;
+
+}
+
+async function addTurningPointContexts(prompt, date) {
+  const command = new Command("getNews", {});
+  let resp = await command.promiseExecute();
+  let news = resp.content;
+
+  const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
+  const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
+
+  if (turningPointsOutcomes.length > 0) {
+    let number = 1;
+    let turningOutcomesText = ``;
+    turningOutcomesText += turningPointsOutcomes.map(tp => {
+      const turningDate = tp.date;
+      if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
+        if (tp.id.includes("investment")) {
+          return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
+        }
+        else if (tp.id.includes("technical_directive")) {
+          return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
+        }
+        else if (tp.id.includes("dsq")) {
+          return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
+        }
+        else if (tp.id.includes("substitution")) {
+          return `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
+        }
+        else if (tp.id.includes("transfer")) {
+          return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
+        }
+        else if (tp.id.includes("injury")) {
+          return `${number++}. ${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`;
+        }
+        else if (tp.id.includes("_world_champion")) {
+          return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
+        }
+      }
+    }).join("\n");
+    if (turningOutcomesText) {
+      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${turningOutcomesText}`;
+    }
+  }
+  return prompt;
+}

@@ -1,7 +1,8 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
-  fetchDrivers, fetchStaff, fetchEngines, fetchCalendar, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
-  fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContract,
+  fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
+  fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
+  fetchJuniorTeamDriverNames,
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
@@ -14,8 +15,8 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
-import { editCalendar } from "./scriptUtils/calendarUtils";
-import { fireDriver, hireDriver, swapDrivers, editContract, futureContract } from "./scriptUtils/transferUtils";
+import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
+import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
@@ -28,12 +29,19 @@ import {
   loadNewsMapFromDB,
   ensureTurningPointsStructure,
   deleteNews,
-  deleteTurningPoints
+  deleteTurningPoints,
+  getNewsAndTpYearsAvailable,
+  getNewsFromSeason,
+  deleteNewByKey,
+  checkDoublePointsBug,
+  fixDoublePointsBug,
+  getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
+import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -70,9 +78,10 @@ const workerCommands = {
   yearSelected: (data, postMessage) => {
     const year = data.year
     const isCurrentYear = data.isCurrentYear || true;
-    const results = fetchSeasonResults(year, isCurrentYear, true);
-    const events = fetchEventsFrom(year);
-    const teams = fetchTeamsStandings(year);
+    const formula = data.formula ? Number(data.formula) : 1;
+    const results = fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
+    const events = fetchEventsFrom(year, formula);
+    const teams = fetchTeamsStandings(year, formula);
     const pointsInfo = fetchPointsRegulations()
 
     postMessage({
@@ -115,11 +124,23 @@ const workerCommands = {
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
 
+    const regulations = fetchRegulationsData();
+    postMessage({ responseMessage: "Regulations fetched", content: regulations });
+
     const year = fetchYear();
-    postMessage({ responseMessage: "Year fetched", content: year });
+    postMessage({ responseMessage: "Year fetched", content: year });       
+
+    const previousYear = Number(year) - 1;
+    if (Number.isFinite(previousYear) && previousYear > 0) {
+      const standings = fetchTeamsStandings(previousYear, 1);
+      postMessage({
+        responseMessage: "Previous year teams standings fetched",
+        content: { year: previousYear, standings }
+      });
+    }
 
     const numbers = fetchDriverNumbers();
-    postMessage({ responseMessage: "Numbers fetched", content: numbers });
+    postMessage({ responseMessage: "Numbers fetched", content: numbers });      
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races] });
@@ -208,8 +229,18 @@ const workerCommands = {
     postMessage(designResponse);
   },
   driverRequest: (data, postMessage) => {
-    const contract = fetchDriverContract(data.driverID);
+    const contract = fetchDriverContracts(data.driverID);
     postMessage({ responseMessage: "Contract fetched", content: contract });
+  },
+  juniorTeamDriversRequest: (data, postMessage) => {
+    const teamID = Number(data.teamID);
+    if (!Number.isFinite(teamID) || teamID < 11 || teamID > 31) {
+      postMessage({ responseMessage: "Error", error: "Invalid junior team id" });
+      return;
+    }
+
+    const driverNames = fetchJuniorTeamDriverNames(teamID);
+    postMessage({ responseMessage: "Junior team drivers fetched", content: { teamID, driverNames } });
   },
   partRequest: (data, postMessage) => {
     const partValues = getUnitValueFromOnePart(data.designID);
@@ -307,10 +338,21 @@ const workerCommands = {
   },
   editCalendar: (data, postMessage) => {
     const year = getGlobals().yearIteration;
-    editCalendar(data.calendarCodes, year, data.racesData);
+    editCalendar(year, data.racesData);
     postMessage({
       responseMessage: "Calendar updated",
       noti_msg: "Succesfully updated the calendar",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
+  editRegulations: (data, postMessage) => {
+    updateRegulations(data);
+    const regulations = fetchRegulationsData();
+    postMessage({
+      responseMessage: "Regulations fetched",
+      content: regulations,
+      noti_msg: "Succesfully updated regulations",
       isEditCommand: true,
       unlocksDownload: true
     });
@@ -340,6 +382,20 @@ const workerCommands = {
       isEditCommand: true,
       unlocksDownload: true
     });
+  },
+  juniorTransfer(data, postMessage) {
+    transferJuniorDriver(data.driverID, data.teamID, data.posInTeam, getGlobals().yearIteration);
+    postMessage({
+      responseMessage: "Junior driver transferred",
+      noti_msg: `Succesfully transferred ${data.driver} to ${data.team}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
   },
   autoContract: (data, postMessage) => {
     hireDriver("auto", data.driverID, data.teamID, data.position, getGlobals().yearIteration);
@@ -505,17 +561,33 @@ const workerCommands = {
       const tpState = ensureTurningPointsStructure(tpStateFromDB);
 
       const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
+      const doublePointsBug = checkDoublePointsBug(turningPointState)
+      const yearsAvailable = getNewsAndTpYearsAvailable()
 
       postMessage({
         responseMessage: "News fetched",
         noti_msg: "News generated successfully",
-        content: { newsList, turningPointState },
+        content: { newsList, turningPointState, yearsAvailable, doublePointsBug },
         unlocksDownload: true
       });
     } catch (e) {
-      console.error(e);
+        console.error("ERROR COMPLETO:", e);
+      console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
     }
+  },
+  fixDoublePointsBug: (data, postMessage) => {
+    const raceBugged = data.raceId;
+    fixDoublePointsBug(raceBugged);
+
+    postMessage({ responseMessage: "Double points bug fixed", noti_msg: "Double points bug fixed successfully", unlocksDownload: true });
+  },
+  getNewsFromSeason: (data, postMessage) => {
+    const season = data.season;
+    let newsAndTp = getNewsFromSeason(season);
+    const currentSeason = getGlobals().currentDate[1];
+    newsAndTp.isCurrentSeason = (season == currentSeason);
+    postMessage({ responseMessage: "News from season fetched", content: newsAndTp });
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;
@@ -554,9 +626,16 @@ const workerCommands = {
   },
   fullChampionshipDetailsRequest: (data, postMessage) => {
     const season = data.season;
+    const junior = data.junior || false;
 
     const results = getFullChampionSeasonDetails(season);
     postMessage({ responseMessage: "Full championship details fetched", content: results });
+  },
+  fullFeederSeriesDetailsRequest: (data, postMessage) => {
+    const season = data.season;
+
+    const results = getFullFeederSeriesDetails(season, true);
+    postMessage({ responseMessage: "Full feeder series details fetched", content: results });
   },
   recordSelected: (data, postMessage) => {
     const type = data.type;
@@ -595,13 +674,16 @@ const workerCommands = {
     const originalStableKey = data.id;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "negative");
-    newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+
 
     if (originalStableKey) {
       updateNewsFields(originalStableKey, { turning_point_type: "cancelled" });
     }
 
-    upsertNews([newResponse]);
+    if (newResponse){
+      newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+      upsertNews([newResponse]);
+    } 
 
     postMessage({ responseMessage: "Turning point negative", noti_msg: "Cancelled turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
@@ -653,10 +735,19 @@ const workerCommands = {
       postMessage({ responseMessage: "Error", error: e.message });
     }
   },
+  deleteNewsArticle: (data, postMessage) => {
+    const articleId = data.articleId;
+    const ok = deleteNewByKey(articleId);
+    postMessage({ responseMessage: ok ? "Article deleted successfully" : "Article not found", noti_msg: ok ? "Article deleted successfully" : "Article not found", isEditCommand: true, unlocksDownload: true });
+  },
   deleteNews: (data, postMessage) => {
     deleteNews();
     deleteTurningPoints();
     postMessage({ responseMessage: "News deleted successfully", unlocksDownload: true });
+  },
+  enginesRefresh: (data, postMessage) => {
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
   }
 
 

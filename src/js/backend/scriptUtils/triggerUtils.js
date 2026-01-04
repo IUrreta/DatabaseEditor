@@ -10,14 +10,6 @@ const difficultyDict = {
     research: 0
   },
   1: {
-    name: "reducedWeight",
-    perc: 0,
-    "7and8": 0,
-    "9": 0,
-    reduction: 0,
-    research: 0
-  },
-  2: {
     name: "extraHard",
     perc: 0.5,
     "7and8": 0.01,
@@ -25,7 +17,7 @@ const difficultyDict = {
     reduction: 0,
     research: 8
   },
-  3: {
+  2: {
     name: "brutal",
     perc: 0.8,
     "7and8": 0.016,
@@ -33,7 +25,7 @@ const difficultyDict = {
     reduction: 0.05,
     research: 14
   },
-  4: {
+  3: {
     name: "unfair",
     perc: 1.5,
     "7and8": 0.03,
@@ -41,7 +33,7 @@ const difficultyDict = {
     reduction: 0.11,
     research: 30
   },
-  5: {
+  4: {
     name: "insane",
     perc: 2,
     "7and8": 0.04,
@@ -49,7 +41,7 @@ const difficultyDict = {
     reduction: 0.16,
     research: 45
   },
-  6: {
+  5: {
     name: "impossible",
     perc: 3,
     "7and8": 0.06,
@@ -65,6 +57,7 @@ const invertedDifficultyDict = Object.fromEntries(
 );
 
 export function manageDifficultyTriggers(triggerList) {
+  console.log("Managing difficulty triggers with list:", triggerList);
   if (triggerList.statDif !== undefined) manageDesignBoostTriggers(triggerList.statDif);
   if (triggerList.designTimeDif !== undefined) manageDesignTimeTriggers(triggerList.designTimeDif);
   if (triggerList.lightDif !== undefined) manageWeightTrigger(triggerList.lightDif);
@@ -73,14 +66,18 @@ export function manageDifficultyTriggers(triggerList) {
 }
 
 export function manageWeightTrigger(triggerLevel) {
-  queryDB("DROP TRIGGER IF EXISTS reduced_weight_normal");
-  queryDB("DROP TRIGGER IF EXISTS reduced_weight_extreme");
-  queryDB("DROP TRIGGER IF EXISTS reduced_weight_impossible");
+  console.log("Managing weight trigger with level:", triggerLevel);
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_reducedWeight", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_normal", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_extraHard", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_extreme", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS reduced_weight_impossible", [], 'run');
+  triggerLevel = parseInt(triggerLevel);
   let triggerSQL = "";
   if (triggerLevel > 0) {
     if (triggerLevel === 1) {
       triggerSQL = `
-          CREATE TRIGGER reduced_weight_normal
+          CREATE TRIGGER reduced_weight_extraHard
           AFTER INSERT ON Parts_Designs_StatValues
           FOR EACH ROW
           WHEN (
@@ -108,7 +105,7 @@ export function manageWeightTrigger(triggerLevel) {
             AND PartStat = 15;
           END;
         `;
-    } else if (triggerLevel === 6) {
+    } else if (triggerLevel === 2) {
       triggerSQL = `
           CREATE TRIGGER reduced_weight_impossible
           AFTER INSERT ON Parts_Designs_StatValues
@@ -139,46 +136,27 @@ export function manageWeightTrigger(triggerLevel) {
           END;
         `;
     }
-    if (triggerSQL) queryDB(triggerSQL);
+    if (triggerSQL) queryDB(triggerSQL, [], 'run');
   }
 }
 
 export function manageDesignTimeTriggers(triggerLevel) {
-  queryDB("DROP TRIGGER IF EXISTS designTime_extraHard");
-  queryDB("DROP TRIGGER IF EXISTS designTime_brutal");
-  queryDB("DROP TRIGGER IF EXISTS designTime_unfair");
-  queryDB("DROP TRIGGER IF EXISTS designTime_insane");
-  queryDB("DROP TRIGGER IF EXISTS designTime_impossible");
-  let triggerSQL = "";
-  if (triggerLevel > 0) {
-    const triggerName = `designTime_${difficultyDict[triggerLevel].name}`;
-    const reduction = difficultyDict[triggerLevel].reduction;
-    triggerSQL = `
-        CREATE TRIGGER ${triggerName}
-        AFTER INSERT ON Parts_Designs_StatValues
-        FOR EACH ROW
-        WHEN (
-          SELECT TeamID FROM Parts_Designs WHERE DesignID = NEW.DesignID
-          AND ValidFrom = (SELECT CurrentSeason FROM Player_State)
-        ) != (SELECT TeamID FROM Player)
-        AND NEW.PartStat != 15
-        BEGIN
-          UPDATE Parts_Designs
-          SET DesignWork = DesignWork + (${reduction} * (DesignWorkMax - DesignWork))
-          WHERE DesignID = NEW.DesignID
-          AND DayCompleted = -1 AND DesignWork IS NOT NULL;
-        END;
-      `;
-    queryDB(triggerSQL);
-  }
+  queryDB("DROP TRIGGER IF EXISTS designTime_extraHard", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS designTime_brutal", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS designTime_unfair", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS designTime_insane", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS designTime_impossible", [], 'run');
 }
 
 export function manageDesignBoostTriggers(triggerLevel) {
-  queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard");
-  queryDB("DROP TRIGGER IF EXISTS difficulty_brutal");
-  queryDB("DROP TRIGGER IF EXISTS difficulty_unfair");
-  queryDB("DROP TRIGGER IF EXISTS difficulty_insane");
-  queryDB("DROP TRIGGER IF EXISTS difficulty_impossible");
+  triggerLevel = parseInt(triggerLevel);
+  queryDB("DROP TRIGGER IF EXISTS difficulty_reducedWeight", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_extraHard", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_reducedWeight", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_brutal", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_unfair", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_insane", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS difficulty_impossible", [], 'run');
   let triggerSQL = "";
   if (triggerLevel > 0) {
     const triggerName = `difficulty_${difficultyDict[triggerLevel].name}`;
@@ -257,111 +235,23 @@ export function manageDesignBoostTriggers(triggerLevel) {
 
         END;
       `;
-    queryDB(triggerSQL);
+    queryDB(triggerSQL, [], 'run');
   }
 }
 
 export function manageInstantBuildTriggers(triggerLevel) {
-  queryDB("DROP TRIGGER IF EXISTS instant_build_insane");
-  queryDB("DROP TRIGGER IF EXISTS instant_build_impossible");
-  let triggerSQL = "";
-  if (triggerLevel > 0) {
-    const triggerName = `instant_build_${difficultyDict[triggerLevel].name}`;
-    if (triggerLevel === 5) {
-      triggerSQL = `
-          CREATE TRIGGER ${triggerName}
-          AFTER UPDATE ON Parts_Designs
-          FOR EACH ROW
-          WHEN NEW.DesignWork >= NEW.DesignWorkMax
-          AND NEW.TeamID != (SELECT TeamID FROM Player)
-          AND NEW.DayCompleted = -1
-          AND NEW.DayCreated != -1
-          BEGIN
-            INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
-            VALUES (
-              (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
-              NEW.DesignID,                                        
-              CASE NEW.PartType                                    
-                WHEN 3 THEN 2000
-                WHEN 4 THEN 500
-                WHEN 5 THEN 500
-                WHEN 6 THEN 1500
-                WHEN 7 THEN 1500
-                WHEN 8 THEN 1500
-                ELSE 1000 
-              END,
-              1,
-              NEW.ManufactureCount + 1,
-              NULL, NULL, 0, NULL
-            );
-            
-            UPDATE Parts_Designs
-            SET ManufactureCount = NEW.ManufactureCount + 1
-            WHERE DesignID = NEW.DesignID;
-          END;
-        `;
-    } else if (triggerLevel === 6) {
-      triggerSQL = `
-          CREATE TRIGGER ${triggerName}
-          AFTER UPDATE ON Parts_Designs
-          FOR EACH ROW
-          WHEN NEW.DesignWork >= NEW.DesignWorkMax
-          AND NEW.TeamID != (SELECT TeamID FROM Player)
-          AND NEW.DayCompleted = -1
-          AND NEW.DayCreated != -1
-          BEGIN
-            INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
-            VALUES (
-              (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items),
-              NEW.DesignID,                                        
-              CASE NEW.PartType                                    
-                WHEN 3 THEN 2000
-                WHEN 4 THEN 500
-                WHEN 5 THEN 500
-                WHEN 6 THEN 1500
-                WHEN 7 THEN 1500
-                WHEN 8 THEN 1500
-                ELSE 1000
-              END,
-              1,
-              NEW.ManufactureCount + 1,
-              NULL, NULL, 0, NULL
-            );
-            
-            INSERT INTO Parts_Items (ItemID, DesignID, BuildWork, Condition, ManufactureNumber, ProjectID, AssociatedCar, InspectionState, LastEquippedCar)
-            VALUES (
-              (SELECT IFNULL(MAX(ItemID), 0) + 1 FROM Parts_Items), 
-              NEW.DesignID,                                        
-              CASE NEW.PartType                                    
-                WHEN 3 THEN 2000
-                WHEN 4 THEN 500
-                WHEN 5 THEN 500
-                WHEN 6 THEN 1500
-                WHEN 7 THEN 1500
-                WHEN 8 THEN 1500
-                ELSE 1000 
-              END,
-              1,
-              NEW.ManufactureCount + 2,
-              NULL, NULL, 0, NULL
-            );
-            
-            UPDATE Parts_Designs
-            SET ManufactureCount = NEW.ManufactureCount + 2
-            WHERE DesignID = NEW.DesignID;
-          END;
-        `;
-    }
-    if (triggerSQL) queryDB(triggerSQL);
-  }
+  queryDB("DROP TRIGGER IF EXISTS instant_build_insane", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS instant_build_impossible", [], 'run');
 }
 
 export function manageResearchTriggers(triggerLevel) {
-  queryDB("DROP TRIGGER IF EXISTS research_extraHard");
-  queryDB("DROP TRIGGER IF EXISTS research_brutal");
-  queryDB("DROP TRIGGER IF EXISTS research_unfair");
-  queryDB("DROP TRIGGER IF EXISTS research_insane");
-  queryDB("DROP TRIGGER IF EXISTS research_impossible");
+  queryDB("DROP TRIGGER IF EXISTS research_reducedWeight", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS research_extraHard", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS research_brutal", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS research_unfair", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS research_insane", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS research_impossible", [], 'run');
+  triggerLevel = parseInt(triggerLevel);
   let triggerSQL = "";
   if (triggerLevel > 0) {
     const triggerName = `research_${difficultyDict[triggerLevel].name}`;
@@ -384,22 +274,22 @@ export function manageResearchTriggers(triggerLevel) {
           AND PartType = NEW.PartType;
         END;
       `;
-    queryDB(triggerSQL);
+    queryDB(triggerSQL, [], 'run');
   }
 }
 
 export function upgradeFactories(triggerLevel) {
   if (triggerLevel === 4) {
-    queryDB("UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 34");
+    queryDB("UPDATE Buildings_HQ SET BuildingID = 34, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 34", [], 'run');
   } else if (triggerLevel === 6) {
-    queryDB("UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35");
+    queryDB("UPDATE Buildings_HQ SET BuildingID = 35, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID < 35", [], 'run');
   } else if (triggerLevel === -1) {
-    queryDB("UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID >= 34");
+    queryDB("UPDATE Buildings_HQ SET BuildingID = 33, DegradationValue = 1 WHERE BuildingType = 3 AND TeamID != (SELECT TeamID FROM Player) AND BuildingID >= 34", [], 'run');
   }
 }
 
 export function manageRefurbishTrigger(type) {
-  queryDB("DROP TRIGGER IF EXISTS refurbish_fix");
+  queryDB("DROP TRIGGER IF EXISTS refurbish_fix", [], 'run');
   if (type === 1) {
     const triggerSQL = `
         CREATE TRIGGER refurbish_fix
@@ -412,7 +302,7 @@ export function manageRefurbishTrigger(type) {
           AND TeamID != (SELECT TeamID FROM Player);
         END;
       `;
-    queryDB(triggerSQL);
+    queryDB(triggerSQL, [], 'run');
   }
 }
 
@@ -427,14 +317,17 @@ export function fetchExistingTriggers() {
   };
   let refurbish = 0;
   let frozenMentality = 0;
-  const triggers = queryDB("SELECT name FROM sqlite_master WHERE type='trigger';", "allRows");
+  const triggers = queryDB("SELECT name FROM sqlite_master WHERE type='trigger';", [], "allRows");
   if (triggers && triggers.length) {
     triggers.forEach(row => {
       const triggerName = row[0];
       const parts = triggerName.split("_");
       const dif = parts[parts.length - 1];
+      console.log("Processing trigger:", triggerName, "with difficulty part:", dif);
       const dif_level = invertedDifficultyDict[dif] !== undefined ? invertedDifficultyDict[dif] : 0;
+      console.log("Mapped difficulty level:", dif_level);
       const type_trigger = parts[0];
+
       if (type_trigger === "difficulty") {
         triggerList.statDif = dif_level;
       } else if (type_trigger === "designTime") {
@@ -444,12 +337,19 @@ export function fetchExistingTriggers() {
       } else if (type_trigger === "research") {
         triggerList.researchDif = dif_level;
       } else if (type_trigger === "reduced") {
-        triggerList.lightDif = dif_level;
+        console.log("Found weight trigger with difficulty level:", dif_level);
+        if (dif_level === 6) {
+          triggerList.lightDif = 2;
+        }
+        else{
+          triggerList.lightDif = dif_level;
+        }
       } else if (type_trigger === "refurbish") {
         refurbish = 1;
       } else if (type_trigger === "clear") {
         frozenMentality = 1;
       }
+      
       if (dif_level > highest_difficulty) highest_difficulty = dif_level;
     });
   }
@@ -458,12 +358,12 @@ export function fetchExistingTriggers() {
 
 export function editFreezeMentality(state) {
   if (state === 0) {
-    queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;");
-    queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Update;");
-    queryDB("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;");
-    queryDB("DROP TRIGGER IF EXISTS clear_Staff_Mentality_AreaOpinions;");
-    queryDB("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;");
-    queryDB("DROP TRIGGER IF EXISTS reset_Staff_State;");
+    queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;", [], 'run');
+    queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Update;", [], 'run');
+    queryDB("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;", [], 'run');
+    queryDB("DROP TRIGGER IF EXISTS clear_Staff_Mentality_AreaOpinions;", [], 'run');
+    queryDB("DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;", [], 'run');
+    queryDB("DROP TRIGGER IF EXISTS reset_Staff_State;", [], 'run');
   } else {
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Insert
@@ -473,7 +373,7 @@ export function editFreezeMentality(state) {
         SET Opinion = 2
         WHERE Opinion != 2;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Update
       AFTER UPDATE OF Opinion ON Staff_Mentality_AreaOpinions
@@ -482,21 +382,21 @@ export function editFreezeMentality(state) {
         SET Opinion = 2
         WHERE Opinion != 2;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Statuses
       AFTER INSERT ON Staff_Mentality_Statuses
       BEGIN
         DELETE FROM Staff_Mentality_Statuses;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Events
       AFTER INSERT ON Staff_Mentality_Events
       BEGIN
         DELETE FROM Staff_Mentality_Events;
       END;
-    `);
+    `, [], 'run');
     queryDB(`
       CREATE TRIGGER IF NOT EXISTS reset_Staff_State
       AFTER UPDATE ON Staff_State
@@ -504,7 +404,6 @@ export function editFreezeMentality(state) {
         UPDATE Staff_State
         SET Mentality = 50, MentalityOpinion = 2;
       END;
-    `);
+    `, [], 'run');
   }
 }
-

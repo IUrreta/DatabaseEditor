@@ -60,7 +60,7 @@ Chart.register(annotationPlugin);
 
 export function init_colors_dict(theme) {
     console.log("Selected theme:", theme);
-    colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#2293D1", "51": "#fd48c7", "60": "#37BEDD", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000" }
+    colors_dict = { "10": "#F91536", "11": theme_colors[theme].general_secondary, "20": "#F58020", "21": "#47c7fc", "30": "#3671C6", "31": "#ffd300", "40": "#6CD3BF", "41": theme_colors[theme].general_secondary, "50": "#F168BA", "51":  theme_colors[theme].general_secondary, "60": "#1868DB", "61": theme_colors[theme].general_secondary, "70": "#B6BABD", "71": "#f62039", "80": "#5E8FAA", "81": theme_colors[theme].general_secondary, "90": "#C92D4B", "91": theme_colors[theme].general_secondary, "100": "#358C75", "101": "#c3dc00", "320": "#ffffff", "321": "#000000" }
 }
 
 
@@ -862,7 +862,7 @@ export function resetH2H() {
  * Event listeners for the 3 types of graphs
  */
 document.querySelector("#pointsProgression").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Points progression"
+    document.querySelector("#graphTypeButton span").innerText = "Points progression"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.remove("d-none")
@@ -871,7 +871,7 @@ document.querySelector("#pointsProgression").addEventListener("click", function 
 })
 
 document.querySelector("#raceForm").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Race form"
+    document.querySelector("#graphTypeButton span").innerText = "Race form"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.remove("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -880,7 +880,7 @@ document.querySelector("#raceForm").addEventListener("click", function (elem) {
 })
 
 document.querySelector("#qualiForm").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Qualifying form"
+    document.querySelector("#graphTypeButton span").innerText = "Qualifying form"
     document.querySelector("#qualiGraph").classList.remove("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -889,7 +889,7 @@ document.querySelector("#qualiForm").addEventListener("click", function (elem) {
 })
 
 document.querySelector("#gapToWinner").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Gap to winner"
+    document.querySelector("#graphTypeButton span").innerText = "Gap to winner"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -899,7 +899,7 @@ document.querySelector("#gapToWinner").addEventListener("click", function (elem)
 })
 
 document.querySelector("#gapToPole").addEventListener("click", function (elem) {
-    document.querySelector("#graphTypeButton").innerText = "Gap to pole"
+    document.querySelector("#graphTypeButton span").innerText = "Gap to pole"
     document.querySelector("#qualiGraph").classList.add("d-none")
     document.querySelector("#driverGraph").classList.add("d-none")
     document.querySelector("#progressionGraph").classList.add("d-none")
@@ -1149,24 +1149,21 @@ function load_teams_points_graph(data) {
 }
 
 function get_one_driver_points_format(driver, data) {
-    console.log("driver:", driver);
-    console.log("data:", data);
     let d1_races = [];
     let d1_points_provisional = []
     let d1_points = [0]
 
     driver["races"].forEach(function (elem) {
         d1_races.push(elem["raceId"]);
-        let ptsThatRace = elem["points"];
-        if (ptsThatRace === -1) {
+        let ptsThatRace = Number(elem["points"]);
+        if (!Number.isFinite(ptsThatRace) || ptsThatRace === -1) {
             ptsThatRace = 0;
         }
-        if (elem["sprintPoints"] != null && elem["sprintPoints"] !== -1) {
-            d1_points_provisional.push(ptsThatRace + elem["sprintPoints"])
-        }
-        else {
-            d1_points_provisional.push(ptsThatRace)
-        }
+        const qualiPts = Number(elem["qualifyingPoints"]);
+        const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+        const sprintPts = Number(elem["sprintPoints"]);
+        const sPts = (elem["sprintPoints"] != null && Number.isFinite(sprintPts) && sprintPts !== -1) ? sprintPts : 0;
+        d1_points_provisional.push(ptsThatRace + qPts + sPts);
     })
     data[0].forEach(function (elem) {
         let index1 = d1_races.indexOf(elem[0])
@@ -1191,10 +1188,8 @@ function get_one_driver_points_format(driver, data) {
 }
 
 function load_graphs_data(drivers) {
-    console.log("data:", drivers);
     let max_gapPole = 0;
     let max_gapWinner = 0;
-    console.log(drivers);
     const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
     const races_done = drivers[drivers.length - 1]; // array de raceId ya corridas
 
@@ -1262,10 +1257,13 @@ function load_graphs_data(drivers) {
                 let ptsThatRace = Number(r.points);
                 if (ptsThatRace === -1) ptsThatRace = 0;
 
+                const qualiPts = Number(r.qualifyingPoints);
+                const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+
                 const sprintPts = (r.sprintPoints != null && r.sprintPoints !== -1)
                     ? Number(r.sprintPoints) : 0;
 
-                d1_points_provisional.push(ptsThatRace + sprintPts);
+                d1_points_provisional.push(ptsThatRace + qPts + sprintPts);
             });
 
             // --- color del piloto ---

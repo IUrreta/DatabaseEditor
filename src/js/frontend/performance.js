@@ -2,8 +2,7 @@ import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_
     theme_colors
   } from "./config";
 import { colors_dict, get_colors_dict } from "./head2head";
-import { manageSaveButton, game_version } from "./renderer";
-import { first_show_animation, selectedTheme } from "./renderer";
+import { manageSaveButton, game_version, attachHold, first_show_animation, selectedTheme } from "./renderer";
 import { Command } from "../backend/command.js";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -181,7 +180,7 @@ document.getElementById("teamsCarsButton").addEventListener("click", function (e
 
 document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#attributeButton").innerText = elem.innerText;
+        document.querySelector("#attributeButton span").innerText = elem.innerText;
         order_by(elem.dataset.attribute);
     })
 })
@@ -259,7 +258,7 @@ export function manage_engineStats(engineData) {
             let attribute = engine.querySelector(`.engine-performance-stat[data-attribute="${key}"]`);
             let input = attribute.querySelector(".custom-input-number");
             let bar = attribute.querySelector(".engine-performance-progress");
-            input.value = value.toFixed(1) + " %";
+            input.value = value.toFixed(1);
             bar.style.width = value + "%";
         }
     })
@@ -333,10 +332,10 @@ export function load_parts_stats(data) {
                 if (stat !== "15") {
                     let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
                     if (stat === "7" || stat === "8" || stat === "9") {
-                        stat_input.value = data[key][stat].toFixed(2) + " kN"
+                        stat_input.value = data[key][stat].toFixed(2)
                     }
                     else {
-                        stat_input.value = data[key][stat].toFixed(2) + " %"
+                        stat_input.value = data[key][stat].toFixed(2)
                     }
                 }
             }
@@ -540,10 +539,10 @@ export function load_one_part(data) {
         if (stat !== "15") {
             let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
             if (stat === "7" || stat === "8" || stat === "9") {
-                stat_input.value = data[key][stat].toFixed(2) + " kN"
+                stat_input.value = data[key][stat].toFixed(2)
             }
             else {
-                stat_input.value = data[key][stat].toFixed(2) + " %"
+                stat_input.value = data[key][stat].toFixed(2)
             }
         }
     }
@@ -617,10 +616,9 @@ document.querySelector("#fitButton").addEventListener("click", function () {
 
     }
     //pending
-    console.log(data)
 })
 
-document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach(function (elem) {
+document.querySelectorAll(".part-performance-title .redesigned-chevron").forEach(function (elem) {
     elem.addEventListener("click", function () {
         elem.classList.toggle("clicked")
         let generalPart = elem.parentNode.parentNode
@@ -634,161 +632,88 @@ document.querySelectorAll(".part-performance-title .bi-caret-down-fill").forEach
     })
 })
 
-document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-plus-lg").forEach(function (elem) {
-    let intervalIds = [];
+function buildHoldOptions(input, extra = {}) {
+    const min = parseFloat(input.min);
+    const max = parseFloat(input.max);
+    const isEngineStat = !!input.closest(".engine-performance-stat");
+    const format = extra.format ?? ((val) => (
+        Number.isFinite(val) ? val.toFixed(2) : String(val)
+    ));
+    const opts = { ...extra, format };
+    if (!Number.isNaN(min)) {
+        opts.min = min;
+    }
+    if (!Number.isNaN(max)) {
+        opts.max = max;
+    }
+    if (isEngineStat && Number.isNaN(min)) {
+        opts.min = 0;
+    }
+    if (isEngineStat && Number.isNaN(max)) {
+        opts.max = 100;
+    }
+    return opts;
+}
 
-    elem.addEventListener("mousedown", function () {
-        let part = elem.parentNode.parentNode.parentNode.parentNode;
-        let inputs = part.querySelectorAll(".custom-input-number");
+document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-plus.new-augment-button").forEach(function (elem) {
+    const part = elem.closest(".part-performance");
+    if (!part) return;
+    const inputs = part.querySelectorAll(".custom-input-number");
+    inputs.forEach(function (input) {
+        const increment = input.max === "100" ? 0.5 : 0.025;
+        attachHold(elem, input, increment, buildHoldOptions(input));
+    });
+});
 
-        inputs.forEach(function (input) {
-            let increment;
-            if (input.max === "100") {
-                increment = 0.5
+document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-dash.new-augment-button").forEach(function (elem) {
+    const part = elem.closest(".part-performance");
+    if (!part) return;
+    const inputs = part.querySelectorAll(".custom-input-number");
+    inputs.forEach(function (input) {
+        const increment = input.max === "100" ? -0.5 : -0.025;
+        attachHold(elem, input, increment, buildHoldOptions(input));
+    });
+});
+
+document.querySelector(".performance-show").querySelectorAll(".stat-number .bi-plus.new-augment-button").forEach(button => {
+    const input = button.parentNode.querySelector(".custom-input-number");
+    if (!input) return;
+    attachHold(button, input, 0.01, buildHoldOptions(input));
+});
+
+document.querySelector(".performance-show").querySelectorAll(".stat-number .bi-dash.new-augment-button").forEach(button => {
+    const input = button.parentNode.querySelector(".custom-input-number");
+    if (!input) return;
+    attachHold(button, input, -0.01, buildHoldOptions(input));
+});
+
+document.querySelector(".engines-show").querySelectorAll(".stat-number .bi-plus.new-augment-button").forEach(button => {
+    const stat = button.closest(".engine-performance-stat");
+    const input = button.parentNode.querySelector(".custom-input-number");
+    const bar = stat ? stat.querySelector(".engine-performance-progress") : null;
+    if (!input) return;
+    attachHold(button, input, 0.5, buildHoldOptions(input, {
+        onChange: (val) => {
+            if (bar) {
+                bar.style.width = val + "%";
             }
-            else {
-                increment = 0.025
+        }
+    }));
+});
+
+document.querySelector(".engines-show").querySelectorAll(".stat-number .bi-dash.new-augment-button").forEach(button => {
+    const stat = button.closest(".engine-performance-stat");
+    const input = button.parentNode.querySelector(".custom-input-number");
+    const bar = stat ? stat.querySelector(".engine-performance-progress") : null;
+    if (!input) return;
+    attachHold(button, input, -0.5, buildHoldOptions(input, {
+        onChange: (val) => {
+            if (bar) {
+                bar.style.width = val + "%";
             }
-            updateValue(input, increment);
-            let intervalId = setInterval(() => {
-                updateValue(input, increment);
-            }, 100);
-            intervalIds.push(intervalId);
-        });
-    });
-
-    elem.addEventListener("mouseup", function () {
-        intervalIds.forEach(clearInterval);
-        intervalIds = [];
-    });
-
-    elem.addEventListener("mouseleave", function () {
-        intervalIds.forEach(clearInterval);
-        intervalIds = [];
-    });
+        }
+    }));
 });
-
-document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-dash-lg").forEach(function (elem) {
-    let intervalIds = [];
-
-    elem.addEventListener("mousedown", function () {
-        let part = elem.parentNode.parentNode.parentNode.parentNode;
-        let inputs = part.querySelectorAll(".custom-input-number");
-
-        inputs.forEach(function (input) {
-            let increment;
-            if (input.max === "100") {
-                increment = -0.5
-            }
-            else {
-                increment = -0.025
-            }
-            updateValue(input, increment);
-            let intervalId = setInterval(() => {
-                updateValue(input, increment);
-            }, 100);
-            intervalIds.push(intervalId);
-        });
-    });
-
-    elem.addEventListener("mouseup", function () {
-        intervalIds.forEach(clearInterval);
-        intervalIds = [];
-    });
-
-    elem.addEventListener("mouseleave", function () {
-        intervalIds.forEach(clearInterval);
-        intervalIds = [];
-    });
-});
-
-
-document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-plus-lg').forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function () {
-        const input = this.previousElementSibling;
-        updateValue(input, 0.01);
-        intervalId = setInterval(() => {
-            updateValue(input, 0.01);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-document.querySelector(".engines-show").querySelectorAll('.bi-plus-lg').forEach(button => {
-    let intervalId;
-    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
-    button.addEventListener('mousedown', function () {
-        const input = this.previousElementSibling;
-        updateValue(input, 0.5);
-        bar.style.width = input.value.split(' ')[0] + "%";
-        intervalId = setInterval(() => {
-            updateValue(input, 0.5);
-            bar.style.width = input.value.split(' ')[0] + "%";
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-
-
-document.querySelector(".performance-show").querySelectorAll('.stat-number .bi-dash-lg').forEach(button => {
-    let intervalId;
-    button.addEventListener('mousedown', function () {
-        const input = this.nextElementSibling;
-        updateValue(input, -0.01);
-        intervalId = setInterval(() => {
-            updateValue(input, -0.01);
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-document.querySelector(".engines-show").querySelectorAll('.bi-dash-lg').forEach(button => {
-    let intervalId;
-    let bar = button.parentNode.parentNode.querySelector(".engine-performance-progress");
-    button.addEventListener('mousedown', function () {
-        const input = this.nextElementSibling;
-        updateValue(input, -0.5);
-        bar.style.width = input.value.split(' ')[0] + "%";
-        intervalId = setInterval(() => {
-            updateValue(input, -0.5);
-            bar.style.width = input.value.split(' ')[0] + "%";
-        }, 100);
-    });
-
-    button.addEventListener('mouseup', function () {
-        clearInterval(intervalId);
-    });
-
-    button.addEventListener('mouseleave', function () {
-        clearInterval(intervalId);
-    });
-});
-
-
-
 document.querySelector(".performance-show").querySelectorAll(".new-or-existing-part div").forEach(function (elem) {
     elem.addEventListener("click", function () {
         let parent = elem.parentNode;
@@ -800,21 +725,6 @@ document.querySelector(".performance-show").querySelectorAll(".new-or-existing-p
         parent.parentNode.parentNode.dataset.new = elem.dataset.new;
     })
 })
-
-
-function updateValue(input, increment) {
-    let value = input.value.split(' ')[0];
-    let unit = input.value.split(' ')[1];
-    value = (parseFloat(value) + increment).toFixed(2);
-    if (value > parseFloat(input.max)) {
-        value = parseFloat(input.max).toFixed(2);
-    }
-    if (value < parseFloat(input.min)) {
-        value = parseFloat(input.min).toFixed(2);
-    }
-    input.value = value + ' ' + unit;
-}
-
 
 document.querySelector("#performanceGraphButton").addEventListener("click", function () {
     if (!viewingGraph) {
@@ -904,7 +814,7 @@ function add_custom_engine(name, stats) {
     let caret = document.createElement("i")
     let trash = document.createElement("i")
     trash.classList.add("bi", "bi-trash")
-    caret.classList.add("bi", "bi-caret-down-fill", "clicked")
+    caret.classList.add("redesigned-chevron", "clicked")
     generalEngineDiv.classList.add("engine-performance")
     engineTitle.classList.add("engine-performance-title")
     engineStats.classList.add("engine-performance-stats", "collapse", "show")
@@ -928,21 +838,25 @@ function add_custom_engine(name, stats) {
             stat.dataset.attribute = key
             let statTitle = document.createElement("div")
             statTitle.classList.add("part-performance-stat-title")
-            statTitle.innerText = value
+            statTitle.innerText = value + " ";
+            const statUnit = document.createElement("span")
+            statUnit.classList.add("text-secondary")
+            statUnit.innerText = "%"
+            statTitle.appendChild(statUnit)
             let stat_number = document.createElement("div")
             stat_number.classList.add("stat-number")
-            stat_number.innerHTML = '<i class="bi bi-dash-lg"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus-lg"></i>'
+            stat_number.innerHTML = '<i class="bi bi-dash new-augment-button"></i> <input type="text" class="custom-input-number"> <i class="bi bi-plus new-augment-button"></i>'
             let input = stat_number.querySelector(".custom-input-number");
             let bar = document.createElement("div")
             bar.classList.add("engine-performance-bar")
             let bar_progress = document.createElement("div")
             bar_progress.classList.add("engine-performance-progress")
             if (stats[key.toString()] !== undefined) {
-                input.value = stats[key] + " %";
+                input.value = Number(stats[key]).toFixed(1);
                 bar_progress.style.width = stats[key] + "%";
             }
             else {
-                input.value = "50.0 %";
+                input.value = "50.0";
             }
             stat.appendChild(statTitle)
             stat.appendChild(stat_number)
@@ -950,48 +864,21 @@ function add_custom_engine(name, stats) {
             stat.appendChild(bar)
             engineStats.appendChild(stat)
 
-            let less = stat_number.querySelector(".bi-dash-lg");
-            let intervalId;
-            less.addEventListener('mousedown', function () {
-                const input = this.nextElementSibling;
-                updateValue(input, -0.5);
-                bar_progress.style.width = input.value.split(' ')[0] + "%";
-                intervalId = setInterval(() => {
-                    updateValue(input, -0.5);
-                    bar_progress.style.width = input.value.split(' ')[0] + "%";
-                }, 100);
+            let less = stat_number.querySelector(".bi-dash.new-augment-button");
+            let plus = stat_number.querySelector(".bi-plus.new-augment-button");
+            const holdOptions = buildHoldOptions(input, {
+                onChange: (val) => {
+                    bar_progress.style.width = val + "%";
+                }
             });
-
-            less.addEventListener('mouseup', function () {
-                clearInterval(intervalId);
-            });
-
-            less.addEventListener('mouseleave', function () {
-                clearInterval(intervalId);
-            });
-
-            let plus = stat_number.querySelector(".bi-plus-lg");
-
-            plus.addEventListener('mousedown', function () {
-                const input = this.previousElementSibling;
-                updateValue(input, 0.5);
-                bar_progress.style.width = input.value.split(' ')[0] + "%";
-                intervalId = setInterval(() => {
-                    updateValue(input, 0.5);
-                    bar_progress.style.width = input.value.split(' ')[0] + "%";
-                }, 100);
-            });
-
-            plus.addEventListener('mouseup', function () {
-                clearInterval(intervalId);
-            });
-
-            plus.addEventListener('mouseleave', function () {
-                clearInterval(intervalId);
-            });
+            attachHold(less, input, -0.5, holdOptions);
+            attachHold(plus, input, 0.5, holdOptions);
 
         }
     }
+    const blankSpace = document.createElement("div");
+    blankSpace.classList.add("blank-engine-space");
+    engineStats.appendChild(blankSpace);
     generalEngineDiv.appendChild(engineTitle)
     generalEngineDiv.appendChild(engineStats)
     generalEngineDiv.appendChild(caret)
@@ -1043,7 +930,7 @@ export function load_custom_engines(data) {
     engines.forEach(function (engine) {
         add_custom_engine(engine[2], engine[1])
         let engineOption = document.createElement("a")
-        engineOption.classList.add("dropdown-item", "custom-engine")
+        engineOption.classList.add("redesigned-dropdown-item", "custom-engine")
         engineOption.innerText = engine[2].charAt(0).toUpperCase() + engine[2].slice(1)
         engineOption.dataset.engine = engine[0]
         engineOption.href = "#"
@@ -1258,3 +1145,6 @@ function createPerformanceChart(labelsArray) {
         }
     );
 }
+
+
+
