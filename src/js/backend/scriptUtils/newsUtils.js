@@ -2618,7 +2618,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
         }
     });
 
-    //alkso put driverids from bigConfirmedTransfersNews into usedDriverIdsGlobal
+    //also put driverids from bigConfirmedTransfersNews into usedDriverIdsGlobal
     bigConfirmedTransfersNews.forEach(news => {
         let id = news.data.driverId;
         if (id) {
@@ -2629,7 +2629,6 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
     let newsList = [];
 
     monthsDone.forEach(m => {
-        // ---- Cálculos que no dependen del "slot" ----
         const drivers = queryDB(
             `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
              FROM Staff_BasicData bas
@@ -2826,7 +2825,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
                     title,
                     date: excelDate,
                     image: image,
-                    overlay: null,
+                    overlay: "fake-transfer-overlay",
                     data: newData,
                     text: null
                 });
@@ -2917,7 +2916,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
                 title,
                 date: excelDate,
                 image,
-                overlay: null,
+                overlay: "massive-signing-overlay",
                 data: titleData,
                 text: null
             });
@@ -2942,7 +2941,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
                 title: title1,
                 date: excelDate1,
                 image: image1,
-                overlay: null,
+                overlay: "massive-exit-overlay",
                 data: titleData,
                 text: null
             });
@@ -2964,7 +2963,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
                 title: title2,
                 date: excelDate2,
                 image: image2,
-                overlay: null,
+                overlay: "massive-signing-overlay",
                 data: titleData,
                 text: null
             });
@@ -3124,7 +3123,7 @@ export function generateContractRenewalsNews(savedNews = {}, contractRenewals = 
             title,
             date: excelDate,
             image,
-            overlay: null,
+            overlay: "contract-renewal-overlay",
             data: contract,
             text: null
         });
@@ -3467,7 +3466,7 @@ export function generateTransferRumorsNews(offers, savedNews) {
         date: date,
         season: seasonYear,
         image: image,
-        overlay: null,
+        overlay: "silly-season-overlay",
         data: { drivers: driversArray },
         text: null
     };

@@ -14381,6 +14381,53 @@ body.default-theme .news-article-date {
   z-index: 2;
 }
 
+.news-centered-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.05));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  z-index: 2;
+}
+
+.news-centered-overlay .news-centered-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-bottom: 3px solid transparent;
+  color: var(--news-overlays-text);
+  font-family: 'Formula1Bold';
+}
+
+.news-centered-overlay .news-centered-title {
+  font-size: 26px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.news-centered-overlay .news-centered-subtitle {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  opacity: 0.9;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.news-centered-overlay .news-centered-subtitle.silly-season-names {
+  font-size: 18px;
+  letter-spacing: 1px;
+  opacity: 1;
+}
+
 .reaction-overlay .reaction-title {
   display: flex;
   flex-direction: column;

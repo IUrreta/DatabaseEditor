@@ -64,4 +64,23 @@
 # 30th december
 - Added **Regulations** tab to allow players to change Cost cap, engine part limit, points reglations, CFD/WT allocations, etc.
 - Updated Williams logo and color for the 2026 season
+- **Transfers** tab now has the teams ordered by last year's constructor's championship
 - Updated other team's colors
+
+## 2nd january 2026
+- Added turning points probability slider, to make them more or less often
+- Added a progress bar when downloading a save file
+- Changed the style of filters in **Transfers** and **Attributes** tab
+- Added F2/F3 "Season review" new at the end of each season
+- Fixed an issue with team names on performance tab (individual cars) when replacing one team with another one
+- Fixed an bug that would cause news about a driver being champion in a race that hadn't been done yet
+- Minor UI changes on the landing page
+
+## 3rd january 2026
+- Added more photos to race reactions news
+- Added overlay to race reacition news
+- Minor UI changes for **Regulations** tab
+- Minor animations added when loading a save file
+
+## 4th january
+- Added overlays to transfer news
