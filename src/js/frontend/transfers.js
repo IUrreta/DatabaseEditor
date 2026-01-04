@@ -36,6 +36,7 @@ let posInTeam;
 let modalType;
 let driverEditingID;
 let driverEditingName;
+let driverEditingOfficialDriver = false;
 let driver1;
 let driver2;
 let originalTeamId
@@ -514,6 +515,8 @@ function iconListener(icon) {
         document.getElementById("contractModalTitle").innerText = icon.parentNode.parentNode.innerText.replace(/\n/g, ' ') + "'s";
         fetchContracts(icon.parentNode.parentNode)
         let space = icon.parentNode.parentNode.parentNode
+        //officialDriver = space has an id that ends with 1 or 2
+        driverEditingOfficialDriver = space.id.endsWith("1") || space.id.endsWith("2")
         if (space.classList.contains("driver-space") || space.classList.contains("affiliates-space") || (space.id === "free-drivers" && (f2_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid)) || f3_teams.includes(parseInt(icon.parentNode.parentNode.dataset.teamid))))) {
             manage_modal_driver_staff("driver")
         }
@@ -667,9 +670,9 @@ export function manage_modal(info) {
         }
         document.getElementById("currentContract").innerText = getUpdatedName(info[0][5]).toUpperCase()
         document.getElementById("currentContract").className = "team-contract engine-" + team_dict[teamID]
-        document.getElementById("yearInput").dataset.maxYear = info[3]
-        document.getElementById("yearInput").min = info[3]
-        document.getElementById("yearInputFuture").min = info[3] + 1
+        document.getElementById("yearInput").dataset.maxYear = info[4]
+        document.getElementById("yearInput").min = info[4]
+        document.getElementById("yearInputFuture").min = info[4] + 1
         document.querySelector("#currentContractOptions").querySelectorAll(".contract-modal-input").forEach(function (elem, index) {
             if (elem.id === "salaryInput" || elem.id === "signBonusInput" || elem.id === "raceBonusAmt") {
                 elem.value = info[0][index].toLocaleString("en-US")
@@ -775,6 +778,13 @@ export function manage_modal(info) {
         document.querySelector(".add-contract")?.classList.add("d-none");
         document.querySelector("#futureContractTitle")?.classList.remove("d-none");
         document.querySelector("#futureContractOptions")?.classList.remove("d-none");
+    }
+
+    if (driverEditingOfficialDriver || !info[3]) { //if its an official driver or is a staff member, hide junior pill
+        juniorPill?.classList.add("d-none");
+    }
+    else{
+        juniorPill?.classList.remove("d-none");
     }
 
 }

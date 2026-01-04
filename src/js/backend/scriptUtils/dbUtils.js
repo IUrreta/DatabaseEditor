@@ -2060,8 +2060,16 @@ export function fetchDriverContracts(id) {
         AND (TeamID > 10 AND TeamID <> 32)
     `, [id], 'singleRow');
 
+  let isDriver = queryDB(`
+        SELECT COUNT(*)
+        FROM Staff_DriverData
+        WHERE StaffID = ?
+    `, [id], 'singleValue');
+  //isDriver has to be true or false
+  isDriver = isDriver > 0 ? true : false;
+
   // Retornar los resultados
-  return [currentContract, futureContract, juniorFormulasContract, daySeason ? daySeason[1] : null];
+  return [currentContract, futureContract, juniorFormulasContract, isDriver, daySeason ? daySeason[1] : null];
 }
 
 function formatStaffNameFromLocKeys(firstNameLocKey, lastNameLocKey) {
