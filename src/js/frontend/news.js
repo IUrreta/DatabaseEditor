@@ -2695,7 +2695,7 @@ async function contextualizeSeasonReview(newData) {
 
 
 async function askGenAI(messages, opts = {}) {
-  const aiModel = opts.model || "gpt-5-nano";
+  const aiModel = opts.model || "gpt-5-mini";
 
   const response = await fetch("/api/ask-openai", {
     method: "POST",
