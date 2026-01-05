@@ -4040,6 +4040,14 @@ export function getOneQualiDetails(raceId) {
     const poleDetails = results.map(row => {
         const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
         const time = row[5];
+        //format to mins:secs.millis, time is in seconds.milis
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        const millis = Math.round((time % 1) * 1000);
+        const fastestLap =
+            `${minutes}:${seconds.toString().padStart(2, "0")}.${millis
+                .toString()
+                .padStart(3, "0")}`;
 
         const gapToPole = time - poleTime;
 
@@ -4048,7 +4056,8 @@ export function getOneQualiDetails(raceId) {
             driverId,
             teamId,
             pos: row[4],
-            gapToPole
+            gapToPole,
+            fastestLap: fastestLap
         };
     });
 

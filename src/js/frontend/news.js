@@ -252,10 +252,10 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       keyboard: false
     });
 
-    if (!news.text){
+    if (!news.text) {
       newsOptionsBtn.classList.add('d-none');
     }
-    else{
+    else {
       newsOptionsBtn.classList.remove('d-none');
     }
 
@@ -292,18 +292,18 @@ function addReadButtonListener(readButton, newsItem, news, newsList) {
       }
     })();
 
-      await generateAndRenderArticle(news, newsList, "Generating", false);
+    await generateAndRenderArticle(news, newsList, "Generating", false);
 
-      const regenerateButton = document.getElementById('regenerateArticle');
-      if (regenerateButton) {
-        // evitar listeners duplicados si abres varias noticias
-        regenerateButton.replaceWith(regenerateButton.cloneNode(true));
-        const newRegenerateButton = document.getElementById('regenerateArticle');
+    const regenerateButton = document.getElementById('regenerateArticle');
+    if (regenerateButton) {
+      // evitar listeners duplicados si abres varias noticias
+      regenerateButton.replaceWith(regenerateButton.cloneNode(true));
+      const newRegenerateButton = document.getElementById('regenerateArticle');
 
-        newRegenerateButton.addEventListener('click', async () => {
-          await generateAndRenderArticle(news, newsList, "Regenerating", true);
-        });
-      }
+      newRegenerateButton.addEventListener('click', async () => {
+        await generateAndRenderArticle(news, newsList, "Regenerating", true);
+      });
+    }
 
   });
 }
@@ -374,7 +374,7 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
 
     const errorDiv = document.createElement('div');
     errorDiv.classList.add('news-error', 'model-error');
-    
+
     if (err.status === 429) {
       errorDiv.innerText = "Daily limit reached. Tomorrow you'll be able to generate more articles.";
       newsArticle.appendChild(errorDiv);
@@ -482,7 +482,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       place_turning_outcome(newResp.content, newsList);
 
       if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" ||
-         news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
+        news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -703,7 +703,7 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   if (news.type === "race_result" || news.type === "quali_result") {
     newsItem.dataset.type = news.type;
   }
-  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {   
+  else if (news.type === "fake_transfer" || news.type === "big_transfer" || news.type === "contract_renewal" || news.type === "silly_season_rumors") {
     newsItem.dataset.type = "driver_transfers";
   }
   else if (news.type === "massive_exit" || news.type === "massive_signing") {
@@ -770,11 +770,11 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
     }, 1500);
   }
 
-  if (!isCurrentSeason && isCurrentSeason !== undefined){ //if it's undefined it should go to else
+  if (!isCurrentSeason && isCurrentSeason !== undefined) { //if it's undefined it should go to else
     document.querySelector("#reloadNews").classList.add("d-none");
     document.querySelector("#regenerateArticle").classList.add("d-none");
   }
-  else{
+  else {
     document.querySelector("#reloadNews").classList.remove("d-none");
     document.querySelector("#regenerateArticle").classList.remove("d-none");
   }
@@ -824,10 +824,10 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
     });
     newsModal.show();
 
-    if (!turningPointResponse.text){
+    if (!turningPointResponse.text) {
       newsOptionsBtn.classList.add('d-none');
     }
-    else{
+    else {
       newsOptionsBtn.classList.remove('d-none');
     }
 
@@ -1358,7 +1358,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      finalInstruction += `\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
       if (expectsJson) {
         finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
@@ -1866,7 +1866,7 @@ async function contextualizeTurningPointYoungDrivers(newData, turningPointType) 
   };
 }
 
-async function contextualizeTurningPointTransfer(newData, turningPointType) {   
+async function contextualizeTurningPointTransfer(newData, turningPointType) {
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 101);
   let prompt;
   if (turningPointType.includes("positive")) {
@@ -2427,12 +2427,30 @@ async function contextualizeQualiResults(newData) {
     position: row.pos,
     name: row.name,
     team: combined_dict[row.teamId],
-    gapToPole: row.gapToPole.toFixed(3)
+    gapToPole: row.gapToPole.toFixed(3),
+    fastestLap: row.fastestLap
   }));
 
   prompt += `\n\nHere are the full qualifying results:\n`;
-  qualiResults.forEach(result => {
-    prompt += `${result.position}. ${result.name} (${result.team}) | +${result.gapToPole}s\n`;
+
+  const totalDrivers = qualiResults.length;
+
+  qualiResults.forEach((result, index) => {
+    const position = result.position;
+
+    if (position === 11) {
+      prompt += `\n-- Q2 --\n`;
+    }
+
+    if (
+      (totalDrivers <= 20 && position === 16) ||
+      (totalDrivers > 20 && position === 17)
+    ) {
+      prompt += `\n-- Q1 --\n`;
+    }
+
+    prompt += `${position}. ${result.name} (${result.team}) ${result.fastestLap}` +
+      `${result.gapToPole > 0 ? ` +${result.gapToPole}s` : ''}\n`;
   });
 
   const contextData = buildContextualPrompt(resp.content, { timing: "before this race", seasonYear });
@@ -2483,7 +2501,7 @@ async function contextualizeRaceResults(newData) {
 
   prompt += `\n\nHere are the full race results:\n`;
   raceDetails.forEach(result => {
-    prompt += `${result.position}. ${result.name} (${result.team}) | Started P${result.startPos} | +${result.gap} | ${result.status}\n`;
+    prompt += `${result.position}. ${result.name} (${result.team}) | Grid P${result.startPos} | +${result.gap} | ${result.status}\n`;
   });
 
   const safetyCars = resp.content.details[0].safetyCar;
@@ -2714,7 +2732,7 @@ async function contextualizeSeasonReview(newData) {
 
 
 async function askGenAI(messages, opts = {}) {
-  const aiModel = opts.model || "gpt-5-mini";
+  const aiModel = opts.model || "gpt-5-nano";
 
   const response = await fetch("/api/ask-openai", {
     method: "POST",
@@ -2722,7 +2740,7 @@ async function askGenAI(messages, opts = {}) {
     body: JSON.stringify({
       messages,
       model: aiModel,
-      max_tokens: opts.max_tokens || 5000
+      max_tokens: opts.max_tokens || 4000
     })
   });
 
@@ -2757,7 +2775,7 @@ deleteArticleBtn.addEventListener("click", async () => {
     closeBtn?.click();
   });
 });
-  
+
 
 copyArticleBtn.addEventListener("click", async () => {
   const titleEl = document.querySelector("#newsModalTitle");
@@ -2798,7 +2816,7 @@ function createEditFooterButtons(articleEl) {
 
   buttonsWrapper.appendChild(cancelArticleBtn);
   buttonsWrapper.appendChild(saveArticleBtn);
-  
+
 
   cancelArticleBtn.addEventListener('click', () => exitArticleEditMode());
 
@@ -3323,7 +3341,7 @@ document.querySelector("#reloadNews").addEventListener("click", async () => {
   generateNews();
 });
 
-export function updateNewsYearsButton(message){
+export function updateNewsYearsButton(message) {
   let years = message.yearsAvailable;
   const newsYearsMenu = document.getElementById("newsSeasonMenu");
   const newsYearsButton = document.getElementById("newsSeasonButton");

@@ -55,7 +55,8 @@ export default async function handler(req, res) {
     const response = await client.responses.create({
       model: aiModel,
       input,
-      max_output_tokens: safeMaxTokens
+      max_output_tokens: safeMaxTokens,
+      reasoning: {"effort": "low"}
     });
 
     const text = response.output_text || "";
