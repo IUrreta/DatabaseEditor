@@ -321,21 +321,29 @@ function applyInvestmentEffect(turningPointData) {
             let newLevel = 4;
             if (current) {
                 //get last digit
-                const currentLevel = parseInt(current.toString().slice(-1));
-                if (currentLevel === 4) {
+                const currentLevel = parseInt(current.toString().slice(-1), 10);
+                if (!Number.isFinite(currentLevel)) continue;
+                const safeLevel = Math.min(5, Math.max(0, currentLevel));
+                if (safeLevel >= 4) {
                     newLevel = 5;
                 }
-                const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString());
+                const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString(), 10);
+                if (!Number.isFinite(newBuildingId)) continue;
                 queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
             }
 
         }
-        else {//improve by 1 level
-            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');
+        else {//set to at least level 4
+            const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');    
             if (current) {
-                // Upgrade the building by 1 level (parse to int first) and refurbish
-                const newLevel = parseInt(current) + 1;
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newLevel, buildingId, teamId], 'run');
+                const currentStr = current.toString();
+                const currentLevel = parseInt(currentStr.slice(-1), 10);
+                if (!Number.isFinite(currentLevel)) continue;
+                const safeLevel = Math.min(5, Math.max(0, currentLevel));
+                const newLevel = safeLevel >= 5 ? 5 : 4;
+                const newBuildingId = parseInt(currentStr.slice(0, -1) + newLevel.toString(), 10);
+                if (!Number.isFinite(newBuildingId)) continue;
+                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
             }
 
         }
@@ -2610,7 +2618,7 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
             }
         }
 
-        if (id.startsWith("big_transfer_") || id.startsWith("massive_signing_")) {
+        if (id.startsWith("big_transfer_") || id.startsWith("massive_signing_") || id.startsWith("massive_exit_")) {
             let id = news.data.driverId;
             if (id) {
                 usedDriverIdsGlobal.add(id);
@@ -2625,6 +2633,8 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
             usedDriverIdsGlobal.add(id);
         }
     });
+
+    console.log("USED DRIVERS FOR FAKE TRANSFERS:", usedDriverIdsGlobal);
 
     let newsList = [];
 
