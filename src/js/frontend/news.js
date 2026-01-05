@@ -3098,7 +3098,7 @@ function manage_overlay(imageContainer, overlay, data, image) {
       `Departure from ${teamName} speculated`,
       `Linked with a move away from ${teamName}`,
       `Considering options beyond ${teamName}`,
-      `Transfer rumours swirl around ${teamName}`,
+      `In talks to leave ${teamName}`,
       `His manager weighing up options beyond ${teamName}`
     ];
 
