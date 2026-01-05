@@ -105,7 +105,7 @@ export function manageWeightTrigger(triggerLevel) {
             AND PartStat = 15;
           END;
         `;
-    } else if (triggerLevel === 2) {
+    } else if (triggerLevel === 5) {
       triggerSQL = `
           CREATE TRIGGER reduced_weight_impossible
           AFTER INSERT ON Parts_Designs_StatValues

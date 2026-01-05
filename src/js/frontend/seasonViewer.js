@@ -839,8 +839,11 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
         (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
 
 
-    const firstTeamPos = document.querySelector(".teams-table-data .teams-table-position")
-    const firstTeamPoints = document.querySelector(".teams-table-data .teams-table-points")
+    const firstTeamRow = document.querySelector(
+    ".teams-table-position[data-position='1']"
+    )?.closest(".teams-table-row");
+    const firstTeamPos = firstTeamRow?.querySelector(".teams-table-position");
+    const firstTeamPoints = firstTeamRow?.querySelector(".teams-table-points");
 
     if (pointsDif > pointsRemaining) {
         firstTeamPos.classList.add("champion")
@@ -874,6 +877,7 @@ function new_addTeam(teamRaceMap, name, pos, id) {
 
     let posDiv = document.createElement("div");
     posDiv.classList = "teams-table-position bold-font";
+    posDiv.dataset.position = pos;
     posDiv.innerText = pos;
     row.appendChild(posDiv);
 
