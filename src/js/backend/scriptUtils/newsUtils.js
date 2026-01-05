@@ -2935,6 +2935,7 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
             const entryId1 = `massive_exit_${driver.driverId}`;
             if (savedNews[entryId1]) {
                 newsList.push({ id: entryId1, ...savedNews[entryId1] });
+                return;
             }
 
             const title1 = generateTitle(titleData, 17);
