@@ -9230,7 +9230,7 @@ body.og-theme .records-list {
   align-items: center;
   justify-content: center;
   align-content: center;
-  height: 91%;
+  height: 40px;
   transition: all 0.15s;
   opacity: 1;
 }
@@ -9277,11 +9277,11 @@ body.og-theme .records-list {
   -webkit-background-clip: text;
   animation: gradient-move-title 4s infinite linear;
   background-size: 200% 200%;
-  transform: scale(1.5);
+  transform: scale(1.1);
 }
 
 .download-save-button i:active {
-  transform: scale(1.35);
+  transform: scale(0.98);
 }
 
 .active #mod25logo,
