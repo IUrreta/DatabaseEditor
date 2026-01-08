@@ -42,6 +42,7 @@ import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
+import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -67,6 +68,16 @@ const workerCommands = {
     postMessage({ responseMessage: "Database loaded", content: date });
   },
   exportSave: async (data, postMessage) => {
+    const db = getDatabase();
+    const metadata = getMetadata();
+
+    const result = repack(db, metadata);
+
+    postMessage({ responseMessage: "Database exported", content: result });
+  },
+  panicDownload: async (data, postMessage) => {
+    deleteProblematicTriggers();
+
     const db = getDatabase();
     const metadata = getMetadata();
 

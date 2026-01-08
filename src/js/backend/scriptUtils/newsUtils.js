@@ -5441,30 +5441,6 @@ export function getNewsFromSeason(season) {
     return { newsList: Object.values(newsMap).sort((a, b) => new Date(b.date) - new Date(a.date)), turningPointState: tpMap };
 }
 
-// DRIVER INJURY
-
-export function ensureInjurySwapInfrastructure() {
-    queryDB(`
-        CREATE TABLE IF NOT EXISTS Custom_Injury_Swaps (
-        id                   INTEGER PRIMARY KEY AUTOINCREMENT,
-        season_id            INTEGER NOT NULL,
-        start_day            INTEGER NOT NULL,
-        end_day              INTEGER NOT NULL,
-        injured_id           INTEGER NOT NULL,
-        reserve_id           INTEGER NOT NULL,
-        injured_team_id      INTEGER,
-        injured_pos          INTEGER,
-        injured_car_number   INTEGER,
-        reserve_team_id      INTEGER,
-        reserve_pos          INTEGER,
-        reserve_car_number   INTEGER,
-        injured_engineer_id  INTEGER,
-        reserve_engineer_id  INTEGER,
-        processed            INTEGER NOT NULL DEFAULT 0
-        )
-    `, [], 'run');
-
-}
 
 export function startInjurySwap(injuredId, reserveData, endDay) {
     const [dayNow, seasonId] = queryDB(`
@@ -5473,270 +5449,25 @@ export function startInjurySwap(injuredId, reserveData, endDay) {
     `, [], 'singleRow');
     let reserveId = reserveData.id;
 
-    // Foto del estado original (equipo/pos/coche)
-    const injTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [injuredId], 'singleValue');
-    const injPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [injuredId], 'singleValue');
-    const injCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ?`, [injuredId], 'singleValue');
-
-    const resTeam = queryDB(`SELECT TeamID FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [reserveId], 'singleValue');
-    const resPos = queryDB(`SELECT PosInTeam FROM Staff_Contracts WHERE ContractType = 0 AND StaffID = ?`, [reserveId], 'singleValue');
-    const resCar = queryDB(`SELECT AssignedCarNumber FROM Staff_DriverData WHERE StaffID = ?`, [reserveId], 'singleValue');
-
-    // 🔸 Foto de ingenieros actuales (ANTES del swap)
-    const injEngineer = queryDB(`
-    SELECT RaceEngineerID
-    FROM Staff_RaceEngineerDriverAssignments
-    WHERE DriverID = ? AND IsCurrentAssignment = 1
-    ORDER BY DaysTogether DESC, ROWID DESC
-    LIMIT 1
-  `, [injuredId], 'singleValue');
-
-    const resEngineer = queryDB(`
-    SELECT RaceEngineerID
-    FROM Staff_RaceEngineerDriverAssignments
-    WHERE DriverID = ? AND IsCurrentAssignment = 1
-    ORDER BY DaysTogether DESC, ROWID DESC
-    LIMIT 1
-  `, [reserveId], 'singleValue');
 
     if (reserveData.isFreeAgent) {
         let teamId = reserveData.futureTeamId
         hireDriver("auto", reserveId, teamId, 10);
     }
-    // Aplica el cambio (tu función gestiona engineers/car numbers en este momento)
-    swapDrivers(injuredId, reserveId);
 
-    // Registrar TODO para revertir exactamente en endDay
-    queryDB(`
-    INSERT INTO Custom_Injury_Swaps (
-      season_id, start_day, end_day,
-      injured_id, reserve_id,
-      injured_team_id, injured_pos, injured_car_number,
-      reserve_team_id, reserve_pos, reserve_car_number,
-      injured_engineer_id, reserve_engineer_id,
-      processed
-    ) VALUES (
-      ?, ?, ?,
-      ?, ?,
-      ?, ?, ?,
-      ?, ?, ?,
-      ?,
-      ?,
-      0
-    )
-  `, [seasonId, dayNow, endDay, injuredId, reserveId, injTeam, injPos, injCar, resTeam, resPos, resCar, injEngineer, resEngineer], 'run');
+    swapDrivers(injuredId, reserveId);
 
     return { seasonId, dayNow };
 }
 
 
-export function createInjuryRevertTrigger({ seasonId, monthNumber, injuredId, reserveId, endDay }) {
-    if (!seasonId || !monthNumber || !injuredId || !reserveId || endDay === undefined || endDay === null) {
-        throw new Error('createInjuryRevertTrigger: faltan parámetros obligatorios.');
-    }
-
-    // Validate numeric parameters to prevent SQL injection
-    const validSeasonId = Number(seasonId);
-    const validInjuredId = Number(injuredId);
-    const validEndDay = Number(endDay);
-
-    if (!Number.isInteger(validSeasonId) || !Number.isInteger(validInjuredId) || !Number.isInteger(validEndDay)) {
-        throw new Error('createInjuryRevertTrigger: seasonId, injuredId, and endDay must be integers.');
-    }
-
-    const trigName = `trg_injury_revert_${validSeasonId}_${validInjuredId}`;
-
-    // Por si re-generas, dejamos el nombre libre
-    // Note: SQL doesn't support parameterized trigger names in DROP/CREATE statements
-    // validSeasonId, validInjuredId, and validEndDay are validated as integers above (lines 4482-4488)
-    // and cannot be parameterized in CREATE TRIGGER syntax, so they are safely interpolated
-    queryDB(`DROP TRIGGER IF EXISTS "${trigName}"`, [], 'run');
-
-    // Trigger con igualdad estricta en el día objetivo
-    // Note: Trigger definition uses validated integers directly as they cannot be parameterized in CREATE TRIGGER
-    const sql = `
-    CREATE TRIGGER "${trigName}"
-    AFTER UPDATE OF Day ON Player_State
-    WHEN NEW.Day = ${validEndDay} AND NEW.CurrentSeason = ${validSeasonId}
-    BEGIN
-      -- Restaurar lesionado
-      UPDATE Staff_Contracts
-      SET TeamID = (
-            SELECT injured_team_id
-            FROM Custom_Injury_Swaps s
-            WHERE s.injured_id = Staff_Contracts.StaffID
-              AND s.processed = 0
-              AND s.season_id = ${validSeasonId}
-              AND s.end_day = ${validEndDay}
-            ORDER BY s.id DESC
-            LIMIT 1
-          ),
-          PosInTeam = (
-            SELECT injured_pos
-            FROM Custom_Injury_Swaps s
-            WHERE s.injured_id = Staff_Contracts.StaffID
-              AND s.processed = 0
-              AND s.season_id = ${validSeasonId}
-              AND s.end_day = ${validEndDay}
-            ORDER BY s.id DESC
-            LIMIT 1
-          )
-      WHERE ContractType = 0
-        AND StaffID IN (
-          SELECT injured_id FROM Custom_Injury_Swaps
-          WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-        );
-
-      UPDATE Staff_DriverData
-      SET AssignedCarNumber = (
-            SELECT injured_car_number
-            FROM Custom_Injury_Swaps s
-            WHERE s.injured_id = Staff_DriverData.StaffID
-              AND s.processed = 0
-              AND s.season_id = ${validSeasonId}
-              AND s.end_day = ${validEndDay}
-            ORDER BY s.id DESC
-            LIMIT 1
-          )
-      WHERE StaffID IN (
-        SELECT injured_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-      );
-
-      -- Restaurar reserva
-      UPDATE Staff_Contracts
-      SET TeamID = (
-            SELECT reserve_team_id
-            FROM Custom_Injury_Swaps s
-            WHERE s.reserve_id = Staff_Contracts.StaffID
-              AND s.processed = 0
-              AND s.season_id = ${validSeasonId}
-              AND s.end_day = ${validEndDay}
-            ORDER BY s.id DESC
-            LIMIT 1
-          ),
-          PosInTeam = (
-            SELECT reserve_pos
-            FROM Custom_Injury_Swaps s
-            WHERE s.reserve_id = Staff_Contracts.StaffID
-              AND s.processed = 0
-              AND s.season_id = ${validSeasonId}
-              AND s.end_day = ${validEndDay}
-            ORDER BY s.id DESC
-            LIMIT 1
-          )
-      WHERE ContractType = 0
-        AND StaffID IN (
-          SELECT reserve_id FROM Custom_Injury_Swaps
-          WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-        );
-
-      UPDATE Staff_DriverData
-      SET AssignedCarNumber = (
-            SELECT reserve_car_number
-            FROM Custom_Injury_Swaps s
-            WHERE s.reserve_id = Staff_DriverData.StaffID
-              AND s.processed = 0
-              AND s.season_id = ${validSeasonId}
-              AND s.end_day = ${validEndDay}
-            ORDER BY s.id DESC
-            LIMIT 1
-          )
-      WHERE StaffID IN (
-        SELECT reserve_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-      );
-
-      UPDATE Staff_RaceEngineerDriverAssignments
-      SET IsCurrentAssignment = 0
-      WHERE DriverID IN (
-        SELECT injured_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-        UNION
-        SELECT reserve_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-      );
-
-      -- 2) Poner a 0 cualquier asignación actual de los ingenieros originales (evita conflictos)
-      UPDATE Staff_RaceEngineerDriverAssignments
-      SET IsCurrentAssignment = 0
-      WHERE RaceEngineerID IN (
-        SELECT injured_engineer_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-        UNION
-        SELECT reserve_engineer_id FROM Custom_Injury_Swaps
-        WHERE processed = 0 AND season_id = ${validSeasonId} AND end_day = ${validEndDay}
-      );
-
-      -- 3) Asegurar que existen filas (si no existen, crearlas), y marcar como actuales
-
-      -- Lesionado ↔ su ingeniero original
-      INSERT OR IGNORE INTO Staff_RaceEngineerDriverAssignments
-        (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
-      SELECT s.injured_engineer_id, s.injured_id, 0, 0
-      FROM Custom_Injury_Swaps s
-      WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
-        AND s.injured_engineer_id IS NOT NULL;
-
-      UPDATE Staff_RaceEngineerDriverAssignments
-      SET IsCurrentAssignment = 1
-      WHERE (DriverID, RaceEngineerID) IN (
-        SELECT s.injured_id, s.injured_engineer_id
-        FROM Custom_Injury_Swaps s
-        WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
-          AND s.injured_engineer_id IS NOT NULL
-      );
-
-      -- Reserva ↔ su ingeniero original (del equipo de origen del reserva)
-      INSERT OR IGNORE INTO Staff_RaceEngineerDriverAssignments
-        (RaceEngineerID, DriverID, DaysTogether, IsCurrentAssignment)
-      SELECT s.reserve_engineer_id, s.reserve_id, 0, 0
-      FROM Custom_Injury_Swaps s
-      WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
-        AND s.reserve_engineer_id IS NOT NULL;
-
-      UPDATE Staff_RaceEngineerDriverAssignments
-      SET IsCurrentAssignment = 1
-      WHERE (DriverID, RaceEngineerID) IN (
-        SELECT s.reserve_id, s.reserve_engineer_id
-        FROM Custom_Injury_Swaps s
-        WHERE s.processed = 0 AND s.season_id = ${validSeasonId} AND s.end_day = ${validEndDay}
-          AND s.reserve_engineer_id IS NOT NULL
-      );
-
-      -- Marcar como procesado
-      UPDATE Custom_Injury_Swaps
-      SET processed = 1
-      WHERE processed = 0
-        AND season_id = ${validSeasonId}
-        AND end_day = ${validEndDay};
-    END;
-  `;
-
-    queryDB(sql, [], 'run');
-
-    return trigName; // por si quieres guardarlo para limpieza futura
-}
 
 
 function applyDriverInjury(turningPointData) {
-    ensureInjurySwapInfrastructure();
-
     // 1) Aplicar lesión y registrar
     const injuredId = turningPointData.driver_affected.id;
     const reserveData = turningPointData.reserve_driver
     const endDay = turningPointData.condition.end_date;
     let reserveId = reserveData.id;
     const { seasonId } = startInjurySwap(injuredId, reserveData, endDay);
-
-    // 2) Crear trigger con nombre que incluya el mes actual
-    const monthNumber = turningPointData.month; // por ejemplo, noviembre
-    const triggerName = createInjuryRevertTrigger({
-        seasonId,
-        monthNumber,
-        injuredId,
-        reserveId,
-        endDay
-    });
-
 }

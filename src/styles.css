@@ -9284,6 +9284,11 @@ body.og-theme .records-list {
   transform: scale(0.98);
 }
 
+#panicDownloadButton{
+  width: max-content;
+  margin-top: 5px;
+}
+
 .active #mod25logo,
 #mod25logo:hover {
   background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
