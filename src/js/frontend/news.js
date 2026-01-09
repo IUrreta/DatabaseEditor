@@ -297,6 +297,21 @@ async function openContextModal(articleTitle = '') {
   });
 }
 
+function setOptionsContextOpen(isOpen) {
+  const container = document.getElementById('newsOptionsContext');
+  if (!container) return;
+
+  container.classList.toggle('open', isOpen);
+  container.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+  if (isOpen) {
+    setTimeout(() => {
+      const textarea = document.getElementById('newsOptionsContextTextarea');
+      textarea?.focus();
+    }, 0);
+  }
+}
+
 async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
   const { extraContext = '' } = opts;
   exitArticleEditMode();
@@ -316,6 +331,14 @@ async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
   }
 
   newsModal._element.setAttribute("data-article-id", news.id || '');
+
+  newsOptionsBtn?.classList.remove('active');
+  setOptionsContextOpen(false);
+
+  const optionsContextTextarea = document.getElementById('newsOptionsContextTextarea');
+  if (optionsContextTextarea) {
+    optionsContextTextarea.value = currentModalExtraContext || '';
+  }
 
   newsModal.show();
   const modalTitle = document.querySelector('#newsModal .modal-title');
@@ -348,6 +371,34 @@ async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
 
   await generateAndRenderArticle(news, newsList, "Generating", false, undefined, extraContext);
 
+  const optionsContextCancelButton = document.getElementById('newsOptionsContextCancel');
+  if (optionsContextCancelButton) {
+    optionsContextCancelButton.replaceWith(optionsContextCancelButton.cloneNode(true));
+    const newOptionsContextCancelButton = document.getElementById('newsOptionsContextCancel');
+
+    newOptionsContextCancelButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (optionsContextTextarea) optionsContextTextarea.value = currentModalExtraContext || '';
+      setOptionsContextOpen(false);
+    });
+  }
+
+  const optionsContextRegenerateButton = document.getElementById('newsOptionsContextRegenerate');
+  if (optionsContextRegenerateButton) {
+    optionsContextRegenerateButton.replaceWith(optionsContextRegenerateButton.cloneNode(true));
+    const newOptionsContextRegenerateButton = document.getElementById('newsOptionsContextRegenerate');
+
+    newOptionsContextRegenerateButton.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      currentModalExtraContext = optionsContextTextarea?.value?.trim() || '';
+      setOptionsContextOpen(false);
+      newsOptionsBtn?.classList.remove('active');
+      await generateAndRenderArticle(news, newsList, "Regenerating", true, undefined, currentModalExtraContext);
+    });
+  }
+
   const regenerateButton = document.getElementById('regenerateArticle');
   if (regenerateButton) {
     regenerateButton.replaceWith(regenerateButton.cloneNode(true));
@@ -355,6 +406,23 @@ async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
 
     newRegenerateButton.addEventListener('click', async () => {
       await generateAndRenderArticle(news, newsList, "Regenerating", true, undefined, currentModalExtraContext);
+    });
+  }
+
+  const regenerateWithContextButton = document.getElementById('regenerateWithContext');
+  if (regenerateWithContextButton) {
+    regenerateWithContextButton.replaceWith(regenerateWithContextButton.cloneNode(true));
+    const newRegenerateWithContextButton = document.getElementById('regenerateWithContext');
+
+    newRegenerateWithContextButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (optionsContextTextarea) {
+        optionsContextTextarea.value = currentModalExtraContext || '';
+      }
+      const container = document.getElementById('newsOptionsContext');
+      const isOpen = !!container?.classList.contains('open');
+      setOptionsContextOpen(!isOpen);
     });
   }
 }
@@ -1403,11 +1471,10 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       // Add additional contextual info to the prompt template
       let finalInstruction = `The current date is ${isoDate}\n\n` +
-        instruction +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
       if (expectsJson) {
         finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
@@ -1418,20 +1485,27 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
 
+      // Message 1: Instruction
+      messages.push({
+        role: "user",
+        content: instruction
+      });
+
+      if (extraContext.trim()) {
+        const shortExtraContext = extraContext.slice(0, 1500);
+        messages.push({
+          role: "user",
+          content: `Additional context that you MUST incorporate:\n${shortExtraContext.trim()}`
+        });
+      }
+
       // Message 1: Context Data
       messages.push({
         role: "user",
         content: `Here is context about  results, championship standings, driver stats and important events that happened throughout the season:\n\n${context}`
       });
 
-      if (extraContext.trim()) {
-        messages.push({
-          role: "user",
-          content: `Additional context to incorporate:\n${extraContext.trim()}`
-        });
-      }
-
-      // Message 2: Instruction
+      // Message 3: Final instructions
       messages.push({
         role: "user",
         content: finalInstruction
@@ -2817,7 +2891,11 @@ async function askGenAI(messages, opts = {}) {
 }
 
 newsOptionsBtn.addEventListener("click", (e) => {
-  e.target.classList.toggle("active");
+  const btn = e.currentTarget;
+  btn.classList.toggle("active");
+  if (!btn.classList.contains('active')) {
+    setOptionsContextOpen(false);
+  }
 });
 
 deleteArticleBtn.addEventListener("click", async () => {

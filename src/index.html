@@ -600,7 +600,7 @@
             <div class="mt-4">
               <h5 class="modal-subtitle bold-font">Panic download</h5>
               <div class="modal-text">
-                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in the db.
+                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in the db. It might fix some issues.
               </div>
               <div class="button-with-icon" id="panicDownloadButton">
                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -1119,6 +1119,18 @@
               <div class="reload-article button-with-icon" id="regenerateArticle">
                 <i class="bi bi-arrow-clockwise"></i>
                 <span class="">Regenerate</span>
+              </div>
+              <div class="reload-article button-with-icon" id="regenerateWithContext">
+                <i class="bi bi-chat-text"></i>
+                <span class="">Regenerate with context</span>
+              </div>
+              <div class="news-options-context" id="newsOptionsContext" aria-hidden="true">
+                <textarea class="news-options-context-textarea" id="newsOptionsContextTextarea"
+                  placeholder="Add extra context for the model..."></textarea>
+                <div class="news-options-context-actions">
+                  <button type="button" class="close-modal" id="newsOptionsContextCancel">Cancel</button>
+                  <button type="button" class="confirm-modal" id="newsOptionsContextRegenerate">Regenerate</button>
+                </div>
               </div>
               <div class="copy-article button-with-icon" id="copyArticle">
                 <i class="bi bi-copy"></i>

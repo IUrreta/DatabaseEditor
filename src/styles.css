@@ -14529,7 +14529,7 @@ body.default-theme .news-article-date {
 .read-actions {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 3px;
   justify-content: flex-end;
 }
 
@@ -15785,6 +15785,50 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   pointer-events: none;
   transform: translateY(-10px);
   transition: opacity 0.15s, transform 0.15s;
+}
+
+.news-options-context{
+  margin-top: 6px;
+  border-top: 0 solid color-mix(in srgb, var(--text-general) 12%, transparent);
+  padding: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: max-height 0.25s ease, opacity 0.15s ease, transform 0.25s ease, padding 0.25s ease;
+}
+
+.news-options-context.open{
+  padding: 0px;
+  max-height: 220px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.news-options-context-textarea{
+  width: 300px;
+  height: 110px;
+  resize: none;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-general) 18%, transparent);
+  border-radius: 10px;
+  padding: 10px;
+  color: var(--text-general);
+  outline: none;
+  font: inherit;
+}
+
+.news-options-context-textarea:focus{
+  border-color: color-mix(in srgb, var(--new-primary) 60%, transparent);
+}
+
+.news-options-context-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 5px;
 }
 
 .news-options-global:has(.news-options.active) .news-options-menu{
