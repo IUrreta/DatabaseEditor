@@ -356,6 +356,23 @@ export function fetchExistingTriggers() {
   return { highest_difficulty, triggerList, refurbish, frozenMentality };
 }
 
+
+export function deleteProblematicTriggers() {
+  const triggerStartNames = ["trg_injury_revert"];
+  for (const startName of triggerStartNames) {
+    const triggers = queryDB("SELECT name FROM sqlite_master WHERE type='trigger' AND name LIKE ?;", [`${startName}%`], "allRows") || [];
+    triggers.forEach(row => {
+      const triggerName = row?.[0];
+      if (!triggerName) return;
+      const escaped = String(triggerName).replace(/"/g, '""');
+      queryDB(`DROP TRIGGER IF EXISTS "${escaped}"`, [], 'run');
+    });
+  }
+
+  queryDB("DROP TABLE IF EXISTS Custom_Injury_Swaps;", [], 'run');
+}
+
+
 export function editFreezeMentality(state) {
   if (state === 0) {
     queryDB("DROP TRIGGER IF EXISTS update_Opinion_After_Insert;", [], 'run');

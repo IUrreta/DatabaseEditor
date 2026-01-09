@@ -9230,7 +9230,7 @@ body.og-theme .records-list {
   align-items: center;
   justify-content: center;
   align-content: center;
-  height: 91%;
+  height: 40px;
   transition: all 0.15s;
   opacity: 1;
 }
@@ -9277,11 +9277,16 @@ body.og-theme .records-list {
   -webkit-background-clip: text;
   animation: gradient-move-title 4s infinite linear;
   background-size: 200% 200%;
-  transform: scale(1.5);
+  transform: scale(1.1);
 }
 
 .download-save-button i:active {
-  transform: scale(1.35);
+  transform: scale(0.98);
+}
+
+#panicDownloadButton{
+  width: max-content;
+  margin-top: 5px;
 }
 
 .active #mod25logo,
@@ -14521,6 +14526,12 @@ body.default-theme .news-article-date {
   justify-content: space-between;
 }
 
+.read-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: flex-end;
+}
 
 .read-button {
   border-radius: 5px;
@@ -14531,6 +14542,56 @@ body.default-theme .news-article-date {
   cursor: pointer;
   position: relative;
   transition: background-color 0.15s, color 0.15s;
+}
+
+.context-read-button {
+  border-radius: 5px;
+  background-color: var(--elements);
+  color: var(--dark-text);
+  align-self: flex-end;
+  padding: 5px 8px;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(6px);
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s, color 0.15s;
+}
+
+.context-read-button i {
+  font-size: 16px;
+}
+
+.news-item:hover .context-read-button,
+.news-item:focus-within .context-read-button {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.context-read-button:hover {
+  background-color: var(--elements-hover);
+  color: var(--text-general);
+}
+
+.news-context-textarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid var(--elements-hover);
+  background-color: color-mix(in srgb, var(--elements) 70%, transparent);
+  color: var(--text-general);
+  padding: 8px 10px;
+  outline: none;
+}
+
+.news-context-textarea:focus {
+  border-color: var(--new-primary);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--new-primary) 50%, transparent);
 }
 
 .close-modal,
@@ -15724,6 +15785,50 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   pointer-events: none;
   transform: translateY(-10px);
   transition: opacity 0.15s, transform 0.15s;
+}
+
+.news-options-context{
+  margin-top: 6px;
+  border-top: 0 solid color-mix(in srgb, var(--text-general) 12%, transparent);
+  padding: 0;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateY(-6px);
+  pointer-events: none;
+  transition: max-height 0.25s ease, opacity 0.15s ease, transform 0.25s ease, padding 0.25s ease;
+}
+
+.news-options-context.open{
+  padding: 0px;
+  max-height: 220px;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.news-options-context-textarea{
+  width: 300px;
+  height: 110px;
+  resize: none;
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--text-general) 18%, transparent);
+  border-radius: 10px;
+  padding: 10px;
+  color: var(--text-general);
+  outline: none;
+  font: inherit;
+}
+
+.news-options-context-textarea:focus{
+  border-color: color-mix(in srgb, var(--new-primary) 60%, transparent);
+}
+
+.news-options-context-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 5px;
 }
 
 .news-options-global:has(.news-options.active) .news-options-menu{
