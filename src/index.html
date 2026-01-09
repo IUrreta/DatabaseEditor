@@ -17,44 +17,6 @@
 </script>
 
 <body class="font">
-  <div class="snowflakes" aria-hidden="true">
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">.</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">.</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">❅</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">.</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">.</div>
-    </div>
-    <div class="snowflake">
-      <div class="inner">.</div>
-    </div>
-  </div>
   <div class="tech-grid"></div>
   <div class="glow-spot"></div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
@@ -635,6 +597,16 @@
                 <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
               </div>
             </div>
+            <div class="mt-4">
+              <h5 class="modal-subtitle bold-font">Panic download</h5>
+              <div class="modal-text">
+                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in the db. It might fix some issues.
+              </div>
+              <div class="button-with-icon" id="panicDownloadButton">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <span>Panic download</span>
+              </div>
+            </div>
           </div>
           <div class="d-flex" style="gap: 7px;">
             <div class="d-none" id="gameChanges">
@@ -1148,6 +1120,18 @@
                 <i class="bi bi-arrow-clockwise"></i>
                 <span class="">Regenerate</span>
               </div>
+              <div class="reload-article button-with-icon" id="regenerateWithContext">
+                <i class="bi bi-chat-text"></i>
+                <span class="">Regenerate with context</span>
+              </div>
+              <div class="news-options-context" id="newsOptionsContext" aria-hidden="true">
+                <textarea class="news-options-context-textarea" id="newsOptionsContextTextarea"
+                  placeholder="Add extra context for the model..."></textarea>
+                <div class="news-options-context-actions">
+                  <button type="button" class="close-modal" id="newsOptionsContextCancel">Cancel</button>
+                  <button type="button" class="confirm-modal" id="newsOptionsContextRegenerate">Regenerate</button>
+                </div>
+              </div>
               <div class="copy-article button-with-icon" id="copyArticle">
                 <i class="bi bi-copy"></i>
                 <span class="">Copy</span>
@@ -1190,6 +1174,24 @@
           <div class="d-flex">
             <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
             <button type="button" class="confirm-modal" id="confirmActionButton">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="newsContextModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Add context for this article</h3>
+        </div>
+        <div class="modal-body custom-body">
+          <textarea class="news-context-textarea" placeholder="Add extra context for the model..."></textarea>
+        </div>
+        <div class="modal-footer custom-footer">
+          <div class="d-flex">
+            <button type="button" class="close-modal context-cancel" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="confirm-modal context-confirm">Read</button>
           </div>
         </div>
       </div>

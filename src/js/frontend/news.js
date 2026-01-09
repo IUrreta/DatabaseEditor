@@ -24,6 +24,7 @@ let interval2 = null;
 let cleaning = false;
 
 let currentModalNews = null;
+let currentModalExtraContext = '';
 let isEditingArticle = false;
 let originalArticleHTML = '';
 let editTextarea = null;
@@ -243,72 +244,196 @@ function hashStr(str) {
 const BUCKET_TURNING = 5;
 const BUCKET_NORMAL = 7;
 
-function addReadButtonListener(readButton, newsItem, news, newsList) {
-  readButton.addEventListener('click', async () => {
-    exitArticleEditMode();
-    currentModalNews = news;
-    newsItem.classList.add('with-transition', 'opened');
-    const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
-      keyboard: false
-    });
+async function openContextModal(articleTitle = '') {
+  const modalEl = document.getElementById('newsContextModal');
+  if (!modalEl) return { confirmed: false, context: '' };
 
-    if (!news.text) {
-      newsOptionsBtn.classList.add('d-none');
-    }
-    else {
-      newsOptionsBtn.classList.remove('d-none');
-    }
+  const bsModal =
+    bootstrap.Modal.getInstance(modalEl) ||
+    new bootstrap.Modal(modalEl, { keyboard: false });
 
-    newsModal._element.setAttribute("data-article-id", news.id || '');
+  const modalTitle = modalEl.querySelector('.modal-title');
+  const textarea = modalEl.querySelector('.news-context-textarea');
+  const confirmBtn = modalEl.querySelector('.context-confirm');
+  const cancelBtn = modalEl.querySelector('.context-cancel');
 
-    newsModal.show();
-    const modalTitle = document.querySelector('#newsModal .modal-title');
-    modalTitle.textContent = news.title;
+  if (modalTitle) {
+    modalTitle.textContent = articleTitle
+      ? `Add context for "${articleTitle}"`
+      : "Add context for this article";
+  }
 
-    const newsArticle = document.querySelector('#newsModal .news-article');
-    newsArticle.innerHTML = '';
+  if (textarea) {
+    textarea.value = '';
+  }
 
-    const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
-    const date = excelToDate(news.date);
+  return new Promise((resolve) => {
+    let clicked = false;
+    const controller = new AbortController();
+    const { signal } = controller;
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    dateSpan.textContent = `${day}/${month}/${year}`;
+    confirmBtn?.addEventListener('click', () => {
+      clicked = true;
+      resolve({ confirmed: true, context: textarea?.value?.trim() || '' });
+      bsModal.hide();
+    }, { once: true, signal });
 
-    const image = document.querySelector('#newsModal .news-image-background');
+    cancelBtn?.addEventListener('click', () => {
+      clicked = true;
+      resolve({ confirmed: false, context: '' });
+      bsModal.hide();
+    }, { once: true, signal });
 
-    (async () => {
-      const url = news.image;
-      const exists = await imageExists(url);
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      if (!clicked) resolve({ confirmed: false, context: '' });
+      controller.abort();
+    }, { once: true });
 
-      if (exists) {
-        //remove d-none from image
-        image.classList.remove('d-none');
-        image.src = news.image;
-      } else {
-        //add d-none to image
-        image.classList.add('d-none');
-      }
-    })();
+    modalEl.addEventListener('shown.bs.modal', () => {
+      textarea?.focus();
+    }, { once: true });
 
-    await generateAndRenderArticle(news, newsList, "Generating", false);
-
-    const regenerateButton = document.getElementById('regenerateArticle');
-    if (regenerateButton) {
-      // evitar listeners duplicados si abres varias noticias
-      regenerateButton.replaceWith(regenerateButton.cloneNode(true));
-      const newRegenerateButton = document.getElementById('regenerateArticle');
-
-      newRegenerateButton.addEventListener('click', async () => {
-        await generateAndRenderArticle(news, newsList, "Regenerating", true);
-      });
-    }
-
+    bsModal.show();
   });
 }
 
-async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model) {
+function setOptionsContextOpen(isOpen) {
+  const container = document.getElementById('newsOptionsContext');
+  if (!container) return;
+
+  container.classList.toggle('open', isOpen);
+  container.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+
+  if (isOpen) {
+    setTimeout(() => {
+      const textarea = document.getElementById('newsOptionsContextTextarea');
+      textarea?.focus();
+    }, 0);
+  }
+}
+
+async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
+  const { extraContext = '' } = opts;
+  exitArticleEditMode();
+  currentModalNews = news;
+  currentModalExtraContext = extraContext;
+  newsItem?.classList.add('with-transition', 'opened');
+
+  const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
+    keyboard: false
+  });
+
+  if (!news.text) {
+    newsOptionsBtn.classList.add('d-none');
+  }
+  else {
+    newsOptionsBtn.classList.remove('d-none');
+  }
+
+  newsModal._element.setAttribute("data-article-id", news.id || '');
+
+  newsOptionsBtn?.classList.remove('active');
+  setOptionsContextOpen(false);
+
+  const optionsContextTextarea = document.getElementById('newsOptionsContextTextarea');
+  if (optionsContextTextarea) {
+    optionsContextTextarea.value = currentModalExtraContext || '';
+  }
+
+  newsModal.show();
+  const modalTitle = document.querySelector('#newsModal .modal-title');
+  modalTitle.textContent = news.title;
+
+  const newsArticle = document.querySelector('#newsModal .news-article');
+  newsArticle.innerHTML = '';
+
+  const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
+  const date = excelToDate(news.date);
+
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  dateSpan.textContent = `${day}/${month}/${year}`;
+
+  const image = document.querySelector('#newsModal .news-image-background');
+
+  (async () => {
+    const url = news.image;
+    const exists = await imageExists(url);
+
+    if (exists) {
+      image.classList.remove('d-none');
+      image.src = news.image;
+    } else {
+      image.classList.add('d-none');
+    }
+  })();
+
+  await generateAndRenderArticle(news, newsList, "Generating", false, undefined, extraContext);
+
+  const optionsContextCancelButton = document.getElementById('newsOptionsContextCancel');
+  if (optionsContextCancelButton) {
+    optionsContextCancelButton.replaceWith(optionsContextCancelButton.cloneNode(true));
+    const newOptionsContextCancelButton = document.getElementById('newsOptionsContextCancel');
+
+    newOptionsContextCancelButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (optionsContextTextarea) optionsContextTextarea.value = currentModalExtraContext || '';
+      setOptionsContextOpen(false);
+    });
+  }
+
+  const optionsContextRegenerateButton = document.getElementById('newsOptionsContextRegenerate');
+  if (optionsContextRegenerateButton) {
+    optionsContextRegenerateButton.replaceWith(optionsContextRegenerateButton.cloneNode(true));
+    const newOptionsContextRegenerateButton = document.getElementById('newsOptionsContextRegenerate');
+
+    newOptionsContextRegenerateButton.addEventListener('click', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      currentModalExtraContext = optionsContextTextarea?.value?.trim() || '';
+      setOptionsContextOpen(false);
+      newsOptionsBtn?.classList.remove('active');
+      await generateAndRenderArticle(news, newsList, "Regenerating", true, undefined, currentModalExtraContext);
+    });
+  }
+
+  const regenerateButton = document.getElementById('regenerateArticle');
+  if (regenerateButton) {
+    regenerateButton.replaceWith(regenerateButton.cloneNode(true));
+    const newRegenerateButton = document.getElementById('regenerateArticle');
+
+    newRegenerateButton.addEventListener('click', async () => {
+      await generateAndRenderArticle(news, newsList, "Regenerating", true, undefined, currentModalExtraContext);
+    });
+  }
+
+  const regenerateWithContextButton = document.getElementById('regenerateWithContext');
+  if (regenerateWithContextButton) {
+    regenerateWithContextButton.replaceWith(regenerateWithContextButton.cloneNode(true));
+    const newRegenerateWithContextButton = document.getElementById('regenerateWithContext');
+
+    newRegenerateWithContextButton.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (optionsContextTextarea) {
+        optionsContextTextarea.value = currentModalExtraContext || '';
+      }
+      const container = document.getElementById('newsOptionsContext');
+      const isOpen = !!container?.classList.contains('open');
+      setOptionsContextOpen(!isOpen);
+    });
+  }
+}
+
+function addReadButtonListener(readButton, newsItem, news, newsList) {
+  readButton.addEventListener('click', async () => {
+    await openNewsModalFlow(news, newsItem, newsList);
+  });
+}
+
+async function generateAndRenderArticle(news, newsList, label = "Generating", force = false, model, extraContext = '') {
   exitArticleEditMode();
   const newsArticle = document.querySelector('#newsModal .news-article');
   newsArticle.innerHTML = '';
@@ -346,7 +471,7 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
   }, 150);
 
   try {
-    const articleText = await manageRead(news, newsList, progressDiv, interval, { force });
+    const articleText = await manageRead(news, newsList, progressDiv, interval, { force, extraContext });
 
     clearInterval(interval);
     clearInterval(dotsInterval);
@@ -611,6 +736,16 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   const readbuttonContainer = document.createElement('div');
   readbuttonContainer.classList.add('read-button-container');
 
+  const readActions = document.createElement('div');
+  readActions.classList.add('read-actions');
+
+  const contextButton = document.createElement('div');
+  contextButton.classList.add('context-read-button');
+  contextButton.setAttribute('title', 'Add context');
+  const contextIcon = document.createElement('i');
+  contextIcon.classList.add('bi', 'bi-chat-text');
+  contextButton.appendChild(contextIcon);
+
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
@@ -669,6 +804,11 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
 
 
   addReadButtonListener(readButton, newsItem, news, newsList);
+  contextButton.addEventListener('click', async () => {
+    const result = await openContextModal(news.title);
+    if (!result.confirmed) return;
+    await openNewsModalFlow(news, newsItem, newsList, { extraContext: result.context });
+  });
 
   newsItem.appendChild(imageContainer);
   titleAndArticle.appendChild(newsTitle);
@@ -681,11 +821,15 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
 
   if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
     if (newsAvailable.normal === true && !isTurning) { //second check - if normal news are available
-      readbuttonContainer.appendChild(readButton);
+      readActions.appendChild(contextButton);
+      readActions.appendChild(readButton);
+      readbuttonContainer.appendChild(readActions);
     }
 
     if (newsAvailable.turning === true && isTurning) { //second check - if insider news are available
-      readbuttonContainer.appendChild(readButton);
+      readActions.appendChild(contextButton);
+      readActions.appendChild(readButton);
+      readbuttonContainer.appendChild(readActions);
     }
 
   }
@@ -693,6 +837,7 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   //if news has .isCurrentSeason and its false, remove read button and turning point buttons
   if (isCurrentSeason === false && (news.text === undefined || news.text === null)) {
     readButton.remove();
+    contextButton.remove();
     const tpDiv = readbuttonContainer.querySelector('.turning-point-div');
     if (tpDiv) tpDiv.remove();
   }
@@ -810,6 +955,16 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   const readbuttonContainer = document.createElement('div');
   readbuttonContainer.classList.add('read-button-container');
 
+  const readActions = document.createElement('div');
+  readActions.classList.add('read-actions');
+
+  const contextButton = document.createElement('div');
+  contextButton.classList.add('context-read-button');
+  contextButton.setAttribute('title', 'Add context');
+  const contextIcon = document.createElement('i');
+  contextIcon.classList.add('bi', 'bi-chat-text');
+  contextButton.appendChild(contextIcon);
+
   const readButton = document.createElement('div');
   readButton.classList.add('read-button');
   const readButtonSpan = document.createElement('span');
@@ -817,60 +972,22 @@ export async function place_turning_outcome(turningPointResponse, newsList) {
   readButton.appendChild(readButtonSpan);
 
   readButton.addEventListener('click', async () => {
-    exitArticleEditMode();
-    currentModalNews = turningPointResponse;
-    const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
-      keyboard: false
-    });
-    newsModal.show();
+    await openNewsModalFlow(turningPointResponse, newsItem, newsList);
+  });
 
-    if (!turningPointResponse.text) {
-      newsOptionsBtn.classList.add('d-none');
-    }
-    else {
-      newsOptionsBtn.classList.remove('d-none');
-    }
-
-    newsModal._element.setAttribute("data-article-id", turningPointResponse.id || '');
-
-    const modalTitle = document.querySelector('#newsModal .modal-title');
-    modalTitle.textContent = turningPointResponse.title;
-
-    const newsArticle = document.querySelector('#newsModal .news-article');
-    newsArticle.innerHTML = '';
-
-
-    const dateSpan = document.querySelector('#newsModal .news-article-date .dateSpan');
-    const date = excelToDate(turningPointResponse.date);
-
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    dateSpan.textContent = `${day}/${month}/${year}`;
-
-    const image = document.querySelector('#newsModal .news-image-background');
-    image.src = turningPointResponse.image;
-
-    await generateAndRenderArticle(turningPointResponse, newsList, "Generating", false);
-
-    // Hook para REGENERAR (misma lógica, forzando)
-    const regenBtn = document.getElementById('regenerateArticle');
-    if (regenBtn) {
-      regenBtn.replaceWith(regenBtn.cloneNode(true)); // evita listeners duplicados
-      const newRegenBtn = document.getElementById('regenerateArticle');
-      newRegenBtn.addEventListener('click', () => {
-        generateAndRenderArticle(turningPointResponse, newsList, "Regenerating", true);
-      });
-    }
-
+  contextButton.addEventListener('click', async () => {
+    const result = await openContextModal(turningPointResponse.title);
+    if (!result.confirmed) return;
+    await openNewsModalFlow(turningPointResponse, newsItem, newsList, { extraContext: result.context });
   });
 
   imageContainer.appendChild(image);
   newsItem.appendChild(imageContainer);
   titleAndArticle.appendChild(newsTitle);
   newsBody.appendChild(titleAndArticle);
-  readbuttonContainer.appendChild(readButton);
+  readActions.appendChild(contextButton);
+  readActions.appendChild(readButton);
+  readbuttonContainer.appendChild(readActions);
   newsBody.appendChild(readbuttonContainer);
   newsItem.appendChild(newsBody);
 
@@ -1271,7 +1388,7 @@ function buildContextualPrompt(data, config = {}) {
 }
 
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
-  const { force = false } = opts;
+  const { force = false, extraContext = '' } = opts;
   const stableKey = newData.stableKey ?? newData.id ?? computeStableKey(newData);
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
@@ -1354,11 +1471,10 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       // Add additional contextual info to the prompt template
       let finalInstruction = `The current date is ${isoDate}\n\n` +
-        instruction +
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Use **bold** for important names or key phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
       if (expectsJson) {
         finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
@@ -1369,13 +1485,27 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
 
       finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
 
+      // Message 1: Instruction
+      messages.push({
+        role: "user",
+        content: instruction
+      });
+
+      if (extraContext.trim()) {
+        const shortExtraContext = extraContext.slice(0, 1500);
+        messages.push({
+          role: "user",
+          content: `Additional context that you MUST incorporate:\n${shortExtraContext.trim()}`
+        });
+      }
+
       // Message 1: Context Data
       messages.push({
         role: "user",
         content: `Here is context about  results, championship standings, driver stats and important events that happened throughout the season:\n\n${context}`
       });
 
-      // Message 2: Instruction
+      // Message 3: Final instructions
       messages.push({
         role: "user",
         content: finalInstruction
@@ -2761,7 +2891,11 @@ async function askGenAI(messages, opts = {}) {
 }
 
 newsOptionsBtn.addEventListener("click", (e) => {
-  e.target.classList.toggle("active");
+  const btn = e.currentTarget;
+  btn.classList.toggle("active");
+  if (!btn.classList.contains('active')) {
+    setOptionsContextOpen(false);
+  }
 });
 
 deleteArticleBtn.addEventListener("click", async () => {

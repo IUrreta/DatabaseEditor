@@ -2020,48 +2020,60 @@ function finishDownloadSaveProgress() {
     window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
 }
 
+const panicDownloadButton = document.getElementById("panicDownloadButton");
 const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+
+function downloadExportedSave(command) {
+    if (isDownloadingSave) return;
+
+    startDownloadSaveProgressSimulation();
+
+    downloadSaveWorkerHandler = (msg) => {
+        if (!isDownloadingSave) return;
+
+        const response = msg?.data;
+        if (!response) return;
+
+        if (response.error) {
+            console.error("Error exporting save:", response.error);
+            resetDownloadSaveProgress();
+            new_update_notifications("Error exporting save.", "error");
+            return;
+        }
+
+        if (response.responseMessage !== "Database exported") return;
+
+        try {
+            const finalData = response?.content?.finalData;
+            const metadata = response?.content?.metadata;
+            const filename = metadata?.filename || saveName || "save.sav";
+
+            if (finalData == null) {
+                throw new Error("Missing exported data");
+            }
+
+            saveAs(new Blob([finalData], { type: "application/binary" }), filename);
+            finishDownloadSaveProgress();
+        } catch (e) {
+            console.error("Failed to download exported save:", e);
+            resetDownloadSaveProgress();
+            new_update_notifications("Error exporting save.", "error");
+        }
+    };
+
+    dbWorker.addEventListener("message", downloadSaveWorkerHandler);
+    dbWorker.postMessage({ command, data: {} });
+}
+
 if (downloadSaveIcon) {
     downloadSaveIcon.addEventListener("click", function () {
-        if (isDownloadingSave) return;
+        downloadExportedSave("exportSave");
+    })
+}
 
-        startDownloadSaveProgressSimulation();
-
-        downloadSaveWorkerHandler = (msg) => {
-            if (!isDownloadingSave) return;
-
-            const response = msg?.data;
-            if (!response) return;
-
-            if (response.error) {
-                console.error("Error exporting save:", response.error);
-                resetDownloadSaveProgress();
-                new_update_notifications("Error exporting save.", "error");
-                return;
-            }
-
-            if (response.responseMessage !== "Database exported") return;
-
-            try {
-                const finalData = response?.content?.finalData;
-                const metadata = response?.content?.metadata;
-                const filename = metadata?.filename || saveName || "save.sav";
-
-                if (finalData == null) {
-                    throw new Error("Missing exported data");
-                }
-
-                saveAs(new Blob([finalData], { type: "application/binary" }), filename);
-                finishDownloadSaveProgress();
-            } catch (e) {
-                console.error("Failed to download exported save:", e);
-                resetDownloadSaveProgress();
-                new_update_notifications("Error exporting save.", "error");
-            }
-        };
-
-        dbWorker.addEventListener("message", downloadSaveWorkerHandler);
-        dbWorker.postMessage({ command: "exportSave", data: {} });
+if (panicDownloadButton) {
+    panicDownloadButton.addEventListener("click", function () {
+        downloadExportedSave("panicDownload");
     })
 }
 
