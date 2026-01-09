@@ -14521,6 +14521,12 @@ body.default-theme .news-article-date {
   justify-content: space-between;
 }
 
+.read-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+}
 
 .read-button {
   border-radius: 5px;
@@ -14531,6 +14537,56 @@ body.default-theme .news-article-date {
   cursor: pointer;
   position: relative;
   transition: background-color 0.15s, color 0.15s;
+}
+
+.context-read-button {
+  border-radius: 5px;
+  background-color: var(--elements);
+  color: var(--dark-text);
+  align-self: flex-end;
+  padding: 5px 8px;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(6px);
+  transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s, color 0.15s;
+}
+
+.context-read-button i {
+  font-size: 16px;
+}
+
+.news-item:hover .context-read-button,
+.news-item:focus-within .context-read-button {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(0);
+}
+
+.context-read-button:hover {
+  background-color: var(--elements-hover);
+  color: var(--text-general);
+}
+
+.news-context-textarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid var(--elements-hover);
+  background-color: color-mix(in srgb, var(--elements) 70%, transparent);
+  color: var(--text-general);
+  padding: 8px 10px;
+  outline: none;
+}
+
+.news-context-textarea:focus {
+  border-color: var(--new-primary);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--new-primary) 50%, transparent);
 }
 
 .close-modal,
