@@ -15788,7 +15788,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .news-options-context{
-  margin-top: 6px;
+  margin-top: 0px;
   border-top: 0 solid color-mix(in srgb, var(--text-general) 12%, transparent);
   padding: 0;
   max-height: 0;
@@ -15796,11 +15796,12 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   overflow: hidden;
   transform: translateY(-6px);
   pointer-events: none;
-  transition: max-height 0.25s ease, opacity 0.15s ease, transform 0.25s ease, padding 0.25s ease;
+  transition: max-height 0.25s ease, opacity 0.15s ease, transform 0.25s ease, padding 0.25s ease, margin-top 0.25s ease;
 }
 
 .news-options-context.open{
   padding: 0px;
+  margin-top: 5px;
   max-height: 220px;
   opacity: 1;
   transform: translateY(0);
