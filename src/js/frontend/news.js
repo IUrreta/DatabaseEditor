@@ -19,6 +19,14 @@ const newsOptionsBtn = document.querySelector('.news-options');
 const copyArticleBtn = document.getElementById('copyArticle');
 const deleteArticleBtn = document.getElementById('deleteArticle');
 const editArticleBtn = document.getElementById('editArticle');
+const createCustomNewsBtn = document.getElementById('createCustomNews');
+const customNewsModalEl = document.getElementById('customNewsModal');
+const customNewsTypeSelect = document.getElementById('customNewsTypeSelect');
+const customNewsDateInput = document.getElementById('customNewsDateInput');
+const customNewsTitleInput = document.getElementById('customNewsTitleInput');
+const customNewsParams = document.getElementById('customNewsParams');
+const customNewsError = document.getElementById('customNewsError');
+const customNewsCreateBtn = document.getElementById('customNewsCreateBtn');
 
 let interval2 = null;
 let cleaning = false;
@@ -918,10 +926,12 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
   if (!isCurrentSeason && isCurrentSeason !== undefined) { //if it's undefined it should go to else
     document.querySelector("#reloadNews").classList.add("d-none");
     document.querySelector("#regenerateArticle").classList.add("d-none");
+    document.querySelector("#createCustomNews")?.classList.add("d-none");
   }
   else {
     document.querySelector("#reloadNews").classList.remove("d-none");
     document.querySelector("#regenerateArticle").classList.remove("d-none");
+    document.querySelector("#createCustomNews")?.classList.remove("d-none");
   }
 }
 
@@ -2533,7 +2543,7 @@ async function contextualizeQualiResults(newData) {
     .replace(/{{\s*circuit\s*}}/g, circuit);
 
 
-  const raceId = newData.id.split("_")[2];
+  const raceId = newData?.data?.raceId ?? Number.parseInt(newData?.id?.split("_")?.[2], 10);
 
   const command = new Command("qualiDetailsRequest", {
     raceid: raceId,
@@ -2603,7 +2613,7 @@ async function contextualizeRaceResults(newData) {
     .replace(/{{\s*season_year\s*}}/g, seasonYear)
     .replace(/{{\s*circuit\s*}}/g, circuit);
 
-  const raceId = newData.id.split("_")[2];
+  const raceId = newData?.data?.raceId ?? Number.parseInt(newData?.id?.split("_")?.[2], 10);
   const command = new Command("raceDetailsRequest", {
     raceid: raceId,
   }
@@ -2767,8 +2777,10 @@ async function contextualizeRaceReaction(newData) {
 
 async function contextualizeFeederSeriesReview(newData) {
   let seasonYear = newData.data.season_year;
-  let f2_champion = newData.data.f2_champion.name;
-  let f3_champion = newData.data.f3_champion.name;
+  const f2ChampionData = newData.data.f2_champion;
+  const f3ChampionData = newData.data.f3_champion;
+  let f2_champion = (typeof f2ChampionData === "string") ? f2ChampionData : f2ChampionData?.name;
+  let f3_champion = (typeof f3ChampionData === "string") ? f3ChampionData : f3ChampionData?.name;
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 20).prompt;
   prompt = prompt.replace(/{{\s*season_year\s*}}/g, seasonYear)
     .replace(/{{\s*f2_champion\s*}}/g, f2_champion)
@@ -3474,6 +3486,452 @@ document.querySelector("#reloadNews").addEventListener("click", async () => {
   command.execute();
 
   generateNews();
+});
+
+const CUSTOM_NEWS_TYPE_DEFS = [
+  { value: "race_result", label: "Race result" },
+  { value: "quali_result", label: "Qualifying result" },
+  { value: "race_reaction", label: "Post-race reactions" },
+  { value: "fake_transfer", label: "Fake transfer rumor" },
+  { value: "big_transfer", label: "Big transfer confirmed" },
+  { value: "massive_exit", label: "Massive exit" },
+  { value: "massive_signing", label: "Massive signing" },
+  { value: "contract_renewal", label: "Contract renewal" },
+  { value: "silly_season_rumors", label: "Silly season rumors" },
+  { value: "team_comparison", label: "Team comparison" },
+  { value: "driver_comparison", label: "Driver comparison" },
+  { value: "season_review", label: "Season review" },
+  { value: "potential_champion", label: "Potential champion" },
+  { value: "world_champion", label: "World champion" },
+  { value: "next_season_grid", label: "Next season grid" },
+  { value: "feeder_series_review", label: "Feeder series review" },
+];
+
+let customNewsModal = null;
+let customNewsOptionsCache = null;
+
+function setCustomNewsError(msg) {
+  if (!customNewsError) return;
+  if (msg) {
+    customNewsError.textContent = msg;
+    customNewsError.classList.remove('d-none');
+  } else {
+    customNewsError.textContent = '';
+    customNewsError.classList.add('d-none');
+  }
+}
+
+function toIsoDate(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return d.toISOString().slice(0, 10);
+}
+
+function buildOptionsHtml(items, { getValue, getLabel, includeEmpty = false, emptyLabel = "Select..." } = {}) {
+  const rows = [];
+  if (includeEmpty) rows.push(`<option value="">${emptyLabel}</option>`);
+  for (const it of items || []) {
+    const v = getValue(it);
+    const l = getLabel(it);
+    rows.push(`<option value="${String(v)}">${String(l)}</option>`);
+  }
+  return rows.join("");
+}
+
+async function loadCustomNewsOptions() {
+  if (customNewsOptionsCache) return customNewsOptionsCache;
+  const resp = await new Command("getCustomNewsOptions", {}).promiseExecute();
+  customNewsOptionsCache = resp.content || null;
+  return customNewsOptionsCache;
+}
+
+function renderCustomNewsParams(type, options) {
+  if (!customNewsParams) return;
+
+  const teams = options?.teams || [];
+  const races = options?.races || [];
+  const drivers = options?.drivers || [];
+
+  const teamOptions = buildOptionsHtml(teams, {
+    getValue: t => t.id,
+    getLabel: t => t.name,
+    includeEmpty: true
+  });
+  const raceOptions = buildOptionsHtml(races, {
+    getValue: r => r.id,
+    getLabel: r => `${r.label}${r.state === 2 ? " (Done)" : ""}`,
+    includeEmpty: true
+  });
+  const driverOptions = buildOptionsHtml(drivers, {
+    getValue: d => d.id,
+    getLabel: d => `${d.name} (${d.teamName})`,
+    includeEmpty: true
+  });
+
+  if (type === "race_result" || type === "quali_result" || type === "race_reaction" || type === "potential_champion" || type === "world_champion") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-12">
+          <label class="form-label bold-font" for="customNewsRaceId">Race</label>
+          <select class="form-select" id="customNewsRaceId" required>
+            ${raceOptions}
+          </select>
+        </div>
+        ${type === "race_reaction" ? `
+          <div class="col-md-6">
+            <label class="form-label bold-font" for="customNewsHappyDriverId">Happy driver (optional)</label>
+            <select class="form-select" id="customNewsHappyDriverId">
+              <option value="">Random</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label bold-font" for="customNewsUnhappyDriverId">Unhappy driver (optional)</label>
+            <select class="form-select" id="customNewsUnhappyDriverId">
+              <option value="">Random</option>
+            </select>
+          </div>
+        ` : ""}
+      </div>
+    `;
+
+    if (type === "race_reaction") {
+      const raceSel = document.getElementById('customNewsRaceId');
+      raceSel?.addEventListener('change', async () => {
+        const raceId = Number(raceSel.value);
+        const happySel = document.getElementById('customNewsHappyDriverId');
+        const unhappySel = document.getElementById('customNewsUnhappyDriverId');
+        if (!happySel || !unhappySel) return;
+
+        happySel.innerHTML = `<option value="">Random</option>`;
+        unhappySel.innerHTML = `<option value="">Random</option>`;
+        if (!Number.isFinite(raceId) || raceId <= 0) return;
+
+        try {
+          const resp = await new Command("customNewsRaceDrivers", { raceId }).promiseExecute();
+          const list = Array.isArray(resp.content) ? resp.content : [];
+          const html = buildOptionsHtml(list, {
+            getValue: d => d.driverId,
+            getLabel: d => `${d.pos}. ${d.name} (${d.teamName})`
+          });
+          happySel.insertAdjacentHTML('beforeend', html);
+          unhappySel.insertAdjacentHTML('beforeend', html);
+        } catch (e) {
+          console.error("Failed to load race drivers:", e);
+        }
+      });
+    }
+    return;
+  }
+
+  if (type === "fake_transfer") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-12">
+          <label class="form-label bold-font" for="customNewsDriverId">Driver</label>
+          <select class="form-select" id="customNewsDriverId" required>
+            ${driverOptions}
+          </select>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (type === "big_transfer" || type === "massive_exit" || type === "massive_signing") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsDriverId">Driver</label>
+          <select class="form-select" id="customNewsDriverId" required>
+            ${driverOptions}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label bold-font" for="customNewsFromTeamId">From team</label>
+          <select class="form-select" id="customNewsFromTeamId" required>
+            ${teamOptions}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label bold-font" for="customNewsToTeamId">To team</label>
+          <select class="form-select" id="customNewsToTeamId" required>
+            ${teamOptions}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsSalary">Salary (optional)</label>
+          <input type="number" class="form-control" id="customNewsSalary" placeholder="e.g. 2000000" min="0">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsEndSeason">Contract end season (optional)</label>
+          <input type="number" class="form-control" id="customNewsEndSeason" placeholder="e.g. 2028" min="0">
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (type === "contract_renewal") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsDriverId">Driver</label>
+          <select class="form-select" id="customNewsDriverId" required>
+            ${driverOptions}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label bold-font" for="customNewsRenewalTeamId">Renewal team</label>
+          <select class="form-select" id="customNewsRenewalTeamId" required>
+            ${teamOptions}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label bold-font" for="customNewsCurrentTeamId">Current team</label>
+          <select class="form-select" id="customNewsCurrentTeamId" required>
+            ${teamOptions}
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsSalary">Salary (optional)</label>
+          <input type="number" class="form-control" id="customNewsSalary" placeholder="e.g. 2000000" min="0">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsEndSeason">Contract end season (optional)</label>
+          <input type="number" class="form-control" id="customNewsEndSeason" placeholder="e.g. 2028" min="0">
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (type === "silly_season_rumors") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="text-muted">Pick 3 drivers and their most likely destination teams.</div>
+        </div>
+        ${[1, 2, 3].map(i => `
+          <div class="col-md-6">
+            <label class="form-label bold-font" for="customNewsSillyDriver${i}Id">Driver ${i}</label>
+            <select class="form-select" id="customNewsSillyDriver${i}Id" required>
+              ${driverOptions}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label bold-font" for="customNewsSillyTeam${i}Id">Destination team ${i}</label>
+            <select class="form-select" id="customNewsSillyTeam${i}Id" required>
+              ${teamOptions}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label bold-font" for="customNewsSillySalary${i}">Salary ${i} (optional)</label>
+            <input type="number" class="form-control" id="customNewsSillySalary${i}" placeholder="e.g. 2000000" min="0">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label bold-font" for="customNewsSillyEndSeason${i}">Contract end season ${i} (optional)</label>
+            <input type="number" class="form-control" id="customNewsSillyEndSeason${i}" placeholder="e.g. 2028" min="0">
+          </div>
+        `).join('')}
+      </div>
+    `;
+    return;
+  }
+
+  if (type === "team_comparison") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsTeamId">Team</label>
+          <select class="form-select" id="customNewsTeamId" required>
+            ${teamOptions}
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label bold-font" for="customNewsCompType">Comparison</label>
+          <select class="form-select" id="customNewsCompType">
+            <option value="good">Good</option>
+            <option value="bad">Bad</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label bold-font" for="customNewsDrop">Points diff (optional)</label>
+          <input type="number" class="form-control" id="customNewsDrop" value="0">
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (type === "driver_comparison") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label bold-font" for="customNewsTeamId">Team</label>
+          <select class="form-select" id="customNewsTeamId" required>
+            ${teamOptions}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label bold-font" for="customNewsDriver1Id">Driver 1</label>
+          <select class="form-select" id="customNewsDriver1Id" required>
+            ${driverOptions}
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label bold-font" for="customNewsDriver2Id">Driver 2</label>
+          <select class="form-select" id="customNewsDriver2Id" required>
+            ${driverOptions}
+          </select>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  if (type === "season_review") {
+    customNewsParams.innerHTML = `
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label bold-font" for="customNewsPart">Season review part</label>
+          <select class="form-select" id="customNewsPart" required>
+            <option value="1">Part 1</option>
+            <option value="2">Part 2</option>
+            <option value="3">Part 3</option>
+          </select>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  customNewsParams.innerHTML = `<div class="text-muted">No extra parameters for this type.</div>`;
+}
+
+async function openCustomNewsModal() {
+  if (!customNewsModalEl || !customNewsTypeSelect || !customNewsCreateBtn) return;
+  if (!customNewsModal) customNewsModal = new bootstrap.Modal(customNewsModalEl);
+
+  setCustomNewsError(null);
+
+  const options = await loadCustomNewsOptions();
+  if (!options) {
+    setCustomNewsError("Failed to load custom news options.");
+    return;
+  }
+
+  customNewsTypeSelect.innerHTML = buildOptionsHtml(CUSTOM_NEWS_TYPE_DEFS, {
+    getValue: t => t.value,
+    getLabel: t => t.label
+  });
+
+  const defaultDate = options.currentDay ? excelToDate(options.currentDay) : new Date();
+  if (customNewsDateInput) customNewsDateInput.value = toIsoDate(defaultDate);
+  if (customNewsTitleInput) customNewsTitleInput.value = "";
+
+  renderCustomNewsParams(customNewsTypeSelect.value, options);
+  customNewsTypeSelect.onchange = () => {
+    setCustomNewsError(null);
+    renderCustomNewsParams(customNewsTypeSelect.value, options);
+  };
+
+  customNewsModal.show();
+}
+
+async function submitCustomNews() {
+  if (!customNewsTypeSelect) return;
+  setCustomNewsError(null);
+
+  const type = customNewsTypeSelect.value;
+  const dateIso = customNewsDateInput?.value || null;
+  const title = customNewsTitleInput?.value || "";
+
+  const params = {};
+
+  const raceIdEl = document.getElementById('customNewsRaceId');
+  if (raceIdEl?.value) params.raceId = Number(raceIdEl.value);
+
+  const driverIdEl = document.getElementById('customNewsDriverId');
+  if (driverIdEl?.value) params.driverId = Number(driverIdEl.value);
+
+  const fromTeamIdEl = document.getElementById('customNewsFromTeamId');
+  if (fromTeamIdEl?.value) params.fromTeamId = Number(fromTeamIdEl.value);
+
+  const toTeamIdEl = document.getElementById('customNewsToTeamId');
+  if (toTeamIdEl?.value) params.toTeamId = Number(toTeamIdEl.value);
+
+  const renewalTeamIdEl = document.getElementById('customNewsRenewalTeamId');
+  if (renewalTeamIdEl?.value) params.renewalTeamId = Number(renewalTeamIdEl.value);
+
+  const currentTeamIdEl = document.getElementById('customNewsCurrentTeamId');
+  if (currentTeamIdEl?.value) params.currentTeamId = Number(currentTeamIdEl.value);
+
+  const teamIdEl = document.getElementById('customNewsTeamId');
+  if (teamIdEl?.value) params.teamId = Number(teamIdEl.value);
+
+  const compTypeEl = document.getElementById('customNewsCompType');
+  if (compTypeEl?.value) params.compType = compTypeEl.value;
+
+  const dropEl = document.getElementById('customNewsDrop');
+  if (dropEl && dropEl.value !== "") params.drop = Number(dropEl.value);
+
+  const driver1IdEl = document.getElementById('customNewsDriver1Id');
+  if (driver1IdEl?.value) params.driver1Id = Number(driver1IdEl.value);
+
+  const driver2IdEl = document.getElementById('customNewsDriver2Id');
+  if (driver2IdEl?.value) params.driver2Id = Number(driver2IdEl.value);
+
+  const partEl = document.getElementById('customNewsPart');
+  if (partEl?.value) params.part = Number(partEl.value);
+
+  const salaryEl = document.getElementById('customNewsSalary');
+  if (salaryEl && salaryEl.value !== "") params.salary = Number(salaryEl.value);
+
+  const endSeasonEl = document.getElementById('customNewsEndSeason');
+  if (endSeasonEl && endSeasonEl.value !== "") params.endSeason = Number(endSeasonEl.value);
+
+  const happyEl = document.getElementById('customNewsHappyDriverId');
+  if (happyEl?.value) params.happyDriverId = Number(happyEl.value);
+
+  const unhappyEl = document.getElementById('customNewsUnhappyDriverId');
+  if (unhappyEl?.value) params.unhappyDriverId = Number(unhappyEl.value);
+
+  if (type === "silly_season_rumors") {
+    const list = [1, 2, 3].map(i => {
+      const dEl = document.getElementById(`customNewsSillyDriver${i}Id`);
+      const tEl = document.getElementById(`customNewsSillyTeam${i}Id`);
+      const sEl = document.getElementById(`customNewsSillySalary${i}`);
+      const eEl = document.getElementById(`customNewsSillyEndSeason${i}`);
+      return {
+        driverId: dEl?.value ? Number(dEl.value) : null,
+        potentialTeam: tEl?.value ? Number(tEl.value) : null,
+        salary: sEl && sEl.value !== "" ? Number(sEl.value) : null,
+        endSeason: eEl && eEl.value !== "" ? Number(eEl.value) : null
+      };
+    });
+    params.drivers = list;
+  }
+
+  try {
+    await new Command("createCustomNews", { type, title, dateIso, params }).promiseExecute();
+    customNewsModal?.hide();
+    customNewsOptionsCache = null;
+    generateNews();
+  } catch (e) {
+    console.error(e);
+    setCustomNewsError(e?.message || "Failed to create custom news.");
+  }
+}
+
+createCustomNewsBtn?.addEventListener("click", async () => {
+  try {
+    await openCustomNewsModal();
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+customNewsCreateBtn?.addEventListener("click", async () => {
+  await submitCustomNews();
 });
 
 export function updateNewsYearsButton(message) {

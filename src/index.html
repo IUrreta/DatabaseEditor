@@ -1161,6 +1161,40 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="customNewsModal" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h4 class="modal-title bold-font">Create custom news</h4>
+        </div>
+        <div class="modal-body custom-body">
+          <form id="customNewsForm">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label bold-font" for="customNewsTypeSelect">Type</label>
+                <select class="form-select" id="customNewsTypeSelect" required></select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label bold-font" for="customNewsDateInput">Date</label>
+                <input type="date" class="form-control" id="customNewsDateInput">
+              </div>
+              <div class="col-12">
+                <label class="form-label bold-font" for="customNewsTitleInput">Title</label>
+                <input type="text" class="form-control" id="customNewsTitleInput"
+                  placeholder="Leave empty to auto-generate a title">
+              </div>
+            </div>
+            <div class="mt-3" id="customNewsParams"></div>
+            <div class="alert alert-danger d-none mt-3" id="customNewsError"></div>
+          </form>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal" id="customNewsCancel">Cancel</button>
+          <button type="button" class="confirm-modal" id="customNewsCreateBtn">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -1611,6 +1645,10 @@
             Latest news
           </div>
           <div class="title-buttons-right">
+            <div class="button-with-icon" id="createCustomNews">
+              <i class="bi bi-plus-circle"></i>
+              <span class="">Create news</span>
+            </div>
             <div class="button-with-icon" id="reloadNews">
               <i class="bi bi-arrow-clockwise"></i>
               <span class="">Regenerate news</span>

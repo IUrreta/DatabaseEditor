@@ -35,7 +35,10 @@ import {
   deleteNewByKey,
   checkDoublePointsBug,
   fixDoublePointsBug,
-  getFullFeederSeriesDetails
+  getFullFeederSeriesDetails,
+  getCustomNewsOptions,
+  getRaceDriversForCustomNews,
+  createCustomNewsEntry
 } from "./scriptUtils/newsUtils";
 import { getSelectedRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -585,6 +588,32 @@ const workerCommands = {
         console.error("ERROR COMPLETO:", e);
       console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
+    }
+  },
+  getCustomNewsOptions: (data, postMessage) => {
+    const options = getCustomNewsOptions();
+    postMessage({ responseMessage: "Custom news options", content: options });
+  },
+  customNewsRaceDrivers: (data, postMessage) => {
+    const raceId = Number(data?.raceId);
+    const drivers = getRaceDriversForCustomNews(raceId);
+    postMessage({ responseMessage: "Custom news race drivers", content: drivers });
+  },
+  createCustomNews: (data, postMessage) => {
+    try {
+      const entry = createCustomNewsEntry(data || {});
+      entry.stableKey = entry.stableKey ?? computeStableKey(entry);
+      upsertNews([entry]);
+      postMessage({
+        responseMessage: "Custom news created",
+        noti_msg: "Custom news created",
+        content: entry,
+        isEditCommand: true,
+        unlocksDownload: true
+      });
+    } catch (e) {
+      console.error(e);
+      postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
     }
   },
   fixDoublePointsBug: (data, postMessage) => {
