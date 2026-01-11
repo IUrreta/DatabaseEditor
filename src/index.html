@@ -1168,25 +1168,33 @@
           <h4 class="modal-title bold-font">Create custom news</h4>
         </div>
         <div class="modal-body custom-body">
-          <form id="customNewsForm">
+          <div id="customNewsForm">
             <div class="row g-3">
               <div class="col-md-6">
-                <label class="form-label bold-font" for="customNewsTypeSelect">Type</label>
-                <select class="form-select" id="customNewsTypeSelect" required></select>
+                <label class="form-label bold-font" for="customNewsTypeButton">Type</label>
+                <div class="dropdown-global">
+                  <button type="button" class="redesigned-dropdown bold-font" id="customNewsTypeButton" aria-haspopup="true"
+                    aria-expanded="false" data-value="">
+                    <span class="dropdown-label">Select type</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu" id="customNewsTypeMenu" style="font-family: Formula1;">
+                  </ul>
+                </div>
               </div>
               <div class="col-md-6">
                 <label class="form-label bold-font" for="customNewsDateInput">Date</label>
-                <input type="date" class="form-control" id="customNewsDateInput">
+                <input type="date" class="custom-news-input" id="customNewsDateInput">
               </div>
               <div class="col-12">
                 <label class="form-label bold-font" for="customNewsTitleInput">Title</label>
-                <input type="text" class="form-control" id="customNewsTitleInput"
+                <input type="text" class="custom-news-input" id="customNewsTitleInput"
                   placeholder="Leave empty to auto-generate a title">
               </div>
             </div>
             <div class="mt-3" id="customNewsParams"></div>
             <div class="alert alert-danger d-none mt-3" id="customNewsError"></div>
-          </form>
+          </div>
         </div>
         <div class="modal-footer custom-footer">
           <button type="button" class="close-modal" data-bs-dismiss="modal" id="customNewsCancel">Cancel</button>

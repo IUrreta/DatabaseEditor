@@ -21,7 +21,8 @@ const deleteArticleBtn = document.getElementById('deleteArticle');
 const editArticleBtn = document.getElementById('editArticle');
 const createCustomNewsBtn = document.getElementById('createCustomNews');
 const customNewsModalEl = document.getElementById('customNewsModal');
-const customNewsTypeSelect = document.getElementById('customNewsTypeSelect');
+const customNewsTypeButton = document.getElementById('customNewsTypeButton');
+const customNewsTypeMenu = document.getElementById('customNewsTypeMenu');
 const customNewsDateInput = document.getElementById('customNewsDateInput');
 const customNewsTitleInput = document.getElementById('customNewsTitleInput');
 const customNewsParams = document.getElementById('customNewsParams');
@@ -3526,15 +3527,110 @@ function toIsoDate(date) {
   return d.toISOString().slice(0, 10);
 }
 
-function buildOptionsHtml(items, { getValue, getLabel, includeEmpty = false, emptyLabel = "Select..." } = {}) {
-  const rows = [];
-  if (includeEmpty) rows.push(`<option value="">${emptyLabel}</option>`);
-  for (const it of items || []) {
-    const v = getValue(it);
-    const l = getLabel(it);
-    rows.push(`<option value="${String(v)}">${String(l)}</option>`);
+function bindRedesignedDropdownToggle(dropdown) {
+  if (!dropdown || dropdown._customDropdownBound) return;
+  dropdown._customDropdownBound = true;
+
+  dropdown.addEventListener("click", function (e) {
+    e.stopPropagation();
+
+    document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+      if (openDropdown !== dropdown) {
+        openDropdown.classList.remove("open");
+      }
+    });
+
+    dropdown.classList.toggle("open");
+  });
+}
+
+function getDropdownLabelSpan(buttonEl) {
+  return buttonEl?.querySelector(".dropdown-label") || buttonEl?.querySelector("span") || null;
+}
+
+function setRedesignedDropdownSelection(buttonEl, menuEl, value, label) {
+  if (!buttonEl) return;
+  buttonEl.dataset.value = value == null ? "" : String(value);
+
+  const span = getDropdownLabelSpan(buttonEl);
+  if (span) span.textContent = label != null ? String(label) : "";
+
+  if (menuEl) {
+    menuEl.querySelectorAll(".redesigned-dropdown-item").forEach(item => {
+      const isSelected = item.dataset.value === String(value ?? "");
+      item.querySelector("i")?.classList.toggle("unactive", !isSelected);
+    });
   }
-  return rows.join("");
+}
+
+function getRedesignedDropdownValue(buttonEl) {
+  const v = buttonEl?.dataset?.value;
+  return v == null ? "" : String(v);
+}
+
+function populateRedesignedDropdown({
+  buttonEl,
+  menuEl,
+  items,
+  getValue,
+  getLabel,
+  placeholderLabel = "Select...",
+  includeEmpty = false,
+  emptyLabel = "Select...",
+  selectedValue = "",
+  bindToggle = true,
+  onSelect
+} = {}) {
+  if (!buttonEl || !menuEl) return;
+
+  if (bindToggle) bindRedesignedDropdownToggle(buttonEl);
+
+  const mkItem = (value, label) => {
+    const a = document.createElement("a");
+    a.className = "redesigned-dropdown-item";
+    a.href = "#";
+    a.dataset.value = value == null ? "" : String(value);
+
+    const text = document.createElement("span");
+    text.textContent = String(label ?? "");
+
+    const icon = document.createElement("i");
+    icon.className = "bi bi-check unactive";
+
+    a.appendChild(text);
+    a.appendChild(icon);
+
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      setRedesignedDropdownSelection(buttonEl, menuEl, a.dataset.value, text.textContent);
+      buttonEl.classList.remove("open");
+      if (typeof onSelect === "function") onSelect(a.dataset.value);
+    });
+
+    return a;
+  };
+
+  menuEl.replaceChildren();
+
+  if (includeEmpty) {
+    menuEl.appendChild(mkItem("", emptyLabel));
+  }
+
+  (items || []).forEach(it => {
+    menuEl.appendChild(mkItem(getValue(it), getLabel(it)));
+  });
+
+  const selectedStr = selectedValue == null ? "" : String(selectedValue);
+  const selectedItem = Array.from(menuEl.querySelectorAll(".redesigned-dropdown-item"))
+    .find(a => a.dataset.value === selectedStr);
+
+  if (selectedItem) {
+    setRedesignedDropdownSelection(buttonEl, menuEl, selectedItem.dataset.value, selectedItem.querySelector("span")?.textContent);
+  } else {
+    setRedesignedDropdownSelection(buttonEl, menuEl, "", placeholderLabel);
+  }
 }
 
 async function loadCustomNewsOptions() {
@@ -3551,264 +3647,594 @@ function renderCustomNewsParams(type, options) {
   const races = options?.races || [];
   const drivers = options?.drivers || [];
 
-  const teamOptions = buildOptionsHtml(teams, {
-    getValue: t => t.id,
-    getLabel: t => t.name,
-    includeEmpty: true
-  });
-  const raceOptions = buildOptionsHtml(races, {
-    getValue: r => r.id,
-    getLabel: r => `${r.label}${r.state === 2 ? " (Done)" : ""}`,
-    includeEmpty: true
-  });
-  const driverOptions = buildOptionsHtml(drivers, {
-    getValue: d => d.id,
-    getLabel: d => `${d.name} (${d.teamName})`,
-    includeEmpty: true
-  });
+  customNewsParams.replaceChildren();
 
-  if (type === "race_result" || type === "quali_result" || type === "race_reaction" || type === "potential_champion" || type === "world_champion") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-12">
-          <label class="form-label bold-font" for="customNewsRaceId">Race</label>
-          <select class="form-select" id="customNewsRaceId" required>
-            ${raceOptions}
-          </select>
-        </div>
-        ${type === "race_reaction" ? `
-          <div class="col-md-6">
-            <label class="form-label bold-font" for="customNewsHappyDriverId">Happy driver (optional)</label>
-            <select class="form-select" id="customNewsHappyDriverId">
-              <option value="">Random</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label bold-font" for="customNewsUnhappyDriverId">Unhappy driver (optional)</label>
-            <select class="form-select" id="customNewsUnhappyDriverId">
-              <option value="">Random</option>
-            </select>
-          </div>
-        ` : ""}
-      </div>
-    `;
+  const createEl = (tag, className) => {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    return el;
+  };
 
-    if (type === "race_reaction") {
-      const raceSel = document.getElementById('customNewsRaceId');
-      raceSel?.addEventListener('change', async () => {
-        const raceId = Number(raceSel.value);
-        const happySel = document.getElementById('customNewsHappyDriverId');
-        const unhappySel = document.getElementById('customNewsUnhappyDriverId');
-        if (!happySel || !unhappySel) return;
+  const makeLabel = (htmlFor, text) => {
+    const label = createEl("label", "form-label bold-font");
+    label.htmlFor = htmlFor;
+    label.textContent = text;
+    return label;
+  };
 
-        happySel.innerHTML = `<option value="">Random</option>`;
-        unhappySel.innerHTML = `<option value="">Random</option>`;
-        if (!Number.isFinite(raceId) || raceId <= 0) return;
+  const makeRow = () => createEl("div", "row g-3");
+  const makeCol = (className) => createEl("div", className);
+
+  const makeInput = ({ id, type = "text", placeholder = "", min = null, value = null } = {}) => {
+    const input = createEl("input", "form-control");
+    input.id = id;
+    input.type = type;
+    if (placeholder) input.placeholder = placeholder;
+    if (min != null) input.min = String(min);
+    if (value != null) input.value = String(value);
+    return input;
+  };
+
+  const makeDropdown = ({ buttonId, menuId, placeholder }) => {
+    const wrap = createEl("div", "dropdown-global");
+
+    const button = createEl("button", "redesigned-dropdown bold-font");
+    button.type = "button";
+    button.id = buttonId;
+    button.setAttribute("aria-haspopup", "true");
+    button.setAttribute("aria-expanded", "false");
+    button.dataset.value = "";
+
+    const labelSpan = createEl("span", "dropdown-label");
+    labelSpan.textContent = placeholder;
+
+    const chevron = createEl("i", "redesigned-chevron");
+
+    button.append(labelSpan, chevron);
+
+    const menu = createEl("ul", "redesigned-dropdown-menu");
+    menu.id = menuId;
+    menu.style.fontFamily = "Formula1";
+
+    wrap.append(button, menu);
+    return { wrap, button, menu };
+  };
+
+  const teamLabel = (t) => t?.name ?? "";
+  const raceLabel = (r) => `${r?.label ?? ""}${r?.state === 2 ? " (Done)" : ""}`;
+  const driverLabel = (d) => `${d?.name ?? ""} (${d?.teamName ?? ""})`;
+
+  if (type === "race_result" || type === "quali_result" || type === "potential_champion" || type === "world_champion") {
+    const row = makeRow();
+    const col = makeCol("col-12");
+    const { wrap } = makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" });
+    col.append(makeLabel("customNewsRaceButton", "Race"), wrap);
+    row.append(col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: races,
+      getValue: r => r.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "race_reaction") {
+    const row = makeRow();
+
+    const raceCol = makeCol("col-12");
+    raceCol.append(
+      makeLabel("customNewsRaceButton", "Race"),
+      makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
+    );
+
+    const happyCol = makeCol("col-md-6");
+    happyCol.append(
+      makeLabel("customNewsHappyDriverButton", "Happy driver (optional)"),
+      makeDropdown({ buttonId: "customNewsHappyDriverButton", menuId: "customNewsHappyDriverMenu", placeholder: "Random" }).wrap
+    );
+
+    const unhappyCol = makeCol("col-md-6");
+    unhappyCol.append(
+      makeLabel("customNewsUnhappyDriverButton", "Unhappy driver (optional)"),
+      makeDropdown({ buttonId: "customNewsUnhappyDriverButton", menuId: "customNewsUnhappyDriverMenu", placeholder: "Random" }).wrap
+    );
+
+    row.append(raceCol, happyCol, unhappyCol);
+    customNewsParams.append(row);
+
+    const happyBtn = document.getElementById("customNewsHappyDriverButton");
+    const happyMenu = document.getElementById("customNewsHappyDriverMenu");
+    const unhappyBtn = document.getElementById("customNewsUnhappyDriverButton");
+    const unhappyMenu = document.getElementById("customNewsUnhappyDriverMenu");
+
+    const raceDriverLabel = (d) => `${d?.pos}. ${d?.name} (${d?.teamName})`;
+
+    const resetRaceReactionDrivers = () => {
+      populateRedesignedDropdown({
+        buttonEl: happyBtn,
+        menuEl: happyMenu,
+        items: [],
+        getValue: d => d.driverId,
+        getLabel: raceDriverLabel,
+        placeholderLabel: "Random",
+        includeEmpty: true,
+        emptyLabel: "Random",
+        selectedValue: "",
+        bindToggle: true
+      });
+      populateRedesignedDropdown({
+        buttonEl: unhappyBtn,
+        menuEl: unhappyMenu,
+        items: [],
+        getValue: d => d.driverId,
+        getLabel: raceDriverLabel,
+        placeholderLabel: "Random",
+        includeEmpty: true,
+        emptyLabel: "Random",
+        selectedValue: "",
+        bindToggle: true
+      });
+    };
+
+    resetRaceReactionDrivers();
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: races,
+      getValue: r => r.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true,
+      onSelect: async (raceIdValue) => {
+        const raceId = Number(raceIdValue);
+        if (!Number.isFinite(raceId) || raceId <= 0) {
+          resetRaceReactionDrivers();
+          return;
+        }
 
         try {
           const resp = await new Command("customNewsRaceDrivers", { raceId }).promiseExecute();
           const list = Array.isArray(resp.content) ? resp.content : [];
-          const html = buildOptionsHtml(list, {
+
+          populateRedesignedDropdown({
+            buttonEl: happyBtn,
+            menuEl: happyMenu,
+            items: list,
             getValue: d => d.driverId,
-            getLabel: d => `${d.pos}. ${d.name} (${d.teamName})`
+            getLabel: raceDriverLabel,
+            placeholderLabel: "Random",
+            includeEmpty: true,
+            emptyLabel: "Random",
+            selectedValue: "",
+            bindToggle: true
           });
-          happySel.insertAdjacentHTML('beforeend', html);
-          unhappySel.insertAdjacentHTML('beforeend', html);
+          populateRedesignedDropdown({
+            buttonEl: unhappyBtn,
+            menuEl: unhappyMenu,
+            items: list,
+            getValue: d => d.driverId,
+            getLabel: raceDriverLabel,
+            placeholderLabel: "Random",
+            includeEmpty: true,
+            emptyLabel: "Random",
+            selectedValue: "",
+            bindToggle: true
+          });
         } catch (e) {
           console.error("Failed to load race drivers:", e);
         }
-      });
-    }
+      }
+    });
     return;
   }
 
   if (type === "fake_transfer") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-12">
-          <label class="form-label bold-font" for="customNewsDriverId">Driver</label>
-          <select class="form-select" id="customNewsDriverId" required>
-            ${driverOptions}
-          </select>
-        </div>
-      </div>
-    `;
+    const row = makeRow();
+    const col = makeCol("col-12");
+    col.append(
+      makeLabel("customNewsDriverButton", "Driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+    row.append(col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
     return;
   }
 
   if (type === "big_transfer" || type === "massive_exit" || type === "massive_signing") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsDriverId">Driver</label>
-          <select class="form-select" id="customNewsDriverId" required>
-            ${driverOptions}
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label bold-font" for="customNewsFromTeamId">From team</label>
-          <select class="form-select" id="customNewsFromTeamId" required>
-            ${teamOptions}
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label bold-font" for="customNewsToTeamId">To team</label>
-          <select class="form-select" id="customNewsToTeamId" required>
-            ${teamOptions}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsSalary">Salary (optional)</label>
-          <input type="number" class="form-control" id="customNewsSalary" placeholder="e.g. 2000000" min="0">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsEndSeason">Contract end season (optional)</label>
-          <input type="number" class="form-control" id="customNewsEndSeason" placeholder="e.g. 2028" min="0">
-        </div>
-      </div>
-    `;
+    const row = makeRow();
+
+    const driverCol = makeCol("col-md-6");
+    driverCol.append(
+      makeLabel("customNewsDriverButton", "Driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const fromCol = makeCol("col-md-3");
+    fromCol.append(
+      makeLabel("customNewsFromTeamButton", "From team"),
+      makeDropdown({ buttonId: "customNewsFromTeamButton", menuId: "customNewsFromTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const toCol = makeCol("col-md-3");
+    toCol.append(
+      makeLabel("customNewsToTeamButton", "To team"),
+      makeDropdown({ buttonId: "customNewsToTeamButton", menuId: "customNewsToTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const salaryCol = makeCol("col-md-6");
+    salaryCol.append(
+      makeLabel("customNewsSalary", "Salary (optional)"),
+      makeInput({ id: "customNewsSalary", type: "number", placeholder: "e.g. 2000000", min: 0 })
+    );
+
+    const endSeasonCol = makeCol("col-md-6");
+    endSeasonCol.append(
+      makeLabel("customNewsEndSeason", "Contract end season (optional)"),
+      makeInput({ id: "customNewsEndSeason", type: "number", placeholder: "e.g. 2028", min: 0 })
+    );
+
+    row.append(driverCol, fromCol, toCol, salaryCol, endSeasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsFromTeamButton"),
+      menuEl: document.getElementById("customNewsFromTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsToTeamButton"),
+      menuEl: document.getElementById("customNewsToTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
     return;
   }
 
   if (type === "contract_renewal") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsDriverId">Driver</label>
-          <select class="form-select" id="customNewsDriverId" required>
-            ${driverOptions}
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label bold-font" for="customNewsRenewalTeamId">Renewal team</label>
-          <select class="form-select" id="customNewsRenewalTeamId" required>
-            ${teamOptions}
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label bold-font" for="customNewsCurrentTeamId">Current team</label>
-          <select class="form-select" id="customNewsCurrentTeamId" required>
-            ${teamOptions}
-          </select>
-        </div>
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsSalary">Salary (optional)</label>
-          <input type="number" class="form-control" id="customNewsSalary" placeholder="e.g. 2000000" min="0">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsEndSeason">Contract end season (optional)</label>
-          <input type="number" class="form-control" id="customNewsEndSeason" placeholder="e.g. 2028" min="0">
-        </div>
-      </div>
-    `;
+    const row = makeRow();
+
+    const driverCol = makeCol("col-md-6");
+    driverCol.append(
+      makeLabel("customNewsDriverButton", "Driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const renewalCol = makeCol("col-md-3");
+    renewalCol.append(
+      makeLabel("customNewsRenewalTeamButton", "Renewal team"),
+      makeDropdown({ buttonId: "customNewsRenewalTeamButton", menuId: "customNewsRenewalTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const currentCol = makeCol("col-md-3");
+    currentCol.append(
+      makeLabel("customNewsCurrentTeamButton", "Current team"),
+      makeDropdown({ buttonId: "customNewsCurrentTeamButton", menuId: "customNewsCurrentTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const salaryCol = makeCol("col-md-6");
+    salaryCol.append(
+      makeLabel("customNewsSalary", "Salary (optional)"),
+      makeInput({ id: "customNewsSalary", type: "number", placeholder: "e.g. 2000000", min: 0 })
+    );
+
+    const endSeasonCol = makeCol("col-md-6");
+    endSeasonCol.append(
+      makeLabel("customNewsEndSeason", "Contract end season (optional)"),
+      makeInput({ id: "customNewsEndSeason", type: "number", placeholder: "e.g. 2028", min: 0 })
+    );
+
+    row.append(driverCol, renewalCol, currentCol, salaryCol, endSeasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRenewalTeamButton"),
+      menuEl: document.getElementById("customNewsRenewalTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsCurrentTeamButton"),
+      menuEl: document.getElementById("customNewsCurrentTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
     return;
   }
 
   if (type === "silly_season_rumors") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-12">
-          <div class="text-muted">Pick 3 drivers and their most likely destination teams.</div>
-        </div>
-        ${[1, 2, 3].map(i => `
-          <div class="col-md-6">
-            <label class="form-label bold-font" for="customNewsSillyDriver${i}Id">Driver ${i}</label>
-            <select class="form-select" id="customNewsSillyDriver${i}Id" required>
-              ${driverOptions}
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label bold-font" for="customNewsSillyTeam${i}Id">Destination team ${i}</label>
-            <select class="form-select" id="customNewsSillyTeam${i}Id" required>
-              ${teamOptions}
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label bold-font" for="customNewsSillySalary${i}">Salary ${i} (optional)</label>
-            <input type="number" class="form-control" id="customNewsSillySalary${i}" placeholder="e.g. 2000000" min="0">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label bold-font" for="customNewsSillyEndSeason${i}">Contract end season ${i} (optional)</label>
-            <input type="number" class="form-control" id="customNewsSillyEndSeason${i}" placeholder="e.g. 2028" min="0">
-          </div>
-        `).join('')}
-      </div>
-    `;
+    const row = makeRow();
+    const msgCol = makeCol("col-12");
+    const msg = createEl("div", "text-muted");
+    msg.textContent = "Pick 3 drivers and their most likely destination teams.";
+    msgCol.append(msg);
+    row.append(msgCol);
+
+    [1, 2, 3].forEach(i => {
+      const driverCol = makeCol("col-md-6");
+      driverCol.append(
+        makeLabel(`customNewsSillyDriver${i}Button`, `Driver ${i}`),
+        makeDropdown({
+          buttonId: `customNewsSillyDriver${i}Button`,
+          menuId: `customNewsSillyDriver${i}Menu`,
+          placeholder: "Select driver"
+        }).wrap
+      );
+
+      const teamCol = makeCol("col-md-6");
+      teamCol.append(
+        makeLabel(`customNewsSillyTeam${i}Button`, `Destination team ${i}`),
+        makeDropdown({
+          buttonId: `customNewsSillyTeam${i}Button`,
+          menuId: `customNewsSillyTeam${i}Menu`,
+          placeholder: "Select team"
+        }).wrap
+      );
+
+      const salaryCol = makeCol("col-md-6");
+      salaryCol.append(
+        makeLabel(`customNewsSillySalary${i}`, `Salary ${i} (optional)`),
+        makeInput({ id: `customNewsSillySalary${i}`, type: "number", placeholder: "e.g. 2000000", min: 0 })
+      );
+
+      const endSeasonCol = makeCol("col-md-6");
+      endSeasonCol.append(
+        makeLabel(`customNewsSillyEndSeason${i}`, `Contract end season ${i} (optional)`),
+        makeInput({ id: `customNewsSillyEndSeason${i}`, type: "number", placeholder: "e.g. 2028", min: 0 })
+      );
+
+      row.append(driverCol, teamCol, salaryCol, endSeasonCol);
+    });
+
+    customNewsParams.append(row);
+
+    [1, 2, 3].forEach(i => {
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsSillyDriver${i}Button`),
+        menuEl: document.getElementById(`customNewsSillyDriver${i}Menu`),
+        items: drivers,
+        getValue: d => d.id,
+        getLabel: driverLabel,
+        placeholderLabel: "Select driver",
+        includeEmpty: true,
+        emptyLabel: "Select driver",
+        selectedValue: "",
+        bindToggle: true
+      });
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsSillyTeam${i}Button`),
+        menuEl: document.getElementById(`customNewsSillyTeam${i}Menu`),
+        items: teams,
+        getValue: t => t.id,
+        getLabel: teamLabel,
+        placeholderLabel: "Select team",
+        includeEmpty: true,
+        emptyLabel: "Select team",
+        selectedValue: "",
+        bindToggle: true
+      });
+    });
     return;
   }
 
   if (type === "team_comparison") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsTeamId">Team</label>
-          <select class="form-select" id="customNewsTeamId" required>
-            ${teamOptions}
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label bold-font" for="customNewsCompType">Comparison</label>
-          <select class="form-select" id="customNewsCompType">
-            <option value="good">Good</option>
-            <option value="bad">Bad</option>
-          </select>
-        </div>
-        <div class="col-md-3">
-          <label class="form-label bold-font" for="customNewsDrop">Points diff (optional)</label>
-          <input type="number" class="form-control" id="customNewsDrop" value="0">
-        </div>
-      </div>
-    `;
+    const row = makeRow();
+
+    const teamCol = makeCol("col-md-6");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const compCol = makeCol("col-md-3");
+    compCol.append(
+      makeLabel("customNewsCompTypeButton", "Comparison"),
+      makeDropdown({ buttonId: "customNewsCompTypeButton", menuId: "customNewsCompTypeMenu", placeholder: "Select" }).wrap
+    );
+
+    const dropCol = makeCol("col-md-3");
+    dropCol.append(
+      makeLabel("customNewsDrop", "Points diff (optional)"),
+      makeInput({ id: "customNewsDrop", type: "number", value: 0 })
+    );
+
+    row.append(teamCol, compCol, dropCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsCompTypeButton"),
+      menuEl: document.getElementById("customNewsCompTypeMenu"),
+      items: [{ value: "good", label: "Good" }, { value: "bad", label: "Bad" }],
+      getValue: t => t.value,
+      getLabel: t => t.label,
+      placeholderLabel: "Select",
+      includeEmpty: false,
+      selectedValue: "good",
+      bindToggle: true
+    });
     return;
   }
 
   if (type === "driver_comparison") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-4">
-          <label class="form-label bold-font" for="customNewsTeamId">Team</label>
-          <select class="form-select" id="customNewsTeamId" required>
-            ${teamOptions}
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label bold-font" for="customNewsDriver1Id">Driver 1</label>
-          <select class="form-select" id="customNewsDriver1Id" required>
-            ${driverOptions}
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label class="form-label bold-font" for="customNewsDriver2Id">Driver 2</label>
-          <select class="form-select" id="customNewsDriver2Id" required>
-            ${driverOptions}
-          </select>
-        </div>
-      </div>
-    `;
+    const row = makeRow();
+
+    const teamCol = makeCol("col-md-4");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const driver1Col = makeCol("col-md-4");
+    driver1Col.append(
+      makeLabel("customNewsDriver1Button", "Driver 1"),
+      makeDropdown({ buttonId: "customNewsDriver1Button", menuId: "customNewsDriver1Menu", placeholder: "Select driver" }).wrap
+    );
+
+    const driver2Col = makeCol("col-md-4");
+    driver2Col.append(
+      makeLabel("customNewsDriver2Button", "Driver 2"),
+      makeDropdown({ buttonId: "customNewsDriver2Button", menuId: "customNewsDriver2Menu", placeholder: "Select driver" }).wrap
+    );
+
+    row.append(teamCol, driver1Col, driver2Col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriver1Button"),
+      menuEl: document.getElementById("customNewsDriver1Menu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriver2Button"),
+      menuEl: document.getElementById("customNewsDriver2Menu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
     return;
   }
 
   if (type === "season_review") {
-    customNewsParams.innerHTML = `
-      <div class="row g-3">
-        <div class="col-md-6">
-          <label class="form-label bold-font" for="customNewsPart">Season review part</label>
-          <select class="form-select" id="customNewsPart" required>
-            <option value="1">Part 1</option>
-            <option value="2">Part 2</option>
-            <option value="3">Part 3</option>
-          </select>
-        </div>
-      </div>
-    `;
+    const row = makeRow();
+    const col = makeCol("col-md-6");
+    col.append(
+      makeLabel("customNewsPartButton", "Season review part"),
+      makeDropdown({ buttonId: "customNewsPartButton", menuId: "customNewsPartMenu", placeholder: "Select part" }).wrap
+    );
+    row.append(col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsPartButton"),
+      menuEl: document.getElementById("customNewsPartMenu"),
+      items: [{ value: "1", label: "Part 1" }, { value: "2", label: "Part 2" }, { value: "3", label: "Part 3" }],
+      getValue: t => t.value,
+      getLabel: t => t.label,
+      placeholderLabel: "Select part",
+      includeEmpty: false,
+      selectedValue: "1",
+      bindToggle: true
+    });
     return;
   }
 
-  customNewsParams.innerHTML = `<div class="text-muted">No extra parameters for this type.</div>`;
+  const noParams = createEl("div", "text-muted");
+  noParams.textContent = "No extra parameters for this type.";
+  customNewsParams.append(noParams);
 }
 
 async function openCustomNewsModal() {
-  if (!customNewsModalEl || !customNewsTypeSelect || !customNewsCreateBtn) return;
+  if (!customNewsModalEl || !customNewsTypeButton || !customNewsTypeMenu || !customNewsCreateBtn) return;
   if (!customNewsModal) customNewsModal = new bootstrap.Modal(customNewsModalEl);
 
   setCustomNewsError(null);
@@ -3819,69 +4245,93 @@ async function openCustomNewsModal() {
     return;
   }
 
-  customNewsTypeSelect.innerHTML = buildOptionsHtml(CUSTOM_NEWS_TYPE_DEFS, {
+  const defaultType = CUSTOM_NEWS_TYPE_DEFS[0]?.value || "";
+  populateRedesignedDropdown({
+    buttonEl: customNewsTypeButton,
+    menuEl: customNewsTypeMenu,
+    items: CUSTOM_NEWS_TYPE_DEFS,
     getValue: t => t.value,
-    getLabel: t => t.label
+    getLabel: t => t.label,
+    placeholderLabel: "Select type",
+    includeEmpty: false,
+    selectedValue: defaultType,
+    bindToggle: false,
+    onSelect: (value) => {
+      setCustomNewsError(null);
+      renderCustomNewsParams(String(value), options);
+    }
   });
 
   const defaultDate = options.currentDay ? excelToDate(options.currentDay) : new Date();
   if (customNewsDateInput) customNewsDateInput.value = toIsoDate(defaultDate);
   if (customNewsTitleInput) customNewsTitleInput.value = "";
 
-  renderCustomNewsParams(customNewsTypeSelect.value, options);
-  customNewsTypeSelect.onchange = () => {
-    setCustomNewsError(null);
-    renderCustomNewsParams(customNewsTypeSelect.value, options);
-  };
+  renderCustomNewsParams(getRedesignedDropdownValue(customNewsTypeButton), options);
 
   customNewsModal.show();
 }
 
 async function submitCustomNews() {
-  if (!customNewsTypeSelect) return;
+  if (!customNewsTypeButton) return;
   setCustomNewsError(null);
 
-  const type = customNewsTypeSelect.value;
+  const type = getRedesignedDropdownValue(customNewsTypeButton);
+  if (!type) {
+    setCustomNewsError("Select a type first.");
+    return;
+  }
   const dateIso = customNewsDateInput?.value || null;
   const title = customNewsTitleInput?.value || "";
 
   const params = {};
 
-  const raceIdEl = document.getElementById('customNewsRaceId');
-  if (raceIdEl?.value) params.raceId = Number(raceIdEl.value);
+  const numFromButtonId = (id) => {
+    const btn = document.getElementById(id);
+    const raw = getRedesignedDropdownValue(btn);
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : null;
+  };
+  const strFromButtonId = (id) => {
+    const btn = document.getElementById(id);
+    const raw = getRedesignedDropdownValue(btn);
+    return raw || null;
+  };
 
-  const driverIdEl = document.getElementById('customNewsDriverId');
-  if (driverIdEl?.value) params.driverId = Number(driverIdEl.value);
+  const raceId = numFromButtonId("customNewsRaceButton");
+  if (raceId != null && raceId > 0) params.raceId = raceId;
 
-  const fromTeamIdEl = document.getElementById('customNewsFromTeamId');
-  if (fromTeamIdEl?.value) params.fromTeamId = Number(fromTeamIdEl.value);
+  const driverId = numFromButtonId("customNewsDriverButton");
+  if (driverId != null && driverId > 0) params.driverId = driverId;
 
-  const toTeamIdEl = document.getElementById('customNewsToTeamId');
-  if (toTeamIdEl?.value) params.toTeamId = Number(toTeamIdEl.value);
+  const fromTeamId = numFromButtonId("customNewsFromTeamButton");
+  if (fromTeamId != null && fromTeamId > 0) params.fromTeamId = fromTeamId;
 
-  const renewalTeamIdEl = document.getElementById('customNewsRenewalTeamId');
-  if (renewalTeamIdEl?.value) params.renewalTeamId = Number(renewalTeamIdEl.value);
+  const toTeamId = numFromButtonId("customNewsToTeamButton");
+  if (toTeamId != null && toTeamId > 0) params.toTeamId = toTeamId;
 
-  const currentTeamIdEl = document.getElementById('customNewsCurrentTeamId');
-  if (currentTeamIdEl?.value) params.currentTeamId = Number(currentTeamIdEl.value);
+  const renewalTeamId = numFromButtonId("customNewsRenewalTeamButton");
+  if (renewalTeamId != null && renewalTeamId > 0) params.renewalTeamId = renewalTeamId;
 
-  const teamIdEl = document.getElementById('customNewsTeamId');
-  if (teamIdEl?.value) params.teamId = Number(teamIdEl.value);
+  const currentTeamId = numFromButtonId("customNewsCurrentTeamButton");
+  if (currentTeamId != null && currentTeamId > 0) params.currentTeamId = currentTeamId;
 
-  const compTypeEl = document.getElementById('customNewsCompType');
-  if (compTypeEl?.value) params.compType = compTypeEl.value;
+  const teamId = numFromButtonId("customNewsTeamButton");
+  if (teamId != null && teamId > 0) params.teamId = teamId;
+
+  const compType = strFromButtonId("customNewsCompTypeButton");
+  if (compType) params.compType = compType;
 
   const dropEl = document.getElementById('customNewsDrop');
   if (dropEl && dropEl.value !== "") params.drop = Number(dropEl.value);
 
-  const driver1IdEl = document.getElementById('customNewsDriver1Id');
-  if (driver1IdEl?.value) params.driver1Id = Number(driver1IdEl.value);
+  const driver1Id = numFromButtonId("customNewsDriver1Button");
+  if (driver1Id != null && driver1Id > 0) params.driver1Id = driver1Id;
 
-  const driver2IdEl = document.getElementById('customNewsDriver2Id');
-  if (driver2IdEl?.value) params.driver2Id = Number(driver2IdEl.value);
+  const driver2Id = numFromButtonId("customNewsDriver2Button");
+  if (driver2Id != null && driver2Id > 0) params.driver2Id = driver2Id;
 
-  const partEl = document.getElementById('customNewsPart');
-  if (partEl?.value) params.part = Number(partEl.value);
+  const part = numFromButtonId("customNewsPartButton");
+  if (part != null && part > 0) params.part = part;
 
   const salaryEl = document.getElementById('customNewsSalary');
   if (salaryEl && salaryEl.value !== "") params.salary = Number(salaryEl.value);
@@ -3889,21 +4339,29 @@ async function submitCustomNews() {
   const endSeasonEl = document.getElementById('customNewsEndSeason');
   if (endSeasonEl && endSeasonEl.value !== "") params.endSeason = Number(endSeasonEl.value);
 
-  const happyEl = document.getElementById('customNewsHappyDriverId');
-  if (happyEl?.value) params.happyDriverId = Number(happyEl.value);
+  const happyDriverId = numFromButtonId("customNewsHappyDriverButton");
+  if (happyDriverId != null && happyDriverId > 0) params.happyDriverId = happyDriverId;
 
-  const unhappyEl = document.getElementById('customNewsUnhappyDriverId');
-  if (unhappyEl?.value) params.unhappyDriverId = Number(unhappyEl.value);
+  const unhappyDriverId = numFromButtonId("customNewsUnhappyDriverButton");
+  if (unhappyDriverId != null && unhappyDriverId > 0) params.unhappyDriverId = unhappyDriverId;
 
   if (type === "silly_season_rumors") {
     const list = [1, 2, 3].map(i => {
-      const dEl = document.getElementById(`customNewsSillyDriver${i}Id`);
-      const tEl = document.getElementById(`customNewsSillyTeam${i}Id`);
+      const dBtn = document.getElementById(`customNewsSillyDriver${i}Button`);
+      const tBtn = document.getElementById(`customNewsSillyTeam${i}Button`);
       const sEl = document.getElementById(`customNewsSillySalary${i}`);
       const eEl = document.getElementById(`customNewsSillyEndSeason${i}`);
       return {
-        driverId: dEl?.value ? Number(dEl.value) : null,
-        potentialTeam: tEl?.value ? Number(tEl.value) : null,
+        driverId: (() => {
+          const v = getRedesignedDropdownValue(dBtn);
+          const n = Number(v);
+          return Number.isFinite(n) && n > 0 ? n : null;
+        })(),
+        potentialTeam: (() => {
+          const v = getRedesignedDropdownValue(tBtn);
+          const n = Number(v);
+          return Number.isFinite(n) && n > 0 ? n : null;
+        })(),
         salary: sEl && sEl.value !== "" ? Number(sEl.value) : null,
         endSeason: eEl && eEl.value !== "" ? Number(eEl.value) : null
       };

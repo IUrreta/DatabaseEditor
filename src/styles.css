@@ -14803,6 +14803,75 @@ p.news-error-api-key {
   opacity: 0;
 }
 
+#customNewsModal .redesigned-dropdown-item i {
+  display: inline-block;
+  font-size: 18px;
+  margin-left: 8px;
+  transition: transform 0.15s, opacity 0.15s;
+  transform: rotate(0deg);
+}
+
+#customNewsModal .redesigned-dropdown-item i.unactive {
+  transform: rotate(-90deg);
+  opacity: 0;
+}
+
+#customNewsModal .custom-news-field {
+  grid-column: span 12;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#customNewsModal .custom-news-label {
+  margin: 0;
+}
+
+#customNewsModal .custom-news-input {
+  background-color: var(--elements-hover);
+  color: var(--text-general);
+  border: none;
+  outline: none;
+  box-shadow: none;
+  width: 100%;
+  border-radius: 8px;
+  padding: 6px;
+  font-size: 18px;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+
+#customNewsModal .custom-news-input:hover {
+  border-color: var(--text-selected);
+}
+
+#customNewsModal .custom-news-input:focus {
+  outline: 0px solid transparent;
+  border-color: var(--new-primary);
+  color: var(--text-selected);
+}
+
+#customNewsModal .custom-news-params {
+  margin-top: 14px;
+}
+
+
+#customNewsModal .dropdown-global {
+  width: 100%;
+  display: block;
+}
+
+#customNewsModal .redesigned-dropdown {
+  width: max-content;
+  justify-content: space-between;
+}
+
+#customNewsModal .redesigned-dropdown-menu {
+  width: 100%;
+  max-width: 400px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
 .turning-point-div {
   display: flex;
   flex-direction: row;
