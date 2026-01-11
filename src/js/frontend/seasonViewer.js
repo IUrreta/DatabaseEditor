@@ -24,6 +24,79 @@ let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
+let standingsDetailsEnabled = false;
+
+function applyStandingsDetailsState() {
+    const seasonViewer = document.getElementById("season_viewer");
+    const button = document.getElementById("standingsDetailsButton");
+    const label = button?.querySelector("span");
+
+    if (seasonViewer) {
+        seasonViewer.classList.toggle("standings-details-enabled", standingsDetailsEnabled);
+    }
+
+    if (button) {
+        button.classList.toggle("active", standingsDetailsEnabled);
+    }
+
+    if (label) {
+        label.textContent = standingsDetailsEnabled ? "Hide details" : "Show details";
+    }
+}
+
+function setStandingsPositionChange(changeDiv, lastPositionChange) {
+    if (!changeDiv) return;
+    const numberEl = changeDiv.querySelector(".standings-pos-change-number");
+    const iconEl = changeDiv.querySelector("i");
+    // In DB: negative = gained positions, positive = lost positions.
+    // UI: positive = gained, negative = lost.
+    const dbChange = Number(lastPositionChange) || 0;
+    const change = -dbChange;
+
+    changeDiv.classList.remove("up", "down", "neutral");
+
+    if (numberEl) {
+        numberEl.textContent = change > 0 ? `+${change}` : String(change);
+    }
+
+    if (iconEl) {
+        if (change > 0) {
+            iconEl.className = "bi bi-caret-up-fill";
+            changeDiv.classList.add("up");
+        }
+        else if (change < 0) {
+            iconEl.className = "bi bi-caret-down-fill";
+            changeDiv.classList.add("down");
+        }
+        else {
+            iconEl.className = "bi bi-dash";
+            changeDiv.classList.add("neutral");
+        }
+    }
+}
+
+function setStandingsPointsGap(gapDiv, gapToLeader) {
+    if (!gapDiv) return;
+    const gap = Number(gapToLeader);
+    if (!Number.isFinite(gap)) {
+        gapDiv.textContent = "";
+        return;
+    }
+    gapDiv.textContent = gap === 0 ? "0" : `+${Math.max(0, gap)}`;
+}
+
+function updateStandingsPointsGaps(rows, leaderPoints) {
+    rows.forEach((row) => {
+        const gap = Number(leaderPoints) - Number(row.points);
+        setStandingsPointsGap(row.pointsGapDiv, gap);
+    });
+}
+
+document.getElementById("standingsDetailsButton").addEventListener("click", function () {
+    standingsDetailsEnabled = !standingsDetailsEnabled;
+    applyStandingsDetailsState();
+});
+applyStandingsDetailsState();
 
 
 export let engine_names = { //this one is changed as the user adds engines, so it will stayhere
@@ -306,6 +379,10 @@ export function new_drivers_table(data) {
     PositionDiv.classList = "drivers-table-position bold-font"
     PositionDiv.innerText = "#"
     header.appendChild(PositionDiv)
+    let posChangeHeader = document.createElement("div")
+    posChangeHeader.classList = "standings-pos-change bold-font"
+    posChangeHeader.innerText = "G/L"
+    header.appendChild(posChangeHeader)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
     const driversData = document.querySelector(".drivers-table-data")
@@ -328,6 +405,10 @@ export function new_drivers_table(data) {
             header.appendChild(createHeaderCell(trackId))
         }
     })
+    let GapDiv = document.createElement("div")
+    GapDiv.classList = "standings-points-gap bold-font"
+    GapDiv.innerText = "GAP"
+    header.appendChild(GapDiv)
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "drivers-table-points bold-font"
     PointsDiv.innerText = "PTS"
@@ -347,6 +428,10 @@ export function new_teams_table(data) {
     PositionDiv.classList = "teams-table-position bold-font"
     PositionDiv.innerText = "#"
     header.appendChild(PositionDiv)
+    let posChangeHeader = document.createElement("div")
+    posChangeHeader.classList = "standings-pos-change bold-font"
+    posChangeHeader.innerText = "G/L"
+    header.appendChild(posChangeHeader)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
     const teamsData = document.querySelector(".teams-table-data")
@@ -369,6 +454,10 @@ export function new_teams_table(data) {
             header.appendChild(createHeaderCell(trackId, "", "teams-table-normal"))
         }
     })
+    let GapDiv = document.createElement("div")
+    GapDiv.classList = "standings-points-gap bold-font"
+    GapDiv.innerText = "GAP"
+    header.appendChild(GapDiv)
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "teams-table-points bold-font"
     PointsDiv.innerText = "PTS"
@@ -639,10 +728,13 @@ export function new_load_drivers_table(data) {
     data = data[0]
     data = new_order_drivers(data)
     let driver1Poitns = 0, driver2Points = 0;
+    const driverRows = [];
     data.forEach(function (driver, index) {
         let odd = index % 2 === 0
         let races_done = driver["races"].map(x => x.raceId)
-        let points = new_addDriver(driver, races_done, odd)
+        let result = new_addDriver(driver, races_done, odd)
+        driverRows.push(result)
+        const points = result.points
         if (index === 0) {
             driver1Poitns = points
         }
@@ -650,8 +742,12 @@ export function new_load_drivers_table(data) {
             driver2Points = points
         }
     })
+
+    const leaderPoints = driverRows[0]?.points ?? 0;
+    updateStandingsPointsGaps(driverRows, leaderPoints);
+
     if (currentFormula === 1) {
-        checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo)
+        checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo, driverRows)
     }
     else {
         const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
@@ -665,28 +761,60 @@ export function new_load_drivers_table(data) {
     driverCells = document.querySelectorAll(".drivers-table-data .drivers-table-normal")
 }
 
-function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
+function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo, driverRows = []) {
     if (driver1 !== undefined) {
         const lastRaceDone = driver1["races"][driver1["races"].length - 1]["raceId"];
         const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
         racesLeftCount = calendarData.length - (lastRaceIndex + 1);
         sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
 
+        const maxRacePoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
+        const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
+        const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+        const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+
         const pointsDif = driver1Points - driver2Points
-        let pointsRemaining = racesLeftCount * pointsInfo.twoBiggestPoints[0] + sprintsLeft * 8 +
-            (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
-            (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
-            (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+        let pointsRemaining = racesLeftCount * maxRacePoints + sprintsLeft * 8 +
+            (isDoublePoints ? maxRacePoints : 0) +
+            (fastestLapBonus ? racesLeftCount : 0) +
+            (poleBonus ? racesLeftCount : 0)
 
         const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
         const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
-        if (pointsDif > pointsRemaining) {
+        const championClinched = pointsDif > pointsRemaining;
+        if (championClinched) {
             firstDriverPos.classList.add("champion")
             firstDriverPoints.classList.add("champion")
         }
         else {
             firstDriverPos.classList.remove("champion")
             firstDriverPoints.classList.remove("champion")
+        }
+
+        driverRows.forEach((row) => {
+            row?.row?.classList.remove("last-title-contender");
+        });
+
+        driverRows.forEach((row, index) => {
+            if (!row?.pointsDiv) return;
+            if (index === 0) {
+                row.pointsDiv.classList.remove("eliminated");
+                return;
+            }
+            const eliminated = (Number(row.points) + Number(pointsRemaining)) < Number(driver1Points);
+            row.pointsDiv.classList.toggle("eliminated", eliminated);
+        });
+
+        if (!championClinched) {
+            for (let i = driverRows.length - 1; i >= 0; i--) {
+                const row = driverRows[i];
+                if (!row?.row) continue;
+                const hasChance = (Number(row.points) + Number(pointsRemaining)) >= Number(driver1Points);
+                if (hasChance) {
+                    row.row.classList.add("last-title-contender");
+                    break;
+                }
+            }
         }
     }
 }
@@ -736,7 +864,10 @@ export function new_load_teams_table(data) {
     // Mapa posEquipo -> posición (1..10)
     const pairTeamPosDict = {};
     pairTeamPos.forEach(function (pair) {
-        pairTeamPosDict[pair[0]] = pair[1];
+        pairTeamPosDict[pair[0]] = {
+            pos: Number(pair[1]),
+            lastPositionChange: Number(pair[2] ?? 0)
+        };
     });
 
     // Ahora data[0] es el array de pilotos con formato-objeto
@@ -786,14 +917,16 @@ export function new_load_teams_table(data) {
     let team1Points = 0, team2Points = 0, firstTeamId = 0;
     const teamRows = [];
     teamIds.forEach((teamId) => {
-        const pos = pairTeamPosDict[teamId];
+        const teamInfo = pairTeamPosDict[teamId] || {};
+        const pos = teamInfo.pos;
+        const lastPositionChange = teamInfo.lastPositionChange;
         let teamName = combined_dict[teamId] //remove the final (F2) or (F3) that may exist
         if (teamName && (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)"))) {
             teamName = teamName.slice(0, -5)
         }
-        const result = new_addTeam(teamData[teamId], teamName, pos, teamId);
+        const result = new_addTeam(teamData[teamId], teamName, pos, teamId, lastPositionChange);
         const points = result.points;
-        teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv });
+        teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv, pointsDiv: result.pointsDiv, pointsGapDiv: result.pointsGapDiv });
         if (pos === 1) {
             team1Points = points;
             firstTeamId = teamId;
@@ -811,13 +944,17 @@ export function new_load_teams_table(data) {
             team.pos = position;
             if (team.posDiv) {
                 team.posDiv.innerText = String(position);
+                team.posDiv.dataset.position = String(position);
             }
         });
     }
 
+    const leaderTeamPoints = teamRows.find(team => Number(team.pos) === 1)?.points ?? 0;
+    updateStandingsPointsGaps(teamRows, leaderTeamPoints);
+
     new_color_teams_table();
     if (currentFormula === 1) {
-        checkIfTeamIsChamp(team1Points, team2Points, pointsInfo);
+        checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows);
         manage_teams_table_logos();
         manage_teams_table_names();
     }
@@ -831,12 +968,30 @@ export function new_load_teams_table(data) {
     teamCells = document.querySelectorAll(".teams-table-data .teams-table-normal");
 }
 
-function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
-    const pointsDif = team1Points - team2Points
-    let pointsRemaining = racesLeftCount * (parseInt(pointsInfo.twoBiggestPoints[0]) + parseInt(pointsInfo.twoBiggestPoints[1])) + sprintsLeft * 15 +
-        (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
-        (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
-        (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows = []) {
+    const sortedTeams = [...teamRows]
+        .filter(team => team && Number.isFinite(Number(team.pos)))
+        .sort((a, b) => Number(a.pos) - Number(b.pos));
+
+    const leaderTeam = sortedTeams.find(team => Number(team.pos) === 1) || sortedTeams[0];
+    const runnerUpTeam = sortedTeams.find(team => Number(team.pos) === 2) || sortedTeams[1];
+
+    const leaderPoints = Number(leaderTeam?.points ?? team1Points) || 0;
+    const runnerUpPoints = Number(runnerUpTeam?.points ?? team2Points) || 0;
+
+    const pointsDif = leaderPoints - runnerUpPoints
+
+    const maxFirstPoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
+    const maxSecondPoints = Number(pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? pointsInfo?.twoBiggestPoints?.[1] ?? 0);
+    const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
+    const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
+    const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+    const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+
+    let pointsRemaining = racesLeftCount * maxTeamRacePoints + sprintsLeft * 15 +
+        (isDoublePoints ? maxTeamRacePoints : 0) +
+        (fastestLapBonus ? racesLeftCount : 0) +
+        (poleBonus ? racesLeftCount : 0)
 
 
     const firstTeamRow = document.querySelector(
@@ -845,7 +1000,8 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
     const firstTeamPos = firstTeamRow?.querySelector(".teams-table-position");
     const firstTeamPoints = firstTeamRow?.querySelector(".teams-table-points");
 
-    if (pointsDif > pointsRemaining) {
+    const championClinched = pointsDif > pointsRemaining;
+    if (championClinched) {
         firstTeamPos.classList.add("champion")
         firstTeamPoints.classList.add("champion")
     }
@@ -853,9 +1009,35 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
         firstTeamPos.classList.remove("champion")
         firstTeamPoints.classList.remove("champion")
     }
+
+    teamRows.forEach((team) => {
+        team?.row?.classList.remove("last-title-contender");
+    });
+
+    teamRows.forEach((team) => {
+        if (!team?.pointsDiv) return;
+        if (Number(team.pos) === 1) {
+            team.pointsDiv.classList.remove("eliminated");
+            return;
+        }
+        const eliminated = (Number(team.points) + Number(pointsRemaining)) < Number(leaderPoints);
+        team.pointsDiv.classList.toggle("eliminated", eliminated);
+    });
+
+    if (!championClinched) {
+        for (let i = sortedTeams.length - 1; i >= 0; i--) {
+            const team = sortedTeams[i];
+            if (!team?.row) continue;
+            const hasChance = (Number(team.points) + Number(pointsRemaining)) >= Number(leaderPoints);
+            if (hasChance) {
+                team.row.classList.add("last-title-contender");
+                break;
+            }
+        }
+    }
 }
 
-function new_addTeam(teamRaceMap, name, pos, id) {
+function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
     // teamRaceMap: Map<raceId, RaceObj[]>
     let data = document.querySelector(".teams-table-data");
     let row = document.createElement("div");
@@ -880,6 +1062,16 @@ function new_addTeam(teamRaceMap, name, pos, id) {
     posDiv.dataset.position = pos;
     posDiv.innerText = pos;
     row.appendChild(posDiv);
+
+    const posChangeDiv = document.createElement("div");
+    posChangeDiv.className = "standings-pos-change";
+    const posChangeNumber = document.createElement("span");
+    posChangeNumber.className = "standings-pos-change-number";
+    const posChangeIcon = document.createElement("i");
+    posChangeDiv.appendChild(posChangeNumber);
+    posChangeDiv.appendChild(posChangeIcon);
+    setStandingsPositionChange(posChangeDiv, lastPositionChange);
+    row.appendChild(posChangeDiv);
 
     let logoDiv = document.createElement("div");
     logoDiv.classList = "teams-table-logo";
@@ -1170,13 +1362,17 @@ function new_addTeam(teamRaceMap, name, pos, id) {
         }
     });
 
+    const pointsGapDiv = document.createElement("div");
+    pointsGapDiv.className = "standings-points-gap";
+    row.appendChild(pointsGapDiv);
+
     let pointsDiv = document.createElement("div");
     pointsDiv.classList = "teams-table-points bold-font";
     pointsDiv.innerText = (currentFormula === 3 && teampoints === 0) ? "" : teampoints;
     row.appendChild(pointsDiv);
 
     data.appendChild(row);
-    return { points: teampoints, row, posDiv };
+    return { points: teampoints, row, posDiv, pointsDiv, pointsGapDiv };
 }
 
 
@@ -1207,6 +1403,16 @@ function new_addDriver(driver, races_done, odd) {
     posDiv.classList = "drivers-table-position bold-font";
     posDiv.innerText = driver["championshipPosition"];
     row.appendChild(posDiv);
+
+    const posChangeDiv = document.createElement("div");
+    posChangeDiv.className = "standings-pos-change";
+    const posChangeNumber = document.createElement("span");
+    posChangeNumber.className = "standings-pos-change-number";
+    const posChangeIcon = document.createElement("i");
+    posChangeDiv.appendChild(posChangeNumber);
+    posChangeDiv.appendChild(posChangeIcon);
+    setStandingsPositionChange(posChangeDiv, driver["lastPositionChange"]);
+    row.appendChild(posChangeDiv);
 
     let logoDiv = document.createElement("div");
     logoDiv.classList = "drivers-table-logo-div";
@@ -1358,6 +1564,10 @@ function new_addDriver(driver, races_done, odd) {
         }
     });
 
+    const pointsGapDiv = document.createElement("div");
+    pointsGapDiv.className = "standings-points-gap";
+    row.appendChild(pointsGapDiv);
+
     let pointsDiv = document.createElement("div");
     pointsDiv.classList = "drivers-table-points bold-font";
     pointsDiv.innerText = driverpoints;
@@ -1373,7 +1583,7 @@ function new_addDriver(driver, races_done, odd) {
     });
 
     data.appendChild(row);
-    return driverpoints;
+    return { points: driverpoints, row, pointsDiv, pointsGapDiv };
 }
 
 

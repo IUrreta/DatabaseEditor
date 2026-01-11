@@ -3272,7 +3272,7 @@ DRIVERS TABLE
 
 .drivers-table-row:first-child .drivers-table-position,
 .teams-table-row:first-child .teams-table-position {
-  background: var(--f1-first) !important;
+  background: var(--f1-first);
   color: var(--gold-gradient-text);
 }
 
@@ -3288,44 +3288,32 @@ DRIVERS TABLE
   color: var(--gold-gradient-text);
 }
 
-.drivers-table-row:first-child .drivers-table-position.champion,
-.drivers-table-row:first-child .drivers-table-points.champion,
-.teams-table-row:first-child .teams-table-position.champion,
-.teams-table-row:first-child .teams-table-points.champion {
-  background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-    radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%) !important;
-  position: relative;
-  color: var(--gold-gradient-text);
-  z-index: 0;
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-position,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-position {
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, var(--table-default-odd) 75%);
 }
 
-.drivers-table-row:first-child .drivers-table-position.champion::before,
-.teams-table-row:first-child .teams-table-position.champion::before,
-.drivers-table-row:first-child .drivers-table-points.champion::before,
-.teams-table-row:first-child .teams-table-points.champion::before {
-  content: '';
-  position: absolute;
-  text-align: center;
-  align-content: center;
-  inset: 0;
-  background-color: var(--text-general);
-  opacity: 0;
-  z-index: -1;
+.drivers-table-row:has(.drivers-table-position.champion):hover .drivers-table-position,
+.teams-table-row:has(.teams-table-position.champion):hover .teams-table-position {
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, var(--text-general) 75%);
+  color: var(--negative-text) !important;
 }
 
-.drivers-table-row:hover .drivers-table-position.champion,
-.teams-table-row:hover .teams-table-position.champion,
-.drivers-table-row:hover .drivers-table-points.champion,
-.teams-table-row:hover .teams-table-points.champion {
-  color: #b88b2b !important;
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-points,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-points {
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, var(--table-default-odd) 75%);
 }
 
-.drivers-table-row:first-child:hover .drivers-table-position.champion::before,
-.teams-table-row:first-child:hover .teams-table-position.champion::before,
-.drivers-table-row:first-child:hover .drivers-table-points.champion::before,
-.teams-table-row:first-child:hover .teams-table-points.champion::before {
-  opacity: 1;
+.drivers-table-row:has(.drivers-table-position.champion):hover .drivers-table-points,
+.teams-table-row:has(.teams-table-position.champion):hover .teams-table-points {
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, var(--text-general) 75%);
+  color: var(--negative-text) !important;
 }
+
 
 .drivers-table-data::-webkit-scrollbar {
   width: 4px !important;
@@ -3360,15 +3348,34 @@ DRIVERS TABLE
 .drivers-table-row:hover .drivers-table-position,
 .teams-table-row:hover .teams-table-position,
 .drivers-table-row-odd:hover .drivers-table-position,
-.teams-table-row-odd:hover .teams-table-position {
+.teams-table-row-odd:hover .teams-table-position,
+.drivers-table-row.odd:hover .standings-pos-change,
+.teams-table-row.odd:hover .standings-pos-change,
+.drivers-table-row.odd:hover .standings-points-gap,
+.teams-table-row.odd:hover .standings-points-gap {
   background-color: var(--text-general) !important;
   color: var(--negative-text);
 }
 
 .drivers-table-row:hover .drivers-table-points,
-.teams-table-row:hover .teams-table-points {
+.teams-table-row:hover .teams-table-points,
+.drivers-table-row:hover .standings-pos-change,
+.teams-table-row:hover .standings-pos-change,
+.drivers-table-row:hover .standings-points-gap,
+.teams-table-row:hover .standings-points-gap{
   background-color: var(--text-general) !important;
   color: var(--negative-text);
+}
+
+.drivers-table-row:hover .standings-pos-change.up,
+.teams-table-row:hover .standings-pos-change.up {
+  color: var(--positive-general-darker) !important;
+}
+
+
+.drivers-table-row:hover .standings-pos-change.down,
+.teams-table-row:hover .standings-pos-change.down {
+  color: var(--negative-general) !important;
 }
 
 .drivers-table-row:hover,
@@ -3391,7 +3398,11 @@ DRIVERS TABLE
 .drivers-table-row .drivers-table-driver,
 .drivers-table-row .drivers-table-points,
 .drivers-table-row .drivers-table-position,
-.drivers-table-row .drivers-table-logo-div {
+.drivers-table-row .drivers-table-logo-div,
+.teams-table-row .standings-pos-change,
+.teams-table-row .standings-points-gap,
+.drivers-table-row .standings-pos-change,
+.drivers-table-row .standings-points-gap {
   background-color: var(--table-default);
 }
 
@@ -3400,7 +3411,11 @@ DRIVERS TABLE
 .drivers-table-row.odd .drivers-table-driver,
 .drivers-table-row.odd .drivers-table-points,
 .drivers-table-row.odd .drivers-table-position,
-.drivers-table-row.odd .drivers-table-logo-div {
+.drivers-table-row.odd .drivers-table-logo-div,
+.drivers-table-row.odd .standings-pos-change,
+.teams-table-row.odd .standings-pos-change,
+.teams-table-row.odd .standings-points-gap,
+.drivers-table-row.odd .standings-points-gap {
   background-color: var(--table-default-odd);
 }
 
@@ -3467,11 +3482,79 @@ DRIVERS TABLE
   align-items: center;
   justify-content: center;
   padding-top: 3px;
+  position: relative;
 }
 
 .drivers-table-data .drivers-table-points,
 .teams-table-data .teams-table-points {
   padding-top: 3px;
+}
+
+#season_viewer {
+  --standings-details-col-width: 0px;
+}
+
+#season_viewer.standings-details-enabled {
+  --standings-details-col-width: 44px;
+}
+
+.drivers-table-header .standings-pos-change,
+.teams-table-header .standings-pos-change,
+.drivers-table-header .standings-points-gap,
+.teams-table-header .standings-points-gap {
+  font-family: "Formula1Bold" !important;
+  padding-top: 0px !important;
+}
+
+.standings-pos-change,
+.standings-points-gap {
+  flex: 0 0 var(--standings-details-col-width);
+  width: var(--standings-details-col-width);
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font-size: 13px;
+  line-height: 1;
+  font-family: 'NumbersFont';
+  padding-top: 0;
+}
+
+
+#season_viewer.standings-details-enabled .standings-pos-change,
+#season_viewer.standings-details-enabled .standings-points-gap {
+  padding-top: 3px;
+}
+
+.standings-pos-change.up {
+  color: var(--positive-general);
+}
+
+.standings-pos-change.down {
+  color: var(--negative-general);
+}
+
+.standings-pos-change.neutral {
+  color: var(--text-general);
+}
+
+.standings-points-gap {
+  color: var(--text-general);
+}
+
+.drivers-table-row:has(.drivers-table-points.eliminated) .standings-points-gap,
+.teams-table-row:has(.teams-table-points.eliminated) .standings-points-gap {
+  color: var(--table-dnf) !important;
+}
+
+#season_viewer.standings-details-enabled .drivers-table-row.last-title-contender {
+  border-bottom: 1px solid var(--table-dnf);
+}
+
+#season_viewer.standings-details-enabled .teams-table-row.last-title-contender {
+  border-bottom: 1px solid var(--table-dnf);
 }
 
 .drivers-table-data .drivers-table-position,
@@ -3485,6 +3568,10 @@ DRIVERS TABLE
 .teams-table-data .teams-table-points {
   font-family: 'NumbersFont' !important;
   font-size: 14px;
+  letter-spacing: -1.2px;
+}
+
+.standings-points-gap{
   letter-spacing: -1.2px;
 }
 
@@ -4692,10 +4779,10 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   border-left: 1px solid var(--table-dnf);
 }
 
-.drivers-table:has(.f2-table-data) .drivers-table-points,
-.teams-table:has(.f2-table-data) .teams-table-points, 
-.drivers-table:has(.f3-table-data) .drivers-table-points,
-.teams-table:has(.f3-table-data) .teams-table-points{
+.drivers-table:has(.f2-table-data) .standings-points-gap,
+.teams-table:has(.f2-table-data) .standings-points-gap, 
+.drivers-table:has(.f3-table-data) .standings-points-gap,
+.teams-table:has(.f3-table-data) .standings-points-gap{
   border-left: 1px solid var(--table-dnf);
 }
 

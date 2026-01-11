@@ -348,6 +348,7 @@ body.light-theme {
     --table-third: #b87a3c;
     --table-third-light: #f2cda6;
     --table-header: #d1d1d1;
+    --table-dnf: #8b8b8b;
 
     --positive-general: #2a9b63;
 
@@ -445,6 +446,7 @@ body.og-theme {
     --box-shadow: #00000044;
     --footer-og: #797599;
     --separator: #5f5c77;
+    --table-dnf: #7d7a93;
 
     --tech-grid-color: transparent;
     --tech-grid-line: transparent;
@@ -537,6 +539,7 @@ body.vaporwave-theme {
     --table-default: #250d58;;
     --table-default-odd: #2a0f61;
     --table-header: #3a1488;
+    --table-dnf: #614ab1;
 
     --augment-buttons-bg: #3a1488;
     --augment-buttons-hover: #4b1da3;

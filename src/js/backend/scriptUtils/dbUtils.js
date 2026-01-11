@@ -959,6 +959,16 @@ export function fetchTeamsStandings(year, formula = 1) {
       `, [year, formula], 'allRows') || [];
 }
 
+export function fetchTeamsStandingsWithPositionChange(year, formula = 1) {
+  return queryDB(`
+        SELECT TeamID, Position, LastPositionChange
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY Position
+      `, [year, formula], 'allRows') || [];
+}
+
 export function fetchPointsRegulations() {
   const pointScheme = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 7`, [], 'singleValue');
   const twoBiggestPoints = queryDB(`SELECT Points FROM Regulations_NonTechnical_PointSchemes WHERE (PointScheme = ?) AND (RacePos = 1 OR RacePos = 2); `, [pointScheme], 'allRows');
@@ -1698,20 +1708,24 @@ function formatSeasonResultsF2F3(
   const latestTeamId =
     raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
 
-  const championshipPosition =
+  const standingsRow =
     queryDB(`
-      SELECT Position
+      SELECT Position, LastPositionChange
       FROM Races_Driverstandings
       WHERE RaceFormula = ?
         AND SeasonID = ?
         AND DriverID = ?
-    `, [formula, season, driverID], "singleValue") || 0;
+    `, [formula, season, driverID], "singleRow") || [0, 0];
+
+  const championshipPosition = Number(standingsRow[0]) || 0;
+  const lastPositionChange = Number(standingsRow[1]) || 0;
 
   return {
     driverName: nameFormatted,
     latestTeamId,
     driverId: driverID[0] || driverID,
     championshipPosition,
+    lastPositionChange,
     races: raceObjects
   };
 }
@@ -1945,20 +1959,24 @@ export function formatSeasonResults(
   const latestTeamId =
     raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
 
-  const championshipPosition =
+  const standingsRow =
     queryDB(`
-        SELECT Position
+        SELECT Position, LastPositionChange
         FROM Races_Driverstandings
         WHERE RaceFormula = ?
           AND SeasonID = ?
           AND DriverID = ?
-      `, [formula, season, driverID], "singleValue") || 0;
+      `, [formula, season, driverID], "singleRow") || [0, 0];
+
+  const championshipPosition = Number(standingsRow[0]) || 0;
+  const lastPositionChange = Number(standingsRow[1]) || 0;
 
   const payload = {
     driverName: nameFormatted,
     latestTeamId,
     driverId: driverID[0] || driverID,
     championshipPosition,
+    lastPositionChange,
     races: raceObjects
   };
 
