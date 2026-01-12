@@ -2567,11 +2567,13 @@ export function updateCustomConfig(data) {
   const alfaRomeo = data.alfa;
   const alphaTauri = data.alphatauri;
   const alpine = data.alpine;
+  const williams = data.williams;
+  const haas = data.haas;
   const primaryColor = data.primaryColor;
   const secondaryColor = data.secondaryColor;
   const difficulty = data.difficulty
   const playerTeam = data.playerTeam
-  const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;
+  const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;       
 
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
@@ -2587,6 +2589,16 @@ export function updateCustomConfig(data) {
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('alpine', ?)
   `, [alpine], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('williams', ?)
+  `, [williams], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('haas', ?)
+  `, [haas], 'run');
 
   if (primaryColor){
     queryDB(`
@@ -2656,7 +2668,7 @@ export function fetchCustomConfig() {
   rows.forEach(row => {
     const key = row[0];
     const value = row[1];
-    if (key === 'alphatauri' || key === 'alpine' || key === 'alfa') {
+    if (key === 'alphatauri' || key === 'alpine' || key === 'williams' || key === 'haas' || key === 'alfa') {
       config.teams[key] = value;
     } else if (key === 'primaryColor') {
       config.primaryColor = value;
@@ -2677,6 +2689,14 @@ export function fetchCustomConfig() {
   config.triggerList = triggers.triggerList
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
+
+  if (!config.teams.williams) {
+    config.teams.williams = 'williams';
+  }
+
+  if (!config.teams.haas) {
+    config.teams.haas = 'haas';
+  }
 
   return config;
 }

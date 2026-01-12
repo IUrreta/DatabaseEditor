@@ -293,17 +293,17 @@
                   </a>
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="6">
                     <div class="team-menu-logo">
-                      <div class="team-menu-williams"></div>
+                      <div class="team-menu-williams team-menu-williams-replace changable-team-menu-williams"></div>
                     </div>
-                    <div class="team-menu-name">
+                    <div class="team-menu-name williams-name">
                       WILLIAMS
                     </div>
                   </a>
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="7">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/haas.png" class="team-menu-haas">
+                      <img src="../assets/images/haas.png" class="team-menu-haas team-menu-haas-replace changable-team-menu-haas haaslogo-replace">
                     </div>
-                    <div class="team-menu-name">
+                    <div class="team-menu-name haas-name">
                       HAAS
                     </div>
                   </a>
@@ -412,8 +412,37 @@
                   <span class="important-text bold-font">NOT APPLY TO YOUR SAVE IN-GAME</span>
                 </div>
               </div>
-              <div class="team-change mt-2">
+              <div class="team-change">
                 <div class="bold-font logo-and-name" style="width: 33%;">
+                  <img src="../assets/images/haas.png" class="haaslogo non-changable">
+                  <div class="team-name">HAAS</div>
+                </div>
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="haasReplaceButton">
+                  <div class="dropdown-global" style="width: max-content;">
+                    <button class="redesigned-dropdown bold-font" data-value="haas">
+                      <span class="dropdown-label">HAAS</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                      <a class="redesigned-dropdown-item bold-font" data-value="haas">
+                        <img src="../assets/images/haas.png" class="haaslogo non-changable">
+                        <div>HAAS</div>
+                      </a>
+                      <a class="redesigned-dropdown-item bold-font" data-value="toyota">
+                        <div class="team-menu-logo">
+                          <div class="toyotalogo"></div>
+                        </div>
+                        <div>TOYOTA</div>
+                      </a>
+                    </ul>
+
+                  </div>
+
+                </div>
+              </div>
+              <div class="team-change">
+                <div class="bold-font logo-and-name" style="width: 33%;"> 
                   <div class="alphatauri-logo-container">
                     <div class="alphataurilogo non-changable" id="alphaModalLogo"></div>
                   </div>
@@ -446,7 +475,9 @@
                         <div>HUGO BOSS</div>
                       </a>
                       <a class="redesigned-dropdown-item bold-font" data-value="toyota">
-                        <img src="../assets/images/toyota.png" class="toyotalogo">
+                        <div class="alphatauri-logo-container">
+                          <div class="toyotalogo"></div>
+                        </div>
                         <div class="">TOYOTA</div>
                       </a>
                       <a class="redesigned-dropdown-item bold-font" data-value="porsche">
@@ -464,7 +495,7 @@
 
                 </div>
               </div>
-              <div class="team-change mt-2">
+              <div class="team-change">
                 <div class="bold-font logo-and-name" style="width: 33%;">
                   <div class="alpine-logo-container">
                     <div class="alpinelogo non-changable"></div>
@@ -512,8 +543,35 @@
 
                 </div>
               </div>
-              <div class="team-change mt-2">
+              <div class="team-change">
                 <div class="bold-font logo-and-name" style="width: 33%;">
+                  <div class="williamslogo non-changable"></div>
+                  <div class="team-name">WILLIAMS</div>
+                </div>
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="williamsReplaceButton">
+                  <div class="dropdown-global" style="width: max-content;">
+                    <button class="redesigned-dropdown bold-font" data-value="williams">
+                      <span class="dropdown-label">WILLIAMS</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                      <a class="redesigned-dropdown-item bold-font" data-value="williams">
+                        <div class="williamslogo non-changable"></div>
+                        <div>WILLIAMS</div>
+                      </a>
+                      <a class="redesigned-dropdown-item bold-font" data-value="bmw">
+                        <img src="../assets/images/bmw.png" class="bmwlogo">
+                        <div>BMW</div>
+                      </a>
+                    </ul>
+
+                  </div>
+
+                </div>
+              </div>
+              <div class="team-change">
+                <div class="bold-font logo-and-name" style="width: 33%;">       
                   <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable" id="alfaModalLogo">
                   <div class="team-name" id="alfaModalName">ALFA ROMEO</div>
                 </div>
@@ -534,7 +592,9 @@
                         <div class="">STAKE SAUBER</div>
                       </a>
                       <a class="redesigned-dropdown-item bold-font" data-value="sauber">
-                        <img src="../assets/images/sauber.png" class="sauberlogo">
+                        <div class="team-menu-logo">
+                          <div class="sauberlogo"></div>
+                        </div>
                         <div class="">SAUBER</div>
                       </a>
                       <a class="redesigned-dropdown-item bold-font" data-value="audi">
@@ -586,7 +646,7 @@
 
               </div>
             </div>
-            <div class="mt-4 d-none" id="turningPointsFrequencyConfig">
+            <div class="mt-3 d-none" id="turningPointsFrequencyConfig">
               <h5 class="modal-subtitle bold-font">Turning Points Frequency</h5>
               <div class="modal-text">
                 Scales the chance and seasonal cap for all Turning Points.
@@ -597,7 +657,7 @@
                 <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
               </div>
             </div>
-            <div class="mt-4">
+            <div class="mt-3">
               <h5 class="modal-subtitle bold-font">Panic download</h5>
               <div class="modal-text">
                 Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in the db. It might fix some issues.
@@ -636,10 +696,10 @@
                       </div>
                     </div>
                     <div class="team-logo-container wi" data-teamid="6">
-                      <div class="williamslogo"></div>
+                      <div class="williamslogo williamslogo-replace"></div>
                     </div>
-                    <div class="team-logo-container ha" data-teamid="7">
-                      <img src="../assets/images/haas.png" class="team-logo">
+                    <div class="team-logo-container ha" data-teamid="7">  
+                      <img src="../assets/images/haas.png" class="team-logo haaslogo-replace">
                     </div>
                     <div class="team-logo-container at" data-teamid="8">
                       <div class="alphatauri-logo-container">
@@ -1309,8 +1369,8 @@
               </div>
               <div class="col modal-team wi-transparent d-none" data-teamid="6">
                 <div class="logo-and-name">
-                  <div class="williamslogo front-gradient logo-margin-top"></div>
-                  <div class="team-name bold-font front-gradient">WILLIAMS</div>
+                  <div class="williamslogo williamslogo-replace front-gradient logo-margin-top"></div>
+                  <div class="team-name bold-font front-gradient williams-name">WILLIAMS</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="6" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -1319,8 +1379,8 @@
               </div>
               <div class="col modal-team ha-transparent d-none" data-teamid="7">
                 <div class="logo-and-name">
-                  <img src="../assets/images/haas.png" class="haaslogo front-gradient logo-margin-top">
-                  <div class="team-name bold-font front-gradient">HAAS</div>
+                  <img src="../assets/images/haas.png" class="haaslogo haaslogo-replace front-gradient logo-margin-top">
+                  <div class="team-name bold-font front-gradient haas-name">HAAS</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="7" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -2146,10 +2206,10 @@
               </div>
               <div class="team-template  wiborder">
                 <div class="new-logo-and-name">
-                  <div class="williamslogo"></div>
-                  <div class="team-name bold-font">WILLIAMS</div>
+                  <div class="williamslogo williamslogo-replace"></div>
+                  <div class="team-name bold-font williams-name">WILLIAMS</div>
                 </div>
-                <div class="drivers-section" data-team="williams">
+                <div class="drivers-section" data-team="williams">        
                   <div class="driver-space" id="wi1">
                   </div>
                   <div class="driver-space" id="wi2">
@@ -2220,8 +2280,8 @@
               </div>
               <div class="team-template  haborder">
                 <div class="new-logo-and-name">
-                  <img src="../assets/images/haas.png" class="haaslogo">
-                  <div class="team-name bold-font">HAAS</div>
+                  <img src="../assets/images/haas.png" class="haaslogo haaslogo-replace">  
+                  <div class="team-name bold-font haas-name">HAAS</div>
                 </div>
                 <div class="drivers-section" data-team="haas">
                   <div class="driver-space" id="ha1">
@@ -3138,18 +3198,18 @@
                   </div>
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="6">
-                  <div class="team-menu-logo">
-                    <div class="team-menu-williams"></div>
-                  </div>
-                  <div class="team-menu-name">
-                    WILLIAMS
-                  </div>
-                </a>
+                    <div class="team-menu-logo">
+                      <div class="team-menu-williams team-menu-williams-replace changable-team-menu-williams williamslogo-replace"></div>
+                    </div>
+                    <div class="team-menu-name williams-name">
+                      WILLIAMS
+                    </div>
+                  </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="7">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/haas.png" class="team-menu-haas">
+                    <img src="../assets/images/haas.png" class="team-menu-haas team-menu-haas-replace changable-team-menu-haas haaslogo-replace">
                   </div>
-                  <div class="team-menu-name">
+                  <div class="team-menu-name haas-name">
                     HAAS
                   </div>
                 </a>
@@ -4206,12 +4266,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance ha-transparent" data-teamid="7"
-                  data-teamname="Haas">
+                <div class="number-and-team team bold-font team-performance ha-transparent ha-teamname" data-teamid="7"
+                  data-teamname="Haas" data-teamshow="Haas">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
-                      <span class="team-title-name">HAAS</span>
+                      <span class="team-title-name haas-name">HAAS</span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4241,7 +4301,7 @@
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
-                      <span class="team-title-name">WILLIAMS</span>
+                      <span class="team-title-name williams-name">WILLIAMS</span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4438,12 +4498,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance wi-transparent" data-teamid="6"
+                <div class="nunmber-and-car car bold-font car-performance wi-transparent wi-teamname" data-teamid="6"
                   data-teamname="Williams" data-teamshow="Williams" data-carnumber="1">
                   <div class="performance-number">1</div>
                   <div class="col main-car" data-teamid="6" data-teamname="Williams" data-teamshow="Williams">
                     <div class="car-title">
-                      <span class="team-title-name">Williams</span>
+                      <span class="team-title-name williams-name">Williams</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4455,12 +4515,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance wi-transparent" data-teamid="6"
+                <div class="nunmber-and-car car bold-font car-performance wi-transparent wi-teamname" data-teamid="6"
                   data-teamname="Williams" data-teamshow="Williams" data-carnumber="2">
                   <div class="performance-number">2</div>
                   <div class="col main-car" data-teamid="6" data-teamname="Williams" data-teamshow="Williams">
                     <div class="car-title">
-                      <span class="team-title-name">Williams</span>
+                      <span class="team-title-name williams-name">Williams</span>       
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4472,12 +4532,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance ha-transparent" data-teamid="7"
+                <div class="nunmber-and-car car bold-font car-performance ha-transparent ha-teamname" data-teamid="7"
                   data-teamname="Haas" data-teamshow="Haas" data-carnumber="1">
                   <div class="performance-number">1</div>
                   <div class="col main-car" data-teamid="7" data-teamname="Haas" data-teamshow="Haas">
                     <div class="car-title">
-                      <span class="team-title-name">Haas</span>
+                      <span class="team-title-name haas-name">Haas</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4489,12 +4549,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance ha-transparent" data-teamid="7"
+                <div class="nunmber-and-car car bold-font car-performance ha-transparent ha-teamname" data-teamid="7"
                   data-teamname="Haas" data-teamshow="Haas" data-carnumber="2">
                   <div class="performance-number">2</div>
                   <div class="col main-car" data-teamid="7" data-teamname="Haas" data-teamshow="Haas">
                     <div class="car-title">
-                      <span class="team-title-name">Haas</span>
+                      <span class="team-title-name haas-name">Haas</span>       
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>

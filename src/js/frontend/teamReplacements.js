@@ -3,39 +3,40 @@ import { Command } from "../backend/command.js";
 export const names_configs = {
     "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
     "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa": "ALFA ROMEO",
-    "audi": "AUDI", "sauber": "SAUBER", "stake": "STAKE SAUBER"
+    "audi": "AUDI", "sauber": "SAUBER", "stake": "STAKE SAUBER", "williams": "WILLIAMS", "bmw": "BMW", "haas": "HAAS"
 };
 export const pretty_names = {
     "visarb": "Visa Cashapp RB", "toyota": "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
     "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa": "Alfa Romeo",
-    "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
+    "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber", "williams": "Williams", "bmw": "BMW", "haas": "Haas"
 };
 export const abreviations_for_replacements = {
     "visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
-    "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
+    "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK", "williams": "WIL", "bmw": "BMW", "haas": "HA"
 };
 export const logos_configs = {
-    "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
+    "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.svg", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
     "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
     "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
-    "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.png", "stake": "../assets/images/kick.png"
+    "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.svg", "stake": "../assets/images/kick.png",
+    "williams": "../assets/images/Williams_2026_logo.svg", "bmw": "../assets/images/bmw.png", "haas": "../assets/images/haas.png"
 };
 export const logos_classes_configs = {
     "visarb": "visarblogo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
     "porsche": "porschelogo", "brawn": "brawnlogo",
     "alpine": "alpinelogo", "renault": "renaultlogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
-    "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
+    "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo",
+    "williams": "williamslogo", "bmw": "bmwlogo"
 };
 
 function updateTeamMenuClass(selector, info) {
     document.querySelectorAll(selector).forEach(function (elem) {
-        let classes = elem.className.split(" ");
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
+        Array.from(elem.classList).forEach(function (cl) {
+            if (cl.startsWith("changable-team-menu-")) {
                 elem.classList.remove(cl);
-                elem.classList.add("changable-team-menu-" + info);
             }
         });
+        elem.classList.add("changable-team-menu-" + info);
     });
 }
 
@@ -138,7 +139,7 @@ export function createTeamReplacers(deps) {
                 document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
                     if (!elem.classList.contains("non-changable")) {
                         let newElem;
-                        if (info === "porsche" || info === "toyota") {
+                        if (info === "porsche") {
                             newElem = document.createElement("img");
                             newElem.src = logos_configs[info];
                         } else {
@@ -185,9 +186,9 @@ export function createTeamReplacers(deps) {
         primaryColorId: "50",
         secondaryColorId: "51",
         updateNames(info) {
-            document.querySelectorAll(".alpine-name").forEach(function (elem) {
+            document.querySelectorAll(".alpine-name").forEach(function (elem) { 
                 let name = names_configs[info];
-                if (elem.parentElement.classList.contains("car-title")) {
+                if (elem.parentElement.classList.contains("car-title")) {       
                     const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
                     if (match) {
                         name = pretty_names[info];
@@ -207,7 +208,7 @@ export function createTeamReplacers(deps) {
                         elem.classList.remove("andrettilogo");
                         elem.classList.remove("renaultlogo");
                         elem.classList.remove("lotuslogo");
-                        elem.classList.add(logos_classes_configs[info]);
+                        elem.classList.add(logos_classes_configs[info]);        
                     }
                     if (elem.classList.contains("secondary")) {
                         elem.src = elem.src.slice(0, -4) + "2.png";
@@ -227,6 +228,105 @@ export function createTeamReplacers(deps) {
                 if (elem.classList.contains("secondary")) {
                     elem.src = elem.src.slice(0, -4) + "2.png";
                 }
+            });
+        }
+    };
+
+    const williamsConfig = {
+        buttonSelector: "#williamsReplaceButton",
+        teamId: 6,
+        teamNameSelector: ".wi-teamname",
+        teamMenuSelector: ".team-menu-williams-replace",
+        baseKey: "williams",
+        primaryColorId: "60",
+        secondaryColorId: "61",
+        updateNames(info) {
+            document.querySelectorAll(".williams-name").forEach(function (elem) {
+                let name = names_configs[info];
+                if (elem.parentElement.classList.contains("car-title")) {
+                    const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+                    if (match) {
+                        name = pretty_names[info];
+                        elem.textContent = `${name} ${match[2]}`;
+                    }
+                }
+                else {
+                    elem.textContent = name;
+                }
+            });
+        },
+        updateLogos(info) {
+            document.querySelectorAll(".williamslogo-replace").forEach(function (elem) {
+                if (!elem.classList.contains("non-changable")) {
+                    elem.classList.remove("williamslogo");
+                    elem.classList.remove("bmwlogo");
+                    elem.classList.add(logos_classes_configs[info]);
+                    // bmw logo is a png
+                    if (info === "bmw") {
+                        //create an img element to replace the div
+                        let newElem = document.createElement("img");
+                        newElem.src = logos_configs[info];
+                        newElem.className = elem.className;
+                        elem.replaceWith(newElem);
+                    }   else {
+                        //if not bmw, make sure it's a div
+                        if (elem.tagName.toLowerCase() === "img") {
+                            let newElem = document.createElement("div");
+                            newElem.className = elem.className;
+                            elem.replaceWith(newElem);
+                        }
+                    }
+                }
+            });
+        }
+    };
+
+    const haasConfig = {
+        buttonSelector: "#haasReplaceButton",
+        teamId: 7,
+        teamNameSelector: ".ha-teamname",
+        teamMenuSelector: ".team-menu-haas-replace",
+        baseKey: "haas",
+        primaryColorId: "70",
+        secondaryColorId: "71",
+        updateNames(info) {
+            document.querySelectorAll(".haas-name").forEach(function (elem) {
+                let name = names_configs[info];
+                if (elem.parentElement.classList.contains("car-title")) {
+                    const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
+                    if (match) {
+                        name = pretty_names[info];
+                        elem.textContent = `${name} ${match[2]}`;
+                    }
+                }
+                else {
+                    elem.textContent = name;
+                }
+            });
+        },
+        updateLogos(info) {
+            document.querySelectorAll(".haaslogo-replace").forEach(function (elem) {
+                if (elem.classList.contains("non-changable")) return;
+
+                const isMaskLogo = info === "toyota";
+                if (isMaskLogo) {
+                    const newElem = document.createElement("div");
+                    newElem.className = elem.className;
+                    newElem.classList.remove("haaslogo");
+                    newElem.classList.remove("toyotalogo");
+                    newElem.classList.add("toyotalogo");
+                    elem.replaceWith(newElem);
+                    return;
+                }
+
+                if (elem.tagName.toLowerCase() !== "img") {
+                    const newElem = document.createElement("img");
+                    newElem.className = elem.className;
+                    elem.replaceWith(newElem);
+                    elem = newElem;
+                }
+                elem.src = logos_configs[info];
+                elem.classList.remove("toyotalogo");
             });
         }
     };
@@ -258,6 +358,24 @@ export function createTeamReplacers(deps) {
             if (info !== "alfa") {
                 document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
                     if (!elem.classList.contains("non-changable")) {
+                        const isMaskLogo = info === "sauber";
+                        if (isMaskLogo) {
+                            const newElem = document.createElement("div");
+                            newElem.className = elem.className;
+                            newElem.classList.remove("alfaromeologo");
+                            newElem.classList.remove("audilogo");
+                            newElem.classList.remove("sauberlogo");
+                            newElem.classList.add(logos_classes_configs[info]);
+                            elem.replaceWith(newElem);
+                            return;
+                        }
+
+                        if (elem.tagName.toLowerCase() !== "img") {
+                            const newElem = document.createElement("img");
+                            newElem.className = elem.className;
+                            elem.replaceWith(newElem);
+                            elem = newElem;
+                        }
                         elem.src = logos_configs[info];
                         elem.classList.remove("alfaromeologo");
                         elem.classList.remove("audilogo");
@@ -269,6 +387,13 @@ export function createTeamReplacers(deps) {
             }
             document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
                 if (!elem.classList.contains("non-changable")) {
+                    if (elem.tagName.toLowerCase() !== "img") {
+                        const newElem = document.createElement("img");
+                        newElem.className = "alfalogo-replace alfalogo";
+                        newElem.src = logos_configs[info];
+                        elem.replaceWith(newElem);
+                        return;
+                    }
                     elem.src = logos_configs[info];
                     elem.className = "alfalogo-replace alfalogo";
                 }
@@ -283,6 +408,12 @@ export function createTeamReplacers(deps) {
         },
         alpineReplace(info) {
             replaceTeam(alpineConfig, info, deps);
+        },
+        williamsReplace(info) {
+            replaceTeam(williamsConfig, info || "williams", deps);        
+        },
+        haasReplace(info) {
+            replaceTeam(haasConfig, info || "haas", deps);
         },
         alfaReplace(info) {
             replaceTeam(alfaConfig, info, deps);

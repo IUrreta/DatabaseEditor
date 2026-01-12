@@ -3630,6 +3630,15 @@ DRIVERS TABLE
   padding: 13px 8px !important;
 }
 
+.teams-table-logo-inner.toyota-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
+  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--white-general);
+  width: 48px;
+}
+
 .porsche-team-table-logo {
   padding: 11px !important;
 }
@@ -3907,12 +3916,36 @@ phm
   padding: 4px 3px;
 }
 
+.logo-bmw-table{
+  padding: 2px 0 0 0;
+}
+
+.bmw-team-table-logo {
+  padding: 4px 3px 1px 3px !important;
+}
+
 .logo-porsche-table {
   padding: 3px 3px;
 }
 
 .logo-williams-table {
   padding: 6px 4px;
+}
+
+.logo-toyota-table{
+  width: 24px;
+}
+
+.logo-sauber-table{
+  height: 23px;
+}
+
+.drivers-table-logo-div:has(.logo-sauber-table),
+.drivers-table-logo-div:has(.logo-toyota-table){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
 }
 
 .logo-merc-table {
@@ -4004,11 +4037,27 @@ phm
 .logo-williams-2026-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;  
   mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--williams-primary);
+}
+
+.logo-toyota-table {
+  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
+  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--toyota-primary);
+}
+
+.logo-sauber-table {
+  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
+  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--sauber-primary);
 }
 
 .alhoverback {
@@ -4063,7 +4112,9 @@ phm
 .drivers-table-row:hover .logo-alpine-table,
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
-.drivers-table-row:hover .logo-williams-2026-table {
+.drivers-table-row:hover .logo-williams-2026-table,
+.drivers-table-row:hover .logo-toyota-table,
+.drivers-table-row:hover .logo-sauber-table {
   background-color: #f0f0f0;
 }
 
@@ -8905,6 +8956,8 @@ body.og-theme .records-list {
 .team-menu-logo {
   width: 50px;
   height: 42px;
+  display: flex;
+  align-items: center;
 }
 
 .team-menu-junior-generic {
@@ -8986,7 +9039,7 @@ body.og-theme .records-list {
   padding-left: 3px;
 }
 
-.team-menu-williams {
+.changable-team-menu-williams {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -8998,6 +9051,11 @@ body.og-theme .records-list {
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
+}
+
+.changable-team-menu-bmw {
+  width: 100%;
+  padding-left: 5px;
 }
 
 .changable-team-menu-brawn {
@@ -9093,13 +9151,17 @@ body.og-theme .records-list {
   padding-top: 7px !important;
 }
 
-.changable-team-menu-stake,
-.changable-team-menu-sauber {
+.changable-team-menu-stake {
   width: 40px !important;
   height: 40px !important;
   padding-bottom: 3px !important;
   padding-top: 5px !important;
   padding-left: 7px !important;
+}
+
+.changable-team-menu-sauber {
+  width: 100% !important;
+  height: 30px !important;
 }
 
 .changable-team-menu-lotus {
@@ -9353,7 +9415,7 @@ body.og-theme .records-list {
   font-size: 20px;
   cursor: pointer;
   background-size: 200% 200%;
-  transition: all 0.15s;
+  transition: all 0.15s, transform 0s;
   display: inline-block;
 }
 
@@ -10112,13 +10174,13 @@ input[type='number'] {
 .color-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
 }
 
 .logo-selector {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .logo-and-preview {
@@ -10433,10 +10495,7 @@ input[type='number'] {
 #felogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 7px;
-  padding-top: 5px;
-  padding-left: 3px;
-  padding-right: 2px;
+  padding: 5px;
 }
 
 .porschelogo {
@@ -10669,8 +10728,16 @@ input[type='number'] {
 
 .sauberlogo {
   width: 40px;
-  height: 40px;
+  height: 31px;
   padding: 6px 5px;
+}
+
+.sauberlogo {
+  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
+  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--sauber-primary);
 }
 
 .hugologo {
@@ -10711,6 +10778,14 @@ input[type='number'] {
   padding: 7px 2px;
 }
 
+.toyotalogo {
+  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
+  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--toyota-primary);
+}
+
 .haaslogo,
 #halogo {
   width: 40px;
@@ -10748,6 +10823,7 @@ input[type='number'] {
 }
 
 .williamslogo,
+.bmwlogo,
 #wilogo {
   width: 40px;
   height: 40px;
@@ -10758,12 +10834,22 @@ input[type='number'] {
   transition: opacity 0.15s;
 }
 
+.team-menu-williams-replace.williamslogo{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
 .williamslogo {
   -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
   mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
+}
+
+.bmwlogo {
+  padding: 1px;
 }
 
 .team1,

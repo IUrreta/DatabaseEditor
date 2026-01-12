@@ -1416,12 +1416,22 @@ function manage_config(info, year_config = false) {
 
 function replace_all_teams(info) {
     let teams = info["teams"]
-    alphaTauriReplace(teams["alphatauri"])
-    alpineReplace(teams["alpine"])
-    alfaReplace(teams["alfa"])
-    update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
-    update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
-    update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
+    const alphatauri = teams["alphatauri"]
+    const alpine = teams["alpine"]
+    const alfa = teams["alfa"]
+    const williams = teams["williams"] || "williams"
+    const haas = teams["haas"] || "haas"
+
+    alphaTauriReplace(alphatauri)
+    alpineReplace(alpine)
+    williamsReplace(williams)
+    haasReplace(haas)
+    alfaReplace(alfa)
+    update_logo("alpine", logos_configs[alpine], alpine)
+    update_logo("williams", logos_configs[williams], williams)
+    update_logo("haas", logos_configs[haas], haas)
+    update_logo("alfa", logos_configs[alfa], alfa)
+    update_logo("alphatauri", logos_configs[alphatauri], alphatauri)
 
 }
 
@@ -1511,7 +1521,7 @@ function change_css_variables(oldVar, newVar) {
     root.style.setProperty(oldVar, newVal);
 }
 
-const { alphaTauriReplace, alpineReplace, alfaReplace } = createTeamReplacers({
+const { alphaTauriReplace, alpineReplace, williamsReplace, haasReplace, alfaReplace } = createTeamReplacers({
     combined_dict,
     abreviations_dict,
     edit_colors_dict,
@@ -1548,6 +1558,8 @@ document.querySelectorAll(".team-change-button").forEach(function (elem) {
 document.querySelector("#configDetailsButton").addEventListener("click", function () {
     let alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
     let alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
+    let williams = document.querySelector("#williamsReplaceButton").querySelector("button").dataset.value
+    let haas = document.querySelector("#haasReplaceButton").querySelector("button").dataset.value
     let alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
     let mentalityFrozen = 0;
     if (document.getElementById("freezeMentalityToggle").checked) {
@@ -1568,6 +1580,8 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let data = {
         alphatauri: alphatauri,
         alpine: alpine,
+        williams: williams,
+        haas: haas,
         alfa: alfa,
         frozenMentality: mentalityFrozen,
         refurbish: refurbish,
@@ -1591,7 +1605,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     if (isSaveSelected === 1) {
         const command = new Command("configUpdate", data);
         command.execute();
-        let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
+        let info = { teams: { alphatauri: alphatauri, alpine: alpine, williams: williams, haas: haas, alfa: alfa } }
         replace_all_teams(info)
         reloadTables()
         if (tempImageData) {
