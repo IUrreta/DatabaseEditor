@@ -34,17 +34,20 @@ function applyStandingsDetailsState() {
     const seasonViewer = document.getElementById("season_viewer");
     const button = document.getElementById("standingsDetailsButton");
     const label = button?.querySelector("span");
+    const eyeIcon = button?.querySelector("i.bi-eye");
+    const eyeSlashIcon = button?.querySelector("i.bi-eye-slash");
 
     if (seasonViewer) {
         seasonViewer.classList.toggle("standings-details-enabled", standingsDetailsEnabled);
     }
 
-    if (button) {
-        button.classList.toggle("active", standingsDetailsEnabled);
-    }
-
     if (label) {
         label.textContent = standingsDetailsEnabled ? "Hide details" : "Show details";
+    }
+
+    if (eyeIcon && eyeSlashIcon) {
+        eyeIcon.style.display = standingsDetailsEnabled ? "inline" : "none";
+        eyeSlashIcon.style.display = standingsDetailsEnabled ? "none" : "inline";
     }
 }
 
@@ -524,8 +527,16 @@ function manage_teams_table_logos() {
             logo.className = "teams-table-logo-inner ferrari-team-table-logo"
         }
         else if (logo.dataset.teamid === "2") {
-            // logo.className = "teams-table-logo-inner mclaren-team-table-logo"
-            logo.src = "../assets/images/mclaren2.png"
+            if (logo.tagName === "IMG") {
+                const newElem = document.createElement("div");
+                newElem.className = "teams-table-logo-inner mclaren-team-table-logo";
+                newElem.dataset.teamid = logo.dataset.teamid;
+                logo.replaceWith(newElem);
+                logo = newElem;
+            }
+            else {
+                logo.className = "teams-table-logo-inner mclaren-team-table-logo";
+            }
         }
         else if (logo.dataset.teamid === "3") {
             if (redbullReplace === "redbull") {
@@ -1526,7 +1537,11 @@ function new_addDriver(driver, races_done, odd) {
         logo.dataset.teamid = driver["latestTeamId"];
 
         if (driver["latestTeamId"] === 1) logo.classList.add("logo-ferrari-table");
-        if (driver["latestTeamId"] === 2) logo.classList.add("logo-reduce");
+        if (driver["latestTeamId"] === 2) {
+            logo = document.createElement("div");
+            logo.classList = "drivers-table-logo logo-mclaren-table logo-reduce";
+            logo.dataset.teamid = driver["latestTeamId"];
+        }
         if (driver["latestTeamId"] === 3) {
             logo.classList.add("logo-up-down-mid");
             if (redbullReplace !== "redbull") {

@@ -1384,6 +1384,15 @@ input.comparing-tag {
   border-radius: 5px;
 }
 
+.driver-info-team-logo-masked {
+  height: 24px;
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--mclaren-primary);
+}
+
 .actual-age,
 .actual-retirement {
   width: 30px;
@@ -3623,6 +3632,14 @@ DRIVERS TABLE
   margin-right: 3px !important;
 }
 
+.teams-table-logo-inner.mclaren-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 90%;
+  mask-size: 90%;
+  background-color: #f0f0f0;
+}
+
 .redbull-team-table-logo {
   padding: 13px 0px !important;
 }
@@ -4077,6 +4094,14 @@ phm
   background-color: var(--text-general);
 }
 
+.logo-mclaren-table {
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 85%;
+  mask-size: 85%;
+  background-color: var(--mclaren-primary);
+}
+
 .logo-williams-2026-table {
   width: 100%;
   height: 100%;
@@ -4153,6 +4178,7 @@ phm
 }
 
 .drivers-table-row:hover .logo-alpine-table,
+.drivers-table-row:hover .logo-mclaren-table,
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
 .drivers-table-row:hover .logo-williams-2026-table,
@@ -9185,6 +9211,11 @@ body.og-theme .records-list {
   padding-bottom: 4px;
   padding-top: 7px;
   padding-left: 6px;
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 90%;
+  mask-size: 90%;
+  background-color: var(--mclaren-primary);
 }
 
 .team-menu-ferrari {
@@ -10769,6 +10800,12 @@ input[type='number'] {
   width: 40px;
   height: 40px;
   padding: 2px;
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 90%;
+  background-color: var(--mclaren-primary);
+  transition: opacity 0.15s;
+  mask-size: 90%;
 }
 
 .alfalogo,
@@ -10778,7 +10815,7 @@ input[type='number'] {
   padding: 3px;
 }
 
-.team-menu-logo .astonlogo, .team-menu-logo .redbulllogo {
+.team-menu-logo .astonlogo, .team-menu-logo .redbulllogo, .team-menu-logo .mclarenlogo {
   width: 50px;
 }
 

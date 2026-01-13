@@ -260,7 +260,7 @@
                   </a>
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="2">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/mclaren.png" class="team-menu-mclaren">
+                      <div class="team-menu-mclaren"></div>
                     </div>
                     <div class="team-menu-name">
                       MCLAREN
@@ -732,7 +732,7 @@
                       <img src="../assets/images/ferrari.png" class="team-logo">
                     </div>
                     <div class="team-logo-container mc" data-teamid="2">
-                      <img src="../assets/images/mclaren.png" class="team-logo">
+                      <div class="team-logo mclarenlogo"></div>
                     </div>
                     <div class="team-logo-container rb" data-teamid="3">
                       <img src="../assets/images/redbull.png" class="team-logo redbulllogo redbulllogo-replace">
@@ -1379,7 +1379,7 @@
               </div>
               <div class="col modal-team mc-transparent d-none" data-teamid="2">
                 <div class="logo-and-name">
-                  <img src="../assets/images/mclaren.png" class="mclarenlogo front-gradient logo-margin-top">
+                  <div class="mclarenlogo front-gradient logo-margin-top"></div>
                   <div class="team-name bold-font front-gradient">MCLAREN</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -1941,6 +1941,11 @@
             </div>
           </div>
           <div class="title-buttons-right" id="standingsSettings">
+            <div class="button-with-icon" id="standingsDetailsButton">
+              <i class="bi bi-eye"></i>
+              <i class="bi bi-eye-slash"></i>
+              <span>Show details</span>
+            </div>
             <div class="drivers-teams-pills">
               <ul class="nav nav-pills">
                 <li class="nav-item">
@@ -1969,10 +1974,6 @@
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualipill"
                   data-value="quali">Qualifying</a>
               </ul>
-            </div>
-            <div class="button-with-icon" id="standingsDetailsButton">
-              <i class="bi bi-card-text"></i>
-              <span>Show details</span>
             </div>
           </div>
           <div class="title bold-font">
@@ -2160,7 +2161,7 @@
               </div>
               <div class="team-template  mcborder">
                 <div class="new-logo-and-name">
-                  <img src="../assets/images/mclaren.png" class="mclarenlogo">
+                  <div class="mclarenlogo"></div>
                   <div class="team-name bold-font">MCLAREN</div>
                 </div>
                 <div class="drivers-section" data-team="mclaren">
@@ -2484,7 +2485,8 @@
                       </div>
                       <div class="custom-separator"></div>
                       <div class="image-and-text">
-                        <img src="../assets/images/mclaren.png" class="driver-info-team-logo" id="driverTeamLogo">
+                        <img src="../assets/images/mclaren.png" class="driver-info-team-logo driver-info-team-logo-img" id="driverTeamLogoImg">
+                        <div class="driver-info-team-logo driver-info-team-logo-masked d-none" id="driverTeamLogoMask"></div>
                         <span class="info-text team-text" id="driverTeamName">Placeholder 2</span>
                       </div>
                     </div>
@@ -3217,7 +3219,7 @@
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="2">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/mclaren.png" class="team-menu-mclaren">
+                    <div class="team-menu-mclaren"></div>
                   </div>
                   <div class="team-menu-name">
                     MCLAREN

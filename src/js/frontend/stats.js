@@ -818,14 +818,23 @@ function load_stats(div) {
         document.querySelector(".driver-info-driver-flag").src = `https://flagsapi.com/${div.dataset.nationality}/flat/64.png`
         document.querySelector(".flag-text").textContent = inverted_countries_abreviations[div.dataset.nationality] || div.dataset.nationality
     }
-    let logo = undefined;
-    logo = logos_disc[div.dataset.teamid];
-    if (logo === undefined) {
-        document.querySelector(".driver-info-team-logo").classList.add("d-none")
+    const teamId = Number(div.dataset.teamid);
+    const logoImg = document.querySelector(".driver-info-team-logo-img");
+    const logoMasked = document.querySelector(".driver-info-team-logo-masked");
+    const logo = logos_disc[teamId];
+
+    if (!logoImg || !logoMasked || !teamId || !logo) {
+        logoImg?.classList.add("d-none");
+        logoMasked?.classList.add("d-none");
+    }
+    else if (teamId === 2) {
+        logoImg.classList.add("d-none");
+        logoMasked.classList.remove("d-none");
     }
     else {
-        document.querySelector(".driver-info-team-logo").classList.remove("d-none")
-        document.querySelector(".driver-info-team-logo").src = logo
+        logoMasked.classList.add("d-none");
+        logoImg.classList.remove("d-none");
+        logoImg.src = logo;
     }
     let teamName = combined_dict[div.dataset.teamid] || "Free Agent";
     document.querySelector(".team-text").textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
@@ -1568,7 +1577,24 @@ function updateComparisonUI() {
     clonedInfo.querySelector("#driverCode").innerText = `${driver2.dataset.driverCode}`;
     clonedInfo.querySelector('.driver-info-driver-flag').src = `https://flagsapi.com/${driver2.dataset.nationality}/flat/64.png`;
     clonedInfo.querySelector('.flag-text').textContent = inverted_countries_abreviations[driver2.dataset.nationality] || driver2.dataset.nationality;
-    clonedInfo.querySelector('.driver-info-team-logo').src = logos_disc[driver2.dataset.teamid] || logos_disc[0];
+    const driver2TeamId = Number(driver2.dataset.teamid);
+    const clonedLogoImg = clonedInfo.querySelector('.driver-info-team-logo-img');
+    const clonedLogoMasked = clonedInfo.querySelector('.driver-info-team-logo-masked');
+    const logo2 = logos_disc[driver2TeamId] || logos_disc[0];
+
+    if (!clonedLogoImg || !clonedLogoMasked || !driver2TeamId || !logo2) {
+        clonedLogoImg?.classList.add("d-none");
+        clonedLogoMasked?.classList.add("d-none");
+    }
+    else if (driver2TeamId === 2) {
+        clonedLogoImg.classList.add("d-none");
+        clonedLogoMasked.classList.remove("d-none");
+    }
+    else {
+        clonedLogoMasked.classList.add("d-none");
+        clonedLogoImg.classList.remove("d-none");
+        clonedLogoImg.src = logo2;
+    }
     let teamName = combined_dict[driver2.dataset.teamid] || "Free Agent";
     clonedInfo.querySelector('.team-text').textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
 
