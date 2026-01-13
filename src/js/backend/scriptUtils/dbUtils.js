@@ -2569,6 +2569,8 @@ export function updateCustomConfig(data) {
   const alpine = data.alpine;
   const williams = data.williams;
   const haas = data.haas;
+  const redbull = data.redbull;
+  const aston = data.aston;
   const primaryColor = data.primaryColor;
   const secondaryColor = data.secondaryColor;
   const difficulty = data.difficulty
@@ -2599,6 +2601,16 @@ export function updateCustomConfig(data) {
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('haas', ?)
   `, [haas], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('redbull', ?)
+  `, [redbull], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('aston', ?)
+  `, [aston], 'run');
 
   if (primaryColor){
     queryDB(`
@@ -2668,7 +2680,7 @@ export function fetchCustomConfig() {
   rows.forEach(row => {
     const key = row[0];
     const value = row[1];
-    if (key === 'alphatauri' || key === 'alpine' || key === 'williams' || key === 'haas' || key === 'alfa') {
+    if (key === 'alphatauri' || key === 'alpine' || key === 'williams' || key === 'haas' || key === 'alfa' || key === 'redbull' || key === 'aston') {
       config.teams[key] = value;
     } else if (key === 'primaryColor') {
       config.primaryColor = value;
@@ -2696,6 +2708,14 @@ export function fetchCustomConfig() {
 
   if (!config.teams.haas) {
     config.teams.haas = 'haas';
+  }
+
+  if (!config.teams.redbull) {
+    config.teams.redbull = 'redbull';
+  }
+
+  if (!config.teams.aston) {
+    config.teams.aston = 'aston';
   }
 
   return config;

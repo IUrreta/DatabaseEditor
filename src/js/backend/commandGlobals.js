@@ -7,8 +7,9 @@ export const teamReplaceDict = {
 
 export const prettyNames = {
     "visarb": "Visa Cashapp RB", "toyota": "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
-    "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa": "Alfa Romeo",
-    "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
+    "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "cadillac": "Cadillac", "alfa": "Alfa Romeo",
+    "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber", "redbull": "Red Bull", "ford": "Ford", "aston": "Aston Martin",
+    "racingpoint": "Racing Point", "jordan": "Jordan"
 };
 
 let path = null;

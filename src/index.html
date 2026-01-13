@@ -268,9 +268,9 @@
                   </a>
                   <a class="redesigned-dropdown-item  bold-font" style="cursor: pointer;" data-teamid="3">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/redbull.png" class="team-menu-redbull">
+                      <img src="../assets/images/redbull.png" class="team-menu-redbull team-menu-redbull-replace changable-team-menu-redbull redbulllogo redbulllogo-replace">
                     </div>
-                    <div class="team-menu-name">RED BULL</div>
+                    <div class="team-menu-name redbull-name">RED BULL</div>
                   </a>
                   <a class="redesigned-dropdown-item  bold-font" style="cursor: pointer;" data-teamid="4">
                     <div class="team-menu-logo">
@@ -330,9 +330,9 @@
                   </a>
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="10">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/astonMartin.png" class="team-menu-aston">
+                      <img src="../assets/images/astonMartin.png" class="team-menu-aston team-menu-aston-replace changable-team-menu-aston astonlogo astonlogo-replace">
                     </div>
-                    <div class="team-menu-name" style="margin-right: 5px;">
+                    <div class="team-menu-name aston-name" style="margin-right: 5px;">
                       ASTON MARTIN
                     </div>
                   </a>
@@ -537,6 +537,10 @@
 
                         <div class="">LOTUS</div>
                       </a>
+                      <a class="redesigned-dropdown-item bold-font" data-value="cadillac">
+                        <img src="../assets/images/cadillac.png" class="cadillaclogo">
+                        <div class="">CADILLAC</div>
+                      </a>
                     </ul>
 
                   </div>
@@ -603,6 +607,62 @@
                       </a>
                     </ul>
 
+                  </div>
+
+                </div>
+              </div>
+              <div class="team-change">
+                <div class="bold-font logo-and-name" style="width: 33%;">
+                  <img src="../assets/images/redbull.png" class="redbulllogo non-changable">
+                  <div class="team-name">RED BULL</div>
+                </div>
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="redbullReplaceButton">
+                  <div class="dropdown-global" style="width: max-content;">
+                    <button class="redesigned-dropdown bold-font" data-value="redbull">
+                      <span class="dropdown-label">RED BULL</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                      <a class="redesigned-dropdown-item bold-font" data-value="redbull">
+                        <img src="../assets/images/redbull.png" class="redbulllogo non-changable">
+                        <div>RED BULL</div>
+                      </a>
+                      <a class="redesigned-dropdown-item bold-font" data-value="ford">
+                        <img src="../assets/images/ford.png" class="fordlogo">
+                        <div>FORD</div>
+                      </a>
+                    </ul>
+                  </div>
+
+                </div>
+              </div>
+              <div class="team-change">
+                <div class="bold-font logo-and-name" style="width: 33%;">       
+                  <img src="../assets/images/astonMartin.png" class="astonlogo non-changable">
+                  <div class="team-name">ASTON MARTIN</div>
+                </div>
+                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
+                <div class="team-change-button" id="astonReplaceButton">
+                  <div class="dropdown-global" style="width: max-content;">
+                    <button class="redesigned-dropdown bold-font" data-value="aston">
+                      <span class="dropdown-label">ASTON MARTIN</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                      <a class="redesigned-dropdown-item bold-font" data-value="aston">
+                        <img src="../assets/images/astonMartin.png" class="astonlogo non-changable">
+                        <div class="">ASTON MARTIN</div>
+                      </a>
+                      <a class="redesigned-dropdown-item bold-font" data-value="racingpoint">
+                        <img src="../assets/images/racingpoint.png" class="racingpointlogo">
+                        <div class="">RACING POINT</div>
+                      </a>
+                      <a class="redesigned-dropdown-item bold-font" data-value="jordan">
+                        <img src="../assets/images/jordan.png" class="jordanlogo">
+                        <div class="">JORDAN</div>
+                      </a>
+                    </ul>
                   </div>
 
                 </div>
@@ -685,7 +745,7 @@
                       <img src="../assets/images/mclaren.png" class="team-logo">
                     </div>
                     <div class="team-logo-container rb" data-teamid="3">
-                      <img src="../assets/images/redbull.png" class="team-logo">
+                      <img src="../assets/images/redbull.png" class="team-logo redbulllogo redbulllogo-replace">
                     </div>
                     <div class="team-logo-container me" data-teamid="4">
                       <img src="../assets/images/mercedes.png" class="team-logo">
@@ -710,7 +770,7 @@
                       <img src="../assets/images/alfaromeo.png" class="team-logo alfalogo-replace">
                     </div>
                     <div class="team-logo-container as" data-teamid="10">
-                      <img src="../assets/images/astonMartin.png" class="team-logo">
+                      <img src="../assets/images/astonMartin.png" class="team-logo astonlogo astonlogo-replace">
                     </div>
                     <div class="team-logo-container ct" data-teamid="32">
                       <img src="../assets/images/placeholder.png" class="team-logo custom-replace">
@@ -1337,7 +1397,7 @@
               </div>
               <div class="col modal-team rb-transparent d-none" data-teamid="3">
                 <div class="logo-and-name">
-                  <img src="../assets/images/redbull.png" class="redbulllogo front-gradient logo-margin-top">
+                  <img src="../assets/images/redbull.png" class="redbulllogo redbulllogo-replace front-gradient logo-margin-top">
                   <div class="team-name bold-font front-gradient">RED BULL</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -1412,7 +1472,7 @@
               </div>
               <div class="col modal-team as-transparent d-none" data-teamid="10">
                 <div class="logo-and-name">
-                  <img src="../assets/images/astonMartin.png" class="astonlogo front-gradient">
+                  <img src="../assets/images/astonMartin.png" class="astonlogo astonlogo-replace front-gradient">
                   <div class="team-name bold-font ps-1 front-gradient">ASTON MARTIN</div>
                 </div>
                 <div class="buttons-drivers-modal">
@@ -2059,7 +2119,7 @@
             <div class="main-columns-drag-section teams-columns main-resizable">
               <div class="team-template  rbborder">
                 <div class="new-logo-and-name">
-                  <img src="../assets/images/redbull.png" class="redbulllogo">
+                  <img src="../assets/images/redbull.png" class="redbulllogo redbulllogo-replace">
                   <div class="team-name bold-font">RED BULL RACING</div>
                 </div>
                 <div class="drivers-section" data-team="redbull">
@@ -2155,7 +2215,7 @@
               </div>
               <div class="team-template  asborder">
                 <div class="new-logo-and-name">
-                  <img src="../assets/images/astonMartin.png" class="astonlogo">
+                  <img src="../assets/images/astonMartin.png" class="astonlogo astonlogo-replace">
                   <div class="team-name bold-font">ASTON MARTIN</div>
                 </div>
                 <div class="drivers-section" data-team="astonmartin">
@@ -3172,9 +3232,9 @@
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="3">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/redbull.png" class="team-menu-redbull">
+                    <img src="../assets/images/redbull.png" class="team-menu-redbull team-menu-redbull-replace changable-team-menu-redbull redbulllogo redbulllogo-replace">
                   </div>
-                  <div class="team-menu-name">RED BULL</div>
+                  <div class="team-menu-name redbull-name">RED BULL</div>
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="4">
                   <div class="team-menu-logo">
@@ -3236,9 +3296,9 @@
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="10">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/astonMartin.png" class="team-menu-aston">
+                    <img src="../assets/images/astonMartin.png" class="team-menu-aston team-menu-aston-replace changable-team-menu-aston astonlogo astonlogo-replace">
                   </div>
-                  <div class="team-menu-name" style="margin-right: 5px;">
+                  <div class="team-menu-name aston-name" style="margin-right: 5px;">
                     ASTON MARTIN
                   </div>
                 </a>
@@ -4161,12 +4221,12 @@
           <div class="col-3">
             <div class="teams-engines">
               <div class="main-columns-drag-section main-resizable" id="teamsDiv">
-                <div class="number-and-team team bold-font team-performance rb-transparent" data-teamid="3"
+                <div class="number-and-team team bold-font team-performance rb-transparent rb-teamname" data-teamid="3"
                   data-teamname="Red Bull">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
-                      <span class="team-title-name">RED BULL RACING</span>
+                      <span class="team-title-name redbull-name">RED BULL</span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4251,12 +4311,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="number-and-team team bold-font team-performance as-transparent" data-teamid="10"
+                <div class="number-and-team team bold-font team-performance as-transparent as-teamname" data-teamid="10"
                   data-teamname="Aston Martin">
                   <div class="team-number">1</div>
                   <div class="col main-car">
                     <div class="team-title">
-                      <span class="team-title-name">ASTON MARTIN</span>
+                      <span class="team-title-name aston-name">ASTON MARTIN</span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4328,12 +4388,12 @@
                 </div>
               </div>
               <div class="main-columns-drag-section main-resizable d-none" id="carsDiv">
-                <div class="nunmber-and-car car bold-font car-performance rb-transparent" data-teamid="3"
+                <div class="nunmber-and-car car bold-font car-performance rb-transparent rb-teamname" data-teamid="3"
                   data-teamname="Red Bull" data-teamshow="Red Bull" data-carnumber="1">
                   <div class="performance-number">1</div>
                   <div class="col main-car">
                     <div class="car-title">
-                      <span class="team-title-name">Red Bull</span>
+                      <span class="team-title-name redbull-name">Red Bull</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4345,12 +4405,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance rb-transparent" data-teamid="3"
+                <div class="nunmber-and-car car bold-font car-performance rb-transparent rb-teamname" data-teamid="3"
                   data-teamname="Red Bull" data-teamshow="Red Bull" data-carnumber="2">
                   <div class="performance-number">2</div>
                   <div class="col main-car" data-teamid="3" data-teamname="Red Bull" data-teamshow="Red Bull">
                     <div class="car-title">
-                      <span class="team-title-name">Red Bull</span>
+                      <span class="team-title-name redbull-name">Red Bull</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4634,12 +4694,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance as-transparent" data-teamid="10"
+                <div class="nunmber-and-car car bold-font car-performance as-transparent as-teamname" data-teamid="10"
                   data-teamname="Aston Martin" data-teamshow="Aston Martin" data-carnumber="1">
                   <div class="performance-number">1</div>
                   <div class="col main-car" data-teamid="10" data-teamname="Aston Martin" data-teamshow="Aston Martin">
                     <div class="car-title">
-                      <span class="team-title-name">Aston Martin</span>
+                      <span class="team-title-name aston-name">Aston Martin</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4651,12 +4711,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="nunmber-and-car car bold-font car-performance as-transparent" data-teamid="10"
+                <div class="nunmber-and-car car bold-font car-performance as-transparent as-teamname" data-teamid="10"
                   data-teamname="Aston Martin" data-teamshow="Aston Martin" data-carnumber="2">
                   <div class="performance-number">2</div>
                   <div class="col main-car" data-teamid="10" data-teamname="Aston Martin" data-teamshow="Aston Martin">
                     <div class="car-title">
-                      <span class="team-title-name">Aston Martin</span>
+                      <span class="team-title-name aston-name">Aston Martin</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>

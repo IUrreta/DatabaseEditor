@@ -3586,6 +3586,15 @@ DRIVERS TABLE
   padding: 6px 0 !important;
 }
 
+.racingpoint-team-table-logo,
+.jordan-team-table-logo {
+  padding: 9px 4px !important;
+}
+
+.cadillac-team-table-logo {
+  padding: 9px 5px !important;
+}
+
 .ferrari-team-table-logo {
   padding: 8px !important;
 }
@@ -3596,6 +3605,10 @@ DRIVERS TABLE
 
 .redbull-team-table-logo {
   padding: 13px 0px !important;
+}
+
+.ford-team-table-logo {
+  padding: 10px 4px !important;
 }
 
 .merc-team-table-logo {
@@ -3926,6 +3939,13 @@ phm
 
 .logo-porsche-table {
   padding: 3px 3px;
+}
+
+.logo-ford-table,
+.logo-racingpoint-table,
+.logo-jordan-table,
+.logo-cadillac-table {
+  padding: 4px 2px;
 }
 
 .logo-williams-table {
@@ -9093,6 +9113,48 @@ body.og-theme .records-list {
   padding-top: 7px;
 }
 
+.changable-team-menu-redbull {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 8px;
+  padding-left: 3px;
+  padding-top: 7px;
+}
+
+.changable-team-menu-ford {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-top: 6px;
+}
+
+.changable-team-menu-aston {
+  width: 50px;
+  height: 45px;
+  padding-bottom: 5px;
+  padding-left: 2px;
+  padding-top: 5px;
+  padding-right: 3px;
+}
+
+.changable-team-menu-racingpoint,
+.changable-team-menu-jordan {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-top: 6px;
+}
+
+.changable-team-menu-cadillac {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-top: 6px;
+}
+
 .team-menu-mclaren {
   width: 40px;
   height: 40px;
@@ -10699,6 +10761,15 @@ input[type='number'] {
   padding-bottom: 5px;
   padding-left: 1px;
   padding-top: 5px;
+}
+
+.fordlogo,
+.racingpointlogo,
+.jordanlogo,
+.cadillaclogo {
+  width: 40px;
+  height: 40px;
+  padding: 6px 2px;
 }
 
 .brawnlogo {

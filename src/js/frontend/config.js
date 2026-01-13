@@ -162,7 +162,8 @@ export const names_full = {
 export let driversTableLogosDict = {
     "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-sauber-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
     "brawn": "logo-brawn-table", "toyota": "logo-toyota-table", "alphatauri": "logo-alphatauri-table", "porsche": "logo-porsche-table",
-    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table"
+    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table",
+    "cadillac": "logo-cadillac-table", "ford": "logo-ford-table", "racingpoint": "logo-racingpoint-table", "jordan": "logo-jordan-table"
 }
 
 export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
@@ -563,4 +564,3 @@ export const turningPointsTuningByType = {
         max: [1, 1, 1, 1, 1],
     },
 };
-
