@@ -32,7 +32,7 @@ export const logos_classes_configs = {
     "alpine": "alpinelogo", "renault": "renaultlogo", "andretti": "andrettilogo", "lotus": "lotuslogo", "cadillac": "cadillaclogo",
     "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo",
     "williams": "williamslogo", "bmw": "bmwlogo", "redbull": "redbulllogo", "ford": "fordlogo", "aston": "astonlogo",
-    "racingpoint": "racingpointlogo", "jordan": "jordanlogo"
+    "racingpoint": "racingpointlogo", "jordan": "jordanlogo", "haas": "haaslogo"
 };
 
 function updateTeamMenuClass(selector, info) {
@@ -346,7 +346,6 @@ export function createTeamReplacers(deps) {
         updateLogos(info) {
             document.querySelectorAll(".haaslogo-replace").forEach(function (elem) {
                 if (elem.classList.contains("non-changable")) return;
-
                 const isMaskLogo = info === "toyota";
                 if (isMaskLogo) {
                     const newElem = document.createElement("div");
@@ -366,6 +365,7 @@ export function createTeamReplacers(deps) {
                 }
                 elem.src = logos_configs[info];
                 elem.classList.remove("toyotalogo");
+                elem.classList.add(logos_classes_configs[info]);
             });
         }
     };
@@ -459,6 +459,9 @@ export function createTeamReplacers(deps) {
                     }
                 }
                 else {
+                    if (elem.classList.contains("complete") && info === "redbull") {
+                        name = "RED BULL RACING";
+                    }
                     elem.textContent = name;
                 }
             });

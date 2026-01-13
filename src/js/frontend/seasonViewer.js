@@ -850,7 +850,6 @@ export function new_load_drivers_table(data) {
         if (firstDriverPos) firstDriverPos.classList.remove("champion")
         if (firstDriverPoints) firstDriverPoints.classList.remove("champion")
     }
-    hoverListeners()
     checkscroll()
     new_color_drivers_table()
     driverCells = document.querySelectorAll(".drivers-table-data .drivers-table-normal")
@@ -1722,15 +1721,6 @@ function new_addDriver(driver, races_done, odd) {
     pointsDiv.innerText = driverpoints;
     row.appendChild(pointsDiv);
 
-    row.addEventListener("hover", function (elem) {
-        if (elem.dataset.teamid === 2) {
-            let logo = this.querySelector(".drivers-table-logo");
-            logo.style.opacity = "0";
-            let logo2 = this.querySelector(".drivers-table-logo").nextElementSibling;
-            logo2.style.opacity = "1";
-        }
-    });
-
     data.appendChild(row);
     return { points: driverpoints, row, pointsDiv, pointsGapDiv };
 }
@@ -1975,34 +1965,6 @@ function manageTeamsText(raceDiv) {
     return raceDiv
 }
 
-function hoverListeners() {
-    if (currentFormula !== 1) {
-        return;
-    }
-    document.querySelectorAll(".drivers-table-row").forEach(function (row) {
-        row.addEventListener("mouseenter", function () {
-            if (this.dataset.teamid === "2" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
-                || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo"))) {
-
-                let logo = this.querySelector(".drivers-table-logo");
-                if (!logo) return;
-                const baseSrc = logos_disc[this.dataset.teamid];
-                if (typeof baseSrc !== "string" || !/\.(png|jpe?g)$/i.test(baseSrc)) return;
-                logo.src = baseSrc.replace(/(\.[^.]+)$/, "2$1");
-            }
-        });
-        row.addEventListener("mouseleave", function () {
-            if (this.dataset.teamid === "2" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
-                || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo"))) {
-                let logo = this.querySelector(".drivers-table-logo");
-                if (!logo) return;
-                const baseSrc = logos_disc[this.dataset.teamid];
-                if (typeof baseSrc !== "string" || !/\.(png|jpe?g)$/i.test(baseSrc)) return;
-                logo.src = baseSrc;
-            }
-        });
-    });
-}
 
 
 

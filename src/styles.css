@@ -749,14 +749,34 @@ input[type="checkbox"]:focus {
   flex-direction: column;
 }
 
-.team-change {
-  display: flex;
-  flex-direction: row;
+.team-changes-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px 10px;
+  margin-top: 5px;
   align-items: center;
 }
 
+.team-changes-grid .logo-and-name{
+  font-size: 12px;
+  height: 30px;
+}
+
+.team-changes-grid .logo-and-name .team-name{
+  padding-left: 0px;
+}
+
+.team-changes-grid [data-resizable="true"] {
+  transform: scale(0.8);
+}
+
+.team-change {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .team-change-button {
-  width: 33%;
   text-align: end;
   align-items: end;
   display: flex;
@@ -3942,10 +3962,13 @@ phm
 }
 
 .logo-ford-table,
-.logo-racingpoint-table,
 .logo-jordan-table,
 .logo-cadillac-table {
   padding: 4px 2px;
+}
+
+.logo-racingpoint-table{
+  padding: 4px;
 }
 
 .logo-williams-table {
@@ -4141,7 +4164,8 @@ phm
 .drivers-table-row:hover .logo-renault-table,
 .drivers-table-row:hover .logo-lotus-table,
 .drivers-table-row:hover .logo-andretti-table,
-.drivers-table-row:hover .logo-lotus-table {
+.drivers-table-row:hover .logo-lotus-table,
+.drivers-table-row:hover .logo-brawn-table {
   background-color: #333333;
 }
 
@@ -10252,13 +10276,13 @@ input[type='number'] {
   align-items: center;
 }
 
-.colors-selector .bold-font {
-  width: 22%;
+.title-secondary{
+  color: var(--text-secondary);
 }
 
 .logo-preview {
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   background-color: transparent;
   border: solid 1px var(--toast-background);
 }
@@ -10280,8 +10304,8 @@ input[type='number'] {
 
 .custom-logo-selection {
   display: flex;
-  gap: 20px;
-  flex-direction: column;
+  gap: 10px;
+  flex-direction: row;
 }
 
 .colors-selector {
@@ -10754,6 +10778,10 @@ input[type='number'] {
   padding: 3px;
 }
 
+.team-menu-logo .astonlogo, .team-menu-logo .redbulllogo {
+  width: 50px;
+}
+
 .astonlogo,
 #aslogo {
   width: 40px;
@@ -10764,12 +10792,17 @@ input[type='number'] {
 }
 
 .fordlogo,
-.racingpointlogo,
 .jordanlogo,
 .cadillaclogo {
   width: 40px;
   height: 40px;
   padding: 6px 2px;
+}
+
+.racingpointlogo{
+  width: 40px;
+  height: 40px;
+  padding: 5px;
 }
 
 .brawnlogo {
@@ -10854,7 +10887,7 @@ input[type='number'] {
   mask: url('/assets/images/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--toyota-primary);
+  background-color: #EB0A1B; /* toyota primary color, different from their background gray color */
 }
 
 .haaslogo,

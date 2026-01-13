@@ -11,9 +11,9 @@
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag() { dataLayer.push(arguments); }
-  gtag('js',new Date());
+  gtag('js', new Date());
 
-  gtag('config','G-81CY6HY9K6');
+  gtag('config', 'G-81CY6HY9K6');
 </script>
 
 <body class="font">
@@ -58,13 +58,13 @@
               </div>
               <div class="team-contract" id="currentContract"></div>
               <div class="dropdown-global d-none" id="juniorContractDropdown">
-                  <button class="redesigned-dropdown bold-font" id="juniorTeamContractButton" data-teamid="-1">
-                    <span class="dropdown-label">Select junior team</span>
-                    <i class="redesigned-chevron"></i>
-                  </button>
-                  <ul class="redesigned-dropdown-menu dropdown-menu-end" id="juniorTeamContractMenu"
-                    style="font-family: Formula1;">
-                  </ul>
+                <button class="redesigned-dropdown bold-font" id="juniorTeamContractButton" data-teamid="-1">
+                  <span class="dropdown-label">Select junior team</span>
+                  <i class="redesigned-chevron"></i>
+                </button>
+                <ul class="redesigned-dropdown-menu dropdown-menu-end" id="juniorTeamContractMenu"
+                  style="font-family: Formula1;">
+                </ul>
               </div>
             </div>
             <div class="contract-details pt-1 mb-3" id="currentContractOptions">
@@ -268,7 +268,8 @@
                   </a>
                   <a class="redesigned-dropdown-item  bold-font" style="cursor: pointer;" data-teamid="3">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/redbull.png" class="team-menu-redbull team-menu-redbull-replace changable-team-menu-redbull redbulllogo redbulllogo-replace">
+                      <img src="../assets/images/redbull.png"
+                        class="team-menu-redbull team-menu-redbull-replace changable-team-menu-redbull redbulllogo redbulllogo-replace">
                     </div>
                     <div class="team-menu-name redbull-name">RED BULL</div>
                   </a>
@@ -301,7 +302,8 @@
                   </a>
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="7">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/haas.png" class="team-menu-haas team-menu-haas-replace changable-team-menu-haas haaslogo-replace">
+                      <img src="../assets/images/haas.png"
+                        class="team-menu-haas team-menu-haas-replace changable-team-menu-haas haaslogo-replace">
                     </div>
                     <div class="team-menu-name haas-name">
                       HAAS
@@ -330,7 +332,8 @@
                   </a>
                   <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="10">
                     <div class="team-menu-logo">
-                      <img src="../assets/images/astonMartin.png" class="team-menu-aston team-menu-aston-replace changable-team-menu-aston astonlogo astonlogo-replace">
+                      <img src="../assets/images/astonMartin.png"
+                        class="team-menu-aston team-menu-aston-replace changable-team-menu-aston astonlogo astonlogo-replace">
                     </div>
                     <div class="team-menu-name aston-name" style="margin-right: 5px;">
                       ASTON MARTIN
@@ -407,264 +410,256 @@
           <div id="editorChanges" class="d-none">
             <div class="main-team-changes mb-3" id="teamChanges">
               <div class="d-flex" style="gap: 7px;">
-                <div>Please note that this changes are <span class="important-text bold-font">VISUAL AND FOR THE EDITOR
+                <div class="modal-text">Please note that this changes are <span class="important-text bold-font">VISUAL AND FOR THE EDITOR
                     ONLY</span>, they will
                   <span class="important-text bold-font">NOT APPLY TO YOUR SAVE IN-GAME</span>
                 </div>
               </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;">
-                  <img src="../assets/images/haas.png" class="haaslogo non-changable">
-                  <div class="team-name">HAAS</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="haasReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" data-value="haas">
-                      <span class="dropdown-label">HAAS</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="haas">
-                        <img src="../assets/images/haas.png" class="haaslogo non-changable">
-                        <div>HAAS</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="toyota">
-                        <div class="team-menu-logo">
+              <div class="team-changes-grid">
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <img src="../assets/images/haas.png" class="haaslogo non-changable" data-resizable="true">
+                    <div class="team-name">HAAS</div>
+                  </div>
+                  <div class="team-change-button" id="haasReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" data-value="haas">
+                        <span class="dropdown-label">HAAS</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="haas">
+                          <img src="../assets/images/haas.png" class="haaslogo non-changable">
+                          <div>HAAS</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="toyota">
                           <div class="toyotalogo"></div>
-                        </div>
-                        <div>TOYOTA</div>
-                      </a>
-                    </ul>
+                          <div>TOYOTA</div>
+                        </a>
+                      </ul>
+
+                    </div>
 
                   </div>
-
                 </div>
-              </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;"> 
-                  <div class="alphatauri-logo-container">
-                    <div class="alphataurilogo non-changable" id="alphaModalLogo"></div>
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <div class="alphatauri-logo-container">
+                      <div class="alphataurilogo non-changable" id="alphaModalLogo" data-resizable="true"></div>
+                    </div>
+                    <div class="team-name" id="alphaModalName">ALPHA TAURI</div>
                   </div>
-                  <div class="team-name" id="alphaModalName">ALPHA TAURI</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="alphaTauriReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" aria-haspopup="true" data-value="alphatauri">
-                      <span class="dropdown-label">ALPHA TAURI</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="alphatauri">
-                        <div class="alphatauri-logo-container">
-                          <div class="alphataurilogo non-changable"></div>
-                        </div>
-                        <div>ALPHA TAURI</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="visarb">
-                        <div class="alphatauri-logo-container">
-                          <div class="visarblogo"></div>
-                        </div>
-                        <div>VISA CASHAPP RB</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="hugo">
-                        <div class="alphatauri-logo-container">
-                          <div class="hugologo"></div>
-                        </div>
-                        <div>HUGO BOSS</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="toyota">
-                        <div class="alphatauri-logo-container">
-                          <div class="toyotalogo"></div>
-                        </div>
-                        <div class="">TOYOTA</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="porsche">
-                        <img src="../assets/images/porsche.png" class="porschelogo">
-                        <div class="">PORSCHE</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="brawn">
-                        <div class="alphatauri-logo-container">
-                          <div class="brawnlogo"></div>
-                        </div>
-                        <div class="">BRAWN GP</div>
-                      </a>
-                    </ul>
-                  </div>
-
-                </div>
-              </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;">
-                  <div class="alpine-logo-container">
-                    <div class="alpinelogo non-changable"></div>
-                  </div>
-                  <div class="team-name">ALPINE</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="alpineReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" data-value="alpine">
-                      <span class="dropdown-label">ALPINE</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="alpine">
-                        <div class="alpine-logo-container">
-                          <div class="alpinelogo non-changable"></div>
-                        </div>
-                        <div class="">ALPINE</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="andretti">
-                        <div class="alpine-logo-container">
-                          <div class="andrettilogo"></div>
-                        </div>
-
-                        <div class="">ANDRETTI</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="renault">
-                        <div class="alpine-logo-container">
-                          <div class="renaultlogo"></div>
-                        </div>
-
-                        <div class="">RENAULT</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="lotus">
-                        <div class="alpine-logo-container">
-                          <div class="lotuslogo"></div>
-                        </div>
-
-                        <div class="">LOTUS</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="cadillac">
-                        <img src="../assets/images/cadillac.png" class="cadillaclogo">
-                        <div class="">CADILLAC</div>
-                      </a>
-                    </ul>
+                  <div class="team-change-button" id="alphaTauriReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" aria-haspopup="true" data-value="alphatauri">
+                        <span class="dropdown-label">ALPHA TAURI</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="alphatauri">
+                          <div class="alphatauri-logo-container">
+                            <div class="alphataurilogo non-changable"></div>
+                          </div>
+                          <div>ALPHA TAURI</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="visarb">
+                          <div class="alphatauri-logo-container">
+                            <div class="visarblogo"></div>
+                          </div>
+                          <div>VISA CASHAPP RB</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="hugo">
+                          <div class="alphatauri-logo-container">
+                            <div class="hugologo"></div>
+                          </div>
+                          <div>HUGO BOSS</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="toyota">
+                          <div class="alphatauri-logo-container">
+                            <div class="toyotalogo"></div>
+                          </div>
+                          <div class="">TOYOTA</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="porsche">
+                          <img src="../assets/images/porsche.png" class="porschelogo">
+                          <div class="">PORSCHE</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="brawn">
+                          <div class="alphatauri-logo-container">
+                            <div class="brawnlogo"></div>
+                          </div>
+                          <div class="">BRAWN GP</div>
+                        </a>
+                      </ul>
+                    </div>
 
                   </div>
+                </div>
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <div class="alpine-logo-container">
+                      <div class="alpinelogo non-changable" data-resizable="true"></div>
+                    </div>
+                    <div class="team-name">ALPINE</div>
+                  </div>
+                  <div class="team-change-button" id="alpineReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" data-value="alpine">
+                        <span class="dropdown-label">ALPINE</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="alpine">
+                          <div class="alpine-logo-container">
+                            <div class="alpinelogo non-changable"></div>
+                          </div>
+                          <div class="">ALPINE</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="andretti">
+                          <div class="alpine-logo-container">
+                            <div class="andrettilogo"></div>
+                          </div>
 
-                </div>
-              </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;">
-                  <div class="williamslogo non-changable"></div>
-                  <div class="team-name">WILLIAMS</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="williamsReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" data-value="williams">
-                      <span class="dropdown-label">WILLIAMS</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="williams">
-                        <div class="williamslogo non-changable"></div>
-                        <div>WILLIAMS</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="bmw">
-                        <img src="../assets/images/bmw.png" class="bmwlogo">
-                        <div>BMW</div>
-                      </a>
-                    </ul>
+                          <div class="">ANDRETTI</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="renault">
+                          <div class="alpine-logo-container">
+                            <div class="renaultlogo"></div>
+                          </div>
+
+                          <div class="">RENAULT</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="lotus">
+                          <div class="alpine-logo-container">
+                            <div class="lotuslogo"></div>
+                          </div>
+
+                          <div class="">LOTUS</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="cadillac">
+                          <img src="../assets/images/cadillac.png" class="cadillaclogo">
+                          <div class="">CADILLAC</div>
+                        </a>
+                      </ul>
+
+                    </div>
 
                   </div>
+                </div>
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <div class="williamslogo non-changable" data-resizable="true"></div>
+                    <div class="team-name">WILLIAMS</div>
+                  </div>
+                  <div class="team-change-button" id="williamsReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" data-value="williams">
+                        <span class="dropdown-label">WILLIAMS</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="williams">
+                          <div class="williamslogo non-changable"></div>
+                          <div>WILLIAMS</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="bmw">
+                          <img src="../assets/images/bmw.png" class="bmwlogo">
+                          <div>BMW</div>
+                        </a>
+                      </ul>
 
-                </div>
-              </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;">       
-                  <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable" id="alfaModalLogo">
-                  <div class="team-name" id="alfaModalName">ALFA ROMEO</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="alfaReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" data-value="alfa">
-                      <span class="dropdown-label">ALFA ROMEO</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="alfa">
-                        <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable">
-                        <div class="">ALFA ROMEO</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font " data-value="stake">
-                        <img src="../assets/images/kick.png" class="alfalogo">
-                        <div class="">STAKE SAUBER</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="sauber">
-                        <div class="team-menu-logo">
-                          <div class="sauberlogo"></div>
-                        </div>
-                        <div class="">SAUBER</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="audi">
-                        <img src="../assets/images/audi.png" class="audilogo">
-                        <div class="">AUDI</div>
-                      </a>
-                    </ul>
+                    </div>
 
                   </div>
-
                 </div>
-              </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;">
-                  <img src="../assets/images/redbull.png" class="redbulllogo non-changable">
-                  <div class="team-name">RED BULL</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="redbullReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" data-value="redbull">
-                      <span class="dropdown-label">RED BULL</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="redbull">
-                        <img src="../assets/images/redbull.png" class="redbulllogo non-changable">
-                        <div>RED BULL</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="ford">
-                        <img src="../assets/images/ford.png" class="fordlogo">
-                        <div>FORD</div>
-                      </a>
-                    </ul>
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable" id="alfaModalLogo" data-resizable="true">
+                    <div class="team-name" id="alfaModalName">ALFA ROMEO</div>
                   </div>
+                  <div class="team-change-button" id="alfaReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" data-value="alfa">
+                        <span class="dropdown-label">ALFA ROMEO</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="alfa">
+                          <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable">
+                          <div class="">ALFA ROMEO</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font " data-value="stake">
+                          <img src="../assets/images/kick.png" class="alfalogo">
+                          <div class="">STAKE SAUBER</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="sauber">
+                          <div class="team-menu-logo">
+                            <div class="sauberlogo"></div>
+                          </div>
+                          <div class="">SAUBER</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="audi">
+                          <img src="../assets/images/audi.png" class="audilogo">
+                          <div class="">AUDI</div>
+                        </a>
+                      </ul>
 
-                </div>
-              </div>
-              <div class="team-change">
-                <div class="bold-font logo-and-name" style="width: 33%;">       
-                  <img src="../assets/images/astonMartin.png" class="astonlogo non-changable">
-                  <div class="team-name">ASTON MARTIN</div>
-                </div>
-                <div style="font-size: 35px; width: 33%; text-align: center;"><i class="bi bi-arrow-right"></i></div>
-                <div class="team-change-button" id="astonReplaceButton">
-                  <div class="dropdown-global" style="width: max-content;">
-                    <button class="redesigned-dropdown bold-font" data-value="aston">
-                      <span class="dropdown-label">ASTON MARTIN</span>
-                      <i class="redesigned-chevron"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item bold-font" data-value="aston">
-                        <img src="../assets/images/astonMartin.png" class="astonlogo non-changable">
-                        <div class="">ASTON MARTIN</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="racingpoint">
-                        <img src="../assets/images/racingpoint.png" class="racingpointlogo">
-                        <div class="">RACING POINT</div>
-                      </a>
-                      <a class="redesigned-dropdown-item bold-font" data-value="jordan">
-                        <img src="../assets/images/jordan.png" class="jordanlogo">
-                        <div class="">JORDAN</div>
-                      </a>
-                    </ul>
+                    </div>
+
                   </div>
+                </div>
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <img src="../assets/images/redbull.png" class="redbulllogo non-changable" data-resizable="true">
+                    <div class="team-name">RED BULL</div>
+                  </div>
+                  <div class="team-change-button" id="redbullReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" data-value="redbull">
+                        <span class="dropdown-label">RED BULL</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="redbull">
+                          <img src="../assets/images/redbull.png" class="redbulllogo non-changable">
+                          <div>RED BULL</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="ford">
+                          <img src="../assets/images/ford.png" class="fordlogo">
+                          <div>FORD</div>
+                        </a>
+                      </ul>
+                    </div>
 
+                  </div>
+                </div>
+                <div class="team-change">
+                  <div class="bold-font logo-and-name">
+                    <img src="../assets/images/astonMartin.png" class="astonlogo non-changable" data-resizable="true">
+                    <div class="team-name">ASTON MARTIN</div>
+                  </div>
+                  <div class="team-change-button" id="astonReplaceButton">
+                    <div class="dropdown-global" style="width: max-content;">
+                      <button class="redesigned-dropdown bold-font" data-value="aston">
+                        <span class="dropdown-label">ASTON MARTIN</span>
+                        <i class="redesigned-chevron"></i>
+                      </button>
+                      <ul class="redesigned-dropdown-menu team-select-menu" style="font-family: Formula1;">
+                        <a class="redesigned-dropdown-item bold-font" data-value="aston">
+                          <img src="../assets/images/astonMartin.png" class="astonlogo non-changable">
+                          <div class="">ASTON MARTIN</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="racingpoint">
+                          <img src="../assets/images/racingpoint.png" class="racingpointlogo">
+                          <div class="">RACING POINT</div>
+                        </a>
+                        <a class="redesigned-dropdown-item bold-font" data-value="jordan">
+                          <img src="../assets/images/jordan.png" class="jordanlogo">
+                          <div class="">JORDAN</div>
+                        </a>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -672,14 +667,8 @@
               <h5 class="modal-subtitle bold-font">
                 Customize your team
               </h5>
-              <div class="custom-logo-selection mt-3">
+              <div class="custom-logo-selection mt-2">
                 <div class="logo-selector">
-                  <div class="bold-font">Logo</div>
-                  <div>
-                    Select any logo in a <span class="important-text bold-font">PNG</span>, <span
-                      class="important-text bold-font">JPG</span> or <span class="important-text bold-font">SVG</span>
-                    format
-                  </div>
                   <div class="logo-and-preview">
                     <div style="width: max-content;">
                       <div class="button-with-icon" id="selectImage">
@@ -693,12 +682,12 @@
                 </div>
                 <div class="colors-selector">
                   <div class="color-selector">
-                    <div class="bold-font">Primary color</div>
+                    <div class="bold-font title-secondary">Primary color</div>
                     <input class="color-picker" type="color" id="primarySelector">
                     <input class="color-reader" type="text" id="primaryReader">
                   </div>
                   <div class="color-selector">
-                    <div class="bold-font">Secondary color</div>
+                    <div class="bold-font title-secondary">Secondary color</div>
                     <input class="color-picker" type="color" id="secondarySelector">
                     <input class="color-reader" type="text" id="secondaryReader">
                   </div>
@@ -720,7 +709,8 @@
             <div class="mt-3">
               <h5 class="modal-subtitle bold-font">Panic download</h5>
               <div class="modal-text">
-                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in the db. It might fix some issues.
+                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in
+                the db. It might fix some issues.
               </div>
               <div class="button-with-icon" id="panicDownloadButton">
                 <i class="bi bi-exclamation-triangle-fill"></i>
@@ -758,7 +748,7 @@
                     <div class="team-logo-container wi" data-teamid="6">
                       <div class="williamslogo williamslogo-replace"></div>
                     </div>
-                    <div class="team-logo-container ha" data-teamid="7">  
+                    <div class="team-logo-container ha" data-teamid="7">
                       <img src="../assets/images/haas.png" class="team-logo haaslogo-replace">
                     </div>
                     <div class="team-logo-container at" data-teamid="8">
@@ -983,7 +973,9 @@
               place that race (drivers)</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
-            <div class="standings-list" style="background-color: transparent; position: relative;"><div class="dotd">Pos</div></div> <span> - Driver of the day</span>
+            <div class="standings-list" style="background-color: transparent; position: relative;">
+              <div class="dotd">Pos</div>
+            </div> <span> - Driver of the day</span>
           </div>
           <div class="d-flex mt-2" style="gap: 7px;">
             <div class="standings-list">DNF</div>
@@ -1397,8 +1389,9 @@
               </div>
               <div class="col modal-team rb-transparent d-none" data-teamid="3">
                 <div class="logo-and-name">
-                  <img src="../assets/images/redbull.png" class="redbulllogo redbulllogo-replace front-gradient logo-margin-top">
-                  <div class="team-name bold-font front-gradient">RED BULL</div>
+                  <img src="../assets/images/redbull.png"
+                    class="redbulllogo redbulllogo-replace front-gradient logo-margin-top">
+                  <div class="team-name bold-font front-gradient redbull-name">RED BULL</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="3" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -1473,7 +1466,7 @@
               <div class="col modal-team as-transparent d-none" data-teamid="10">
                 <div class="logo-and-name">
                   <img src="../assets/images/astonMartin.png" class="astonlogo astonlogo-replace front-gradient">
-                  <div class="team-name bold-font ps-1 front-gradient">ASTON MARTIN</div>
+                  <div class="team-name bold-font ps-1 front-gradient aston-name">ASTON MARTIN</div>
                 </div>
                 <div class="buttons-drivers-modal">
                   <div data-teamid="10" class="H2Hradio" data-state="unchecked">H2H</div>
@@ -2120,14 +2113,14 @@
               <div class="team-template  rbborder">
                 <div class="new-logo-and-name">
                   <img src="../assets/images/redbull.png" class="redbulllogo redbulllogo-replace">
-                  <div class="team-name bold-font">RED BULL RACING</div>
+                  <div class="team-name bold-font redbull-name complete">RED BULL RACING</div>
                 </div>
                 <div class="drivers-section" data-team="redbull">
                   <div class="driver-space" id="rb1">
                   </div>
                   <div class="driver-space" id="rb2">
                   </div>
-                  <div class="affiliates-and-arrows" data-team="redbull">  
+                  <div class="affiliates-and-arrows" data-team="redbull">
                     <i class="bi bi-chevron-left arrow-left new-augment-button transparent"></i>
                     <div class="affiliates-space driver-space" id="rb3"></div>
                     <i class="bi bi-chevron-right arrow-right new-augment-button transparent"></i>
@@ -2151,7 +2144,7 @@
                   </div>
                   <div class="driver-space" id="fe2">
                   </div>
-                  <div class="affiliates-and-arrows" data-team="ferrari">  
+                  <div class="affiliates-and-arrows" data-team="ferrari">
                     <i class="bi bi-chevron-left arrow-left new-augment-button transparent"></i>
                     <div class="affiliates-space driver-space" id="fe3"></div>
                     <i class="bi bi-chevron-right arrow-right new-augment-button transparent"></i>
@@ -2175,7 +2168,7 @@
                   </div>
                   <div class="driver-space" id="mc2">
                   </div>
-                  <div class="affiliates-and-arrows" data-team="mclaren">  
+                  <div class="affiliates-and-arrows" data-team="mclaren">
                     <i class="bi bi-chevron-left arrow-left new-augment-button transparent"></i>
                     <div class="affiliates-space driver-space" id="mc3"></div>
                     <i class="bi bi-chevron-right arrow-right new-augment-button transparent"></i>
@@ -2216,7 +2209,7 @@
               <div class="team-template  asborder">
                 <div class="new-logo-and-name">
                   <img src="../assets/images/astonMartin.png" class="astonlogo astonlogo-replace">
-                  <div class="team-name bold-font">ASTON MARTIN</div>
+                  <div class="team-name bold-font aston-name">ASTON MARTIN</div>
                 </div>
                 <div class="drivers-section" data-team="astonmartin">
                   <div class="driver-space" id="as1">
@@ -2250,7 +2243,7 @@
                   </div>
                   <div class="driver-space" id="al2">
                   </div>
-                  <div class="affiliates-and-arrows" data-team="alpine">  
+                  <div class="affiliates-and-arrows" data-team="alpine">
                     <i class="bi bi-chevron-left arrow-left new-augment-button transparent"></i>
                     <div class="affiliates-space driver-space" id="al3"></div>
                     <i class="bi bi-chevron-right arrow-right new-augment-button transparent"></i>
@@ -2269,7 +2262,7 @@
                   <div class="williamslogo williamslogo-replace"></div>
                   <div class="team-name bold-font williams-name">WILLIAMS</div>
                 </div>
-                <div class="drivers-section" data-team="williams">        
+                <div class="drivers-section" data-team="williams">
                   <div class="driver-space" id="wi1">
                   </div>
                   <div class="driver-space" id="wi2">
@@ -2340,7 +2333,7 @@
               </div>
               <div class="team-template  haborder">
                 <div class="new-logo-and-name">
-                  <img src="../assets/images/haas.png" class="haaslogo haaslogo-replace">  
+                  <img src="../assets/images/haas.png" class="haaslogo haaslogo-replace">
                   <div class="team-name bold-font haas-name">HAAS</div>
                 </div>
                 <div class="drivers-section" data-team="haas">
@@ -2348,7 +2341,7 @@
                   </div>
                   <div class="driver-space" id="ha2">
                   </div>
-                  <div class="affiliates-and-arrows" data-team="haas">   
+                  <div class="affiliates-and-arrows" data-team="haas">
                     <i class="bi bi-chevron-left arrow-left new-augment-button transparent"></i>
                     <div class="affiliates-space driver-space" id="ha3"></div>
                     <i class="bi bi-chevron-right arrow-right new-augment-button transparent"></i>
@@ -2372,7 +2365,7 @@
                   </div>
                   <div class="driver-space" id="ct2">
                   </div>
-                  <div class="affiliates-and-arrows" data-team="custom"> 
+                  <div class="affiliates-and-arrows" data-team="custom">
                     <i class="bi bi-chevron-left arrow-left new-augment-button transparent"></i>
                     <div class="affiliates-space driver-space" id="ct3"></div>
                     <i class="bi bi-chevron-right arrow-right new-augment-button transparent"></i>
@@ -3232,7 +3225,8 @@
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="3">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/redbull.png" class="team-menu-redbull team-menu-redbull-replace changable-team-menu-redbull redbulllogo redbulllogo-replace">
+                    <img src="../assets/images/redbull.png"
+                      class="team-menu-redbull team-menu-redbull-replace changable-team-menu-redbull redbulllogo redbulllogo-replace">
                   </div>
                   <div class="team-menu-name redbull-name">RED BULL</div>
                 </a>
@@ -3258,16 +3252,19 @@
                   </div>
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="6">
-                    <div class="team-menu-logo">
-                      <div class="team-menu-williams team-menu-williams-replace changable-team-menu-williams williamslogo-replace"></div>
+                  <div class="team-menu-logo">
+                    <div
+                      class="team-menu-williams team-menu-williams-replace changable-team-menu-williams williamslogo-replace">
                     </div>
-                    <div class="team-menu-name williams-name">
-                      WILLIAMS
-                    </div>
-                  </a>
+                  </div>
+                  <div class="team-menu-name williams-name">
+                    WILLIAMS
+                  </div>
+                </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="7">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/haas.png" class="team-menu-haas team-menu-haas-replace changable-team-menu-haas haaslogo-replace">
+                    <img src="../assets/images/haas.png"
+                      class="team-menu-haas team-menu-haas-replace changable-team-menu-haas haaslogo-replace">
                   </div>
                   <div class="team-menu-name haas-name">
                     HAAS
@@ -3296,7 +3293,8 @@
                 </a>
                 <a class="redesigned-dropdown-item bold-font" style="cursor: pointer;" data-teamid="10">
                   <div class="team-menu-logo">
-                    <img src="../assets/images/astonMartin.png" class="team-menu-aston team-menu-aston-replace changable-team-menu-aston astonlogo astonlogo-replace">
+                    <img src="../assets/images/astonMartin.png"
+                      class="team-menu-aston team-menu-aston-replace changable-team-menu-aston astonlogo astonlogo-replace">
                   </div>
                   <div class="team-menu-name aston-name" style="margin-right: 5px;">
                     ASTON MARTIN
@@ -4033,16 +4031,16 @@
               <div class="viewer-title bold-font">Sporting regulations</div>
               <div class="viewer-element">
                 <div class="viewer-element-name bold-font">Cost cap</div>
-                  <div class="input-and-buttons stat-number">
-                    <div class="unit-and-input">
-                      <span class="unit-label">$</span>
-                      <input type="string" class="custom-input-number" id="regSpendingCap"></input>
-                    </div>
-                    <div class="input-buttons">
-                      <i class="bi bi-plus new-augment-button transparent"></i>
-                      <i class="bi bi-dash new-augment-button transparent"></i>
-                    </div>
+                <div class="input-and-buttons stat-number">
+                  <div class="unit-and-input">
+                    <span class="unit-label">$</span>
+                    <input type="string" class="custom-input-number" id="regSpendingCap"></input>
                   </div>
+                  <div class="input-buttons">
+                    <i class="bi bi-plus new-augment-button transparent"></i>
+                    <i class="bi bi-dash new-augment-button transparent"></i>
+                  </div>
+                </div>
               </div>
 
               <div class="viewer-element">
@@ -4071,7 +4069,7 @@
                 <div class="viewer-element-name bold-font">Season gearbox limit</div>
                 <div class="input-and-buttons stat-number">
                   <input type="text" class="custom-input-number" id="regGearboxLimit">
-                    <div class="input-buttons">
+                  <div class="input-buttons">
                     <i class="bi bi-plus new-augment-button transparent"></i>
                     <i class="bi bi-dash new-augment-button transparent"></i>
                   </div>
@@ -4079,21 +4077,27 @@
               </div>
 
               <div class="viewer-element">
-                <label class="viewer-element-name bold-font" for="regDoubleLastRacePoints">Double points for last race</label>
+                <label class="viewer-element-name bold-font" for="regDoubleLastRacePoints">Double points for last
+                  race</label>
                 <div class="form-switch regulations-switch">
-                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="regDoubleLastRacePoints">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                    id="regDoubleLastRacePoints">
                 </div>
               </div>
               <div class="viewer-element">
-                <label class="viewer-element-name bold-font" for="regFastestLapBonusPoint">1 point for fastest lap</label>
+                <label class="viewer-element-name bold-font" for="regFastestLapBonusPoint">1 point for fastest
+                  lap</label>
                 <div class="form-switch regulations-switch">
-                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="regFastestLapBonusPoint">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                    id="regFastestLapBonusPoint">
                 </div>
               </div>
               <div class="viewer-element">
-                <label class="viewer-element-name bold-font" for="regPolePositionBonusPoint">1 point for pole position</label>
+                <label class="viewer-element-name bold-font" for="regPolePositionBonusPoint">1 point for pole
+                  position</label>
                 <div class="form-switch regulations-switch">
-                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="regPolePositionBonusPoint">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                    id="regPolePositionBonusPoint">
                 </div>
               </div>
             </div>
@@ -4110,8 +4114,9 @@
                   </div>
                 </div>
                 <div class="dropdown-global">
-                  <button class="redesigned-dropdown bold-font" id="regPointSchemeButton" aria-haspopup="true" aria-expanded="false">
-                    <span class="dropdown-label">Point system</span>       
+                  <button class="redesigned-dropdown bold-font" id="regPointSchemeButton" aria-haspopup="true"
+                    aria-expanded="false">
+                    <span class="dropdown-label">Point system</span>
                     <i class="redesigned-chevron"></i>
                   </button>
                   <ul class="redesigned-dropdown-menu" id="regPointSchemeMenu" style="font-family: Formula1;"></ul>
@@ -4130,14 +4135,15 @@
               <div class="viewer-details">
                 <div class="viewer-title-row">
                   <div class="viewer-title bold-font">Wind tunnel &amp; CFD</div>
-                  <div class="button-with-icon" id="regCreateResourcePackage">   
+                  <div class="button-with-icon" id="regCreateResourcePackage">
                     <i class="bi bi-plus-circle"></i>
                     <span class="">Create resource package</span>
                   </div>
                 </div>
                 <div class="dropdown-global">
-                  <button class="redesigned-dropdown bold-font" id="regResourcePackageButton" aria-haspopup="true" aria-expanded="false">
-                    <span class="dropdown-label">Resource package</span>   
+                  <button class="redesigned-dropdown bold-font" id="regResourcePackageButton" aria-haspopup="true"
+                    aria-expanded="false">
+                    <span class="dropdown-label">Resource package</span>
                     <i class="redesigned-chevron"></i>
                   </button>
                   <ul class="redesigned-dropdown-menu" id="regResourcePackageMenu" style="font-family: Formula1;"></ul>
@@ -4580,7 +4586,7 @@
                   <div class="performance-number">2</div>
                   <div class="col main-car" data-teamid="6" data-teamname="Williams" data-teamshow="Williams">
                     <div class="car-title">
-                      <span class="team-title-name williams-name">Williams</span>       
+                      <span class="team-title-name williams-name">Williams</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
@@ -4614,7 +4620,7 @@
                   <div class="performance-number">2</div>
                   <div class="col main-car" data-teamid="7" data-teamname="Haas" data-teamshow="Haas">
                     <div class="car-title">
-                      <span class="team-title-name haas-name">Haas</span>       
+                      <span class="team-title-name haas-name">Haas</span>
                       <span class="car-missing-parts">
                         <span class="value"></span>
                       </span>
