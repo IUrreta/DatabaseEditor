@@ -165,6 +165,8 @@ function manage_show_tables() {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
     recordsList.classList.add("d-none")
+    const seasonReviewBento = document.querySelector(".season-review-bento")
+    seasonReviewBento.classList.add("d-none")
     if (isYearSelected) {
         if (driverOrTeams === "drivers") {
             document.querySelector(".teams-table").classList.add("d-none")
@@ -1492,6 +1494,112 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
 
 
+function buildF1DriverLogoElement(teamId) {
+    let logo = document.createElement("img");
+    logo.classList = "drivers-table-logo";
+    logo.dataset.teamid = teamId;
+
+    if (teamId === 1) logo.classList.add("logo-ferrari-table");
+    if (teamId === 2) {
+        logo = document.createElement("div");
+        logo.classList = "drivers-table-logo logo-mclaren-table logo-reduce";
+        logo.dataset.teamid = teamId;
+    }
+    if (teamId === 3) {
+        logo.classList.add("logo-up-down-mid");
+        if (redbullReplace !== "redbull") {
+            logo.classList.add(driversTableLogosDict[redbullReplace]);
+        }
+    }
+    if (teamId === 6) {
+        if (williamsReplace === "williams") {
+            logo = document.createElement("div");
+            logo.classList.add("logo-williams-2026-table");
+            logo.dataset.teamid = teamId;
+        }
+        else {
+            logo = document.createElement("img");
+            logo.classList = "drivers-table-logo logo-bmw-table";
+            logo.dataset.teamid = teamId;
+            logo.src = logos_disc[6];
+        }
+    }
+    if (teamId === 7 && haasReplace === "toyota") {
+        logo = document.createElement("div");
+        logo.classList = "drivers-table-logo logo-toyota-table";
+        logo.dataset.teamid = teamId;
+    }
+    if (teamId === 4) logo.classList.add("logo-merc-table");
+    if (teamId === 7 && haasReplace !== "toyota") logo.classList.add("logo-merc-table");
+    if (teamId === 5) {
+        if (alpineReplace === "cadillac") {
+            logo = document.createElement("img");
+            logo.classList = "drivers-table-logo";
+            logo.dataset.teamid = teamId;
+        }
+        else {
+            logo = document.createElement("div");
+            logo.dataset.teamid = teamId;
+        }
+        logo.classList.add(driversTableLogosDict[alpineReplace]);
+    }
+    if (teamId === 8) {
+        if (["alphatauri", "visarb", "brawn", "hugo"].includes(alphaReplace)) {
+            logo = document.createElement("div");
+            logo.dataset.teamid = teamId;
+        }
+        else if (alphaReplace === "toyota") {
+            logo = document.createElement("div");
+            logo.classList = "drivers-table-logo";
+            logo.dataset.teamid = teamId;
+        }
+        logo.classList.add(driversTableLogosDict[alphaReplace]);
+    }
+    if (teamId === 9) {
+        if (alfaReplace === "sauber") {
+            logo = document.createElement("div");
+            logo.classList = "drivers-table-logo";
+            logo.dataset.teamid = teamId;
+        }
+        logo.classList.add(driversTableLogosDict[alfaReplace]);
+    }
+    if (teamId === 10 || teamId === 32) {
+        logo.classList.add("logo-up-down-little");
+        if (teamId === 10 && astonReplace !== "aston") {
+            logo.classList.add(driversTableLogosDict[astonReplace]);
+        }
+    }
+    if (teamId === 32) logo.classList.add("custom-replace");
+
+    if (logo.tagName === "IMG") logo.src = logos_disc[teamId];
+    return logo;
+}
+
+function buildDriverLogoDiv(teamId, opts = {}) {
+    const {
+        isF1 = currentFormula === 1,
+        wrapperClass = "drivers-table-logo-div",
+        juniorSizeClass = "junior-team-logo-driver",
+    } = opts;
+
+    const logoDiv = document.createElement("div");
+    logoDiv.className = wrapperClass;
+
+    if (isF1) {
+        const logo = buildF1DriverLogoElement(teamId);
+        logoDiv.appendChild(logo);
+    }
+    else {
+        logoDiv.appendChild(buildTeamAbbrElement(teamId, juniorSizeClass));
+    }
+
+    if (team_dict[teamId]) {
+        logoDiv.classList.add(team_dict[teamId] + "hoverback");
+    }
+
+    return logoDiv;
+}
+
 function new_addDriver(driver, races_done, odd) {
     let data = document.querySelector(".drivers-table-data");
     let row = document.createElement("div");
@@ -1529,91 +1637,7 @@ function new_addDriver(driver, races_done, odd) {
     setStandingsPositionChange(posChangeDiv, driver["lastPositionChange"]);
     row.appendChild(posChangeDiv);
 
-    let logoDiv = document.createElement("div");
-    logoDiv.classList = "drivers-table-logo-div";
-    if (isF1) {
-        let logo = document.createElement("img");
-        logo.classList = "drivers-table-logo";
-        logo.dataset.teamid = driver["latestTeamId"];
-
-        if (driver["latestTeamId"] === 1) logo.classList.add("logo-ferrari-table");
-        if (driver["latestTeamId"] === 2) {
-            logo = document.createElement("div");
-            logo.classList = "drivers-table-logo logo-mclaren-table logo-reduce";
-            logo.dataset.teamid = driver["latestTeamId"];
-        }
-        if (driver["latestTeamId"] === 3) {
-            logo.classList.add("logo-up-down-mid");
-            if (redbullReplace !== "redbull") {
-                logo.classList.add(driversTableLogosDict[redbullReplace]);
-            }
-        }
-        if (driver["latestTeamId"] === 6) {
-            if (williamsReplace === "williams") {
-                logo = document.createElement("div");
-                logo.classList.add("logo-williams-2026-table");
-            }
-            else {
-                logo = document.createElement("img");
-                logo.classList = "drivers-table-logo logo-bmw-table";
-                logo.dataset.teamid = driver["latestTeamId"];
-                logo.src = logos_disc[6];
-            }
-        }
-        if (driver["latestTeamId"] === 7 && haasReplace === "toyota") {
-            logo = document.createElement("div");
-            logo.classList = "drivers-table-logo";
-            logo.dataset.teamid = driver["latestTeamId"];
-            logo.classList.add("logo-toyota-table");
-        }
-        if (driver["latestTeamId"] === 4) logo.classList.add("logo-merc-table");
-        if (driver["latestTeamId"] === 7 && haasReplace !== "toyota") logo.classList.add("logo-merc-table");
-        if (driver["latestTeamId"] === 5) {
-            if (alpineReplace === "cadillac") {
-                logo = document.createElement("img");
-                logo.classList = "drivers-table-logo";
-                logo.dataset.teamid = driver["latestTeamId"];
-            }
-            else {
-                logo = document.createElement("div");
-            }
-            logo.classList.add(driversTableLogosDict[alpineReplace]);
-        }
-        if (driver["latestTeamId"] === 8) {
-            if (["alphatauri", "visarb", "brawn", "hugo"].includes(alphaReplace)) {
-                logo = document.createElement("div");
-            }
-            else if (alphaReplace === "toyota") {
-                logo = document.createElement("div");
-                logo.classList = "drivers-table-logo";
-                logo.dataset.teamid = driver["latestTeamId"];
-            }
-            logo.classList.add(driversTableLogosDict[alphaReplace]);
-        }
-        if (driver["latestTeamId"] === 9) {
-            if (alfaReplace === "sauber") {
-                logo = document.createElement("div");
-                logo.classList = "drivers-table-logo";
-                logo.dataset.teamid = driver["latestTeamId"];
-            }
-            logo.classList.add(driversTableLogosDict[alfaReplace]);
-        }
-        if (driver["latestTeamId"] === 10 || driver["latestTeamId"] === 32) {
-            logo.classList.add("logo-up-down-little");
-            if (driver["latestTeamId"] === 10 && astonReplace !== "aston") {
-                logo.classList.add(driversTableLogosDict[astonReplace]);
-            }
-        }
-        if (driver["latestTeamId"] === 32) logo.classList.add("custom-replace");
-
-        if (logo.tagName === "IMG") logo.src = logos_disc[driver["latestTeamId"]];
-        logoDiv.appendChild(logo);
-    }
-    else {
-        logoDiv.appendChild(buildTeamAbbrElement(driver["latestTeamId"], "junior-team-logo-driver"));
-    }
-
-    logoDiv.classList.add(team_dict[driver["latestTeamId"]] + "hoverback");
+    const logoDiv = buildDriverLogoDiv(driver["latestTeamId"], { isF1 });
     row.appendChild(logoDiv);
     row.appendChild(nameDiv);
 
@@ -2046,7 +2070,7 @@ function manageRecordsSelected(forcedYearEl = null) {
     const yearMenu = document.querySelector("#yearMenu");
     const yearItems = Array.from(yearMenu.querySelectorAll("a"));
     const yearBtn = document.getElementById("yearButton");
-    const typeVal = document.querySelector("#recordsTypeButton").dataset.value;
+    const typeVal = document.querySelector("#recordsTypeButton").dataset.value; 
 
     // resolve seleccionado actual
     let selectedEl = forcedYearEl
@@ -2056,7 +2080,7 @@ function manageRecordsSelected(forcedYearEl = null) {
     const isAllTime = el => el.dataset.year === "all";
 
     // si es standings y estaba en All Time, forzar primer año real
-    if (typeVal === "standings" && isAllTime(selectedEl)) {
+    if ((typeVal === "standings" || typeVal === "seasonreview") && isAllTime(selectedEl)) {
         const firstReal = yearItems.find(i => !isAllTime(i));
         if (firstReal) selectedEl = firstReal;
     }
@@ -2067,21 +2091,102 @@ function manageRecordsSelected(forcedYearEl = null) {
     const selectedYear = selectedEl.dataset.year;
     const isCurrentYear = selectedYear === yearItems[1].dataset.year;
 
+    console.log("Selected year:", selectedYear, "Type:", typeVal);
+
     if (typeVal === "standings") {
         isYearSelected = true
         manage_show_tables();
         new Command("yearSelected", { year: selectedYear, isCurrentYear, formula: currentFormula }).execute();
-    } else {
+    }
+    else if (typeVal === "seasonreview") {
+        manageSeasonReview();
+    }
+    else {
         new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
         manageShowRecords();
     }
 }
+
+function manageSeasonReview(){
+    const driversTable = document.querySelector(".drivers-table")
+    const teamsTable = document.querySelector(".teams-table")
+    driversTable.classList.add("d-none")
+    teamsTable.classList.add("d-none")
+    const recordsList = document.querySelector(".records-list")
+    recordsList.classList.add("d-none")
+
+    const seasonReviewBento = document.querySelector(".season-review-bento")    
+    seasonReviewBento.classList.remove("d-none")
+
+    const selectedYear = document.getElementById("yearButton")?.dataset?.year;
+    if (selectedYear) {
+        new Command("seasonReviewSelected", { year: selectedYear, formula: currentFormula }).execute();
+    }
+}
+
+export function populateSeasonReview(data) {
+    populateDriversStandingsSeasonReview(data.driversStandings)
+}
+
+function populateDriversStandingsSeasonReview(data) {
+    let half = Math.ceil(data.length / 2);
+    const isF1 = currentFormula === 1;
+    const leftColumn = document.querySelector("#standings1sthalf");
+    const rightColumn = document.querySelector("#standings2ndhalf");
+    leftColumn.innerHTML = "";
+    rightColumn.innerHTML = "";
+    data.forEach((driver, index) => {
+        const driverDiv = document.createElement("div");
+        driverDiv.className = "season-review-driver";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-driver-position";
+        posDiv.textContent = driver.Position;
+        driverDiv.appendChild(posDiv);
+
+        const teamId = Number(driver.TeamID ?? driver.teamId ?? driver.teamID ?? driver.TeamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1,
+                wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
+            });
+            driverDiv.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-driver-name";
+        const fullName = news_insert_space(driver.DriverName);
+        const surname = fullName.split(" ").pop();
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = fullName.replace(surname, "");
+        const surnameSpan = document.createElement("span");
+        surnameSpan.textContent = surname;
+        surnameSpan.className = "bold-font";
+        nameDiv.appendChild(nameSpan);
+        nameDiv.appendChild(surnameSpan);
+        driverDiv.appendChild(nameDiv);
+
+        const pointsDiv = document.createElement("div");
+        pointsDiv.className = "season-review-driver-points";
+        pointsDiv.textContent = driver.Points;
+        driverDiv.appendChild(pointsDiv);
+
+        if (index < half) {
+            leftColumn.appendChild(driverDiv);
+        } else {
+            rightColumn.appendChild(driverDiv);
+        }
+    });
+}
+
 
 function manageShowRecords() {
     const driversTable = document.querySelector(".drivers-table")
     const teamsTable = document.querySelector(".teams-table")
     driversTable.classList.add("d-none")
     teamsTable.classList.add("d-none")
+    const seasonReviewBento = document.querySelector(".season-review-bento")
+    seasonReviewBento.classList.add("d-none")
 
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.remove("d-none")
@@ -2286,7 +2391,7 @@ export function loadRecordsList(data) {
     });
 }
 
-document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
+document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {   
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
@@ -2295,6 +2400,13 @@ document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
             if (allTime)
                 allTime.classList.add("d-none")
             document.getElementById("standingsSettings").classList.remove("d-none")
+            document.getElementById("recordsSettings").classList.add("d-none")  
+        }
+        else if (elem.dataset.value === "seasonreview") {
+            const allTime = document.getElementById("allTimeRecords")
+            if (allTime)
+                allTime.classList.add("d-none")
+            document.getElementById("standingsSettings").classList.add("d-none")
             document.getElementById("recordsSettings").classList.add("d-none")
         }
         else {

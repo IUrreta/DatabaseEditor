@@ -413,7 +413,8 @@
             </h5>
             <div class="main-team-changes mb-3" id="teamChanges">
               <div class="d-flex" style="gap: 7px;">
-                <div class="modal-text">Please note that this changes are <span class="important-text bold-font">VISUAL AND FOR THE EDITOR
+                <div class="modal-text">Please note that this changes are <span class="important-text bold-font">VISUAL
+                    AND FOR THE EDITOR
                     ONLY</span>, they will
                   <span class="important-text bold-font">NOT APPLY TO YOUR SAVE IN-GAME</span>
                 </div>
@@ -577,7 +578,8 @@
                 </div>
                 <div class="team-change">
                   <div class="bold-font logo-and-name">
-                    <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable" id="alfaModalLogo" data-resizable="true">
+                    <img src="../assets/images/alfaromeo.png" class="alfalogo non-changable" id="alfaModalLogo"
+                      data-resizable="true">
                     <div class="team-name" id="alfaModalName">ALFA ROMEO</div>
                   </div>
                   <div class="team-change-button" id="alfaReplaceButton">
@@ -669,7 +671,8 @@
             <div class="form-check form-switch mt-2 d-none">
               <input class="form-check-input custom-toggle" type="checkbox" role="switch"
                 id="forceEditorMinimapColorsToggle">
-              <label class="form-check-label" for="forceEditorMinimapColorsToggle">Force editor colors in minimap</label>
+              <label class="form-check-label" for="forceEditorMinimapColorsToggle">Force editor colors in
+                minimap</label>
             </div>
             <div id="customizeTeam">
               <div class="custom-logo-selection mt-2">
@@ -2006,6 +2009,8 @@
               <ul class="redesigned-dropdown-menu" id="recordsTypeDropdown" style="font-family: Formula1;">
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="standingspill"
                   data-value="standings">Standings</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="reviewpill"
+                  data-value="seasonreview">Season review</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill"
@@ -2047,6 +2052,42 @@
           </div>
           <div class="records-list">
 
+          </div>
+          <div class="season-review-bento d-none">
+            <div class="bento-grid">
+              <div class="bento-item item-1">
+                <div class="bento-title bold-font">
+                  Standings <span class="bento-subtitle">Drivers</span>
+                </div>
+                <div class="bento-driver-standings">
+                  <div class="bento-standings-half" id="standings1sthalf"></div>
+                  <div class="bento-standings-half" id="standings2ndhalf"></div>
+                </div>
+              </div>
+              <div class="bento-item item-2">
+                <div class="bento-title bold-font">
+                  Qualifying <span class="bento-subtitle">Analysis</span>
+                </div>
+              </div>
+              <div class="bento-item item-3">
+                <div class="bento-title bold-font">Standings <span class="bento-subtitle">Teams</span></div>
+              </div>
+              <div class="bento-item item-4">
+                <div class="bento-title bold-font">Head to head <span class="bento-subtitle">Comparison</span></div>
+              </div>
+              <div class="bento-item item-5">
+                <div class="bento-title bold-font">Wins <span class="bento-subtitle">Drivers</span></div>
+              </div>
+              <div class="bento-item item-6">
+                <div class="bento-title bold-font">Podiums <span class="bento-subtitle">Drivers</span></div>
+              </div>
+              <div class="bento-item item-7">
+                <div class="bento-title bold-font">Driver of the day <span class="bento-subtitle">Drivers</span></div>
+              </div>
+              <div class="bento-item item-8">
+                <div class="bento-title bold-font">Wins <span class="bento-subtitle">Teams</span></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -2490,8 +2531,10 @@
                       </div>
                       <div class="custom-separator"></div>
                       <div class="image-and-text">
-                        <img src="../assets/images/mclaren.png" class="driver-info-team-logo driver-info-team-logo-img" id="driverTeamLogoImg">
-                        <div class="driver-info-team-logo driver-info-team-logo-masked d-none" id="driverTeamLogoMask"></div>
+                        <img src="../assets/images/mclaren.png" class="driver-info-team-logo driver-info-team-logo-img"
+                          id="driverTeamLogoImg">
+                        <div class="driver-info-team-logo driver-info-team-logo-masked d-none" id="driverTeamLogoMask">
+                        </div>
                         <span class="info-text team-text" id="driverTeamName">Placeholder 2</span>
                       </div>
                     </div>

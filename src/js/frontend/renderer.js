@@ -4,7 +4,8 @@ import DOMPurify from 'dompurify';
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
-    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
+    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
+    populateSeasonReview
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
@@ -1001,6 +1002,9 @@ const messageHandlers = {
     },
     "Double points bug fixed": (message) => {
         //TODO CLICK ON THE FIRST EYAR OF yearMenu
+    },
+    "Season review data fetched": (message) => {
+        populateSeasonReview(message)
     }
 };
 

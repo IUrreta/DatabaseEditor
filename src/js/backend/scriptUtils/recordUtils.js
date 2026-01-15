@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandings, fetchTeamMateQualiRaceHeadToHead } from "./dbUtils.js";
 import records from "../../../data/records.json";
 function idsToCsv(ids) {
     return Array.from(new Set(ids)).filter(x => x != null).join(",");
@@ -324,6 +324,109 @@ export function getSelectedRecord(type, year) {
 
     }
 
+}
+
+export function fetchSeasonReviewData(year, formula = 1) {
+    const teamsStandings = fetchTeamsStandings(year, formula);
+    const driversStandings = fetchDriversStandings(year, formula);
+    const winsRecords = getSelectedRecord("wins", year);
+    const polesRecords = getSelectedRecord("poles", year);
+    const podiumsRecords = getSelectedRecord("podiums", year);
+    const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula);
+    const driverOfTheDayCounts = Number(formula) === 1 ? fetchDriverOfTheDayCounts(year) : [];
+    const teamMateHeadToHead = Number(formula) === 1 ? fetchTeamMateQualiRaceHeadToHead(year) : [];
+
+    return {
+        year,
+        formula,
+        teamsStandings,
+        driversStandings,
+        qualifyingStageCounts,
+        driverOfTheDayCounts,
+        teamMateHeadToHead,
+        polesRecords,
+        podiumsRecords,
+        winsRecords
+    };
+}
+
+export function fetchQualifyingStageCounts(year, formula = 1) {
+    if (Number(formula) === 1) {
+        const rows = queryDB(`
+      SELECT
+        ds.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COALESCE((
+          SELECT rr.TeamID
+          FROM Races_Results rr
+          JOIN Races r ON r.RaceID = rr.RaceID
+          WHERE rr.DriverID = ds.DriverID
+            AND r.SeasonID = ?
+          ORDER BY r.Day DESC, r.RaceID DESC
+          LIMIT 1
+        ), -1) AS TeamID,
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 2 THEN q.RaceID END) AS Q2Count,
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count
+      FROM Races_DriverStandings ds
+      JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
+      LEFT JOIN Races_QualifyingResults q
+        ON q.DriverID = ds.DriverID
+       AND q.SeasonID = ds.SeasonID
+       AND q.RaceFormula = ds.RaceFormula
+       AND q.QualifyingStage IN (2, 3)
+      WHERE ds.SeasonID = ?
+        AND ds.RaceFormula = ?
+      GROUP BY ds.DriverID
+      ORDER BY Q3Count DESC, Q2Count DESC, ds.Position ASC
+    `, [year, year, formula], 'allRows') || [];
+
+        return rows.map(r => ({
+            id: r[0],
+            name: formatNamesSimple([r[1], r[2]])[0],
+            teamId: r[3],
+            q2Count: r[4] ?? 0,
+            q3Count: r[5] ?? 0
+        }));
+    }
+
+    const rows = queryDB(`
+    SELECT
+      ds.DriverID,
+      bas.FirstName,
+      bas.LastName,
+      COALESCE((
+        SELECT fr.TeamID
+        FROM Races_FeatureRaceResults fr
+        JOIN Races r ON r.RaceID = fr.RaceID
+        WHERE fr.DriverID = ds.DriverID
+          AND fr.SeasonID = ?
+          AND fr.RaceFormula = ?
+        ORDER BY r.Day DESC, r.RaceID DESC
+        LIMIT 1
+      ), -1) AS TeamID,
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 2 THEN q.RaceID END) AS Q2Count,
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count
+    FROM Races_DriverStandings ds
+    JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
+    LEFT JOIN Races_QualifyingResults q
+      ON q.DriverID = ds.DriverID
+     AND q.SeasonID = ds.SeasonID
+     AND q.RaceFormula = ds.RaceFormula
+     AND q.QualifyingStage IN (2, 3)
+    WHERE ds.SeasonID = ?
+      AND ds.RaceFormula = ?
+    GROUP BY ds.DriverID
+    ORDER BY Q3Count DESC, Q2Count DESC, ds.Position ASC
+  `, [year, formula, year, formula], 'allRows') || [];
+
+    return rows.map(r => ({
+        id: r[0],
+        name: formatNamesSimple([r[1], r[2]])[0],
+        teamId: r[3],
+        q2Count: r[4] ?? 0,
+        q3Count: r[5] ?? 0
+    }));
 }
 
 function pickValueFromType(item, type) {
