@@ -16292,9 +16292,9 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   display: grid;
   width: 100%;
   height: 100%;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 12px;
   padding: 8px;
 } 
 
@@ -16303,7 +16303,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   display: flex;
   flex-direction: column;
   padding: 12px 15px;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 12px;
   border-radius: 10px;
   box-shadow: var(--shadow-m);
   /* min-height: 120px; */
@@ -16312,7 +16313,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 /* Layout específico de cada bloque */
 .item-1 {
   grid-column: span 2;
-  grid-row: span 2;
+  grid-row: span 4;
 }
 
 .item-2 {
@@ -16321,17 +16322,17 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .item-3 {
-  grid-column: span 1;
-  grid-row: span 3;
+  grid-column: span 4;
+  grid-row: span 2;
 }
 
 .item-4 {
-  grid-column: span 2;
+  grid-column: span 4;
   grid-row: span 2;
 }
 
 .item-5 {
-  grid-column: span 1;
+  grid-column: span 2;
   grid-row: span 2;
 }
 
@@ -16341,11 +16342,21 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .item-7 {
-  grid-column: span 1;
+  grid-column: span 2;
   grid-row: span 1;
 }
 
 .item-8 {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.item-9 {
+  grid-column: span 2;
+  grid-row: span 1;
+}
+
+.item-10 {
   grid-column: span 1;
   grid-row: span 1;
 }
@@ -16364,10 +16375,14 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .bento-driver-standings{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
-  justify-content: space-between;
-  gap: 10px;
+}
+
+.bento-team-standings{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .bento-standings-half{
@@ -16381,6 +16396,16 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   flex-direction: row;
   align-items: center;
   gap: 8px;
+}
+
+.season-review-driver:has(.season-review-driver-position.champion) .season-review-driver-position{
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-driver:has(.season-review-driver-position.champion) .season-review-driver-points{
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
 
 .season-review-driver-logo-div{
@@ -16402,15 +16427,15 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .season-review-driver-position{
   font-family: "NumbersFont";
-  letter-spacing: -1.2px;
+  letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
 }
 
 .season-review-driver-points{
   font-family: "NumbersFont";
-  letter-spacing: -1.2px;
-  width: 42px;
+  letter-spacing: -2.2px;
+  width: 52px;
   text-align: center;
 }
 
@@ -16429,4 +16454,57 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .season-review-driver-name span.bold-font{
   text-transform: uppercase;
+}
+
+.season-review-team{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.season-review-team:has(.season-review-team-position.champion) .season-review-team-position{
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-team:has(.season-review-team-position.champion) .season-review-team-points{
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-team-logo-div{
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.season-review-team-logo-div .drivers-table-logo{
+  width: 24px;
+  height: 24px;
+}
+
+.season-review-team-name{
+  flex-grow: 1;
+  text-transform: uppercase;
+}
+
+.season-review-team-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 25px;
+  text-align: center;
+}
+
+.season-review-team-points{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 52px;
+  text-align: center;
+}
+
+#teamStandings{
+  width: 100%;
 }

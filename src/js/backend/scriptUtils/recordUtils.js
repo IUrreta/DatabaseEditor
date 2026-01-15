@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandings, fetchTeamMateQualiRaceHeadToHead } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead } from "./dbUtils.js";
 import records from "../../../data/records.json";
 function idsToCsv(ids) {
     return Array.from(new Set(ids)).filter(x => x != null).join(",");
@@ -327,7 +327,7 @@ export function getSelectedRecord(type, year) {
 }
 
 export function fetchSeasonReviewData(year, formula = 1) {
-    const teamsStandings = fetchTeamsStandings(year, formula);
+    const teamsStandings = fetchTeamsStandingsWithPoints(year, formula);
     const driversStandings = fetchDriversStandings(year, formula);
     const winsRecords = getSelectedRecord("wins", year);
     const polesRecords = getSelectedRecord("poles", year);

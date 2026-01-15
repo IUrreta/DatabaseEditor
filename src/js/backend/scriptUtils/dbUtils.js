@@ -28,7 +28,7 @@ export function hexToArgb(hex) {
 
   const a = 255;
 
-  return (a << 24) | (r << 16) | (g << 8) | b;
+  return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
 }
 
 export function getDate() {
@@ -968,6 +968,16 @@ export function fetchQualiResults(yearSelected) {
 export function fetchTeamsStandings(year, formula = 1) {
   return queryDB(`
         SELECT TeamID, Position
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY Position
+      `, [year, formula], 'allRows') || [];
+}
+
+export function fetchTeamsStandingsWithPoints(year, formula = 1) {
+  return queryDB(`
+        SELECT TeamID, Position, Points
         FROM Races_TeamStandings
         WHERE SeasonID = ?
           AND RaceFormula = ?
@@ -2882,6 +2892,7 @@ export function updateCustomConfig(data) {
   if (alfaRomeo === "audi") {
     let color = customColors["audi"];
     color = hexToArgb(color);
+    console.log("Updating Alfa Romeo color to:", color);
     const teamId = 9;
     queryDB(
       `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
@@ -2891,7 +2902,8 @@ export function updateCustomConfig(data) {
   }
   else {
     const teamId = 9;
-    const color = defaultColors[teamId];
+    let color = defaultColors[teamId];
+    console.log("Reverting Alfa Romeo color to default:", color);
     queryDB(
       `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
       [color, teamId],

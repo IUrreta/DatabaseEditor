@@ -2126,15 +2126,13 @@ function manageSeasonReview(){
 
 export function populateSeasonReview(data) {
     populateDriversStandingsSeasonReview(data.driversStandings)
+    populateTeamsStandingsSeasonReview(data.teamsStandings)
 }
 
 function populateDriversStandingsSeasonReview(data) {
-    let half = Math.ceil(data.length / 2);
     const isF1 = currentFormula === 1;
-    const leftColumn = document.querySelector("#standings1sthalf");
-    const rightColumn = document.querySelector("#standings2ndhalf");
-    leftColumn.innerHTML = "";
-    rightColumn.innerHTML = "";
+    const standings = document.querySelector(".bento-driver-standings");
+
     data.forEach((driver, index) => {
         const driverDiv = document.createElement("div");
         driverDiv.className = "season-review-driver";
@@ -2171,11 +2169,65 @@ function populateDriversStandingsSeasonReview(data) {
         pointsDiv.textContent = driver.Points;
         driverDiv.appendChild(pointsDiv);
 
-        if (index < half) {
-            leftColumn.appendChild(driverDiv);
-        } else {
-            rightColumn.appendChild(driverDiv);
+        const position = Number(posDiv.textContent);
+        if (position === 1) {
+            posDiv.classList.add("champion");
+            pointsDiv.classList.add("champion");
         }
+
+        standings.appendChild(driverDiv);
+    });
+}
+
+function populateTeamsStandingsSeasonReview(data) {
+    if (!Array.isArray(data)) return;
+
+    const container = document.querySelector(".bento-team-standings");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    data.forEach((team, index) => {
+        const teamObj = Array.isArray(team) ? {
+            TeamID: team[0],
+            Position: team[1],
+            Points: team[2]
+        } : team;
+
+        const teamDiv = document.createElement("div");
+        teamDiv.className = "season-review-team";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-team-position";
+        posDiv.textContent = teamObj.Position ?? teamObj.position ?? "";
+        teamDiv.appendChild(posDiv);
+
+        const teamId = Number(teamObj.TeamID ?? teamObj.teamId ?? teamObj.teamID ?? teamObj.TeamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
+            });
+            teamDiv.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-team-name";
+        nameDiv.textContent = combined_dict[teamId] || "";
+        teamDiv.appendChild(nameDiv);
+
+        const pointsDiv = document.createElement("div");
+        pointsDiv.className = "season-review-team-points";
+        pointsDiv.textContent = teamObj.Points ?? teamObj.points ?? "";
+        teamDiv.appendChild(pointsDiv);
+
+        const position = Number(posDiv.textContent);
+        if (position === 1) {
+            posDiv.classList.add("champion");
+            pointsDiv.classList.add("champion");
+        }
+
+        container.appendChild(teamDiv);
     });
 }
 
