@@ -3,7 +3,7 @@ import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
-import { default_dict, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
+import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
 
 
@@ -13,6 +13,22 @@ import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } f
 export function argbToHex(argb) {
   const rgb = argb & 0xFFFFFF; // Ignora el canal alfa
   return `#${rgb.toString(16).padStart(6, '0').toUpperCase()}`;
+}
+
+export function hexToArgb(hex) {
+    hex = hex.replace("#", "");
+
+  if (hex.length === 3) {
+    hex = hex.split("").map(c => c + c).join("");
+  }
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  const a = 255;
+
+  return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
 export function getDate() {
@@ -2576,6 +2592,20 @@ export function updateCustomConfig(data) {
   const difficulty = data.difficulty
   const playerTeam = data.playerTeam
   const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;       
+  const forceEditorMinimapColors = data.forceEditorMinimapColors;
+  console.log("Updating custom config with data:", data);
+
+  const replacableTeamsDict = { 9: 'alfa', 8: 'alphatauri', 5: 'alpine', 7: 'haas', 3: 'redbull', 10: 'aston', 6: 'williams', }
+
+  const teamValues = {
+    alfa: alfaRomeo,
+    alphatauri: alphaTauri,
+    alpine: alpine,
+    williams: williams,
+    haas: haas,
+    redbull: redbull,
+    aston: aston,
+  };
 
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
@@ -2630,7 +2660,49 @@ export function updateCustomConfig(data) {
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('turningPointsFrequencyPreset', ?)
   `, [turningPointsFrequencyPreset], 'run');
-  
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('forceEditorMinimapColors', ?)
+  `, [String(forceEditorMinimapColors)], 'run');
+
+
+  // for (let teamId in replacableTeamsDict) {
+  //   const teamKey = replacableTeamsDict[teamId]; 
+
+  //   const hexValue = teamValues[teamKey]; 
+  //   const color = forceEditorMinimapColors
+  //     ? hexToArgb(hexValue)
+  //     : defaultColors[teamId];
+
+    
+
+  //   queryDB(
+  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+  //     [color, teamId],
+  //     'run'
+  //   );
+  // }
+
+  if (alfaRomeo === "audi"){
+    let color = customColors["audi"];
+    color = hexToArgb(color);
+    const teamId = 9;
+    queryDB(
+      `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+      [color, teamId],
+      'run'
+    );
+  }
+  else{
+    const teamId = 9;
+    const color = defaultColors[teamId];
+    queryDB(
+      `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+      [color, teamId],
+      'run'
+    );
+  }
 
 
   //delete the difficulty key from Custom_Save_Config every time
@@ -2674,7 +2746,8 @@ export function fetchCustomConfig() {
     teams: {},
     primaryColor: null,
     secondaryColor: null,
-    turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset
+    turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset,
+    forceEditorMinimapColors: 0
   };
 
   rows.forEach(row => {
@@ -2691,7 +2764,9 @@ export function fetchCustomConfig() {
       config.difficulty = value;
     } else if (key === 'turningPointsFrequencyPreset') {
       config.turningPointsFrequencyPreset = parseInt(value, 10);
-      
+
+    } else if (key === 'forceEditorMinimapColors') {
+      config.forceEditorMinimapColors = parseInt(value, 10) === 1 ? 1 : 0;
     }
   });
 

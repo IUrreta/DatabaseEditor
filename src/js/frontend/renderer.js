@@ -100,6 +100,7 @@ const updateInfo = document.querySelector(".update-info")
 const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequencyConfig");
 const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
 const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
+const forceEditorMinimapColorsToggle = document.getElementById("forceEditorMinimapColorsToggle");
 
 function updateTurningPointsFrequencyUI() {
     if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
@@ -1468,6 +1469,9 @@ function manage_config_content(info, year_config = false) {
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+        if (forceEditorMinimapColorsToggle) {
+            forceEditorMinimapColorsToggle.checked = parseInt(info["forceEditorMinimapColors"] || 0, 10) === 1;
+        }
 
         if (turningPointsFrequencySlider) {
             let presetIndex = info?.turningPointsFrequencyPreset;
@@ -1577,6 +1581,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     if (document.getElementById("refurbishingToggle").checked) {
         refurbish = 1;
     }
+    let forceEditorMinimapColors = 0;
+    if (forceEditorMinimapColorsToggle && forceEditorMinimapColorsToggle.checked) {
+        forceEditorMinimapColors = 1;
+    }
     let difficulty = 0;
     let disabledList = {}
     let triggerList = {}
@@ -1595,6 +1603,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         aston: aston,
         frozenMentality: mentalityFrozen,
         refurbish: refurbish,
+        forceEditorMinimapColors: forceEditorMinimapColors,
         disabled: disabledList,
         triggerList: triggerList,
         playerTeam: playerTeam

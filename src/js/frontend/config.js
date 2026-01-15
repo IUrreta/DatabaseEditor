@@ -564,3 +564,37 @@ export const turningPointsTuningByType = {
         max: [1, 1, 1, 1, 1],
     },
 };
+
+export const defaultColors = {
+  1: 4293394477,
+  2: 4294934528,
+  3: 4281758150,
+  4: 4280808658,
+  5: 4278227916,
+  6: 4284794111,
+  7: 4290165437,
+  8: 4284912383,
+  9: 4283621970,
+  10: 4280457585
+};
+
+export const customColors = {
+    "audi": "#C00A26",
+    "sauber": "#f50537",
+    "stake": "#54d650",
+    "visarb": "#6c8ff3",
+    "toyota": "#989898",
+    "brawn": "#d0e610",
+    "porsche": "#873AC4",
+    "alphatauri": "#5E8FAA",
+    "hugo": "#bd9514",
+    "lotus": "#b09247",
+    "renault": "#b09247",
+    "andretti": "#fac51c",
+    "alpine": "#F168BA",
+    "racingpoint": "#F395C7",
+    "jordan": "#e6e624",
+    "bmw": "#f1f1f1",
+    "cadillac": "#111111",
+    "ford": "#3172bf"
+}
