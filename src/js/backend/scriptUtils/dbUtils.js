@@ -1004,8 +1004,17 @@ export function fetchDriversStandings(year, formula = 1) {
       FROM Races_DriverStandings ds
       WHERE ds.SeasonID = ?
         AND ds.RaceFormula = ?
+        AND EXISTS (
+          SELECT 1
+          FROM Races_Results rr2
+          WHERE rr2.Season = ?
+            AND rr2.DriverID = ds.DriverID
+            AND rr2.FinishingPos > 0
+            AND rr2.FinishingPos != 99
+          LIMIT 1
+        )
       ORDER BY ds.Position
-    `, [year, year, formula], 'allRows');
+    `, [year, year, formula, year], 'allRows');
 
     const formatted = rows.map(r => {
       let names = queryDB(`
@@ -1045,8 +1054,18 @@ export function fetchDriversStandings(year, formula = 1) {
     FROM Races_DriverStandings ds
     WHERE ds.SeasonID = ?
       AND ds.RaceFormula = ?
+      AND EXISTS (
+        SELECT 1
+        FROM Races_FeatureRaceResults fr2
+        WHERE fr2.SeasonID = ?
+          AND fr2.RaceFormula = ?
+          AND fr2.DriverID = ds.DriverID
+          AND fr2.FinishingPos > 0
+          AND fr2.FinishingPos != 99
+        LIMIT 1
+      )
     ORDER BY ds.Position
-  `, [year, formula, year, formula], 'allRows') || [];
+  `, [year, formula, year, formula, year, formula], 'allRows') || [];
 }
 
 export function fetchTeamsStandingsWithPositionChange(year, formula = 1) {
@@ -1600,35 +1619,66 @@ export function fetchTeamMateQualiRaceHeadToHead(season) {
     ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
     : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
+  const lastRaceId = queryDB(`
+    SELECT RaceID
+    FROM Races
+    WHERE SeasonID = ?
+    ORDER BY Day DESC, RaceID DESC
+    LIMIT 1
+  `, [season], 'singleValue');
+
+  if (!lastRaceId) return [];
+
   const normalizePos = (pos) => {
     const n = Number(pos);
     if (!Number.isFinite(n) || n <= 0 || n === 99) return 999;
     return n;
   };
 
+  const pickTwoDriversForTeamAtLastRace = (teamId) => {
+    const rows = queryDB(`
+      SELECT DriverID, FinishingPos
+      FROM Races_Results
+      WHERE Season = ?
+        AND RaceID = ?
+        AND TeamID = ?
+      ORDER BY
+        CASE
+          WHEN FinishingPos IS NULL OR FinishingPos <= 0 OR FinishingPos = 99 THEN 999
+          ELSE FinishingPos
+        END ASC,
+        DriverID ASC
+    `, [season, lastRaceId, teamId], 'allRows') || [];
+
+    const ids = [];
+    for (const r of rows) {
+      const id = Number(r[0]);
+      if (!Number.isFinite(id)) continue;
+      if (!ids.includes(id)) ids.push(id);
+      if (ids.length >= 2) break;
+    }
+    return ids;
+  };
+
+  const getDriverName = (driverId) => {
+    const row = queryDB(`
+      SELECT FirstName, LastName, StaffID, 1
+      FROM Staff_BasicData
+      WHERE StaffID = ?
+    `, [driverId], 'singleRow');
+    const formatted = formatNamesSimple(row || ["", "", driverId, 1]);
+    return formatted[0] || "";
+  };
+
   const results = [];
 
   for (const teamId of teams) {
-    const drivers = queryDB(`
-      SELECT bas.FirstName, bas.LastName, con.StaffID, con.PosInTeam
-      FROM Staff_Contracts con
-      JOIN Staff_BasicData bas ON bas.StaffID = con.StaffID
-      JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
-      WHERE con.TeamID = ?
-        AND con.ContractType = 0
-        AND con.PosInTeam <= 2
-      ORDER BY con.PosInTeam ASC
-    `, [teamId], 'allRows') || [];
+    const driverIds = pickTwoDriversForTeamAtLastRace(teamId);
+    if (driverIds.length < 2) continue;
 
-    if (drivers.length < 2) continue;
-
-    const d1Row = drivers.find(r => Number(r[3]) === 1) || drivers[0];
-    const d2Row = drivers.find(r => Number(r[3]) === 2) || drivers[1];
-
-    const driver1Id = Number(d1Row[2]);
-    const driver2Id = Number(d2Row[2]);
-    const driver1Name = formatNamesSimple([d1Row[0], d1Row[1], driver1Id])[0];
-    const driver2Name = formatNamesSimple([d2Row[0], d2Row[1], driver2Id])[0];
+    const [driver1Id, driver2Id] = driverIds;
+    const driver1Name = getDriverName(driver1Id);
+    const driver2Name = getDriverName(driver2Id);
 
     const rows = queryDB(`
       SELECT RaceID, DriverID, FinishingPos, StartingPos

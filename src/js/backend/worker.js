@@ -661,7 +661,10 @@ const workerCommands = {
     const year = data.year;
     const formula = data.formula ? Number(data.formula) : 1;
 
-    const review = fetchSeasonReviewData(year, formula);
+    const globals = getGlobals();
+    const isCurrentYear = data.isCurrentYear ?? (String(globals?.yearIteration) === String(year));
+
+    const review = fetchSeasonReviewData(year, formula, isCurrentYear);
 
     postMessage({ responseMessage: "Season review data fetched", content: review });
   },

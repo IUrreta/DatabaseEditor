@@ -1,6 +1,7 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead } from "./dbUtils.js";
 import records from "../../../data/records.json";
+import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
     return Array.from(new Set(ids)).filter(x => x != null).join(",");
 }
@@ -326,13 +327,13 @@ export function getSelectedRecord(type, year) {
 
 }
 
-export function fetchSeasonReviewData(year, formula = 1) {
+export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
     const teamsStandings = fetchTeamsStandingsWithPoints(year, formula);
     const driversStandings = fetchDriversStandings(year, formula);
     const winsRecords = getSelectedRecord("wins", year);
     const polesRecords = getSelectedRecord("poles", year);
     const podiumsRecords = getSelectedRecord("podiums", year);
-    const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula);
+    const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula, isCurrentYear);
     const driverOfTheDayCounts = Number(formula) === 1 ? fetchDriverOfTheDayCounts(year) : [];
     const teamMateHeadToHead = Number(formula) === 1 ? fetchTeamMateQualiRaceHeadToHead(year) : [];
 
@@ -350,7 +351,47 @@ export function fetchSeasonReviewData(year, formula = 1) {
     };
 }
 
-export function fetchQualifyingStageCounts(year, formula = 1) {
+export function fetchQualifyingStageCounts(year, formula = 1, isCurrentYear = true) {
+    if (Number(formula) === 1 && !isCurrentYear) {
+        const cutoffQ2 = getGlobals().isCreateATeam ? 16 : 15;
+        const rows = queryDB(`
+      SELECT
+        ds.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COALESCE((
+          SELECT rr.TeamID
+          FROM Races_Results rr
+          JOIN Races r ON r.RaceID = rr.RaceID
+          WHERE rr.DriverID = ds.DriverID
+            AND r.SeasonID = ?
+          ORDER BY r.Day DESC, r.RaceID DESC
+          LIMIT 1
+        ), -1) AS TeamID,
+        SUM(CASE WHEN rr.StartingPos = 1 THEN 1 ELSE 0 END) AS PoleCount,
+        SUM(CASE WHEN rr.StartingPos > 0 AND rr.StartingPos != 99 AND rr.StartingPos <= 10 THEN 1 ELSE 0 END) AS Q3Count,
+        SUM(CASE WHEN rr.StartingPos > 0 AND rr.StartingPos != 99 AND rr.StartingPos <= ${cutoffQ2} THEN 1 ELSE 0 END) AS Q2Count
+      FROM Races_DriverStandings ds
+      JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
+      LEFT JOIN Races_Results rr
+        ON rr.DriverID = ds.DriverID
+       AND rr.Season = ?
+      WHERE ds.SeasonID = ?
+        AND ds.RaceFormula = ?
+      GROUP BY ds.DriverID
+      ORDER BY PoleCount DESC, Q3Count DESC, Q2Count DESC, ds.Position ASC
+    `, [year, year, year, formula], 'allRows') || [];
+
+        return rows.map(r => ({
+            id: r[0],
+            name: formatNamesSimple([r[1], r[2]])[0],
+            teamId: r[3],
+            q2Count: r[6] ?? 0,
+            q3Count: r[5] ?? 0,
+            poleCount: r[4] ?? 0
+        }));
+    }
+
     if (Number(formula) === 1) {
         const rows = queryDB(`
       SELECT
@@ -367,7 +408,8 @@ export function fetchQualifyingStageCounts(year, formula = 1) {
           LIMIT 1
         ), -1) AS TeamID,
         COUNT(DISTINCT CASE WHEN q.QualifyingStage = 2 THEN q.RaceID END) AS Q2Count,
-        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count,
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 AND q.FinishingPos = 1 THEN q.RaceID END) AS PoleCount
       FROM Races_DriverStandings ds
       JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
       LEFT JOIN Races_QualifyingResults q
@@ -386,7 +428,8 @@ export function fetchQualifyingStageCounts(year, formula = 1) {
             name: formatNamesSimple([r[1], r[2]])[0],
             teamId: r[3],
             q2Count: r[4] ?? 0,
-            q3Count: r[5] ?? 0
+            q3Count: r[5] ?? 0,
+            poleCount: r[6] ?? 0
         }));
     }
 
@@ -406,7 +449,8 @@ export function fetchQualifyingStageCounts(year, formula = 1) {
         LIMIT 1
       ), -1) AS TeamID,
       COUNT(DISTINCT CASE WHEN q.QualifyingStage = 2 THEN q.RaceID END) AS Q2Count,
-      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count,
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 AND q.FinishingPos = 1 THEN q.RaceID END) AS PoleCount
     FROM Races_DriverStandings ds
     JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
     LEFT JOIN Races_QualifyingResults q
@@ -425,7 +469,8 @@ export function fetchQualifyingStageCounts(year, formula = 1) {
         name: formatNamesSimple([r[1], r[2]])[0],
         teamId: r[3],
         q2Count: r[4] ?? 0,
-        q3Count: r[5] ?? 0
+        q3Count: r[5] ?? 0,
+        poleCount: r[6] ?? 0
     }));
 }
 

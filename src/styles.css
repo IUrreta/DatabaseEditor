@@ -885,7 +885,10 @@ input[type="checkbox"]:focus {
 .news-article::-webkit-scrollbar,
 .main-second-viewer::-webkit-scrollbar,
 .news-edit-textarea::-webkit-scrollbar,
-#juniorTeamContractMenu {
+#juniorTeamContractMenu::-webkit-scrollbar,
+.poles-comparison::-webkit-scrollbar,
+.q3-comparison::-webkit-scrollbar,
+.q2-comparison::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -903,7 +906,10 @@ input[type="checkbox"]:focus {
 .news-article::-webkit-scrollbar-thumb,
 .main-second-viewer::-webkit-scrollbar-thumb,
 .news-edit-textarea::-webkit-scrollbar-thumb,
-#juniorTeamContractMenu::-webkit-scrollbar-thumb {
+#juniorTeamContractMenu::-webkit-scrollbar-thumb,
+.poles-comparison::-webkit-scrollbar-thumb,
+.q3-comparison::-webkit-scrollbar-thumb,
+.q2-comparison::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -922,7 +928,10 @@ input[type="checkbox"]:focus {
 .news-article::-webkit-scrollbar-thumb:hover,
 .main-second-viewer::-webkit-scrollbar-thumb:hover,
 .news-edit-textarea::-webkit-scrollbar-thumb:hover,
-#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover {
+#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover,
+.poles-comparison::-webkit-scrollbar-thumb:hover,
+.q3-comparison::-webkit-scrollbar-thumb:hover,
+.q2-comparison::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -16296,6 +16305,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   grid-template-rows: repeat(5, 1fr);
   gap: 12px;
   padding: 8px;
+  color: var(--text-general);
 } 
 
 .bento-item {
@@ -16304,7 +16314,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   flex-direction: column;
   padding: 12px 15px;
   justify-content: flex-start;
-  gap: 12px;
+  gap: 8px;
   border-radius: 10px;
   box-shadow: var(--shadow-m);
   /* min-height: 120px; */
@@ -16423,6 +16433,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .season-review-driver-name{
   flex-grow: 1;
+  color: var(--text-general);
 }
 
 .season-review-driver-position{
@@ -16430,6 +16441,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
+  padding-top: 2px;
+  height: 24px;
 }
 
 .season-review-driver-points{
@@ -16437,6 +16450,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
+  padding-top: 2px;
+  height: 24px;
 }
 
 #standings2ndhalf{
@@ -16461,6 +16476,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  height: 22px;
 }
 
 .season-review-team:has(.season-review-team-position.champion) .season-review-team-position{
@@ -16489,6 +16505,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-team-name{
   flex-grow: 1;
   text-transform: uppercase;
+  color: var(--text-general);
 }
 
 .season-review-team-position{
@@ -16496,6 +16513,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
+  padding-top: 2px;
+  height: 24px;
 }
 
 .season-review-team-points{
@@ -16503,8 +16522,150 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
+  padding-top: 2px;
+  height: 24px;
 }
 
 #teamStandings{
   width: 100%;
+}
+
+.bento-comparison-container{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.bento-sub-item-comparison{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 50%;
+  gap: 4px;
+}
+
+.bento-qualifying-container{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.bento-sub-item-qualifying{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 33.333%;
+}
+
+.bento-sub-item-qualifying .bento-vertical-label{
+  font-size: 20px;
+}
+
+.poles-comparison,
+.q3-comparison,
+.q2-comparison{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.poles-comparison.with-scrollbar,
+.q3-comparison.with-scrollbar,
+.q2-comparison.with-scrollbar{
+  padding-right: 6px;
+}
+
+.bento-vertical-label{
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  color: var(--text-tertiary);
+  font-size: 28px;
+  letter-spacing: 1px;
+  user-select: none;
+  line-height: 1;
+}
+
+.bento-subtitle{
+  color: var(--text-tertiary);
+}
+
+.race-comparison{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.quali-comparison{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.season-review-comparison-row{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 22px;
+}
+
+.season-review-comparison-name{
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  color: var(--text-general);
+}
+
+.season-review-comparison-name.right{
+  text-align: right;
+}
+
+.season-review-comparison-score{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 26px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.season-review-qualifying-row{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 22px;
+  gap: 4px;
+}
+
+.season-review-qualifying-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 28px;
+  text-align: center;
+}
+
+.season-review-qualifying-name{
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  padding-left: 8px;
+  color: var(--text-general);
+}
+
+.season-review-qualifying-count{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 26px;
+  text-align: center;
+  padding-top: 2px;
 }
