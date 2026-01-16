@@ -985,6 +985,43 @@ export function fetchTeamsStandingsWithPoints(year, formula = 1) {
       `, [year, formula], 'allRows') || [];
 }
 
+function fetchTeamSeasonCountsFromRaceResults(year, extraWhereSql) {
+  const isCreateATeam = !!getGlobals().isCreateATeam;
+  const teamFilterSql = isCreateATeam
+    ? `(rr.TeamID BETWEEN 1 AND 10 OR rr.TeamID = 32)`
+    : `(rr.TeamID BETWEEN 1 AND 10)`;
+
+  const rows = queryDB(`
+    SELECT rr.TeamID, COUNT(*) AS Cnt
+    FROM Races_Results rr
+    WHERE rr.Season = ?
+      AND ${teamFilterSql}
+      AND ${extraWhereSql}
+    GROUP BY rr.TeamID
+    ORDER BY Cnt DESC, rr.TeamID ASC
+  `, [year], 'allRows') || [];
+
+  return rows.map(r => ({
+    teamId: r[0],
+    value: r[1] ?? 0,
+  }));
+}
+
+export function fetchTeamSeasonWinsTotals(year, formula = 1) {
+  if (Number(formula) !== 1) return [];
+  return fetchTeamSeasonCountsFromRaceResults(year, `rr.FinishingPos = 1`);
+}
+
+export function fetchTeamSeasonPodiumsTotals(year, formula = 1) {
+  if (Number(formula) !== 1) return [];
+  return fetchTeamSeasonCountsFromRaceResults(year, `rr.FinishingPos BETWEEN 1 AND 3`);
+}
+
+export function fetchTeamSeasonPolesTotals(year, formula = 1) {
+  if (Number(formula) !== 1) return [];
+  return fetchTeamSeasonCountsFromRaceResults(year, `rr.StartingPos = 1`);
+}
+
 export function fetchDriversStandings(year, formula = 1) {
   if (Number(formula) === 1) {
     const rows = queryDB(`

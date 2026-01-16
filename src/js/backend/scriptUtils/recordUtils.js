@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals } from "./dbUtils.js";
 import records from "../../../data/records.json";
 import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
@@ -333,6 +333,9 @@ export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
     const winsRecords = getSelectedRecord("wins", year);
     const polesRecords = getSelectedRecord("poles", year);
     const podiumsRecords = getSelectedRecord("podiums", year);
+    const teamWinsTotals = fetchTeamSeasonWinsTotals(year, formula);
+    const teamPolesTotals = fetchTeamSeasonPolesTotals(year, formula);
+    const teamPodiumsTotals = fetchTeamSeasonPodiumsTotals(year, formula);
     const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula, isCurrentYear);
     const driverOfTheDayCounts = Number(formula) === 1 ? fetchDriverOfTheDayCounts(year) : [];
     const teamMateHeadToHead = Number(formula) === 1 ? fetchTeamMateQualiRaceHeadToHead(year) : [];
@@ -345,10 +348,25 @@ export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
         qualifyingStageCounts,
         driverOfTheDayCounts,
         teamMateHeadToHead,
+        teamWinsTotals,
+        teamPolesTotals,
+        teamPodiumsTotals,
         polesRecords,
         podiumsRecords,
         winsRecords
     };
+}
+
+export function getSelectedTeamRecord(type, year, formula = 1) {
+    if (!type) return [];
+    if (String(year) === "all") return [];
+
+    const recordType = String(type);
+    if (recordType === "wins") return fetchTeamSeasonWinsTotals(year, formula);
+    if (recordType === "podiums") return fetchTeamSeasonPodiumsTotals(year, formula);
+    if (recordType === "poles") return fetchTeamSeasonPolesTotals(year, formula);
+
+    return [];
 }
 
 export function fetchQualifyingStageCounts(year, formula = 1, isCurrentYear = true) {

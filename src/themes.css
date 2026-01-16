@@ -366,12 +366,12 @@ body.light-theme {
     --negative-text: #eeeeee;
     --new-primary: #7a5fd8;
     --new-primary-dark: #5a42b5;
-    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --text-selected: #aa88ff;
     --text-selected-secondary: #55aaa9;
     --new-secondary: #66aabb;
     --new-secondary-dark: #447788;
-    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, var(--elements));
     --table-hover: #cccccc;
     --elements-hover: #bbbbbb;
     --box-shadow: #00000022;
@@ -475,12 +475,12 @@ body.og-theme {
     --negative-text: #3c3c5b;
     --new-primary: #8f89b8;
     --new-primary-dark: #6a678f;
-    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --text-selected: #e7d3ff;
     --text-selected-secondary: #ff8f63;
     --new-secondary: #ff7c47;
     --new-secondary-dark: #d76a3b;
-    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, var(--elements));
     --table-hover: #50577c;
     --elements-hover: #3a3852;
     --box-shadow: #00000044;
@@ -575,12 +575,11 @@ body.vaporwave-theme {
 
     --new-primary: #ff5ec3;
     --new-primary-dark: #e94eb1;
-    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, transparent);
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
 
     --new-secondary: #00b3ff;
     --new-secondary-dark: #0090d1;
-    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, transparent);
-
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, var(--elements));
     --text-selected: #ff9fff;
     --text-selected-secondary: #6ef9ff;
 

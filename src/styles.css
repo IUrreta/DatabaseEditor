@@ -888,7 +888,9 @@ input[type="checkbox"]:focus {
 #juniorTeamContractMenu::-webkit-scrollbar,
 .poles-comparison::-webkit-scrollbar,
 .q3-comparison::-webkit-scrollbar,
-.q2-comparison::-webkit-scrollbar {
+.q2-comparison::-webkit-scrollbar,
+.wins-drivers-list::-webkit-scrollbar,
+.bento-driver-standings::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -909,7 +911,9 @@ input[type="checkbox"]:focus {
 #juniorTeamContractMenu::-webkit-scrollbar-thumb,
 .poles-comparison::-webkit-scrollbar-thumb,
 .q3-comparison::-webkit-scrollbar-thumb,
-.q2-comparison::-webkit-scrollbar-thumb {
+.q2-comparison::-webkit-scrollbar-thumb,
+.wins-drivers-list::-webkit-scrollbar-thumb,
+.bento-driver-standings::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -931,7 +935,9 @@ input[type="checkbox"]:focus {
 #juniorTeamContractMenu::-webkit-scrollbar-thumb:hover,
 .poles-comparison::-webkit-scrollbar-thumb:hover,
 .q3-comparison::-webkit-scrollbar-thumb:hover,
-.q2-comparison::-webkit-scrollbar-thumb:hover {
+.q2-comparison::-webkit-scrollbar-thumb:hover,
+.wins-drivers-list::-webkit-scrollbar-thumb:hover,
+.bento-driver-standings::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -3965,8 +3971,8 @@ phm
 }
 
 .logo-up-down-extra {
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .logo-ferrari-table,
@@ -16317,23 +16323,37 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   gap: 8px;
   border-radius: 10px;
   box-shadow: var(--shadow-m);
+  outline: 2px solid transparent;
+  transition: outline-color 0.15s ease, background-color 0.15s ease;
   /* min-height: 120px; */
+}
+
+.item-1:hover, .item-2:hover, .item-3:hover, .item-5:hover, .item-9:hover {
+  outline-color: var(--new-primary);
+  background-color: var(--new-primary-transparent);
+}
+
+.item-1:active, .item-2:active, .item-3:active, .item-5:active, .item-9:active {
+  transform: scale(0.98);
 }
 
 /* Layout específico de cada bloque */
 .item-1 {
   grid-column: span 2;
   grid-row: span 4;
+  cursor: pointer;
 }
 
 .item-2 {
   grid-column: span 2;
   grid-row: span 2;
+  cursor: pointer;
 }
 
 .item-3 {
   grid-column: span 4;
   grid-row: span 2;
+  cursor: pointer;
 }
 
 .item-4 {
@@ -16344,6 +16364,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .item-5 {
   grid-column: span 2;
   grid-row: span 2;
+  cursor: pointer;
 }
 
 .item-6 {
@@ -16364,6 +16385,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .item-9 {
   grid-column: span 2;
   grid-row: span 1;
+  cursor: pointer;
 }
 
 .item-10 {
@@ -16393,6 +16415,18 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   display: flex;
   flex-direction: column;
   width: 100%;
+}
+
+.bento-split-list{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px;
+}
+
+.bento-split-list .bento-standings-half + .bento-standings-half{
+  border-left: 2px solid var(--separator-light);
+  padding-left: 12px;
 }
 
 .bento-standings-half{
@@ -16575,7 +16609,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .poles-comparison.with-scrollbar,
 .q3-comparison.with-scrollbar,
-.q2-comparison.with-scrollbar{
+.q2-comparison.with-scrollbar,
+.bento-driver-standings.with-scrollbar {
   padding-right: 6px;
 }
 
@@ -16658,7 +16693,6 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
-  padding-left: 8px;
   color: var(--text-general);
 }
 
@@ -16668,4 +16702,68 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   width: 26px;
   text-align: center;
   padding-top: 2px;
+}
+
+.wins-drivers-list{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.season-review-wins-row{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 22px;
+  gap: 4px;
+}
+
+.season-review-wins-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 28px;
+  text-align: center;
+}
+
+.season-review-wins-name{
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-general);
+}
+
+.season-review-wins-name .bold-font{
+  text-transform: uppercase;
+}
+
+.season-review-wins-name span:not(.bold-font){
+  color: var(--text-secondary);
+}
+
+.season-review-wins-count{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 26px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.podiums-teams-list .season-review-wins-position,
+.poles-teams-list .season-review-wins-position,
+.bento-split-list .season-review-wins-position{
+  width: 18px;
+}
+
+.podiums-teams-list .season-review-wins-name,
+.poles-teams-list .season-review-wins-name,
+.item-8 .bento-split-list .season-review-wins-name{
+  max-width: 120px;
+  font-size: 12px;
+}
+
+.item-7 .bento-split-list .season-review-wins-name,
+.item-9 .bento-split-list .season-review-wins-name{
+  max-width: 120px;
 }
