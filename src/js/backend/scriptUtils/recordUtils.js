@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, ensureCustomDoDRankingTable } from "./dbUtils.js";
 import records from "../../../data/records.json";
 import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
@@ -205,6 +205,58 @@ export function enrichDriversWithHistory(drivers, season = null) {
 
 export function getSelectedRecord(type, year) {
     let recordTargetColumn, recordTargetTable;
+
+    if (type === "dotd") {
+        if (year === "all") {
+            ensureCustomDoDRankingTable();
+            const rows = queryDB(`
+        SELECT
+          bas.FirstName,
+          bas.LastName,
+          t.DriverID,
+          COUNT(*) AS Count,
+          COALESCE((
+            SELECT w.TeamID
+            FROM Custom_DriverOfTheDay_Ranking w
+            JOIN Races r ON r.RaceID = w.RaceID
+            WHERE w.Rank = 1
+              AND w.DriverID = t.DriverID
+            ORDER BY w.Season DESC, r.Day DESC, w.RaceID DESC
+            LIMIT 1
+          ), -1) AS TeamID,
+          COALESCE(gam.Retired, 0) AS Retired
+        FROM Custom_DriverOfTheDay_Ranking t
+        JOIN Staff_BasicData bas ON bas.StaffID = t.DriverID
+        LEFT JOIN Staff_GameData gam ON gam.StaffID = t.DriverID
+        WHERE t.Rank = 1
+        GROUP BY t.DriverID
+        ORDER BY Count DESC
+      `, [], 'allRows') || [];
+
+            const formatted = rows.map(r => ({
+                name: formatNamesSimple([r[0], r[1]])[0],
+                id: r[2],
+                record: type,
+                value: r[3],
+                teamId: r[4],
+                retired: r[5],
+            }));
+
+            return enrichDriversWithHistory(formatted);
+        }
+
+        const counts = fetchDriverOfTheDayCounts(year) || [];
+        const formatted = counts.map(r => ({
+            name: r.name,
+            id: r.id,
+            record: type,
+            value: r.count,
+            teamId: r.teamId,
+            retired: 0,
+        })).sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+
+        return enrichDriversWithHistory(formatted, year);
+    }
 
     if (type === "wins") recordTargetColumn = "TotalWins";
     else if (type === "podiums") recordTargetColumn = "TotalPodiums";

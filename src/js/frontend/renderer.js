@@ -31,7 +31,7 @@ import {
 } from './head2head';
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
-import { loadRecordsList } from './seasonViewer';
+import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
@@ -999,6 +999,9 @@ const messageHandlers = {
     },
     "Record fetched": (message) => {
         loadRecordsList(message)
+    },
+    "Team record fetched": (message) => {
+        loadTeamRecordsList(message)
     },
     "Double points bug fixed": (message) => {
         //TODO CLICK ON THE FIRST EYAR OF yearMenu

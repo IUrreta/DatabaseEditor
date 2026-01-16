@@ -3971,6 +3971,11 @@ phm
 }
 
 .logo-up-down-extra {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.bento-grid .logo-up-down-extra{
   padding-top: 8px;
   padding-bottom: 8px;
 }
@@ -7872,6 +7877,7 @@ body.og-theme .records-list {
   border-radius: 10px;
   padding: 10px 20px;
   align-items: center;
+  height: 67px;
   position: relative;
   box-shadow: var(--shadow-s);
 }
@@ -7892,6 +7898,19 @@ body.og-theme .records-list {
   width: 37px;
   display: flex;
   justify-content: center;
+}
+
+.record-logo-div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+}
+
+.record-logo-div img, .record-logo-div div {
+  width: 42px;
+  height: 42px;
 }
 
 .record-name {
@@ -16328,12 +16347,12 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   /* min-height: 120px; */
 }
 
-.item-1:hover, .item-2:hover, .item-3:hover, .item-5:hover, .item-9:hover {
+.item-1:hover, .item-2:hover, .item-3:hover, .item-5:hover, .item-6:hover, .item-7:hover, .item-8:hover, .item-9:hover, .item-10:hover {
   outline-color: var(--new-primary);
-  background-color: var(--new-primary-transparent);
+  background-color: color-mix(in srgb, var(--new-primary-transparent) 50%, var(--superficials))
 }
 
-.item-1:active, .item-2:active, .item-3:active, .item-5:active, .item-9:active {
+.item-1:active, .item-2:active, .item-3:active, .item-5:active, .item-6:active, .item-7:active, .item-8:active, .item-9:active, .item-10:active {
   transform: scale(0.98);
 }
 
@@ -16370,16 +16389,19 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .item-6 {
   grid-column: span 1;
   grid-row: span 1;
+  cursor: pointer;
 }
 
 .item-7 {
   grid-column: span 2;
   grid-row: span 1;
+  cursor: pointer;
 }
 
 .item-8 {
   grid-column: span 2;
   grid-row: span 1;
+  cursor: pointer;
 }
 
 .item-9 {
@@ -16391,6 +16413,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .item-10 {
   grid-column: span 1;
   grid-row: span 1;
+  cursor: pointer;
+}
+
+.bento-grid .stats-header-separator{
+  background-color: var(--text-tertiary);
 }
 
 
@@ -16425,7 +16452,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .bento-split-list .bento-standings-half + .bento-standings-half{
-  border-left: 2px solid var(--separator-light);
+  border-left: 2px solid var(--text-tertiary);
   padding-left: 12px;
 }
 
@@ -16447,7 +16474,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
 
-.season-review-driver:has(.season-review-driver-position.champion) .season-review-driver-points{
+.season-review-driver:has(.season-review-driver-position.champion) .season-review-driver-points:not(.diff){
   border-right: 2px solid #FEDB37;
   background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
@@ -16488,6 +16515,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   height: 24px;
 }
 
+.season-review-driver-points.diff{
+  color: var(--text-tertiary);
+  margin-right: -15px;
+}
+
 #standings2ndhalf{
   border-left: 1px solid var(--separator-light);
   padding-left: 15px;
@@ -16518,7 +16550,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
 
-.season-review-team:has(.season-review-team-position.champion) .season-review-team-points{
+.season-review-team:has(.season-review-team-position.champion) .season-review-team-points:not(.diff){
   border-right: 2px solid #FEDB37;
   background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
@@ -16558,6 +16590,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   padding-top: 2px;
   height: 24px;
+}
+
+.season-review-team-points.diff{
+  color: var(--text-tertiary);
+  margin-right: -15px;
 }
 
 #teamStandings{

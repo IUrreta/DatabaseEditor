@@ -155,13 +155,64 @@ export function resetYearButtons() {
  */
 document.getElementById("driverspill").addEventListener("click", function () {
     driverOrTeams = "drivers"
-    manage_show_tables()
+    manageDriversTeamsModeChanged()
 })
 
 document.getElementById("teamspill").addEventListener("click", function () {
     driverOrTeams = "teams"
-    manage_show_tables()
+    manageDriversTeamsModeChanged()
 })
+
+function manageDriversTeamsModeChanged() {
+    updateAllTimeVisibilityForTeamsRecords();
+    updateTopPanelControlsVisibility();
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    if (typeVal === "standings") {
+        manage_show_tables();
+        return;
+    }
+    if (typeVal === "seasonreview") {
+        return;
+    }
+    manageRecordsSelected(null);
+}
+
+function updateAllTimeVisibilityForTeamsRecords() {
+    const allTime = document.getElementById("allTimeRecords");
+    if (!allTime) return;
+
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const allowAllTime = currentFormula === 1 && driverOrTeams !== "teams" && typeVal !== "standings" && typeVal !== "seasonreview";
+    allTime.classList.toggle("d-none", !allowAllTime);
+}
+
+function updateTopPanelControlsVisibility() {
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const showStandingsOnlyControls = typeVal === "standings";
+
+    const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
+    if (driversTeamsPills) {
+        driversTeamsPills.classList.toggle("d-none", typeVal === "seasonreview");
+    }
+
+    const standingsDetailsButton = document.getElementById("standingsDetailsButton");
+    if (standingsDetailsButton) {
+        standingsDetailsButton.classList.toggle("d-none", !showStandingsOnlyControls);
+    }
+
+    const tableTypeWrapper = document.getElementById("tableTypeButton")?.closest(".dropdown-global");
+    if (tableTypeWrapper) {
+        tableTypeWrapper.classList.toggle("d-none", !showStandingsOnlyControls);
+    }
+
+    const hideHistoric = document.querySelector(".hide-historic-drivers");
+    if (hideHistoric) {
+        const showHideHistoric = currentFormula === 1 && !showStandingsOnlyControls && typeVal !== "seasonreview" && driverOrTeams !== "teams";
+        hideHistoric.classList.toggle("d-none", !showHideHistoric);
+    }
+
+    updateAllTimeVisibilityForTeamsRecords();
+}
 
 
 function manage_show_tables() {
@@ -210,14 +261,7 @@ function forceStandingsCurrentSeason() {
             label.textContent = standingsItem ? standingsItem.textContent : "Standings"
         }
     }
-    const standingsSettings = document.getElementById("standingsSettings")
-    const recordsSettings = document.getElementById("recordsSettings")
-    if (standingsSettings) {
-        standingsSettings.classList.remove("d-none")
-    }
-    if (recordsSettings) {
-        recordsSettings.classList.add("d-none")
-    }
+    updateTopPanelControlsVisibility();
 
     const yearMenu = document.querySelector("#yearMenu")
     const yearItems = yearMenu ? Array.from(yearMenu.querySelectorAll("a")) : []
@@ -2058,11 +2102,7 @@ export function generateYearsMenu(actualYear) {
     allTime.id = "allTimeRecords";
     allTime.dataset.year = "all";                   // <- clave
     yearMenu.insertBefore(allTime, yearMenu.firstChild);
-    allTime.addEventListener("click", () => {
-        setYearButton(allTime);
-        const value = document.querySelector("#recordsTypeButton").dataset.value;
-        new Command("recordSelected", { type: value, year: "all" }).execute();
-    });
+    allTime.addEventListener("click", () => manageRecordsSelected(allTime));
 
     document.getElementById("standingspill").click();
 }
@@ -2074,6 +2114,7 @@ function manageRecordsSelected(forcedYearEl = null) {
     const yearItems = Array.from(yearMenu.querySelectorAll("a"));
     const yearBtn = document.getElementById("yearButton");
     const typeVal = document.querySelector("#recordsTypeButton").dataset.value; 
+    updateTopPanelControlsVisibility();
 
     // resolve seleccionado actual
     let selectedEl = forcedYearEl
@@ -2084,6 +2125,11 @@ function manageRecordsSelected(forcedYearEl = null) {
 
     // si es standings y estaba en All Time, forzar primer año real
     if ((typeVal === "standings" || typeVal === "seasonreview") && isAllTime(selectedEl)) {
+        const firstReal = yearItems.find(i => !isAllTime(i));
+        if (firstReal) selectedEl = firstReal;
+    }
+
+    if (driverOrTeams === "teams" && isAllTime(selectedEl)) {
         const firstReal = yearItems.find(i => !isAllTime(i));
         if (firstReal) selectedEl = firstReal;
     }
@@ -2105,7 +2151,12 @@ function manageRecordsSelected(forcedYearEl = null) {
         manageSeasonReview();
     }
     else {
-        new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
+        if (driverOrTeams === "teams" && ["wins", "poles", "podiums"].includes(typeVal) && selectedYear !== "all") {
+            new Command("teamRecordRequest", { type: typeVal, year: selectedYear, formula: currentFormula }).execute();
+        }
+        else {
+            new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
+        }
         manageShowRecords();
     }
 }
@@ -2120,6 +2171,7 @@ function manageSeasonReview(){
 
     const seasonReviewBento = document.querySelector(".season-review-bento")    
     seasonReviewBento.classList.remove("d-none")
+    updateTopPanelControlsVisibility();
 
     const selectedYear = document.getElementById("yearButton")?.dataset?.year;
     if (selectedYear) {
@@ -2257,6 +2309,7 @@ function populateDriversStandingsSeasonReview(data) {
     const standings = document.querySelector(".bento-driver-standings");
     if (!standings) return;
     standings.innerHTML = "";
+    let leaderPts = data.length > 0 ? Number(data[0].Points) : 0;
 
     data.forEach((driver, index) => {
         const driverDiv = document.createElement("div");
@@ -2292,6 +2345,13 @@ function populateDriversStandingsSeasonReview(data) {
         const pointsDiv = document.createElement("div");
         pointsDiv.className = "season-review-driver-points";
         pointsDiv.textContent = driver.Points;
+
+        const pointsDiff = Number(driver.Points) - leaderPts;
+        const diffDiv = document.createElement("div");
+        diffDiv.className = "season-review-driver-points diff";
+        diffDiv.textContent = index === 0 ? "" : `+${pointsDiff}`;
+        driverDiv.appendChild(diffDiv);
+
         driverDiv.appendChild(pointsDiv);
 
         const position = Number(posDiv.textContent);
@@ -2347,6 +2407,7 @@ function populateTeamsStandingsSeasonReview(data) {
     if (!container) return;
 
     container.innerHTML = "";
+    const leaderPts = data[0][2];
 
     data.forEach((team, index) => {
         const teamObj = Array.isArray(team) ? {
@@ -2380,6 +2441,13 @@ function populateTeamsStandingsSeasonReview(data) {
         const pointsDiv = document.createElement("div");
         pointsDiv.className = "season-review-team-points";
         pointsDiv.textContent = teamObj.Points ?? teamObj.points ?? "";
+        
+        const pointsDiff = Number(teamObj.Points) - leaderPts;
+        const diffDiv = document.createElement("div");
+        diffDiv.className = "season-review-team-points diff";
+        diffDiv.textContent = index === 0 ? "" : `+${pointsDiff}`;
+        teamDiv.appendChild(diffDiv);
+        
         teamDiv.appendChild(pointsDiv);
 
         const position = Number(posDiv.textContent);
@@ -2810,17 +2878,52 @@ document.querySelector(".bento-grid .item-2").addEventListener("click", () => {
     if (standingsPill) standingsPill.click();
 });
 
-document.querySelector(".bento-grid .item-3").addEventListener("click", () => {
+document.querySelector(".bento-grid .item-10").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
     const polesPill = document.querySelector("#polespill");
     if (polesPill) polesPill.click();
 });
 
-document.querySelector(".bento-grid .item-5").addEventListener("click", () => {
+document.querySelector(".bento-grid .item-3").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const polesPill = document.querySelector("#polespill");
+    if (polesPill) polesPill.click();
+});
+
+document.querySelector(".bento-grid .item-8").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
     const winsPill = document.querySelector("#winspill");
     if (winsPill) winsPill.click();
 });
 
+document.querySelector(".bento-grid .item-5").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const winsPill = document.querySelector("#winspill");
+    if (winsPill) winsPill.click();
+});
+
+document.querySelector(".bento-grid .item-6").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
+    const podiumPill = document.querySelector("#podiumspill");
+    if (podiumPill) podiumPill.click();
+});
+
+document.querySelector(".bento-grid .item-7").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const dotdPill = document.querySelector("#dotdpill");
+    if (dotdPill) dotdPill.click();
+});
+
+
 document.querySelector(".bento-grid .item-9").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
     const podiumPill = document.querySelector("#podiumspill");
     if (podiumPill) podiumPill.click();
 });
@@ -2836,6 +2939,7 @@ function manageShowRecords() {
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.remove("d-none")
     recordsList.innerHTML = ""
+    updateTopPanelControlsVisibility();
 }
 
 function setYearButton(el) {
@@ -2903,6 +3007,16 @@ export function loadRecordsList(data) {
         nameAndTeam.appendChild(teamDiv)
 
         numberAndName.appendChild(number)
+
+        const recordTeamId = Number(record.teamId ?? -1);
+        if (Number.isFinite(recordTeamId) && recordTeamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(recordTeamId, {
+                isF1: currentFormula === 1,
+                wrapperClass: "drivers-table-logo-div record-logo-div"
+            });
+            numberAndName.appendChild(logoDiv);
+        }
+
         numberAndName.appendChild(nameAndTeam)
 
         let extraStatsSection = document.createElement("div")
@@ -3036,32 +3150,70 @@ export function loadRecordsList(data) {
     });
 }
 
+export function loadTeamRecordsList(payload) {
+    const recordsList = document.querySelector(".records-list");
+    recordsList.innerHTML = "";
+
+    const data = Array.isArray(payload) ? payload : payload?.record;
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    let visibleIndex = 0;
+
+    data.forEach((item) => {
+        const teamId = Number(item?.teamId ?? item?.TeamID ?? -1);
+        const value = Number(item?.value ?? 0);
+        if (!Number.isFinite(teamId) || teamId === -1) return;
+        if (!Number.isFinite(value) || value <= 0) return;
+
+        const recordDiv = document.createElement("div");
+        recordDiv.classList = "record-item";
+
+        if (team_dict[teamId]) {
+            recordDiv.classList.add(`${team_dict[teamId]}-record`);
+        }
+        else {
+            recordDiv.classList.add("generic-record");
+        }
+
+        const numberAndName = document.createElement("div");
+        numberAndName.classList = "number-and-name";
+
+        const number = document.createElement("div");
+        number.className = "record-number";
+        number.textContent = `${++visibleIndex}.`;
+
+        const logoDiv = buildDriverLogoDiv(teamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div record-logo-div"
+        });
+
+        const nameAndTeam = document.createElement("div");
+        nameAndTeam.classList = "name-and-team";
+
+        const recordName = document.createElement("div");
+        recordName.classList = "record-name bold-font";
+        recordName.textContent = (combined_dict[teamId] || "").toUpperCase();
+
+        nameAndTeam.appendChild(recordName);
+        numberAndName.appendChild(number);
+        numberAndName.appendChild(logoDiv);
+        numberAndName.appendChild(nameAndTeam);
+
+        const recordValue = document.createElement("div");
+        recordValue.classList = "record-value";
+        recordValue.textContent = String(value);
+
+        recordDiv.appendChild(numberAndName);
+        recordDiv.appendChild(recordValue);
+        recordsList.appendChild(recordDiv);
+    });
+}
+
 document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {   
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
-        if (elem.dataset.value === "standings") {
-            const allTime = document.getElementById("allTimeRecords")
-            if (allTime)
-                allTime.classList.add("d-none")
-            document.getElementById("standingsSettings").classList.remove("d-none")
-            document.getElementById("recordsSettings").classList.add("d-none")  
-        }
-        else if (elem.dataset.value === "seasonreview") {
-            const allTime = document.getElementById("allTimeRecords")
-            if (allTime)
-                allTime.classList.add("d-none")
-            document.getElementById("standingsSettings").classList.add("d-none")
-            document.getElementById("recordsSettings").classList.add("d-none")
-        }
-        else {
-            const allTime = document.getElementById("allTimeRecords")
-            if (allTime)
-                allTime.classList.remove("d-none")
-            document.getElementById("standingsSettings").classList.add("d-none")
-            document.getElementById("recordsSettings").classList.remove("d-none")
-        }
-
+        updateTopPanelControlsVisibility();
         manageRecordsSelected(null)
     })
 })

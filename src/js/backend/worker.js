@@ -38,7 +38,7 @@ import {
   fixDoublePointsBug,
   getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
-import { fetchSeasonReviewData, getSelectedRecord } from "./scriptUtils/recordUtils";
+import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -656,6 +656,14 @@ const workerCommands = {
     const record = getSelectedRecord(type, year);
 
     postMessage({ responseMessage: "Record fetched", content: record });        
+  },
+  teamRecordRequest: (data, postMessage) => {
+    const type = data.type;
+    const year = data.year;
+    const formula = data.formula ? Number(data.formula) : 1;
+
+    const record = getSelectedTeamRecord(type, year, formula);
+    postMessage({ responseMessage: "Team record fetched", content: { type, year, formula, record } });
   },
   seasonReviewSelected: (data, postMessage) => {
     const year = data.year;
