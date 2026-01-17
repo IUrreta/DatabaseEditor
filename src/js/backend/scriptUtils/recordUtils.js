@@ -414,11 +414,148 @@ export function getSelectedTeamRecord(type, year, formula = 1) {
     if (String(year) === "all") return [];
 
     const recordType = String(type);
-    if (recordType === "wins") return fetchTeamSeasonWinsTotals(year, formula);
-    if (recordType === "podiums") return fetchTeamSeasonPodiumsTotals(year, formula);
-    if (recordType === "poles") return fetchTeamSeasonPolesTotals(year, formula);
 
-    return [];
+    let base = [];
+    let breakdownRows = [];
+    if (recordType === "wins") base = fetchTeamSeasonWinsTotals(year, formula);
+    else if (recordType === "podiums") base = fetchTeamSeasonPodiumsTotals(year, formula);
+    else if (recordType === "poles") base = fetchTeamSeasonPolesTotals(year, formula);
+    else if (recordType === "dotd") {
+        if (Number(formula) !== 1) return [];
+
+        ensureCustomDoDRankingTable();
+        const globals = getGlobals();
+        const teamFilterSql = globals.isCreateATeam
+            ? `(t.TeamID BETWEEN 1 AND 10 OR t.TeamID = 32)`
+            : `(t.TeamID BETWEEN 1 AND 10)`;
+
+        const rows = queryDB(`
+      SELECT t.TeamID, COUNT(*) AS Cnt
+      FROM Custom_DriverOfTheDay_Ranking t
+      WHERE t.Season = ?
+        AND t.Rank = 1
+        AND ${teamFilterSql}
+      GROUP BY t.TeamID
+      ORDER BY Cnt DESC, t.TeamID ASC
+    `, [year], 'allRows') || [];
+
+        base = rows.map(r => ({
+            teamId: Number(r[0]),
+            value: Number(r[1]) || 0,
+        }));
+
+        breakdownRows = queryDB(`
+      SELECT
+        t.TeamID,
+        t.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COUNT(*) AS Cnt
+      FROM Custom_DriverOfTheDay_Ranking t
+      JOIN Staff_BasicData bas ON bas.StaffID = t.DriverID
+      WHERE t.Season = ?
+        AND t.Rank = 1
+        AND ${teamFilterSql}
+      GROUP BY t.TeamID, t.DriverID
+      ORDER BY t.TeamID ASC, Cnt DESC
+    `, [year], 'allRows') || [];
+    }
+    else {
+        return [];
+    }
+
+    const breakdownByTeamId = new Map();
+    if (recordType === "wins" || recordType === "podiums" || recordType === "poles") {
+        if (Number(formula) !== 1) return base;
+        const globals = getGlobals();
+        const teamFilterSql = globals.isCreateATeam
+            ? `(rr.TeamID BETWEEN 1 AND 10 OR rr.TeamID = 32)`
+            : `(rr.TeamID BETWEEN 1 AND 10)`;
+
+        let whereSql = "";
+        if (recordType === "wins") whereSql = `rr.FinishingPos = 1`;
+        else if (recordType === "podiums") whereSql = `rr.FinishingPos BETWEEN 1 AND 3`;
+        else whereSql = `rr.StartingPos = 1`;
+
+        breakdownRows = queryDB(`
+      SELECT
+        rr.TeamID,
+        rr.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COUNT(*) AS Cnt
+      FROM Races_Results rr
+      JOIN Staff_BasicData bas ON bas.StaffID = rr.DriverID
+      WHERE rr.Season = ?
+        AND ${teamFilterSql}
+        AND ${whereSql}
+      GROUP BY rr.TeamID, rr.DriverID
+      ORDER BY rr.TeamID ASC, Cnt DESC
+    `, [year], 'allRows') || [];
+    }
+
+    breakdownRows.forEach((r) => {
+        const teamId = Number(r[0]);
+        const driverId = Number(r[1]);
+        const count = Number(r[4]) || 0;
+        if (!Number.isFinite(teamId) || !Number.isFinite(driverId) || count <= 0) return;
+        const name = formatNamesSimple([r[2], r[3]])[0];
+        if (!breakdownByTeamId.has(teamId)) breakdownByTeamId.set(teamId, []);
+        breakdownByTeamId.get(teamId).push({ id: driverId, name, count });
+    });
+
+    const lastRaceId = Number(formula) === 1 ? queryDB(`
+    SELECT RaceID
+    FROM Races
+    WHERE SeasonID = ?
+      AND State = 2
+    ORDER BY Day DESC, RaceID DESC
+    LIMIT 1
+  `, [year], 'singleValue') : null;
+
+    const attachDriversAndBreakdown = (item) => ({
+        ...item,
+        breakdown: breakdownByTeamId.get(item.teamId) || [],
+        drivers: (() => {
+            if (!lastRaceId) return { driver1: null, driver2: null };
+            const drivers = fetchTeamDriversAtRace(lastRaceId, item.teamId);
+            return {
+                driver1: drivers[0] ?? null,
+                driver2: drivers[1] ?? null
+            };
+        })()
+    });
+
+    if (!lastRaceId) return base.map(attachDriversAndBreakdown);
+
+    const fetchTeamDriversAtRace = (raceId, teamId) => {
+        const rows = queryDB(`
+      SELECT DISTINCT rr.DriverID, bas.FirstName, bas.LastName, rr.FinishingPos
+      FROM Races_Results rr
+      JOIN Staff_BasicData bas ON bas.StaffID = rr.DriverID
+      WHERE rr.RaceID = ?
+        AND rr.TeamID = ?
+      ORDER BY rr.FinishingPos ASC, rr.DriverID ASC
+    `, [raceId, teamId], 'allRows') || [];
+
+        return rows.slice(0, 2).map(r => {
+            const driverID = r[0];
+            const driverName = formatNamesSimple([r[1], r[2]])[0];
+            const currentNumber = queryDB(`
+        SELECT Number
+        FROM Staff_DriverNumbers
+        WHERE CurrentHolder = ?
+      `, [driverID], 'singleValue');
+
+            return {
+                id: Number(driverID),
+                name: driverName,
+                number: currentNumber != null ? Number(currentNumber) : null
+            };
+        });
+    };
+
+    return base.map(attachDriversAndBreakdown);
 }
 
 export function fetchQualifyingStageCounts(year, formula = 1, isCurrentYear = true) {

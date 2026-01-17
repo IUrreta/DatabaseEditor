@@ -7913,6 +7913,30 @@ body.og-theme .records-list {
   height: 42px;
 }
 
+.record-team-drivers{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.record-drivers-separator{
+  color: var(--text-general);
+  user-select: none;
+}
+
+.record-team-driver{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.record-driver-number{
+  font-family: 'NumbersFont';
+  letter-spacing: -1px;
+}
+
 .record-name {
   font-size: 20px;
   color: var(--text-general);
@@ -8547,17 +8571,12 @@ body.og-theme .records-list {
   padding-left: 25px;
   column-gap: 15px;
   font-size: 15px;
+  height: 45px;
 }
 
-/* .free-driver span.bold-font,
-.normal-driver span.bold-font,
-.drivers-table-driver span.bold-font,
-.driver-prediction span.bold-font,
-.modal-driver span.bold-font,
-.viewer-header-driver span.bold-font {
-  display: inline-block;
-  transform: skewX(-9deg)
-} */
+#recordsTypeDropdown{
+  min-width: 180px;
+}
 
 .free-driver:hover .bi-ban {
   color: var(--negative-text);
@@ -16329,7 +16348,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   grid-template-columns: repeat(8, 1fr);
   grid-template-rows: repeat(5, 1fr);
   gap: 12px;
-  padding: 8px;
+  padding: 2px 8px;
   color: var(--text-general);
 } 
 
