@@ -1,5 +1,5 @@
 import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
-import { resetH2H } from './head2head';
+import { resetH2H, queueAutoCompareDrivers } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
@@ -2209,6 +2209,24 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     qualiComparisons.innerHTML = "";
     if (!Array.isArray(comparisons) || comparisons.length === 0) return;
 
+    const startH2HFromSeasonReview = (driver1Id, driver2Id) => {
+        const h2hPill = document.getElementById("h2hpill");
+        if (h2hPill) h2hPill.click();
+
+        const driversModePill = document.getElementById("driverspillmodal");
+        if (driversModePill) driversModePill.click();
+
+        const selectedYear = document.getElementById("yearButton")?.dataset?.year;
+        const yearMenuH2H = document.getElementById("yearMenuH2H");
+        queueAutoCompareDrivers(driver1Id, driver2Id);
+
+        if (selectedYear && yearMenuH2H) {
+            const yearLink = Array.from(yearMenuH2H.querySelectorAll("a"))
+                .find(a => (a.dataset.year || a.textContent)?.trim() === String(selectedYear));
+            if (yearLink) yearLink.click();
+        }
+    };
+
     const parseHeadToHead = (value) => {
         if (typeof value === "string") {
             const parts = value.split("-").map(x => parseInt(x, 10));
@@ -2253,6 +2271,9 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
         const row = document.createElement("div");
         row.className = "season-review-comparison-row";
 
+        const teamKey = team_dict[teamId];
+        if (teamKey) row.classList.add(teamKey);
+
         const name1Div = document.createElement("div");
         name1Div.className = "season-review-comparison-name left";
         const surname1Span = document.createElement("span");
@@ -2286,6 +2307,12 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
         surname2Span.textContent = driver2Surname;
         name2Div.appendChild(surname2Span);
         row.appendChild(name2Div);
+
+        const driver1Id = Number(item?.driver1Id ?? item?.Driver1ID ?? item?.Driver1Id);
+        const driver2Id = Number(item?.driver2Id ?? item?.Driver2ID ?? item?.Driver2Id);
+        if (Number.isFinite(driver1Id) && Number.isFinite(driver2Id)) {
+            row.addEventListener("click", () => startH2HFromSeasonReview(driver1Id, driver2Id));
+        }
 
         return row;
     };
@@ -2367,6 +2394,10 @@ function populateDriversStandingsSeasonReview(data) {
         standings.appendChild(driverDiv);
     });
 
+    //calculate heiight and console log it
+    let height = standings.getBoundingClientRect().height;
+    console.log("Drivers Standings Height:", height);
+
     updateDriversStandingsMaxHeight();
     ensureDriversStandingsHeightListener();
 }
@@ -2377,7 +2408,8 @@ function updateDriversStandingsMaxHeight() {
     if (!item || !standings) return;
 
     const height = item.getBoundingClientRect().height;
-    const maxHeight = Math.max(0, Math.floor(height - 60));
+    //if height is less than 60, maxHeight will be 570px
+    const maxHeight = height <= 60 ? 570 : Math.max(0, Math.floor(height - 60));
 
     standings.style.maxHeight = `${maxHeight}px`;
     standings.style.overflowX = "hidden";
@@ -2543,7 +2575,8 @@ function updateQualifyingListsMaxHeight() {
     if (!item) return;
 
     const height = item.getBoundingClientRect().height;
-    const maxHeight = Math.max(0, Math.floor(height - 60));
+    //if height is less than 60, maxHeight will be 250px
+    const maxHeight = height < 60 ? 250 : Math.max(0, Math.floor(height - 60));
 
     document.querySelectorAll(".poles-comparison, .q3-comparison, .q2-comparison").forEach((el) => {
         el.style.maxHeight = `${maxHeight}px`;
@@ -2632,7 +2665,8 @@ function updateWinsDriversListMaxHeight() {
     if (!item || !list) return;
 
     const height = item.getBoundingClientRect().height;
-    const maxHeight = Math.max(0, Math.floor(height - 60));
+    //if height is less than 60, maxHeight will be 300px
+    const maxHeight = height < 60 ? 300 : Math.max(0, Math.floor(height - 60));
 
     list.style.maxHeight = `${maxHeight}px`;
     list.style.overflowX = "hidden";

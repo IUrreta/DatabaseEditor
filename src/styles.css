@@ -7935,6 +7935,8 @@ body.og-theme .records-list {
 .record-driver-number{
   font-family: 'NumbersFont';
   letter-spacing: -1px;
+  padding-top: 1px;
+  height: 21px;
 }
 
 .record-name {
@@ -16623,7 +16625,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .bento-comparison-container{
   display: flex;
   flex-direction: row;
-  gap: 12px;
+  gap: 9px;
   align-items: flex-start;
   justify-content: space-between;
 }
@@ -16703,6 +16705,69 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   gap: 8px;
   width: 100%;
   height: 22px;
+  border-radius: 4px;
+  outline: 1px solid transparent;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.season-review-comparison-row.fe:hover{
+  outline-color: var(--ferrari-primary);
+  background-color: color-mix(in srgb, var(--ferrari-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.mc:hover{
+  outline-color: var(--mclaren-primary);
+  background-color: color-mix(in srgb, var(--mclaren-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.rb:hover{
+  outline-color: var(--redbull-primary);
+  background-color: color-mix(in srgb, var(--redbull-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.me:hover{
+  outline-color: var(--mercedes-primary);
+  background-color: color-mix(in srgb, var(--mercedes-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.al:hover{
+  outline-color: var(--alpine-primary);
+  background-color: color-mix(in srgb, var(--alpine-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.wi:hover{
+  outline-color: var(--williams-primary);
+  background-color: color-mix(in srgb, var(--williams-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.ha:hover{
+  outline-color: var(--haas-primary);
+  background-color: color-mix(in srgb, var(--haas-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.at:hover{
+  outline-color: var(--alphatauri-primary);
+  background-color: color-mix(in srgb, var(--alphatauri-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.af:hover{
+  outline-color: var(--alfa-primary);
+  background-color: color-mix(in srgb, var(--alfa-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.as:hover{
+  outline-color: var(--aston-primary);
+  background-color: color-mix(in srgb, var(--aston-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.ct:hover{
+  outline-color: var(--custom-team-primary);
+  background-color: color-mix(in srgb, var(--custom-team-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row:active{
+  transform: scale(0.98);
 }
 
 .season-review-comparison-name{
