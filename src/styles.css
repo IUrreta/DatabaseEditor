@@ -14490,6 +14490,11 @@ body:has(.active #mod25logo) .one-change {
   font-family: 'Formula1Bold';
 }
 
+/* not first li in a ul to have negative matgin-top */
+.news-article ul li:not(:first-child) {
+  margin-top: -15px;
+}
+
 .news-article-date {
   color: var(--news-date-text);
   display: flex;
@@ -16186,7 +16191,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   overflow: hidden;
   transform: translateY(-6px);
   pointer-events: none;
-  transition: max-height 0.25s ease, opacity 0.15s ease, transform 0.25s ease, padding 0.25s ease;
+  transition: max-height 0.15s ease, opacity 0.15s ease, transform 0.15s ease, padding 0.15s ease, margin 0.15s ease;
+}
+
+.news-options-context:not(.open){
+  margin-top: 0 !important;
 }
 
 .news-options-context.open{
