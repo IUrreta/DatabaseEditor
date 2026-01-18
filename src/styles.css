@@ -14490,8 +14490,8 @@ body:has(.active #mod25logo) .one-change {
   font-family: 'Formula1Bold';
 }
 
-/* not first li in a ul to have negative matgin-top */
-.news-article ul li:not(:first-child) {
+/* not first li (that doesn't have a p as a child) in a ul to have negative margin-top */
+.news-article ul li:not(:first-child):has(p:first-child) {
   margin-top: -15px;
 }
 

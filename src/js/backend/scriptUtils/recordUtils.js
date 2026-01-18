@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, ensureCustomDoDRankingTable } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals } from "./dbUtils.js";
 import records from "../../../data/records.json";
 import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
@@ -389,8 +389,8 @@ export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
     const teamPolesTotals = fetchTeamSeasonPolesTotals(year, formula);
     const teamPodiumsTotals = fetchTeamSeasonPodiumsTotals(year, formula);
     const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula, isCurrentYear);
-    const driverOfTheDayCounts = Number(formula) === 1 ? fetchDriverOfTheDayCounts(year) : [];
-    const teamMateHeadToHead = Number(formula) === 1 ? fetchTeamMateQualiRaceHeadToHead(year) : [];
+    const driverOfTheDayCounts = fetchDriverOfTheDayCounts(year);
+    const teamMateHeadToHead = fetchTeamMateQualiRaceHeadToHead(year);
 
     return {
         year,
