@@ -31,6 +31,52 @@ export function hexToArgb(hex) {
   return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
 }
 
+/**
+ * Convierte un color hex a uint32 en formato ARGB (AARRGGBB) como en tu DB.
+ * Acepta: #RGB, #RRGGBB, #AARRGGBB (también sin #).
+ *
+ * @param {string} hex - Color en hex.
+ * @param {number} [defaultAlpha=255] - Alpha (0-255) si el hex NO incluye alpha.
+ * @returns {number} - Entero uint32 (0..4294967295)
+ */
+export function hexToDbArgb(hex, defaultAlpha = 255) {
+  if (typeof hex !== "string") throw new TypeError("hex must be a string");
+
+  let s = hex.trim().replace(/^#/, "");
+
+  // #RGB -> #RRGGBB
+  if (s.length === 3) {
+    s = s.split("").map(ch => ch + ch).join("");
+  }
+
+  if (![6, 8].includes(s.length) || !/^[0-9a-fA-F]+$/.test(s)) {
+    throw new Error(`Invalid hex color: "${hex}"`);
+  }
+
+  let a, r, g, b;
+
+  if (s.length === 6) {
+    a = clampByte(defaultAlpha);
+    r = parseInt(s.slice(0, 2), 16);
+    g = parseInt(s.slice(2, 4), 16);
+    b = parseInt(s.slice(4, 6), 16);
+  } else {
+    a = parseInt(s.slice(0, 2), 16);
+    r = parseInt(s.slice(2, 4), 16);
+    g = parseInt(s.slice(4, 6), 16);
+    b = parseInt(s.slice(6, 8), 16);
+  }
+
+  return (((a << 24) | (r << 16) | (g << 8) | b) >>> 0);
+}
+
+function clampByte(n) {
+  const x = Number(n);
+  if (!Number.isFinite(x)) return 255;
+  return Math.max(0, Math.min(255, Math.round(x)));
+}
+
+
 export function getDate() {
   const daySeason = queryDB(`
         SELECT Day, CurrentSeason
@@ -1609,7 +1655,6 @@ export function ensureCustomDoDRankingTable() {
 }
 
 export function fetchDriverOfTheDayCounts(season) {
-  ensureCustomDoDRankingTable();
 
   const rows = queryDB(`
     SELECT
@@ -1659,7 +1704,7 @@ export function fetchTeamMateQualiRaceHeadToHead(season) {
   const lastRaceId = queryDB(`
     SELECT RaceID
     FROM Races
-    WHERE SeasonID = ?
+    WHERE SeasonID = ? AND State = 2
     ORDER BY Day DESC, RaceID DESC
     LIMIT 1
   `, [season], 'singleValue');
@@ -1686,6 +1731,8 @@ export function fetchTeamMateQualiRaceHeadToHead(season) {
         END ASC,
         DriverID ASC
     `, [season, lastRaceId, teamId], 'allRows') || [];
+
+    console.log(`DEBUG: Team ${teamId} drivers at last race:`, rows);
 
     const ids = [];
     for (const r of rows) {
@@ -1890,6 +1937,25 @@ export function fetchEventsFrom(year, formula = 1) {
     return seasonEventsRows.filter(row => Number(row[4]) === 1);
   }
   return seasonEventsRows;
+}
+
+export function fetchLastCompletedRaceId(year, formula = 1) {
+  const filterSql = Number(formula) === 2
+    ? `AND t.isF2Race = 1`
+    : (Number(formula) === 3
+      ? `AND t.IsF3Race = 1`
+      : ``);
+
+  return queryDB(`
+    SELECT r.RaceID
+    FROM Races r
+    LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
+    WHERE r.SeasonID = ?
+      AND r.State = 2
+      ${filterSql}
+    ORDER BY r.Day DESC, r.RaceID DESC
+    LIMIT 1
+  `, [year], 'singleValue');
 }
 
 
@@ -2976,27 +3042,26 @@ export function updateCustomConfig(data) {
   //   );
   // }
 
-  // if (alfaRomeo === "audi") {
-  //   let color = customColors["audi"];
-  //   color = hexToArgb(color);
-  //   console.log("Updating Alfa Romeo color to:", color);
-  //   const teamId = 9;
-  //   queryDB(
-  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
-  //     [color, teamId],
-  //     'run'
-  //   );
-  // }
-  // else {
-  //   const teamId = 9;
-  //   let color = defaultColors[teamId];
-  //   console.log("Reverting Alfa Romeo color to default:", color);
-  //   queryDB(
-  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
-  //     [color, teamId],
-  //     'run'
-  //   );
-  // }
+  if (alfaRomeo === "audi") {
+    let color = customColors["audi"];
+    color = hexToDbArgb(color);
+    const teamId = 9;
+    queryDB(
+      `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+      [color, teamId],
+      'run'
+    );
+  }
+  else {
+    const teamId = 9;
+    let color = defaultColors[teamId];
+    console.log("Reverting Alfa Romeo color to default:", color);
+    queryDB(
+      `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+      [color, teamId],
+      'run'
+    );
+  }
 
 
   //delete the difficulty key from Custom_Save_Config every time

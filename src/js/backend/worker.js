@@ -140,7 +140,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Regulations fetched", content: regulations });
 
     const year = fetchYear();
-    postMessage({ responseMessage: "Year fetched", content: year });       
+    postMessage({ responseMessage: "Year fetched", content: year });
 
     const previousYear = Number(year) - 1;
     if (Number.isFinite(previousYear) && previousYear > 0) {
@@ -152,7 +152,7 @@ const workerCommands = {
     }
 
     const numbers = fetchDriverNumbers();
-    postMessage({ responseMessage: "Numbers fetched", content: numbers });      
+    postMessage({ responseMessage: "Numbers fetched", content: numbers });
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races] });
@@ -174,6 +174,8 @@ const workerCommands = {
     if (wasError) {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2025 DLC has been automatically fixed", unlocksDownload: true });
     }
+
+    fetchSeasonResults(year, true, true, 1);
 
     postMessage({ responseMessage: "Save selected finished" });
   },
@@ -583,7 +585,7 @@ const workerCommands = {
         unlocksDownload: true
       });
     } catch (e) {
-        console.error("ERROR COMPLETO:", e);
+      console.error("ERROR COMPLETO:", e);
       console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
     }
@@ -655,7 +657,7 @@ const workerCommands = {
 
     const record = getSelectedRecord(type, year);
 
-    postMessage({ responseMessage: "Record fetched", content: record });        
+    postMessage({ responseMessage: "Record fetched", content: record });
   },
   teamRecordRequest: (data, postMessage) => {
     const type = data.type;
@@ -684,17 +686,18 @@ const workerCommands = {
     const nonReadable = data.nonReadable || false;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "positive");
-    newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
+    if (newResponse) {
+      newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
 
-    if (originalStableKey) {
-      updateNewsFields(originalStableKey, {
-        turning_point_type: "approved",
-        ...(nonReadable ? { nonReadable: true } : {})
-      });
+      if (originalStableKey) {
+        updateNewsFields(originalStableKey, {
+          turning_point_type: "approved",
+          ...(nonReadable ? { nonReadable: true } : {})
+        });
+      }
+
+      upsertNews([newResponse]);
     }
-
-    upsertNews([newResponse]);
-
 
     postMessage({ responseMessage: "Turning point positive", noti_msg: "Accepted turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
@@ -711,10 +714,10 @@ const workerCommands = {
       updateNewsFields(originalStableKey, { turning_point_type: "cancelled" });
     }
 
-    if (newResponse){
+    if (newResponse) {
       newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
       upsertNews([newResponse]);
-    } 
+    }
 
     postMessage({ responseMessage: "Turning point negative", noti_msg: "Cancelled turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },

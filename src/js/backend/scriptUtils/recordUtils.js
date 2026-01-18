@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, ensureCustomDoDRankingTable } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, fetchEventsFrom, fetchPointsRegulations, fetchLastCompletedRaceId, ensureCustomDoDRankingTable } from "./dbUtils.js";
 import records from "../../../data/records.json";
 import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
@@ -382,6 +382,9 @@ export function getSelectedRecord(type, year) {
 export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
     const teamsStandings = fetchTeamsStandingsWithPoints(year, formula);
     const driversStandings = fetchDriversStandings(year, formula);
+    const events = fetchEventsFrom(year, formula);
+    const pointsInfo = fetchPointsRegulations();
+    const lastRaceDoneId = fetchLastCompletedRaceId(year, formula);
     const winsRecords = getSelectedRecord("wins", year);
     const polesRecords = getSelectedRecord("poles", year);
     const podiumsRecords = getSelectedRecord("podiums", year);
@@ -389,14 +392,17 @@ export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
     const teamPolesTotals = fetchTeamSeasonPolesTotals(year, formula);
     const teamPodiumsTotals = fetchTeamSeasonPodiumsTotals(year, formula);
     const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula, isCurrentYear);
-    const driverOfTheDayCounts = Number(formula) === 1 ? fetchDriverOfTheDayCounts(year) : [];
-    const teamMateHeadToHead = Number(formula) === 1 ? fetchTeamMateQualiRaceHeadToHead(year) : [];
+    const driverOfTheDayCounts = fetchDriverOfTheDayCounts(year);
+    const teamMateHeadToHead = fetchTeamMateQualiRaceHeadToHead(year);
 
     return {
         year,
         formula,
         teamsStandings,
         driversStandings,
+        events,
+        pointsInfo,
+        lastRaceDoneId,
         qualifyingStageCounts,
         driverOfTheDayCounts,
         teamMateHeadToHead,
