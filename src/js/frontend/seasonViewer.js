@@ -2238,8 +2238,16 @@ function manageSeasonReview(){
 }
 
 export function populateSeasonReview(data) {
-    populateDriversStandingsSeasonReview(data.driversStandings)
-    populateTeamsStandingsSeasonReview(data.teamsStandings)
+    populateDriversStandingsSeasonReview(data.driversStandings, {
+        events: data.events,
+        pointsInfo: data.pointsInfo,
+        lastRaceDoneId: data.lastRaceDoneId
+    })
+    populateTeamsStandingsSeasonReview(data.teamsStandings, {
+        events: data.events,
+        pointsInfo: data.pointsInfo,
+        lastRaceDoneId: data.lastRaceDoneId
+    })
     populateComparisonsSeasonReview(data.teamMateHeadToHead, data.teamsStandings)
     populateQualifyingAnalysisSeasonReview(data.qualifyingStageCounts)
     populateWinsDriversSeasonReview(data.winsRecords)
@@ -2385,12 +2393,38 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     });
 }
 
-function populateDriversStandingsSeasonReview(data) {
+function populateDriversStandingsSeasonReview(data, meta = {}) {
     const isF1 = currentFormula === 1;
     const standings = document.querySelector(".bento-driver-standings");
     if (!standings) return;
     standings.innerHTML = "";
     let leaderPts = data.length > 0 ? Number(data[0].Points) : 0;
+    const secondPts = data.length > 1 ? Number(data[1].Points) : 0;
+
+    let championClinched = false;
+    if (isF1 && data.length > 1 && meta && Array.isArray(meta.events) && meta.events.length > 0 && meta.pointsInfo) {
+        const lastRaceDoneId = Number(meta.lastRaceDoneId);
+        const lastRaceIndex = Number.isFinite(lastRaceDoneId)
+            ? meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId)
+            : -1;
+
+        if (lastRaceIndex >= 0) {
+            const racesLeft = meta.events.length - (lastRaceIndex + 1);
+            const sprintsLeftLocal = meta.events.filter(x => Number(x?.[2]) === 1 && Number(x?.[0]) >= lastRaceDoneId).length;
+
+            const maxRacePoints = Number(meta.pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[0] ?? 0);
+            const isDoublePoints = Number(meta.pointsInfo?.isLastRaceDouble ?? meta.pointsInfo?.isLastraceDouble) === 1;
+            const fastestLapBonus = Number(meta.pointsInfo?.fastestLapBonusPoint) === 1;
+            const poleBonus = Number(meta.pointsInfo?.poleBonusPoint) === 1;
+
+            const pointsRemaining = racesLeft * maxRacePoints + sprintsLeftLocal * 8 +
+                (isDoublePoints ? maxRacePoints : 0) +
+                (fastestLapBonus ? racesLeft : 0) +
+                (poleBonus ? racesLeft : 0);
+
+            championClinched = (leaderPts - secondPts) > pointsRemaining;
+        }
+    }
 
     data.forEach((driver, index) => {
         const driverDiv = document.createElement("div");
@@ -2435,8 +2469,7 @@ function populateDriversStandingsSeasonReview(data) {
 
         driverDiv.appendChild(pointsDiv);
 
-        const position = Number(posDiv.textContent);
-        if (position === 1) {
+        if (index === 0 && championClinched) {
             posDiv.classList.add("champion");
             pointsDiv.classList.add("champion");
         }
@@ -2465,7 +2498,7 @@ function updateDriversStandingsMaxHeight() {
     standings.style.overflowX = "hidden";
     standings.style.overflowY = "hidden";
     standings.classList.remove("with-scrollbar");
-    const needsScroll = standings.scrollHeight > (standings.clientHeight + 2);
+    const needsScroll = standings.scrollHeight > (standings.clientHeight + 4);
     if (needsScroll) {
         standings.style.overflowY = "auto";
         standings.classList.add("with-scrollbar");
@@ -2486,7 +2519,7 @@ function ensureDriversStandingsHeightListener() {
     });
 }
 
-function populateTeamsStandingsSeasonReview(data) {
+function populateTeamsStandingsSeasonReview(data, meta = {}) {
     if (!Array.isArray(data)) return;
 
     const container = document.querySelector(".bento-team-standings");
@@ -2494,6 +2527,35 @@ function populateTeamsStandingsSeasonReview(data) {
 
     container.innerHTML = "";
     const leaderPts = data[0][2];
+    const secondPts = data.length > 1 ? Number((Array.isArray(data[1]) ? data[1][2] : (data[1]?.Points ?? data[1]?.points ?? 0))) : 0;
+
+    let championClinched = false;
+    if (currentFormula === 1 && data.length > 1 && meta && Array.isArray(meta.events) && meta.events.length > 0 && meta.pointsInfo) {
+        const lastRaceDoneId = Number(meta.lastRaceDoneId);
+        const lastRaceIndex = Number.isFinite(lastRaceDoneId)
+            ? meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId)
+            : -1;
+
+        if (lastRaceIndex >= 0) {
+            const racesLeft = meta.events.length - (lastRaceIndex + 1);
+            const sprintsLeftLocal = meta.events.filter(x => Number(x?.[2]) === 1 && Number(x?.[0]) >= lastRaceDoneId).length;
+
+            const maxFirstPoints = Number(meta.pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[0] ?? 0);
+            const maxSecondPoints = Number(meta.pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[1] ?? 0);
+            const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
+
+            const isDoublePoints = Number(meta.pointsInfo?.isLastRaceDouble ?? meta.pointsInfo?.isLastraceDouble) === 1;
+            const fastestLapBonus = Number(meta.pointsInfo?.fastestLapBonusPoint) === 1;
+            const poleBonus = Number(meta.pointsInfo?.poleBonusPoint) === 1;
+
+            const pointsRemaining = racesLeft * maxTeamRacePoints + sprintsLeftLocal * 15 +
+                (isDoublePoints ? maxTeamRacePoints : 0) +
+                (fastestLapBonus ? racesLeft : 0) +
+                (poleBonus ? racesLeft : 0);
+
+            championClinched = (Number(leaderPts) - Number(secondPts)) > pointsRemaining;
+        }
+    }
 
     data.forEach((team, index) => {
         const teamObj = Array.isArray(team) ? {
@@ -2537,7 +2599,7 @@ function populateTeamsStandingsSeasonReview(data) {
         teamDiv.appendChild(pointsDiv);
 
         const position = Number(posDiv.textContent);
-        if (position === 1) {
+        if (position === 1 && championClinched) {
             posDiv.classList.add("champion");
             pointsDiv.classList.add("champion");
         }
@@ -2633,7 +2695,7 @@ function updateQualifyingListsMaxHeight() {
         el.style.overflowX = "hidden";
         el.style.overflowY = "hidden";
         el.classList.remove("with-scrollbar");
-        const needsScroll = el.scrollHeight > (el.clientHeight + 2);
+        const needsScroll = el.scrollHeight > (el.clientHeight + 4);
         if (needsScroll) {
             el.style.overflowY = "auto";
             el.classList.add("with-scrollbar");
@@ -2721,7 +2783,7 @@ function updateWinsDriversListMaxHeight() {
     list.style.maxHeight = `${maxHeight}px`;
     list.style.overflowX = "hidden";
     list.style.overflowY = "hidden";
-    const needsScroll = list.scrollHeight > (list.clientHeight + 2);
+    const needsScroll = list.scrollHeight > (list.clientHeight + 4);
     if (needsScroll) {
         list.style.overflowY = "auto";
     }

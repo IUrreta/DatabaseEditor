@@ -3314,22 +3314,22 @@ DRIVERS TABLE
   max-height: 80vh;
 }
 
-.drivers-table-row:first-child .drivers-table-position,
-.teams-table-row:first-child .teams-table-position {
-  background: var(--f1-first);
-  color: var(--gold-gradient-text);
+:not(.f2-table-data) .drivers-table-row:first-child .drivers-table-position,
+:not(.f2-table-data) .teams-table-row:first-child .teams-table-position {
+  background-color: var(--f1-first);
+  color: var(--text-general);
 }
 
 .f2-table-data .drivers-table-row:first-child .drivers-table-position,
 .f2-table-data .teams-table-row:first-child .teams-table-position {
-  background: var(--f2-back) !important;
-  color: var(--gold-gradient-text);
+  background-color: var(--f2-back);
+  color: var(--text-general);
 }
 
 .f3-table-data .drivers-table-row:first-child .drivers-table-position,
 .f3-table-data .teams-table-row:first-child .teams-table-position {
-  background: var(--f3-back) !important;
-  color: var(--gold-gradient-text);
+  background-color: var(--f3-back);
+  color: var(--text-general);
 }
 
 .drivers-table-row:has(.drivers-table-position.champion) .drivers-table-position,
@@ -3398,7 +3398,7 @@ DRIVERS TABLE
 .drivers-table-row.odd:hover .standings-points-gap,
 .teams-table-row.odd:hover .standings-points-gap {
   background-color: var(--text-general) !important;
-  color: var(--negative-text);
+  color: var(--negative-text) !important;
 }
 
 .drivers-table-row:hover .drivers-table-points,
@@ -16549,7 +16549,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
   height: 24px;
 }
 
@@ -16558,7 +16558,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
   height: 24px;
 }
 
@@ -16626,7 +16626,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
   height: 24px;
 }
 
@@ -16635,7 +16635,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
   height: 24px;
 }
 
@@ -16815,7 +16815,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 26px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
+  font-size: 14px;
 }
 
 .season-review-qualifying-row{
@@ -16831,6 +16832,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 28px;
   text-align: center;
+  font-size: 14px;
+  padding-top: 3px;
 }
 
 .season-review-qualifying-name{
@@ -16848,7 +16851,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 26px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
+  font-size: 14px;
 }
 
 .wins-drivers-list{
@@ -16870,6 +16874,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 28px;
   text-align: center;
+  font-size: 14px;
+  padding-top: 3px;
 }
 
 .season-review-wins-name{
@@ -16894,7 +16900,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 26px;
   text-align: center;
-  padding-top: 2px;
+  padding-top: 3px;
+  font-size: 14px;
 }
 
 .podiums-teams-list .season-review-wins-position,

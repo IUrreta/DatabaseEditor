@@ -1939,6 +1939,25 @@ export function fetchEventsFrom(year, formula = 1) {
   return seasonEventsRows;
 }
 
+export function fetchLastCompletedRaceId(year, formula = 1) {
+  const filterSql = Number(formula) === 2
+    ? `AND t.isF2Race = 1`
+    : (Number(formula) === 3
+      ? `AND t.IsF3Race = 1`
+      : ``);
+
+  return queryDB(`
+    SELECT r.RaceID
+    FROM Races r
+    LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
+    WHERE r.SeasonID = ?
+      AND r.State = 2
+      ${filterSql}
+    ORDER BY r.Day DESC, r.RaceID DESC
+    LIMIT 1
+  `, [year], 'singleValue');
+}
+
 
 
 function formatDriverName(driverName) {
