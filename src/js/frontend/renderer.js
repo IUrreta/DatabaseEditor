@@ -159,6 +159,7 @@ let divBlocking = 1;
 let saveName;
 let tempImageData = null;
 let lastVisibleIndex = 0;
+let viewerLoaded = false;
 
 let calendarEditMode = "Start2024"
 
@@ -853,6 +854,7 @@ const messageHandlers = {
     },
     "Save loaded succesfully": (message) => {
         isSaveSelected = 1;
+        viewerLoaded = false;
         remove_drivers();
         removeStatsDrivers();
         listenersStaffGroups();
@@ -1832,6 +1834,10 @@ h2hPill.addEventListener("click", function () {
 })
 
 viewPill.addEventListener("click", function () {
+    if (!viewerLoaded) {
+        viewerLoaded = true
+        document.getElementById("reviewpill").click();
+    }
     manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()

@@ -33,6 +33,48 @@ let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
 
+function ensureDropdownCheckIcons(menuEl) {
+    if (!menuEl) return;
+    menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        if (item.querySelector("i.bi-check")) return;
+        const icon = document.createElement("i");
+        icon.classList.add("bi", "bi-check", "unactive");
+        item.appendChild(icon);
+    });
+}
+
+function syncDropdownCheckIcons(menuEl, isSelected) {
+    if (!menuEl || typeof isSelected !== "function") return;
+    ensureDropdownCheckIcons(menuEl);
+    menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        const selected = Boolean(isSelected(item));
+        item.querySelector("i.bi-check")?.classList.toggle("unactive", !selected);
+    });
+}
+
+function syncTableTypeDropdownChecks() {
+    const menu = document.getElementById("tableTypeDropdown");
+    syncDropdownCheckIcons(menu, (item) => item.dataset.value === String(pointsOrPos));
+}
+
+function syncSeriesTypeDropdownChecks() {
+    const menu = document.getElementById("seriesTypeDropdown");
+    const selected = document.getElementById("seriesTypeButton")?.dataset?.value ?? String(currentFormula);
+    syncDropdownCheckIcons(menu, (item) => item.dataset.value === String(selected));
+}
+
+function syncRecordsTypeDropdownChecks() {
+    const menu = document.getElementById("recordsTypeDropdown");
+    const selected = document.getElementById("recordsTypeButton")?.dataset?.value;
+    syncDropdownCheckIcons(menu, (item) => item.dataset.value === String(selected));
+}
+
+function syncYearDropdownChecks() {
+    const menu = document.getElementById("yearMenu");
+    const selected = document.getElementById("yearButton")?.dataset?.year;
+    syncDropdownCheckIcons(menu, (item) => item.dataset.year === String(selected));
+}
+
 function applyStandingsDetailsState() {
     const seasonViewer = document.getElementById("season_viewer");
     const button = document.getElementById("standingsDetailsButton");
@@ -248,6 +290,7 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
         change_points_pos_teams()
         end = performance.now()
         document.querySelector("#tableTypeButton span").textContent = elem.textContent
+        syncTableTypeDropdownChecks()
     })
 })
 
@@ -261,6 +304,7 @@ function forceStandingsCurrentSeason() {
             label.textContent = standingsItem ? standingsItem.textContent : "Standings"
         }
     }
+    syncRecordsTypeDropdownChecks()
     updateTopPanelControlsVisibility();
 
     const yearMenu = document.querySelector("#yearMenu")
@@ -292,6 +336,7 @@ document.querySelectorAll("#seriesTypeDropdown a").forEach(function (elem) {
         const seriesButton = document.getElementById("seriesTypeButton")        
         seriesButton.querySelector("span.dropdown-label").textContent = elem.textContent
         seriesButton.dataset.value = elem.dataset.value
+        syncSeriesTypeDropdownChecks()
         updateSeriesControls()
         if (currentFormula !== 1) {
             forceStandingsCurrentSeason()
@@ -418,6 +463,8 @@ function syncFormulaFromCalendar(formula) {
         seriesButton.querySelector("span.dropdown-label").textContent = label
         seriesButton.dataset.value = String(formula)
     }
+
+    syncSeriesTypeDropdownChecks()
     
     updateSeriesControls()
 }
@@ -2104,7 +2151,10 @@ export function generateYearsMenu(actualYear) {
     yearMenu.insertBefore(allTime, yearMenu.firstChild);
     allTime.addEventListener("click", () => manageRecordsSelected(allTime));
 
-    document.getElementById("reviewpill").click();
+    syncTableTypeDropdownChecks();
+    syncSeriesTypeDropdownChecks();
+    syncRecordsTypeDropdownChecks();
+    syncYearDropdownChecks();
 }
 
 
@@ -3024,6 +3074,7 @@ function setYearButton(el) {
     const yearBtn = document.getElementById("yearButton");
     yearBtn.querySelector("span.dropdown-label").textContent = el.textContent.trim();
     yearBtn.dataset.year = el.dataset.year;           // <- guardamos el valor
+    syncYearDropdownChecks()
 }
 
 export function loadRecordsList(data) {
@@ -3388,6 +3439,7 @@ document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
+        syncRecordsTypeDropdownChecks()
         updateTopPanelControlsVisibility();
         manageRecordsSelected(null)
     })

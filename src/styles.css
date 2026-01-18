@@ -15169,8 +15169,17 @@ p.news-error-api-key {
   transform: rotate(0deg);
 }
 
+#season_viewer .redesigned-dropdown-menu .redesigned-dropdown-item i.bi-check {
+  display: inline-block;
+  font-size: 18px;
+  margin-left: 8px;
+  transition: transform 0.15s, opacity 0.15s;
+  transform: rotate(0deg);
+}
+
 #newsTypeMenu .redesigned-dropdown-item i.unactive,
 #newsLanguageMenu .redesigned-dropdown-item i.unactive,
+#season_viewer .redesigned-dropdown-menu .redesigned-dropdown-item i.unactive,
 #aiModelmenu .dropdown-item i.unactive {
   transform: rotate(-90deg);
   opacity: 0;
@@ -15908,6 +15917,14 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 #objectiveMenu {
   min-width: 280px;
+}
+
+#attributeMenu{
+  min-width: 200px;
+}
+
+#staffMenu{
+  min-width: 220px;
 }
 
 .redesigned-dropdown-item {
