@@ -2976,27 +2976,27 @@ export function updateCustomConfig(data) {
   //   );
   // }
 
-  if (alfaRomeo === "audi") {
-    let color = customColors["audi"];
-    color = hexToArgb(color);
-    console.log("Updating Alfa Romeo color to:", color);
-    const teamId = 9;
-    queryDB(
-      `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
-      [color, teamId],
-      'run'
-    );
-  }
-  else {
-    const teamId = 9;
-    let color = defaultColors[teamId];
-    console.log("Reverting Alfa Romeo color to default:", color);
-    queryDB(
-      `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
-      [color, teamId],
-      'run'
-    );
-  }
+  // if (alfaRomeo === "audi") {
+  //   let color = customColors["audi"];
+  //   color = hexToArgb(color);
+  //   console.log("Updating Alfa Romeo color to:", color);
+  //   const teamId = 9;
+  //   queryDB(
+  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+  //     [color, teamId],
+  //     'run'
+  //   );
+  // }
+  // else {
+  //   const teamId = 9;
+  //   let color = defaultColors[teamId];
+  //   console.log("Reverting Alfa Romeo color to default:", color);
+  //   queryDB(
+  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+  //     [color, teamId],
+  //     'run'
+  //   );
+  // }
 
 
   //delete the difficulty key from Custom_Save_Config every time
