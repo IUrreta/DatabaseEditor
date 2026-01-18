@@ -1,5 +1,6 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
+  fetchTeamsStandingsWithPositionChange,
   fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
   fetchJuniorTeamDriverNames,
@@ -37,7 +38,7 @@ import {
   fixDoublePointsBug,
   getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
-import { getSelectedRecord } from "./scriptUtils/recordUtils";
+import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -88,11 +89,11 @@ const workerCommands = {
 
   yearSelected: (data, postMessage) => {
     const year = data.year
-    const isCurrentYear = data.isCurrentYear || true;
+    const isCurrentYear = data.isCurrentYear ?? true;
     const formula = data.formula ? Number(data.formula) : 1;
     const results = fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
     const events = fetchEventsFrom(year, formula);
-    const teams = fetchTeamsStandings(year, formula);
+    const teams = fetchTeamsStandingsWithPositionChange(year, formula);
     const pointsInfo = fetchPointsRegulations()
 
     postMessage({
@@ -654,7 +655,26 @@ const workerCommands = {
 
     const record = getSelectedRecord(type, year);
 
-    postMessage({ responseMessage: "Record fetched", content: record });
+    postMessage({ responseMessage: "Record fetched", content: record });        
+  },
+  teamRecordRequest: (data, postMessage) => {
+    const type = data.type;
+    const year = data.year;
+    const formula = data.formula ? Number(data.formula) : 1;
+
+    const record = getSelectedTeamRecord(type, year, formula);
+    postMessage({ responseMessage: "Team record fetched", content: { type, year, formula, record } });
+  },
+  seasonReviewSelected: (data, postMessage) => {
+    const year = data.year;
+    const formula = data.formula ? Number(data.formula) : 1;
+
+    const globals = getGlobals();
+    const isCurrentYear = data.isCurrentYear ?? (String(globals?.yearIteration) === String(year));
+
+    const review = fetchSeasonReviewData(year, formula, isCurrentYear);
+
+    postMessage({ responseMessage: "Season review data fetched", content: review });
   },
   approveTurningPoint: (data, postMessage) => {
     const turningPointData = data.turningPointData;

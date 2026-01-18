@@ -44,7 +44,7 @@ export default async function handler(req, res) {
     await redis.expire(redisKey, 60 * 60 * 24);
 
     // 6️⃣ OpenAI
-    const aiModel = model || "gpt-5-nano";
+    const aiModel = model || "gpt-5-mini";
     const safeMaxTokens = Math.min(max_tokens || 1500, 4000);
 
     const input = messages.map(m => ({

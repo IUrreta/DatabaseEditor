@@ -1,5 +1,5 @@
 import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
-import { resetH2H } from './head2head';
+import { resetH2H, queueAutoCompareDrivers } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
@@ -18,12 +18,137 @@ let currentFormula = 1
 let alphaReplace = "alphatauri"
 let alpineReplace = "alpine"
 let alfaReplace = "alfa"
+let redbullReplace = "redbull"
+let astonReplace = "aston"
+let williamsReplace = "williams"
+let haasReplace = "haas"
 let driverOrTeams = "drivers"
 let isYearSelected = false
 let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
+let standingsDetailsEnabled = false;
+let qualifyingHeightListenerAttached = false;
+let winsHeightListenerAttached = false;
+let driversStandingsHeightListenerAttached = false;
+
+function ensureDropdownCheckIcons(menuEl) {
+    if (!menuEl) return;
+    menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        if (item.querySelector("i.bi-check")) return;
+        const icon = document.createElement("i");
+        icon.classList.add("bi", "bi-check", "unactive");
+        item.appendChild(icon);
+    });
+}
+
+function syncDropdownCheckIcons(menuEl, isSelected) {
+    if (!menuEl || typeof isSelected !== "function") return;
+    ensureDropdownCheckIcons(menuEl);
+    menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        const selected = Boolean(isSelected(item));
+        item.querySelector("i.bi-check")?.classList.toggle("unactive", !selected);
+    });
+}
+
+function syncTableTypeDropdownChecks() {
+    const menu = document.getElementById("tableTypeDropdown");
+    syncDropdownCheckIcons(menu, (item) => item.dataset.value === String(pointsOrPos));
+}
+
+function syncSeriesTypeDropdownChecks() {
+    const menu = document.getElementById("seriesTypeDropdown");
+    const selected = document.getElementById("seriesTypeButton")?.dataset?.value ?? String(currentFormula);
+    syncDropdownCheckIcons(menu, (item) => item.dataset.value === String(selected));
+}
+
+function syncRecordsTypeDropdownChecks() {
+    const menu = document.getElementById("recordsTypeDropdown");
+    const selected = document.getElementById("recordsTypeButton")?.dataset?.value;
+    syncDropdownCheckIcons(menu, (item) => item.dataset.value === String(selected));
+}
+
+function syncYearDropdownChecks() {
+    const menu = document.getElementById("yearMenu");
+    const selected = document.getElementById("yearButton")?.dataset?.year;
+    syncDropdownCheckIcons(menu, (item) => item.dataset.year === String(selected));
+}
+
+function applyStandingsDetailsState() {
+    const seasonViewer = document.getElementById("season_viewer");
+    const button = document.getElementById("standingsDetailsButton");
+    const label = button?.querySelector("span");
+    const eyeIcon = button?.querySelector("i.bi-eye");
+    const eyeSlashIcon = button?.querySelector("i.bi-eye-slash");
+
+    if (seasonViewer) {
+        seasonViewer.classList.toggle("standings-details-enabled", standingsDetailsEnabled);
+    }
+
+    if (label) {
+        label.textContent = standingsDetailsEnabled ? "Hide details" : "Show details";
+    }
+
+    if (eyeIcon && eyeSlashIcon) {
+        eyeIcon.style.display = standingsDetailsEnabled ? "inline" : "none";
+        eyeSlashIcon.style.display = standingsDetailsEnabled ? "none" : "inline";
+    }
+}
+
+function setStandingsPositionChange(changeDiv, lastPositionChange) {
+    if (!changeDiv) return;
+    const numberEl = changeDiv.querySelector(".standings-pos-change-number");
+    const iconEl = changeDiv.querySelector("i");
+    // In DB: negative = gained positions, positive = lost positions.
+    // UI: positive = gained, negative = lost.
+    const dbChange = Number(lastPositionChange) || 0;
+    const change = -dbChange;
+
+    changeDiv.classList.remove("up", "down", "neutral");
+
+    if (numberEl) {
+        numberEl.textContent = change > 0 ? `+${change}` : String(change);
+    }
+
+    if (iconEl) {
+        if (change > 0) {
+            iconEl.className = "bi bi-caret-up-fill";
+            changeDiv.classList.add("up");
+        }
+        else if (change < 0) {
+            iconEl.className = "bi bi-caret-down-fill";
+            changeDiv.classList.add("down");
+        }
+        else {
+            iconEl.className = "bi bi-dash";
+            changeDiv.classList.add("neutral");
+        }
+    }
+}
+
+function setStandingsPointsGap(gapDiv, gapToLeader) {
+    if (!gapDiv) return;
+    const gap = Number(gapToLeader);
+    if (!Number.isFinite(gap)) {
+        gapDiv.textContent = "";
+        return;
+    }
+    gapDiv.textContent = gap === 0 ? "0" : `+${Math.max(0, gap)}`;
+}
+
+function updateStandingsPointsGaps(rows, leaderPoints) {
+    rows.forEach((row) => {
+        const gap = Number(leaderPoints) - Number(row.points);
+        setStandingsPointsGap(row.pointsGapDiv, gap);
+    });
+}
+
+document.getElementById("standingsDetailsButton").addEventListener("click", function () {
+    standingsDetailsEnabled = !standingsDetailsEnabled;
+    applyStandingsDetailsState();
+});
+applyStandingsDetailsState();
 
 
 export let engine_names = { //this one is changed as the user adds engines, so it will stayhere
@@ -72,19 +197,72 @@ export function resetYearButtons() {
  */
 document.getElementById("driverspill").addEventListener("click", function () {
     driverOrTeams = "drivers"
-    manage_show_tables()
+    manageDriversTeamsModeChanged()
 })
 
 document.getElementById("teamspill").addEventListener("click", function () {
     driverOrTeams = "teams"
-    manage_show_tables()
+    manageDriversTeamsModeChanged()
 })
+
+function manageDriversTeamsModeChanged() {
+    updateAllTimeVisibilityForTeamsRecords();
+    updateTopPanelControlsVisibility();
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    if (typeVal === "standings") {
+        manage_show_tables();
+        return;
+    }
+    if (typeVal === "seasonreview") {
+        return;
+    }
+    manageRecordsSelected(null);
+}
+
+function updateAllTimeVisibilityForTeamsRecords() {
+    const allTime = document.getElementById("allTimeRecords");
+    if (!allTime) return;
+
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const allowAllTime = currentFormula === 1 && driverOrTeams !== "teams" && typeVal !== "standings" && typeVal !== "seasonreview";
+    allTime.classList.toggle("d-none", !allowAllTime);
+}
+
+function updateTopPanelControlsVisibility() {
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const showStandingsOnlyControls = typeVal === "standings";
+
+    const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
+    if (driversTeamsPills) {
+        driversTeamsPills.classList.toggle("d-none", typeVal === "seasonreview");
+    }
+
+    const standingsDetailsButton = document.getElementById("standingsDetailsButton");
+    if (standingsDetailsButton) {
+        standingsDetailsButton.classList.toggle("d-none", !showStandingsOnlyControls);
+    }
+
+    const tableTypeWrapper = document.getElementById("tableTypeButton")?.closest(".dropdown-global");
+    if (tableTypeWrapper) {
+        tableTypeWrapper.classList.toggle("d-none", !showStandingsOnlyControls);
+    }
+
+    const hideHistoric = document.querySelector(".hide-historic-drivers");
+    if (hideHistoric) {
+        const showHideHistoric = currentFormula === 1 && !showStandingsOnlyControls && typeVal !== "seasonreview" && driverOrTeams !== "teams";
+        hideHistoric.classList.toggle("d-none", !showHideHistoric);
+    }
+
+    updateAllTimeVisibilityForTeamsRecords();
+}
 
 
 function manage_show_tables() {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
     recordsList.classList.add("d-none")
+    const seasonReviewBento = document.querySelector(".season-review-bento")
+    seasonReviewBento.classList.add("d-none")
     if (isYearSelected) {
         if (driverOrTeams === "drivers") {
             document.querySelector(".teams-table").classList.add("d-none")
@@ -112,6 +290,7 @@ document.querySelectorAll("#tableTypeDropdown a").forEach(function (elem) {
         change_points_pos_teams()
         end = performance.now()
         document.querySelector("#tableTypeButton span").textContent = elem.textContent
+        syncTableTypeDropdownChecks()
     })
 })
 
@@ -125,14 +304,8 @@ function forceStandingsCurrentSeason() {
             label.textContent = standingsItem ? standingsItem.textContent : "Standings"
         }
     }
-    const standingsSettings = document.getElementById("standingsSettings")
-    const recordsSettings = document.getElementById("recordsSettings")
-    if (standingsSettings) {
-        standingsSettings.classList.remove("d-none")
-    }
-    if (recordsSettings) {
-        recordsSettings.classList.add("d-none")
-    }
+    syncRecordsTypeDropdownChecks()
+    updateTopPanelControlsVisibility();
 
     const yearMenu = document.querySelector("#yearMenu")
     const yearItems = yearMenu ? Array.from(yearMenu.querySelectorAll("a")) : []
@@ -163,6 +336,7 @@ document.querySelectorAll("#seriesTypeDropdown a").forEach(function (elem) {
         const seriesButton = document.getElementById("seriesTypeButton")        
         seriesButton.querySelector("span.dropdown-label").textContent = elem.textContent
         seriesButton.dataset.value = elem.dataset.value
+        syncSeriesTypeDropdownChecks()
         updateSeriesControls()
         if (currentFormula !== 1) {
             forceStandingsCurrentSeason()
@@ -289,6 +463,8 @@ function syncFormulaFromCalendar(formula) {
         seriesButton.querySelector("span.dropdown-label").textContent = label
         seriesButton.dataset.value = String(formula)
     }
+
+    syncSeriesTypeDropdownChecks()
     
     updateSeriesControls()
 }
@@ -306,6 +482,10 @@ export function new_drivers_table(data) {
     PositionDiv.classList = "drivers-table-position bold-font"
     PositionDiv.innerText = "#"
     header.appendChild(PositionDiv)
+    let posChangeHeader = document.createElement("div")
+    posChangeHeader.classList = "standings-pos-change bold-font"
+    posChangeHeader.innerText = "G/L"
+    header.appendChild(posChangeHeader)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
     const driversData = document.querySelector(".drivers-table-data")
@@ -328,6 +508,10 @@ export function new_drivers_table(data) {
             header.appendChild(createHeaderCell(trackId))
         }
     })
+    let GapDiv = document.createElement("div")
+    GapDiv.classList = "standings-points-gap bold-font"
+    GapDiv.innerText = "GAP"
+    header.appendChild(GapDiv)
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "drivers-table-points bold-font"
     PointsDiv.innerText = "PTS"
@@ -347,6 +531,10 @@ export function new_teams_table(data) {
     PositionDiv.classList = "teams-table-position bold-font"
     PositionDiv.innerText = "#"
     header.appendChild(PositionDiv)
+    let posChangeHeader = document.createElement("div")
+    posChangeHeader.classList = "standings-pos-change bold-font"
+    posChangeHeader.innerText = "G/L"
+    header.appendChild(posChangeHeader)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
     const teamsData = document.querySelector(".teams-table-data")
@@ -369,6 +557,10 @@ export function new_teams_table(data) {
             header.appendChild(createHeaderCell(trackId, "", "teams-table-normal"))
         }
     })
+    let GapDiv = document.createElement("div")
+    GapDiv.classList = "standings-points-gap bold-font"
+    GapDiv.innerText = "GAP"
+    header.appendChild(GapDiv)
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "teams-table-points bold-font"
     PointsDiv.innerText = "PTS"
@@ -431,11 +623,25 @@ function manage_teams_table_logos() {
             logo.className = "teams-table-logo-inner ferrari-team-table-logo"
         }
         else if (logo.dataset.teamid === "2") {
-            // logo.className = "teams-table-logo-inner mclaren-team-table-logo"
-            logo.src = "../assets/images/mclaren2.png"
+            if (logo.tagName === "IMG") {
+                const newElem = document.createElement("div");
+                newElem.className = "teams-table-logo-inner mclaren-team-table-logo";
+                newElem.dataset.teamid = logo.dataset.teamid;
+                logo.replaceWith(newElem);
+                logo = newElem;
+            }
+            else {
+                logo.className = "teams-table-logo-inner mclaren-team-table-logo";
+            }
         }
         else if (logo.dataset.teamid === "3") {
-            logo.className = "teams-table-logo-inner redbull-team-table-logo"
+            if (redbullReplace === "redbull") {
+                logo.className = "teams-table-logo-inner redbull-team-table-logo"
+            }
+            else if (redbullReplace === "ford") {
+                logo.className = "teams-table-logo-inner ford-team-table-logo"
+            }
+            logo.src = logos_disc[3]
         }
         else if (logo.dataset.teamid === "4") {
             logo.className = "teams-table-logo-inner merc-team-table-logo"
@@ -452,16 +658,50 @@ function manage_teams_table_logos() {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
                 logo.src = "../assets/images/renault2.png"
             }
+            else if (alpineReplace === "cadillac") {
+                logo.className = "teams-table-logo-inner cadillac-team-table-logo"
+                logo.src = logos_disc[5]
+            }
             else if (alpineReplace === "lotus") {
                 logo.src = "../assets/images/lotus2.png"
             }
         }
         else if (logo.dataset.teamid === "6") {
-            logo.className = "teams-table-logo-inner williams-team-table-logo"  
-            logo.src = "../assets/images/Williams_2026_logo.svg"
+            if (williamsReplace === "williams") {
+            logo.className = "teams-table-logo-inner williams-team-table-logo" 
+            }
+            else if (williamsReplace === "bmw") {
+                logo.className = "teams-table-logo-inner bmw-team-table-logo"
+            } 
+            logo.src = logos_disc[6]
         }
         else if (logo.dataset.teamid === "7") {
-            logo.className = "teams-table-logo-inner haas-team-table-logo"      
+            if (haasReplace === "toyota") {
+                if (logo.tagName === "IMG") {
+                    const newElem = document.createElement("div");
+                    newElem.className = "teams-table-logo-inner toyota-team-table-logo";
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                else {
+                    logo.className = "teams-table-logo-inner toyota-team-table-logo";
+                }
+            }
+            else {
+                if (logo.tagName !== "IMG") {
+                    const newElem = document.createElement("img");
+                    newElem.className = "teams-table-logo-inner haas-team-table-logo";
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    newElem.src = logos_disc[7];
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                else {
+                    logo.className = "teams-table-logo-inner haas-team-table-logo";
+                    logo.src = logos_disc[7];
+                }
+            }
         }
         else if (logo.dataset.teamid === "8") {
             if (alphaReplace === "alphatauri") {
@@ -474,8 +714,16 @@ function manage_teams_table_logos() {
                 logo.className = "teams-table-logo-inner hugo-team-table-logo"
             }
             else if (alphaReplace === "toyota") {
-                logo.className = "teams-table-logo-inner toyota-team-table-logo"
-                logo.src = "../assets/images/toyota2.png"
+                if (logo.tagName === "IMG") {
+                    const newElem = document.createElement("div");
+                    newElem.className = "teams-table-logo-inner toyota-team-table-logo";
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                else {
+                    logo.className = "teams-table-logo-inner toyota-team-table-logo";
+                }
             }
             else if (alphaReplace === "porsche") {
                 logo.className = "teams-table-logo-inner porsche-team-table-logo"
@@ -483,6 +731,19 @@ function manage_teams_table_logos() {
             else if (alphaReplace === "brawn") {
                 logo.className = "teams-table-logo-inner brawn-team-table-logo"
                 logo.src = "../assets/images/brawn2.png"
+            }
+
+            if (alphaReplace !== "toyota" && logo.tagName !== "IMG") {
+                const newElem = document.createElement("img");
+                newElem.className = logo.className;
+                newElem.dataset.teamid = logo.dataset.teamid;
+                newElem.src = logos_disc[8];
+                logo.replaceWith(newElem);
+                logo = newElem;
+            }
+
+            if (alphaReplace !== "brawn" && logo.tagName === "IMG") {
+                logo.src = logos_disc[8];
             }
         }
         else if (logo.dataset.teamid === "9") {
@@ -497,11 +758,19 @@ function manage_teams_table_logos() {
             }
             else if (alfaReplace === "sauber") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
-                logo.src = "../assets/images/sauber2.png"
             }
         }
         else if (logo.dataset.teamid === "10") {
-            logo.className = "teams-table-logo-inner aston-team-table-logo"
+            if (astonReplace === "aston") {
+                logo.className = "teams-table-logo-inner aston-team-table-logo"
+            }
+            else if (astonReplace === "racingpoint") {
+                logo.className = "teams-table-logo-inner racingpoint-team-table-logo"
+            }
+            else if (astonReplace === "jordan") {
+                logo.className = "teams-table-logo-inner jordan-team-table-logo"
+            }
+            logo.src = logos_disc[10]
         }
         else if (logo.dataset.teamid === "32") {
             logo.className = "teams-table-logo-inner custom-team-table-logo custom-replace"
@@ -521,6 +790,9 @@ function manage_teams_table_names() {
             }
             else if (alpineReplace === "renault") {
                 name.firstChild.innerText = "RENAULT"
+            }
+            else if (alpineReplace === "cadillac") {
+                name.firstChild.innerText = "CADILLAC"
             }
             else if (alpineReplace === "lotus") {
                 name.firstChild.innerText = "LOTUS"
@@ -558,6 +830,25 @@ function manage_teams_table_names() {
             }
             else if (alfaReplace === "sauber") {
                 name.firstChild.innerText = "SAUBER"
+            }
+        }
+        else if (name.dataset.teamid === "3") {
+            if (redbullReplace === "redbull") {
+                name.firstChild.innerText = "RED BULL"
+            }
+            else if (redbullReplace === "ford") {
+                name.firstChild.innerText = "FORD"
+            }
+        }
+        else if (name.dataset.teamid === "10") {
+            if (astonReplace === "aston") {
+                name.firstChild.innerText = "ASTON MARTIN"
+            }
+            else if (astonReplace === "racingpoint") {
+                name.firstChild.innerText = "RACING POINT"
+            }
+            else if (astonReplace === "jordan") {
+                name.firstChild.innerText = "JORDAN"
             }
         }
     })
@@ -639,10 +930,13 @@ export function new_load_drivers_table(data) {
     data = data[0]
     data = new_order_drivers(data)
     let driver1Poitns = 0, driver2Points = 0;
+    const driverRows = [];
     data.forEach(function (driver, index) {
         let odd = index % 2 === 0
         let races_done = driver["races"].map(x => x.raceId)
-        let points = new_addDriver(driver, races_done, odd)
+        let result = new_addDriver(driver, races_done, odd)
+        driverRows.push(result)
+        const points = result.points
         if (index === 0) {
             driver1Poitns = points
         }
@@ -650,8 +944,12 @@ export function new_load_drivers_table(data) {
             driver2Points = points
         }
     })
+
+    const leaderPoints = driverRows[0]?.points ?? 0;
+    updateStandingsPointsGaps(driverRows, leaderPoints);
+
     if (currentFormula === 1) {
-        checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo)
+        checkIfDriverIsChampion(data[0], driver1Poitns, driver2Points, pointsInfo, driverRows)
     }
     else {
         const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
@@ -659,34 +957,65 @@ export function new_load_drivers_table(data) {
         if (firstDriverPos) firstDriverPos.classList.remove("champion")
         if (firstDriverPoints) firstDriverPoints.classList.remove("champion")
     }
-    hoverListeners()
     checkscroll()
     new_color_drivers_table()
     driverCells = document.querySelectorAll(".drivers-table-data .drivers-table-normal")
 }
 
-function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo) {
+function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo, driverRows = []) {
     if (driver1 !== undefined) {
         const lastRaceDone = driver1["races"][driver1["races"].length - 1]["raceId"];
         const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
         racesLeftCount = calendarData.length - (lastRaceIndex + 1);
         sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
 
+        const maxRacePoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
+        const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
+        const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+        const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+
         const pointsDif = driver1Points - driver2Points
-        let pointsRemaining = racesLeftCount * pointsInfo.twoBiggestPoints[0] + sprintsLeft * 8 +
-            (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
-            (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
-            (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+        let pointsRemaining = racesLeftCount * maxRacePoints + sprintsLeft * 8 +
+            (isDoublePoints ? maxRacePoints : 0) +
+            (fastestLapBonus ? racesLeftCount : 0) +
+            (poleBonus ? racesLeftCount : 0)
 
         const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
         const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
-        if (pointsDif > pointsRemaining) {
+        const championClinched = pointsDif > pointsRemaining;
+        if (championClinched) {
             firstDriverPos.classList.add("champion")
             firstDriverPoints.classList.add("champion")
         }
         else {
             firstDriverPos.classList.remove("champion")
             firstDriverPoints.classList.remove("champion")
+        }
+
+        driverRows.forEach((row) => {
+            row?.row?.classList.remove("last-title-contender");
+        });
+
+        driverRows.forEach((row, index) => {
+            if (!row?.pointsDiv) return;
+            if (index === 0) {
+                row.pointsDiv.classList.remove("eliminated");
+                return;
+            }
+            const eliminated = (Number(row.points) + Number(pointsRemaining)) < Number(driver1Points);
+            row.pointsDiv.classList.toggle("eliminated", eliminated);
+        });
+
+        if (!championClinched) {
+            for (let i = driverRows.length - 1; i >= 0; i--) {
+                const row = driverRows[i];
+                if (!row?.row) continue;
+                const hasChance = (Number(row.points) + Number(pointsRemaining)) >= Number(driver1Points);
+                if (hasChance) {
+                    row.row.classList.add("last-title-contender");
+                    break;
+                }
+            }
         }
     }
 }
@@ -701,9 +1030,11 @@ export function update_logo(team, logo, newTeam) {
         logos_disc[5] = logo
     }
     else if (team === "williams") {
+        williamsReplace = newTeam
         logos_disc[6] = logo
     }
     else if (team === "haas") {
+        haasReplace = newTeam || "haas"
         logos_disc[7] = logo
     }
     else if (team === "alphatauri") {
@@ -713,6 +1044,14 @@ export function update_logo(team, logo, newTeam) {
     else if (team === "alfa") {
         alfaReplace = newTeam
         logos_disc[9] = logo
+    }
+    else if (team === "redbull") {
+        redbullReplace = newTeam
+        logos_disc[3] = logo
+    }
+    else if (team === "aston") {
+        astonReplace = newTeam
+        logos_disc[10] = logo
     }
 }
 
@@ -736,7 +1075,10 @@ export function new_load_teams_table(data) {
     // Mapa posEquipo -> posición (1..10)
     const pairTeamPosDict = {};
     pairTeamPos.forEach(function (pair) {
-        pairTeamPosDict[pair[0]] = pair[1];
+        pairTeamPosDict[pair[0]] = {
+            pos: Number(pair[1]),
+            lastPositionChange: Number(pair[2] ?? 0)
+        };
     });
 
     // Ahora data[0] es el array de pilotos con formato-objeto
@@ -786,14 +1128,16 @@ export function new_load_teams_table(data) {
     let team1Points = 0, team2Points = 0, firstTeamId = 0;
     const teamRows = [];
     teamIds.forEach((teamId) => {
-        const pos = pairTeamPosDict[teamId];
+        const teamInfo = pairTeamPosDict[teamId] || {};
+        const pos = teamInfo.pos;
+        const lastPositionChange = teamInfo.lastPositionChange;
         let teamName = combined_dict[teamId] //remove the final (F2) or (F3) that may exist
         if (teamName && (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)"))) {
             teamName = teamName.slice(0, -5)
         }
-        const result = new_addTeam(teamData[teamId], teamName, pos, teamId);
+        const result = new_addTeam(teamData[teamId], teamName, pos, teamId, lastPositionChange);
         const points = result.points;
-        teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv });
+        teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv, pointsDiv: result.pointsDiv, pointsGapDiv: result.pointsGapDiv });
         if (pos === 1) {
             team1Points = points;
             firstTeamId = teamId;
@@ -811,13 +1155,17 @@ export function new_load_teams_table(data) {
             team.pos = position;
             if (team.posDiv) {
                 team.posDiv.innerText = String(position);
+                team.posDiv.dataset.position = String(position);
             }
         });
     }
 
+    const leaderTeamPoints = teamRows.find(team => Number(team.pos) === 1)?.points ?? 0;
+    updateStandingsPointsGaps(teamRows, leaderTeamPoints);
+
     new_color_teams_table();
     if (currentFormula === 1) {
-        checkIfTeamIsChamp(team1Points, team2Points, pointsInfo);
+        checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows);
         manage_teams_table_logos();
         manage_teams_table_names();
     }
@@ -831,12 +1179,30 @@ export function new_load_teams_table(data) {
     teamCells = document.querySelectorAll(".teams-table-data .teams-table-normal");
 }
 
-function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
-    const pointsDif = team1Points - team2Points
-    let pointsRemaining = racesLeftCount * (parseInt(pointsInfo.twoBiggestPoints[0]) + parseInt(pointsInfo.twoBiggestPoints[1])) + sprintsLeft * 15 +
-        (pointsInfo.isLastRaceDouble ? pointsInfo.twoBiggestPoints[0] : 0) +
-        (pointsInfo.fastestLapBonusPoint === 1 ? racesLeftCount : 0) +
-        (pointsInfo.poleBonusPoint === 1 ? racesLeftCount : 0)
+function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows = []) {
+    const sortedTeams = [...teamRows]
+        .filter(team => team && Number.isFinite(Number(team.pos)))
+        .sort((a, b) => Number(a.pos) - Number(b.pos));
+
+    const leaderTeam = sortedTeams.find(team => Number(team.pos) === 1) || sortedTeams[0];
+    const runnerUpTeam = sortedTeams.find(team => Number(team.pos) === 2) || sortedTeams[1];
+
+    const leaderPoints = Number(leaderTeam?.points ?? team1Points) || 0;
+    const runnerUpPoints = Number(runnerUpTeam?.points ?? team2Points) || 0;
+
+    const pointsDif = leaderPoints - runnerUpPoints
+
+    const maxFirstPoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
+    const maxSecondPoints = Number(pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? pointsInfo?.twoBiggestPoints?.[1] ?? 0);
+    const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
+    const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
+    const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+    const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+
+    let pointsRemaining = racesLeftCount * maxTeamRacePoints + sprintsLeft * 15 +
+        (isDoublePoints ? maxTeamRacePoints : 0) +
+        (fastestLapBonus ? racesLeftCount : 0) +
+        (poleBonus ? racesLeftCount : 0)
 
 
     const firstTeamRow = document.querySelector(
@@ -845,7 +1211,8 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
     const firstTeamPos = firstTeamRow?.querySelector(".teams-table-position");
     const firstTeamPoints = firstTeamRow?.querySelector(".teams-table-points");
 
-    if (pointsDif > pointsRemaining) {
+    const championClinched = pointsDif > pointsRemaining;
+    if (championClinched) {
         firstTeamPos.classList.add("champion")
         firstTeamPoints.classList.add("champion")
     }
@@ -853,9 +1220,35 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo) {
         firstTeamPos.classList.remove("champion")
         firstTeamPoints.classList.remove("champion")
     }
+
+    teamRows.forEach((team) => {
+        team?.row?.classList.remove("last-title-contender");
+    });
+
+    teamRows.forEach((team) => {
+        if (!team?.pointsDiv) return;
+        if (Number(team.pos) === 1) {
+            team.pointsDiv.classList.remove("eliminated");
+            return;
+        }
+        const eliminated = (Number(team.points) + Number(pointsRemaining)) < Number(leaderPoints);
+        team.pointsDiv.classList.toggle("eliminated", eliminated);
+    });
+
+    if (!championClinched) {
+        for (let i = sortedTeams.length - 1; i >= 0; i--) {
+            const team = sortedTeams[i];
+            if (!team?.row) continue;
+            const hasChance = (Number(team.points) + Number(pointsRemaining)) >= Number(leaderPoints);
+            if (hasChance) {
+                team.row.classList.add("last-title-contender");
+                break;
+            }
+        }
+    }
 }
 
-function new_addTeam(teamRaceMap, name, pos, id) {
+function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
     // teamRaceMap: Map<raceId, RaceObj[]>
     let data = document.querySelector(".teams-table-data");
     let row = document.createElement("div");
@@ -880,6 +1273,16 @@ function new_addTeam(teamRaceMap, name, pos, id) {
     posDiv.dataset.position = pos;
     posDiv.innerText = pos;
     row.appendChild(posDiv);
+
+    const posChangeDiv = document.createElement("div");
+    posChangeDiv.className = "standings-pos-change";
+    const posChangeNumber = document.createElement("span");
+    posChangeNumber.className = "standings-pos-change-number";
+    const posChangeIcon = document.createElement("i");
+    posChangeDiv.appendChild(posChangeNumber);
+    posChangeDiv.appendChild(posChangeIcon);
+    setStandingsPositionChange(posChangeDiv, lastPositionChange);
+    row.appendChild(posChangeDiv);
 
     let logoDiv = document.createElement("div");
     logoDiv.classList = "teams-table-logo";
@@ -1170,16 +1573,126 @@ function new_addTeam(teamRaceMap, name, pos, id) {
         }
     });
 
+    const pointsGapDiv = document.createElement("div");
+    pointsGapDiv.className = "standings-points-gap";
+    row.appendChild(pointsGapDiv);
+
     let pointsDiv = document.createElement("div");
     pointsDiv.classList = "teams-table-points bold-font";
     pointsDiv.innerText = (currentFormula === 3 && teampoints === 0) ? "" : teampoints;
     row.appendChild(pointsDiv);
 
     data.appendChild(row);
-    return { points: teampoints, row, posDiv };
+    return { points: teampoints, row, posDiv, pointsDiv, pointsGapDiv };
 }
 
 
+
+function buildF1DriverLogoElement(teamId) {
+    let logo = document.createElement("img");
+    logo.classList = "drivers-table-logo";
+    logo.dataset.teamid = teamId;
+
+    if (teamId === 1) logo.classList.add("logo-ferrari-table");
+    if (teamId === 2) {
+        logo = document.createElement("div");
+        logo.classList = "drivers-table-logo logo-mclaren-table logo-reduce";
+        logo.dataset.teamid = teamId;
+    }
+    if (teamId === 3) {
+        logo.classList.add("logo-up-down-mid");
+        if (redbullReplace !== "redbull") {
+            logo.classList.add(driversTableLogosDict[redbullReplace]);
+        }
+    }
+    if (teamId === 6) {
+        if (williamsReplace === "williams") {
+            logo = document.createElement("div");
+            logo.classList.add("logo-williams-2026-table");
+            logo.dataset.teamid = teamId;
+        }
+        else {
+            logo = document.createElement("img");
+            logo.classList = "drivers-table-logo logo-bmw-table";
+            logo.dataset.teamid = teamId;
+            logo.src = logos_disc[6];
+        }
+    }
+    if (teamId === 7 && haasReplace === "toyota") {
+        logo = document.createElement("div");
+        logo.classList = "drivers-table-logo logo-toyota-table";
+        logo.dataset.teamid = teamId;
+    }
+    if (teamId === 4) logo.classList.add("logo-merc-table");
+    if (teamId === 7 && haasReplace !== "toyota") logo.classList.add("logo-merc-table");
+    if (teamId === 5) {
+        if (alpineReplace === "cadillac") {
+            logo = document.createElement("img");
+            logo.classList = "drivers-table-logo";
+            logo.dataset.teamid = teamId;
+        }
+        else {
+            logo = document.createElement("div");
+            logo.dataset.teamid = teamId;
+        }
+        logo.classList.add(driversTableLogosDict[alpineReplace]);
+    }
+    if (teamId === 8) {
+        if (["alphatauri", "visarb", "brawn", "hugo"].includes(alphaReplace)) {
+            logo = document.createElement("div");
+            logo.dataset.teamid = teamId;
+        }
+        else if (alphaReplace === "toyota") {
+            logo = document.createElement("div");
+            logo.classList = "drivers-table-logo";
+            logo.dataset.teamid = teamId;
+        }
+        logo.classList.add(driversTableLogosDict[alphaReplace]);
+    }
+    if (teamId === 9) {
+        if (alfaReplace === "sauber") {
+            logo = document.createElement("div");
+            logo.classList = "drivers-table-logo";
+            logo.dataset.teamid = teamId;
+        }
+        logo.classList.add(driversTableLogosDict[alfaReplace]);
+    }
+    if (teamId === 10 || teamId === 32) {
+        logo.classList.add("logo-up-down-little");
+        if (teamId === 10 && astonReplace !== "aston") {
+            logo.classList.add(driversTableLogosDict[astonReplace]);
+        }
+    }
+    if (teamId === 32) logo.classList.add("custom-replace");
+
+    if (logo.tagName === "IMG") logo.src = logos_disc[teamId];
+    return logo;
+}
+
+function buildDriverLogoDiv(teamId, opts = {}) {
+    const {
+        isF1 = currentFormula === 1,
+        wrapperClass = "drivers-table-logo-div",
+        juniorSizeClass = "junior-team-logo-driver",
+    } = opts;
+
+    const logoDiv = document.createElement("div");
+    logoDiv.className = wrapperClass;
+
+    if (isF1) {
+        const logo = buildF1DriverLogoElement(teamId);
+        logoDiv.appendChild(logo);
+    }
+    else {
+        logoDiv.appendChild(buildTeamAbbrElement(teamId, juniorSizeClass));
+    }
+
+    if (team_dict[teamId]) {
+        logoDiv.classList.add(team_dict[teamId] + "hoverback");
+    }
+
+    return logoDiv;
+}
 
 function new_addDriver(driver, races_done, odd) {
     let data = document.querySelector(".drivers-table-data");
@@ -1208,43 +1721,17 @@ function new_addDriver(driver, races_done, odd) {
     posDiv.innerText = driver["championshipPosition"];
     row.appendChild(posDiv);
 
-    let logoDiv = document.createElement("div");
-    logoDiv.classList = "drivers-table-logo-div";
-    if (isF1) {
-        let logo = document.createElement("img");
-        logo.classList = "drivers-table-logo";
-        logo.dataset.teamid = driver["latestTeamId"];
+    const posChangeDiv = document.createElement("div");
+    posChangeDiv.className = "standings-pos-change";
+    const posChangeNumber = document.createElement("span");
+    posChangeNumber.className = "standings-pos-change-number";
+    const posChangeIcon = document.createElement("i");
+    posChangeDiv.appendChild(posChangeNumber);
+    posChangeDiv.appendChild(posChangeIcon);
+    setStandingsPositionChange(posChangeDiv, driver["lastPositionChange"]);
+    row.appendChild(posChangeDiv);
 
-        if (driver["latestTeamId"] === 1) logo.classList.add("logo-ferrari-table");
-        if (driver["latestTeamId"] === 2) logo.classList.add("logo-reduce");
-        if (driver["latestTeamId"] === 3) logo.classList.add("logo-up-down-mid");
-        if (driver["latestTeamId"] === 6) {
-            logo = document.createElement("div");
-            logo.classList.add("logo-williams-2026-table");
-        }
-        if (driver["latestTeamId"] === 4 || driver["latestTeamId"] === 7) logo.classList.add("logo-merc-table");
-        if (driver["latestTeamId"] === 5) {
-            logo = document.createElement("div");
-            logo.classList.add(driversTableLogosDict[alpineReplace]);
-        }
-        if (driver["latestTeamId"] === 8) {
-            if (["alphatauri", "visarb", "brawn", "hugo"].includes(alphaReplace)) {
-                logo = document.createElement("div");
-            }
-            logo.classList.add(driversTableLogosDict[alphaReplace]);
-        }
-        if (driver["latestTeamId"] === 9) logo.classList.add(driversTableLogosDict[alfaReplace]);
-        if (driver["latestTeamId"] === 10 || driver["latestTeamId"] === 32) logo.classList.add("logo-up-down-little");
-        if (driver["latestTeamId"] === 32) logo.classList.add("custom-replace");
-
-        if (logo.tagName === "IMG") logo.src = logos_disc[driver["latestTeamId"]];
-        logoDiv.appendChild(logo);
-    }
-    else {
-        logoDiv.appendChild(buildTeamAbbrElement(driver["latestTeamId"], "junior-team-logo-driver"));
-    }
-
-    logoDiv.classList.add(team_dict[driver["latestTeamId"]] + "hoverback");
+    const logoDiv = buildDriverLogoDiv(driver["latestTeamId"], { isF1 });
     row.appendChild(logoDiv);
     row.appendChild(nameDiv);
 
@@ -1358,22 +1845,17 @@ function new_addDriver(driver, races_done, odd) {
         }
     });
 
+    const pointsGapDiv = document.createElement("div");
+    pointsGapDiv.className = "standings-points-gap";
+    row.appendChild(pointsGapDiv);
+
     let pointsDiv = document.createElement("div");
     pointsDiv.classList = "drivers-table-points bold-font";
     pointsDiv.innerText = driverpoints;
     row.appendChild(pointsDiv);
 
-    row.addEventListener("hover", function (elem) {
-        if (elem.dataset.teamid === 2) {
-            let logo = this.querySelector(".drivers-table-logo");
-            logo.style.opacity = "0";
-            let logo2 = this.querySelector(".drivers-table-logo").nextElementSibling;
-            logo2.style.opacity = "1";
-        }
-    });
-
     data.appendChild(row);
-    return driverpoints;
+    return { points: driverpoints, row, pointsDiv, pointsGapDiv };
 }
 
 
@@ -1616,34 +2098,6 @@ function manageTeamsText(raceDiv) {
     return raceDiv
 }
 
-function hoverListeners() {
-    if (currentFormula !== 1) {
-        return;
-    }
-    document.querySelectorAll(".drivers-table-row").forEach(function (row) {
-        row.addEventListener("mouseenter", function () {
-            if (this.dataset.teamid === "2" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
-                || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota"))) {
-
-                let logo = this.querySelector(".drivers-table-logo");
-                if (!logo) return;
-                const baseSrc = logos_disc[this.dataset.teamid];
-                if (typeof baseSrc !== "string" || !/\.(png|jpe?g)$/i.test(baseSrc)) return;
-                logo.src = baseSrc.replace(/(\.[^.]+)$/, "2$1");
-            }
-        });
-        row.addEventListener("mouseleave", function () {
-            if (this.dataset.teamid === "2" || (this.dataset.teamid === "5" && alpineReplace !== "alpine")
-                || (this.dataset.teamid === "9" && alfaReplace === "sauber") || (this.dataset.teamid === "8" && (alphaReplace === "brawn" || alphaReplace === "hugo" || alphaReplace === "toyota"))) {
-                let logo = this.querySelector(".drivers-table-logo");
-                if (!logo) return;
-                const baseSrc = logos_disc[this.dataset.teamid];
-                if (typeof baseSrc !== "string" || !/\.(png|jpe?g)$/i.test(baseSrc)) return;
-                logo.src = baseSrc;
-            }
-        });
-    });
-}
 
 
 
@@ -1695,13 +2149,12 @@ export function generateYearsMenu(actualYear) {
     allTime.id = "allTimeRecords";
     allTime.dataset.year = "all";                   // <- clave
     yearMenu.insertBefore(allTime, yearMenu.firstChild);
-    allTime.addEventListener("click", () => {
-        setYearButton(allTime);
-        const value = document.querySelector("#recordsTypeButton").dataset.value;
-        new Command("recordSelected", { type: value, year: "all" }).execute();
-    });
+    allTime.addEventListener("click", () => manageRecordsSelected(allTime));
 
-    document.getElementById("standingspill").click();
+    syncTableTypeDropdownChecks();
+    syncSeriesTypeDropdownChecks();
+    syncRecordsTypeDropdownChecks();
+    syncYearDropdownChecks();
 }
 
 
@@ -1710,7 +2163,8 @@ function manageRecordsSelected(forcedYearEl = null) {
     const yearMenu = document.querySelector("#yearMenu");
     const yearItems = Array.from(yearMenu.querySelectorAll("a"));
     const yearBtn = document.getElementById("yearButton");
-    const typeVal = document.querySelector("#recordsTypeButton").dataset.value;
+    const typeVal = document.querySelector("#recordsTypeButton").dataset.value; 
+    updateTopPanelControlsVisibility();
 
     // resolve seleccionado actual
     let selectedEl = forcedYearEl
@@ -1720,7 +2174,12 @@ function manageRecordsSelected(forcedYearEl = null) {
     const isAllTime = el => el.dataset.year === "all";
 
     // si es standings y estaba en All Time, forzar primer año real
-    if (typeVal === "standings" && isAllTime(selectedEl)) {
+    if ((typeVal === "standings" || typeVal === "seasonreview") && isAllTime(selectedEl)) {
+        const firstReal = yearItems.find(i => !isAllTime(i));
+        if (firstReal) selectedEl = firstReal;
+    }
+
+    if (driverOrTeams === "teams" && isAllTime(selectedEl)) {
         const firstReal = yearItems.find(i => !isAllTime(i));
         if (firstReal) selectedEl = firstReal;
     }
@@ -1731,31 +2190,891 @@ function manageRecordsSelected(forcedYearEl = null) {
     const selectedYear = selectedEl.dataset.year;
     const isCurrentYear = selectedYear === yearItems[1].dataset.year;
 
+    console.log("Selected year:", selectedYear, "Type:", typeVal);
+
     if (typeVal === "standings") {
         isYearSelected = true
         manage_show_tables();
         new Command("yearSelected", { year: selectedYear, isCurrentYear, formula: currentFormula }).execute();
-    } else {
-        new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
+    }
+    else if (typeVal === "seasonreview") {
+        manageSeasonReview();
+    }
+    else {
+        if (driverOrTeams === "teams" && ["wins", "poles", "podiums", "dotd"].includes(typeVal) && selectedYear !== "all") {
+            new Command("teamRecordRequest", { type: typeVal, year: selectedYear, formula: currentFormula }).execute();
+        }
+        else {
+            new Command("recordSelected", { type: typeVal, year: selectedYear }).execute();
+        }
         manageShowRecords();
     }
 }
+
+function manageSeasonReview(){
+    const driversTable = document.querySelector(".drivers-table")
+    const teamsTable = document.querySelector(".teams-table")
+    driversTable.classList.add("d-none")
+    teamsTable.classList.add("d-none")
+    const recordsList = document.querySelector(".records-list")
+    recordsList.classList.add("d-none")
+
+    const seasonReviewBento = document.querySelector(".season-review-bento")    
+    seasonReviewBento.classList.remove("d-none")
+    updateTopPanelControlsVisibility();
+    const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
+    if (driversTeamsPills) driversTeamsPills.classList.add("d-none");
+    const hideHistoric = document.querySelector("#season_viewer .hide-historic-drivers");
+    if (hideHistoric) hideHistoric.classList.add("d-none");
+
+    const selectedYear = document.getElementById("yearButton")?.dataset?.year;
+    if (selectedYear) {
+        const yearMenu = document.querySelector("#yearMenu");
+        const yearItems = yearMenu ? Array.from(yearMenu.querySelectorAll("a")) : [];
+        const currentYear = yearItems[1]?.dataset?.year;
+        const isCurrentYear = currentYear ? (selectedYear === currentYear) : true;
+        new Command("seasonReviewSelected", { year: selectedYear, isCurrentYear, formula: currentFormula }).execute();
+    }
+}
+
+export function populateSeasonReview(data) {
+    populateDriversStandingsSeasonReview(data.driversStandings)
+    populateTeamsStandingsSeasonReview(data.teamsStandings)
+    populateComparisonsSeasonReview(data.teamMateHeadToHead, data.teamsStandings)
+    populateQualifyingAnalysisSeasonReview(data.qualifyingStageCounts)
+    populateWinsDriversSeasonReview(data.winsRecords)
+    populateTeamsAggregateSeasonReview((data.teamWinsTotals?.length ? data.teamWinsTotals : data.winsRecords), ".wins-teams-list", 4)
+    populateTeamsAggregateSeasonReview((data.teamPolesTotals?.length ? data.teamPolesTotals : data.polesRecords), ".poles-teams-list", 4)
+    populateDriverOfTheDaySeasonReview(data.driverOfTheDayCounts)
+    populatePodiumsTeamsSeasonReview((data.teamPodiumsTotals?.length ? data.teamPodiumsTotals : data.podiumsRecords))
+    populatePodiumsDriversSeasonReview(data.podiumsRecords)
+}
+
+function populateComparisonsSeasonReview(comparisons, teamsStandings) {
+    const raceComparisons = document.querySelector(".race-comparison");
+    const qualiComparisons = document.querySelector(".quali-comparison");
+    if (!raceComparisons || !qualiComparisons) return;
+
+    raceComparisons.innerHTML = "";
+    qualiComparisons.innerHTML = "";
+    if (!Array.isArray(comparisons) || comparisons.length === 0) return;
+
+    const startH2HFromSeasonReview = (driver1Id, driver2Id) => {
+        const h2hPill = document.getElementById("h2hpill");
+        if (h2hPill) h2hPill.click();
+
+        const driversModePill = document.getElementById("driverspillmodal");
+        if (driversModePill) driversModePill.click();
+
+        const selectedYear = document.getElementById("yearButton")?.dataset?.year;
+        const yearMenuH2H = document.getElementById("yearMenuH2H");
+        queueAutoCompareDrivers(driver1Id, driver2Id);
+
+        if (selectedYear && yearMenuH2H) {
+            const yearLink = Array.from(yearMenuH2H.querySelectorAll("a"))
+                .find(a => (a.dataset.year || a.textContent)?.trim() === String(selectedYear));
+            if (yearLink) yearLink.click();
+        }
+    };
+
+    const parseHeadToHead = (value) => {
+        if (typeof value === "string") {
+            const parts = value.split("-").map(x => parseInt(x, 10));
+            if (parts.length === 2 && parts.every(n => Number.isFinite(n))) {
+                return parts;
+            }
+        }
+        return [0, 0];
+    };
+
+    const getSurname = (name) => {
+        const words = (name || "").trim().split(/\s+/).filter(Boolean);
+        return words.length ? words[words.length - 1] : "";
+    };
+
+    const teamPositionById = new Map();
+    if (Array.isArray(teamsStandings)) {
+        teamsStandings.forEach((row) => {
+            const teamId = Number(Array.isArray(row) ? row[0] : (row?.TeamID ?? row?.teamId));
+            const pos = Number(Array.isArray(row) ? row[1] : (row?.Position ?? row?.position));
+            if (Number.isFinite(teamId) && Number.isFinite(pos)) {
+                teamPositionById.set(teamId, pos);
+            }
+        });
+    }
+
+    const ordered = [...comparisons].sort((a, b) => {
+        const teamA = Number(a?.teamId ?? a?.TeamID ?? a?.teamID ?? -1);
+        const teamB = Number(b?.teamId ?? b?.TeamID ?? b?.teamID ?? -1);
+        const posA = teamPositionById.get(teamA) ?? 999;
+        const posB = teamPositionById.get(teamB) ?? 999;
+        return Number(posA) - Number(posB);
+    });
+
+    const buildRow = (item, score1, score2) => {
+        const teamId = Number(item?.teamId ?? item?.TeamID ?? item?.teamID ?? -1);
+        const driver1Name = news_insert_space(item?.driver1Name ?? item?.Driver1Name ?? "");
+        const driver2Name = news_insert_space(item?.driver2Name ?? item?.Driver2Name ?? "");
+        const driver1Surname = getSurname(driver1Name);
+        const driver2Surname = getSurname(driver2Name);
+
+        const row = document.createElement("div");
+        row.className = "season-review-comparison-row";
+
+        const teamKey = team_dict[teamId];
+        if (teamKey) row.classList.add(teamKey);
+
+        const name1Div = document.createElement("div");
+        name1Div.className = "season-review-comparison-name left";
+        const surname1Span = document.createElement("span");
+        surname1Span.className = "bold-font";
+        surname1Span.textContent = driver1Surname;
+        name1Div.appendChild(surname1Span);
+        row.appendChild(name1Div);
+
+        const score1Div = document.createElement("div");
+        score1Div.className = "season-review-comparison-score";
+        score1Div.textContent = String(score1);
+        row.appendChild(score1Div);
+
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
+            });
+            row.appendChild(logoDiv);
+        }
+
+        const score2Div = document.createElement("div");
+        score2Div.className = "season-review-comparison-score";
+        score2Div.textContent = String(score2);
+        row.appendChild(score2Div);
+
+        const name2Div = document.createElement("div");
+        name2Div.className = "season-review-comparison-name right";
+        const surname2Span = document.createElement("span");
+        surname2Span.className = "bold-font";
+        surname2Span.textContent = driver2Surname;
+        name2Div.appendChild(surname2Span);
+        row.appendChild(name2Div);
+
+        const driver1Id = Number(item?.driver1Id ?? item?.Driver1ID ?? item?.Driver1Id);
+        const driver2Id = Number(item?.driver2Id ?? item?.Driver2ID ?? item?.Driver2Id);
+        if (Number.isFinite(driver1Id) && Number.isFinite(driver2Id)) {
+            row.addEventListener("click", () => startH2HFromSeasonReview(driver1Id, driver2Id));
+        }
+
+        return row;
+    };
+
+    ordered.forEach((item) => {
+        let race1 = Number(item?.raceAhead1);
+        let race2 = Number(item?.raceAhead2);
+        if (!Number.isFinite(race1) || !Number.isFinite(race2)) {
+            [race1, race2] = parseHeadToHead(item?.raceHeadToHead);
+        }
+
+        let quali1 = Number(item?.qualiAhead1);
+        let quali2 = Number(item?.qualiAhead2);
+        if (!Number.isFinite(quali1) || !Number.isFinite(quali2)) {
+            [quali1, quali2] = parseHeadToHead(item?.qualiHeadToHead);
+        }
+
+        raceComparisons.appendChild(buildRow(item, race1, race2));
+        qualiComparisons.appendChild(buildRow(item, quali1, quali2));
+    });
+}
+
+function populateDriversStandingsSeasonReview(data) {
+    const isF1 = currentFormula === 1;
+    const standings = document.querySelector(".bento-driver-standings");
+    if (!standings) return;
+    standings.innerHTML = "";
+    let leaderPts = data.length > 0 ? Number(data[0].Points) : 0;
+
+    data.forEach((driver, index) => {
+        const driverDiv = document.createElement("div");
+        driverDiv.className = "season-review-driver";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-driver-position";
+        posDiv.textContent = driver.Position;
+        driverDiv.appendChild(posDiv);
+
+        const teamId = Number(driver.TeamID ?? driver.teamId ?? driver.teamID ?? driver.TeamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1,
+                wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
+            });
+            driverDiv.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-driver-name";
+        const fullName = news_insert_space(driver.DriverName);
+        const surname = fullName.split(" ").pop();
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = fullName.replace(surname, "");
+        const surnameSpan = document.createElement("span");
+        surnameSpan.textContent = surname;
+        surnameSpan.className = "bold-font";
+        nameDiv.appendChild(nameSpan);
+        nameDiv.appendChild(surnameSpan);
+        driverDiv.appendChild(nameDiv);
+
+        const pointsDiv = document.createElement("div");
+        pointsDiv.className = "season-review-driver-points";
+        pointsDiv.textContent = driver.Points;
+
+        const pointsDiff = Number(driver.Points) - leaderPts;
+        const diffDiv = document.createElement("div");
+        diffDiv.className = "season-review-driver-points diff";
+        diffDiv.textContent = index === 0 ? "" : `+${pointsDiff.toString().replace("-", "")}`;
+        driverDiv.appendChild(diffDiv);
+
+        driverDiv.appendChild(pointsDiv);
+
+        const position = Number(posDiv.textContent);
+        if (position === 1) {
+            posDiv.classList.add("champion");
+            pointsDiv.classList.add("champion");
+        }
+
+        standings.appendChild(driverDiv);
+    });
+
+    //calculate heiight and console log it
+    let height = standings.getBoundingClientRect().height;
+    console.log("Drivers Standings Height:", height);
+
+    updateDriversStandingsMaxHeight();
+    ensureDriversStandingsHeightListener();
+}
+
+function updateDriversStandingsMaxHeight() {
+    const item = document.querySelector(".bento-item.item-1");
+    const standings = document.querySelector(".bento-driver-standings");
+    if (!item || !standings) return;
+
+    const height = item.getBoundingClientRect().height;
+    //if height is less than 60, maxHeight will be 570px
+    const maxHeight = height <= 60 ? 570 : Math.max(0, Math.floor(height - 60));
+
+    standings.style.maxHeight = `${maxHeight}px`;
+    standings.style.overflowX = "hidden";
+    standings.style.overflowY = "hidden";
+    standings.classList.remove("with-scrollbar");
+    const needsScroll = standings.scrollHeight > (standings.clientHeight + 2);
+    if (needsScroll) {
+        standings.style.overflowY = "auto";
+        standings.classList.add("with-scrollbar");
+    }
+}
+
+function ensureDriversStandingsHeightListener() {
+    if (driversStandingsHeightListenerAttached) return;
+    driversStandingsHeightListenerAttached = true;
+
+    let rafId = null;
+    window.addEventListener("resize", () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            updateDriversStandingsMaxHeight();
+        });
+    });
+}
+
+function populateTeamsStandingsSeasonReview(data) {
+    if (!Array.isArray(data)) return;
+
+    const container = document.querySelector(".bento-team-standings");
+    if (!container) return;
+
+    container.innerHTML = "";
+    const leaderPts = data[0][2];
+
+    data.forEach((team, index) => {
+        const teamObj = Array.isArray(team) ? {
+            TeamID: team[0],
+            Position: team[1],
+            Points: team[2]
+        } : team;
+
+        const teamDiv = document.createElement("div");
+        teamDiv.className = "season-review-team";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-team-position";
+        posDiv.textContent = teamObj.Position ?? teamObj.position ?? "";
+        teamDiv.appendChild(posDiv);
+
+        const teamId = Number(teamObj.TeamID ?? teamObj.teamId ?? teamObj.teamID ?? teamObj.TeamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
+            });
+            teamDiv.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-team-name bold-font";
+        nameDiv.textContent = combined_dict[teamId] || "";
+        teamDiv.appendChild(nameDiv);
+
+        const pointsDiv = document.createElement("div");
+        pointsDiv.className = "season-review-team-points";
+        pointsDiv.textContent = teamObj.Points ?? teamObj.points ?? "";
+        
+        const pointsDiff = Number(teamObj.Points) - leaderPts;
+        const diffDiv = document.createElement("div");
+        diffDiv.className = "season-review-team-points diff";
+        diffDiv.textContent = index === 0 ? "" : `+${pointsDiff.toString().replace("-", "")}`;
+        teamDiv.appendChild(diffDiv);
+        
+        teamDiv.appendChild(pointsDiv);
+
+        const position = Number(posDiv.textContent);
+        if (position === 1) {
+            posDiv.classList.add("champion");
+            pointsDiv.classList.add("champion");
+        }
+
+        container.appendChild(teamDiv);
+    });
+}
+
+function populateQualifyingAnalysisSeasonReview(data) {
+    const polesContainer = document.querySelector(".poles-comparison");
+    const q3Container = document.querySelector(".q3-comparison");
+    const q2Container = document.querySelector(".q2-comparison");
+    if (!polesContainer || !q3Container || !q2Container) return;
+
+    polesContainer.innerHTML = "";
+    q3Container.innerHTML = "";
+    q2Container.innerHTML = "";
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const getSurname = (name) => {
+        const words = (name || "").trim().split(/\s+/).filter(Boolean);
+        return words.length ? words[words.length - 1] : "";
+    };
+
+    const buildRow = (entry, position, count) => {
+        const teamId = Number(entry?.teamId ?? entry?.TeamID ?? entry?.teamID ?? -1);
+        const fullName = news_insert_space(entry?.name ?? entry?.DriverName ?? "");
+        const surname = getSurname(fullName);
+
+        const row = document.createElement("div");
+        row.className = "season-review-qualifying-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-qualifying-position";
+        posDiv.textContent = String(position);
+        row.appendChild(posDiv);
+
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
+            });
+            row.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-qualifying-name";
+        const surnameSpan = document.createElement("span");
+        surnameSpan.className = "bold-font";
+        surnameSpan.textContent = surname;
+        nameDiv.appendChild(surnameSpan);
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-qualifying-count";
+        countDiv.textContent = String(count);
+        row.appendChild(countDiv);
+
+        return row;
+    };
+
+    const byKey = (key) => {
+        return [...data].filter((d) => (Number(d?.[key]) || 0) > 0).sort((a, b) => {
+            const av = Number(a?.[key]) || 0;
+            const bv = Number(b?.[key]) || 0;
+            if (bv !== av) return bv - av;
+            return String(a?.name ?? "").localeCompare(String(b?.name ?? ""));
+        });
+    };
+
+    const poles = byKey("poleCount");
+    const q3s = byKey("q3Count");
+    const q2s = byKey("q2Count");
+
+    poles.forEach((d, idx) => polesContainer.appendChild(buildRow(d, idx + 1, Number(d?.poleCount) || 0)));
+    q3s.forEach((d, idx) => q3Container.appendChild(buildRow(d, idx + 1, Number(d?.q3Count) || 0)));
+    q2s.forEach((d, idx) => q2Container.appendChild(buildRow(d, idx + 1, Number(d?.q2Count) || 0)));
+
+    updateQualifyingListsMaxHeight();
+    ensureQualifyingListsHeightListener();
+}
+
+function updateQualifyingListsMaxHeight() {
+    const item = document.querySelector(".bento-item.item-3");
+    if (!item) return;
+
+    const height = item.getBoundingClientRect().height;
+    //if height is less than 60, maxHeight will be 250px
+    const maxHeight = height < 60 ? 250 : Math.max(0, Math.floor(height - 60));
+
+    document.querySelectorAll(".poles-comparison, .q3-comparison, .q2-comparison").forEach((el) => {
+        el.style.maxHeight = `${maxHeight}px`;
+        el.style.overflowX = "hidden";
+        el.style.overflowY = "hidden";
+        el.classList.remove("with-scrollbar");
+        const needsScroll = el.scrollHeight > (el.clientHeight + 2);
+        if (needsScroll) {
+            el.style.overflowY = "auto";
+            el.classList.add("with-scrollbar");
+        }
+    });
+}
+
+function ensureQualifyingListsHeightListener() {
+    if (qualifyingHeightListenerAttached) return;
+    qualifyingHeightListenerAttached = true;
+
+    let rafId = null;
+    window.addEventListener("resize", () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            updateQualifyingListsMaxHeight();
+        });
+    });
+}
+
+function populateWinsDriversSeasonReview(data) {
+    const container = document.querySelector(".wins-drivers-list");
+    if (!container) return;
+
+    container.innerHTML = "";
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const ordered = [...data]
+        .filter(r => Number(r?.value) > 0)
+        .sort((a, b) => (Number(b?.value) || 0) - (Number(a?.value) || 0));
+
+    ordered.forEach((record, idx) => {
+        const row = document.createElement("div");
+        row.className = "season-review-wins-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-wins-position";
+        posDiv.textContent = String(idx + 1);
+        row.appendChild(posDiv);
+
+        const teamId = Number(record?.teamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
+            });
+            row.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-wins-name";
+        const fullName = news_insert_space(record?.name ?? "");
+        const surname = fullName.split(" ").pop();
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = fullName.replace(surname, "");
+        const surnameSpan = document.createElement("span");
+        surnameSpan.textContent = surname;
+        surnameSpan.className = "bold-font";
+        nameDiv.appendChild(nameSpan);
+        nameDiv.appendChild(surnameSpan);
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-wins-count";
+        countDiv.textContent = String(record?.value ?? 0);
+        row.appendChild(countDiv);
+
+        container.appendChild(row);
+    });
+
+    updateWinsDriversListMaxHeight();
+    ensureWinsDriversListHeightListener();
+}
+
+function updateWinsDriversListMaxHeight() {
+    const item = document.querySelector(".bento-item.item-5");
+    const list = document.querySelector(".wins-drivers-list");
+    if (!item || !list) return;
+
+    const height = item.getBoundingClientRect().height;
+    //if height is less than 60, maxHeight will be 300px
+    const maxHeight = height < 60 ? 300 : Math.max(0, Math.floor(height - 60));
+
+    list.style.maxHeight = `${maxHeight}px`;
+    list.style.overflowX = "hidden";
+    list.style.overflowY = "hidden";
+    const needsScroll = list.scrollHeight > (list.clientHeight + 2);
+    if (needsScroll) {
+        list.style.overflowY = "auto";
+    }
+}
+
+function ensureWinsDriversListHeightListener() {
+    if (winsHeightListenerAttached) return;
+    winsHeightListenerAttached = true;
+
+    let rafId = null;
+    window.addEventListener("resize", () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            updateWinsDriversListMaxHeight();
+        });
+    });
+}
+
+function populateTeamsAggregateSeasonReview(driverRecords, containerSelector, limit = 4) {
+    const container = document.querySelector(containerSelector);
+    if (!container) return;
+
+    container.innerHTML = "";
+    if (!Array.isArray(driverRecords) || driverRecords.length === 0) return;
+
+    const totalsByTeamId = new Map();
+
+    driverRecords.forEach((rec) => {
+        const teamId = Number(rec?.teamId ?? -1);
+        const value = Number(rec?.value ?? 0);
+        if (!Number.isFinite(teamId) || teamId === -1) return;
+        if (!Number.isFinite(value) || value <= 0) return;
+        totalsByTeamId.set(teamId, (totalsByTeamId.get(teamId) || 0) + value);
+    });
+
+    const ordered = [...totalsByTeamId.entries()]
+        .map(([teamId, value]) => ({ teamId: Number(teamId), value: Number(value) }))
+        .sort((a, b) => (b.value - a.value) || String(combined_dict[a.teamId] || "").localeCompare(String(combined_dict[b.teamId] || "")))
+        .slice(0, limit);
+
+    ordered.forEach((team, idx) => {
+        const row = document.createElement("div");
+        row.className = "season-review-wins-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-wins-position";
+        posDiv.textContent = String(idx + 1);
+        row.appendChild(posDiv);
+
+        const logoDiv = buildDriverLogoDiv(team.teamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
+        });
+        row.appendChild(logoDiv);
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-wins-name bold-font";
+        nameDiv.textContent = (combined_dict[team.teamId] || "").toUpperCase();
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-wins-count";
+        countDiv.textContent = String(team.value);
+        row.appendChild(countDiv);
+
+        container.appendChild(row);
+    });
+}
+
+function populateDriverOfTheDaySeasonReview(data) {
+    const left = document.querySelector(".dotd-drivers-half-1");
+    const right = document.querySelector(".dotd-drivers-half-2");
+    if (!left || !right) return;
+
+    left.innerHTML = "";
+    right.innerHTML = "";
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    const ordered = [...data]
+        .filter(d => Number(d?.count) > 0)
+        .sort((a, b) => (Number(b?.count) || 0) - (Number(a?.count) || 0));
+
+    const top = ordered.slice(0, 8);
+    top.forEach((d, idx) => {
+        const half = idx < 4 ? left : right;
+        const row = document.createElement("div");
+        row.className = "season-review-wins-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-wins-position";
+        posDiv.textContent = String(idx + 1);
+        row.appendChild(posDiv);
+
+        const teamId = Number(d?.teamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
+            });
+            row.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-wins-name";
+        const fullName = news_insert_space(d?.name ?? "");
+        const surname = fullName.split(" ").pop();
+        const surnameSpan = document.createElement("span");
+        surnameSpan.className = "bold-font";
+        surnameSpan.textContent = surname;
+        nameDiv.appendChild(surnameSpan);
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-wins-count";
+        countDiv.textContent = String(d?.count ?? 0);
+        row.appendChild(countDiv);
+
+        half.appendChild(row);
+    });
+}
+
+function computeTeamTotalsFromDriverRecords(driverRecords) {
+    const totalsByTeamId = new Map();
+
+    (driverRecords || []).forEach((rec) => {
+        const teamId = Number(rec?.teamId ?? -1);
+        const value = Number(rec?.value ?? 0);
+        if (!Number.isFinite(teamId) || teamId === -1) return;
+        if (!Number.isFinite(value) || value <= 0) return;
+        totalsByTeamId.set(teamId, (totalsByTeamId.get(teamId) || 0) + value);
+    });
+
+    return [...totalsByTeamId.entries()]
+        .map(([teamId, value]) => ({ teamId: Number(teamId), value: Number(value) }))
+        .sort((a, b) => (b.value - a.value) || String(combined_dict[a.teamId] || "").localeCompare(String(combined_dict[b.teamId] || "")));
+}
+
+function populateWinsTeamsSeasonReview(winsRecords) {
+    const left = document.querySelector(".wins-teams-half-1");
+    const right = document.querySelector(".wins-teams-half-2");
+    if (!left || !right) return;
+
+    left.innerHTML = "";
+    right.innerHTML = "";
+
+    const ordered = computeTeamTotalsFromDriverRecords(winsRecords).slice(0, 8);
+
+    ordered.forEach((team, idx) => {
+        const half = idx < 4 ? left : right;
+        const row = document.createElement("div");
+        row.className = "season-review-wins-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-wins-position";
+        posDiv.textContent = String(idx + 1);
+        row.appendChild(posDiv);
+
+        const logoDiv = buildDriverLogoDiv(team.teamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
+        });
+        row.appendChild(logoDiv);
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-wins-name bold-font";
+        nameDiv.textContent = (combined_dict[team.teamId] || "").toUpperCase();
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-wins-count";
+        countDiv.textContent = String(team.value);
+        row.appendChild(countDiv);
+
+        half.appendChild(row);
+    });
+}
+
+function populatePodiumsTeamsSeasonReview(podiumsRecords) {
+    const left = document.querySelector(".podiums-teams-half-1");
+    const right = document.querySelector(".podiums-teams-half-2");
+    if (!left || !right) return;
+
+    left.innerHTML = "";
+    right.innerHTML = "";
+
+    const ordered = computeTeamTotalsFromDriverRecords(podiumsRecords).slice(0, 8);
+
+    ordered.forEach((team, idx) => {
+        const half = idx < 4 ? left : right;
+        const row = document.createElement("div");
+        row.className = "season-review-wins-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-wins-position";
+        posDiv.textContent = String(idx + 1);
+        row.appendChild(posDiv);
+
+        const logoDiv = buildDriverLogoDiv(team.teamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
+        });
+        row.appendChild(logoDiv);
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-wins-name bold-font";
+        nameDiv.textContent = (combined_dict[team.teamId] || "").toUpperCase();
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-wins-count";
+        countDiv.textContent = String(team.value);
+        row.appendChild(countDiv);
+
+        half.appendChild(row);
+    });
+}
+
+function populatePodiumsDriversSeasonReview(podiumsRecords) {
+    const left = document.querySelector(".podiums-drivers-half-1");
+    const right = document.querySelector(".podiums-drivers-half-2");
+    if (!left || !right) return;
+
+    left.innerHTML = "";
+    right.innerHTML = "";
+    if (!Array.isArray(podiumsRecords) || podiumsRecords.length === 0) return;
+
+    const ordered = [...podiumsRecords]
+        .filter(r => Number(r?.value) > 0)
+        .sort((a, b) => (Number(b?.value) || 0) - (Number(a?.value) || 0))
+        .slice(0, 8);
+
+    ordered.forEach((record, idx) => {
+        const half = idx < 4 ? left : right;
+        const row = document.createElement("div");
+        row.className = "season-review-wins-row";
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "season-review-wins-position";
+        posDiv.textContent = String(idx + 1);
+        row.appendChild(posDiv);
+
+        const teamId = Number(record?.teamId ?? -1);
+        if (Number.isFinite(teamId) && teamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
+            });
+            row.appendChild(logoDiv);
+        }
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "season-review-wins-name";
+        const fullName = news_insert_space(record?.name ?? "");
+        const surname = fullName.split(" ").pop();
+        const surnameSpan = document.createElement("span");
+        surnameSpan.className = "bold-font";
+        surnameSpan.textContent = surname;
+        nameDiv.appendChild(surnameSpan);
+        row.appendChild(nameDiv);
+
+        const countDiv = document.createElement("div");
+        countDiv.className = "season-review-wins-count";
+        countDiv.textContent = String(record?.value ?? 0);
+        row.appendChild(countDiv);
+
+        half.appendChild(row);
+    });
+}
+
+document.querySelector(".bento-grid .item-1").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const standingsPill = document.querySelector("#standingspill");
+    if (standingsPill) standingsPill.click();
+});
+
+document.querySelector(".bento-grid .item-2").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
+    const standingsPill = document.querySelector("#standingspill");
+    if (standingsPill) standingsPill.click();
+});
+
+document.querySelector(".bento-grid .item-10").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
+    const polesPill = document.querySelector("#polespill");
+    if (polesPill) polesPill.click();
+});
+
+document.querySelector(".bento-grid .item-3").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const polesPill = document.querySelector("#polespill");
+    if (polesPill) polesPill.click();
+});
+
+document.querySelector(".bento-grid .item-6").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
+    const winsPill = document.querySelector("#winspill");
+    if (winsPill) winsPill.click();
+});
+
+document.querySelector(".bento-grid .item-5").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const winsPill = document.querySelector("#winspill");
+    if (winsPill) winsPill.click();
+});
+
+document.querySelector(".bento-grid .item-8").addEventListener("click", () => {
+    const teamsTablePill = document.querySelector("#teamspill");
+    if (teamsTablePill) teamsTablePill.click();
+    const podiumPill = document.querySelector("#podiumspill");
+    if (podiumPill) podiumPill.click();
+});
+
+document.querySelector(".bento-grid .item-7").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const dotdPill = document.querySelector("#dotdpill");
+    if (dotdPill) dotdPill.click();
+});
+
+
+document.querySelector(".bento-grid .item-9").addEventListener("click", () => {
+    const driversTablePill = document.querySelector("#driverspill");
+    if (driversTablePill) driversTablePill.click();
+    const podiumPill = document.querySelector("#podiumspill");
+    if (podiumPill) podiumPill.click();
+});
 
 function manageShowRecords() {
     const driversTable = document.querySelector(".drivers-table")
     const teamsTable = document.querySelector(".teams-table")
     driversTable.classList.add("d-none")
     teamsTable.classList.add("d-none")
+    const seasonReviewBento = document.querySelector(".season-review-bento")
+    seasonReviewBento.classList.add("d-none")
 
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.remove("d-none")
     recordsList.innerHTML = ""
+    updateTopPanelControlsVisibility();
 }
 
 function setYearButton(el) {
     const yearBtn = document.getElementById("yearButton");
     yearBtn.querySelector("span.dropdown-label").textContent = el.textContent.trim();
     yearBtn.dataset.year = el.dataset.year;           // <- guardamos el valor
+    syncYearDropdownChecks()
 }
 
 export function loadRecordsList(data) {
@@ -1817,6 +3136,16 @@ export function loadRecordsList(data) {
         nameAndTeam.appendChild(teamDiv)
 
         numberAndName.appendChild(number)
+
+        const recordTeamId = Number(record.teamId ?? -1);
+        if (Number.isFinite(recordTeamId) && recordTeamId !== -1) {
+            const logoDiv = buildDriverLogoDiv(recordTeamId, {
+                isF1: currentFormula === 1,
+                wrapperClass: "drivers-table-logo-div record-logo-div"
+            });
+            numberAndName.appendChild(logoDiv);
+        }
+
         numberAndName.appendChild(nameAndTeam)
 
         let extraStatsSection = document.createElement("div")
@@ -1840,7 +3169,7 @@ export function loadRecordsList(data) {
         else if (record.record === "fastestlaps") {
             percentageRate.textContent = `Fastest Lap Rate: ${(record.totalFastestLaps / record.totalStarts * 100).toFixed(2)}%`
         }
-        if (record.record !== "races" && record.record !== "points") {
+        if (record.record !== "races" && record.record !== "points" && record.record !== "dotd") {
             extraStatsSection.appendChild(percentageRate)
         }
 
@@ -1950,25 +3279,168 @@ export function loadRecordsList(data) {
     });
 }
 
-document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
+export function loadTeamRecordsList(payload) {
+    const recordsList = document.querySelector(".records-list");
+    recordsList.innerHTML = "";
+
+    const data = Array.isArray(payload) ? payload : payload?.record;
+    if (!Array.isArray(data) || data.length === 0) return;
+
+    let visibleIndex = 0;
+
+    const formatNameNoUppercase = (fullName, spanName, spanLastName) => {
+        if (!fullName) return;
+        if (fullName.length > 17) {
+            let nameArray = fullName.split(" ");
+            let firstName = nameArray[0];
+            if (insert_space(firstName).includes(" ")) {
+                let splitName = insert_space(firstName).split(" ");
+                spanName.textContent = splitName[0][0] + ". " + splitName[1] + " ";
+            } else {
+                spanName.textContent = firstName[0] + ". ";
+            }
+
+            spanLastName.textContent = nameArray.slice(1).join(" ");
+        } else {
+            const nameSplitted = fullName.split(" ");
+            spanName.textContent = insert_space(nameSplitted[0]) + " ";
+            spanLastName.textContent = nameSplitted.slice(1).join(" ");
+        }
+    };
+
+    const buildTeamDriverInline = (driver) => {
+        const wrap = document.createElement("span");
+        wrap.className = "record-team-driver";
+
+        const num = driver?.number;
+        if (num != null) {
+            const numSpan = document.createElement("span");
+            numSpan.className = "record-driver-number";
+            numSpan.textContent = `#${num}`;
+            wrap.appendChild(numSpan);
+        }
+
+        const name = String(driver?.name ?? "").trim();
+        if (name) {
+            const parts = name.split(" ");
+            const nameSpan = document.createElement("span");
+            const lastSpan = document.createElement("span");
+            formatNameNoUppercase(name, nameSpan, lastSpan);
+            wrap.appendChild(nameSpan);
+            wrap.appendChild(lastSpan);
+        }
+
+        return wrap;
+    };
+
+    data.forEach((item) => {
+        const teamId = Number(item?.teamId ?? item?.TeamID ?? -1);
+        const value = Number(item?.value ?? 0);
+        if (!Number.isFinite(teamId) || teamId === -1) return;
+        if (!Number.isFinite(value) || value <= 0) return;
+
+        const recordDiv = document.createElement("div");
+        recordDiv.classList = "record-item";
+
+        if (team_dict[teamId]) {
+            recordDiv.classList.add(`${team_dict[teamId]}-record`);
+        }
+        else {
+            recordDiv.classList.add("generic-record");
+        }
+
+        const numberAndName = document.createElement("div");
+        numberAndName.classList = "number-and-name";
+
+        const number = document.createElement("div");
+        number.className = "record-number";
+        number.textContent = `${++visibleIndex}.`;
+
+        const logoDiv = buildDriverLogoDiv(teamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div record-logo-div"
+        });
+
+        const nameAndTeam = document.createElement("div");
+        nameAndTeam.classList = "name-and-team";
+
+        const recordName = document.createElement("div");
+        recordName.classList = "record-name bold-font";
+        recordName.textContent = (combined_dict[teamId] || "").toUpperCase();
+
+        nameAndTeam.appendChild(recordName);
+
+        const driversObj = item?.drivers;
+        const driver1 = driversObj?.driver1 ?? null;
+        const driver2 = driversObj?.driver2 ?? null;
+        if (driver1 || driver2) {
+            const driversDiv = document.createElement("div");
+            driversDiv.classList = "record-team record-team-drivers";
+
+            const drivers = [driver1, driver2].filter(Boolean);
+            drivers.forEach((driver, idx) => {
+                if (idx > 0) {
+                    const sep = document.createElement("span");
+                    sep.className = "record-drivers-separator";
+                    sep.textContent = "|";
+                    driversDiv.appendChild(sep);
+                }
+                driversDiv.appendChild(buildTeamDriverInline(driver));
+            });
+
+            nameAndTeam.appendChild(driversDiv);
+        }
+
+        numberAndName.appendChild(number);
+        numberAndName.appendChild(logoDiv);
+        numberAndName.appendChild(nameAndTeam);
+
+        const breakdown = Array.isArray(item?.breakdown) ? item.breakdown : [];
+        if (breakdown.length > 0) {
+            const extraStatsSection = document.createElement("div");
+            extraStatsSection.classList = "extra-stats-section";
+
+            breakdown.forEach((d) => {
+                if (!d || Number(d.count) <= 0) return;
+                const statDiv = document.createElement("div");
+                statDiv.classList = "extra-stat";
+
+                const driverName = String(d.name ?? "").trim();
+                if (driverName) {
+                    const parts = driverName.split(" ");
+                    const nameSpan = document.createElement("span");
+                    const lastSpan = document.createElement("span");
+                    formatNameNoUppercase(driverName, nameSpan, lastSpan);
+                    statDiv.appendChild(nameSpan);
+                    statDiv.appendChild(lastSpan);
+                }
+
+                const countSpan = document.createElement("span");
+                countSpan.textContent = `: ${d.count}`;
+                statDiv.appendChild(countSpan);
+
+                extraStatsSection.appendChild(statDiv);
+            });
+
+            numberAndName.appendChild(extraStatsSection);
+        }
+
+        const recordValue = document.createElement("div");
+        recordValue.classList = "record-value";
+        recordValue.textContent = String(value);
+
+        recordDiv.appendChild(numberAndName);
+        recordDiv.appendChild(recordValue);
+        recordsList.appendChild(recordDiv);
+    });
+}
+
+document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {   
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
-        if (elem.dataset.value === "standings") {
-            const allTime = document.getElementById("allTimeRecords")
-            if (allTime)
-                allTime.classList.add("d-none")
-            document.getElementById("standingsSettings").classList.remove("d-none")
-            document.getElementById("recordsSettings").classList.add("d-none")
-        }
-        else {
-            const allTime = document.getElementById("allTimeRecords")
-            if (allTime)
-                allTime.classList.remove("d-none")
-            document.getElementById("standingsSettings").classList.add("d-none")
-            document.getElementById("recordsSettings").classList.remove("d-none")
-        }
-
+        syncRecordsTypeDropdownChecks()
+        updateTopPanelControlsVisibility();
         manageRecordsSelected(null)
     })
 })

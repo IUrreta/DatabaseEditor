@@ -749,14 +749,34 @@ input[type="checkbox"]:focus {
   flex-direction: column;
 }
 
-.team-change {
-  display: flex;
-  flex-direction: row;
+.team-changes-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 5px 10px;
+  margin-top: 5px;
   align-items: center;
 }
 
+.team-changes-grid .logo-and-name{
+  font-size: 12px;
+  height: 30px;
+}
+
+.team-changes-grid .logo-and-name .team-name{
+  padding-left: 0px;
+}
+
+.team-changes-grid [data-resizable="true"] {
+  transform: scale(0.8);
+}
+
+.team-change {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .team-change-button {
-  width: 33%;
   text-align: end;
   align-items: end;
   display: flex;
@@ -865,7 +885,12 @@ input[type="checkbox"]:focus {
 .news-article::-webkit-scrollbar,
 .main-second-viewer::-webkit-scrollbar,
 .news-edit-textarea::-webkit-scrollbar,
-#juniorTeamContractMenu {
+#juniorTeamContractMenu::-webkit-scrollbar,
+.poles-comparison::-webkit-scrollbar,
+.q3-comparison::-webkit-scrollbar,
+.q2-comparison::-webkit-scrollbar,
+.wins-drivers-list::-webkit-scrollbar,
+.bento-driver-standings::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -883,7 +908,12 @@ input[type="checkbox"]:focus {
 .news-article::-webkit-scrollbar-thumb,
 .main-second-viewer::-webkit-scrollbar-thumb,
 .news-edit-textarea::-webkit-scrollbar-thumb,
-#juniorTeamContractMenu::-webkit-scrollbar-thumb {
+#juniorTeamContractMenu::-webkit-scrollbar-thumb,
+.poles-comparison::-webkit-scrollbar-thumb,
+.q3-comparison::-webkit-scrollbar-thumb,
+.q2-comparison::-webkit-scrollbar-thumb,
+.wins-drivers-list::-webkit-scrollbar-thumb,
+.bento-driver-standings::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -902,7 +932,12 @@ input[type="checkbox"]:focus {
 .news-article::-webkit-scrollbar-thumb:hover,
 .main-second-viewer::-webkit-scrollbar-thumb:hover,
 .news-edit-textarea::-webkit-scrollbar-thumb:hover,
-#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover {
+#juniorTeamContractMenu::-webkit-scrollbar-thumb:hover,
+.poles-comparison::-webkit-scrollbar-thumb:hover,
+.q3-comparison::-webkit-scrollbar-thumb:hover,
+.q2-comparison::-webkit-scrollbar-thumb:hover,
+.wins-drivers-list::-webkit-scrollbar-thumb:hover,
+.bento-driver-standings::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -1362,6 +1397,15 @@ input.comparing-tag {
   width: 34px;
   height: auto;
   border-radius: 5px;
+}
+
+.driver-info-team-logo-masked {
+  height: 24px;
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--mclaren-primary);
 }
 
 .actual-age,
@@ -3272,7 +3316,7 @@ DRIVERS TABLE
 
 .drivers-table-row:first-child .drivers-table-position,
 .teams-table-row:first-child .teams-table-position {
-  background: var(--f1-first) !important;
+  background: var(--f1-first);
   color: var(--gold-gradient-text);
 }
 
@@ -3288,44 +3332,32 @@ DRIVERS TABLE
   color: var(--gold-gradient-text);
 }
 
-.drivers-table-row:first-child .drivers-table-position.champion,
-.drivers-table-row:first-child .drivers-table-points.champion,
-.teams-table-row:first-child .teams-table-position.champion,
-.teams-table-row:first-child .teams-table-points.champion {
-  background: radial-gradient(ellipse farthest-corner at right bottom, #FEDB37 0%, #FDB931 8%, #9f7928 30%, #8A6E2F 40%, transparent 80%),
-    radial-gradient(ellipse farthest-corner at left top, #FFFFFF 0%, #FFFFAC 8%, #D1B464 25%, #5d4a1f 62.5%, #5d4a1f 100%) !important;
-  position: relative;
-  color: var(--gold-gradient-text);
-  z-index: 0;
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-position,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-position {
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, var(--table-default-odd) 75%);
 }
 
-.drivers-table-row:first-child .drivers-table-position.champion::before,
-.teams-table-row:first-child .teams-table-position.champion::before,
-.drivers-table-row:first-child .drivers-table-points.champion::before,
-.teams-table-row:first-child .teams-table-points.champion::before {
-  content: '';
-  position: absolute;
-  text-align: center;
-  align-content: center;
-  inset: 0;
-  background-color: var(--text-general);
-  opacity: 0;
-  z-index: -1;
+.drivers-table-row:has(.drivers-table-position.champion):hover .drivers-table-position,
+.teams-table-row:has(.teams-table-position.champion):hover .teams-table-position {
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, var(--text-general) 75%);
+  color: var(--negative-text) !important;
 }
 
-.drivers-table-row:hover .drivers-table-position.champion,
-.teams-table-row:hover .teams-table-position.champion,
-.drivers-table-row:hover .drivers-table-points.champion,
-.teams-table-row:hover .teams-table-points.champion {
-  color: #b88b2b !important;
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-points,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-points {
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, var(--table-default-odd) 75%);
 }
 
-.drivers-table-row:first-child:hover .drivers-table-position.champion::before,
-.teams-table-row:first-child:hover .teams-table-position.champion::before,
-.drivers-table-row:first-child:hover .drivers-table-points.champion::before,
-.teams-table-row:first-child:hover .teams-table-points.champion::before {
-  opacity: 1;
+.drivers-table-row:has(.drivers-table-position.champion):hover .drivers-table-points,
+.teams-table-row:has(.teams-table-position.champion):hover .teams-table-points {
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, var(--text-general) 75%);
+  color: var(--negative-text) !important;
 }
+
 
 .drivers-table-data::-webkit-scrollbar {
   width: 4px !important;
@@ -3360,15 +3392,34 @@ DRIVERS TABLE
 .drivers-table-row:hover .drivers-table-position,
 .teams-table-row:hover .teams-table-position,
 .drivers-table-row-odd:hover .drivers-table-position,
-.teams-table-row-odd:hover .teams-table-position {
+.teams-table-row-odd:hover .teams-table-position,
+.drivers-table-row.odd:hover .standings-pos-change,
+.teams-table-row.odd:hover .standings-pos-change,
+.drivers-table-row.odd:hover .standings-points-gap,
+.teams-table-row.odd:hover .standings-points-gap {
   background-color: var(--text-general) !important;
   color: var(--negative-text);
 }
 
 .drivers-table-row:hover .drivers-table-points,
-.teams-table-row:hover .teams-table-points {
+.teams-table-row:hover .teams-table-points,
+.drivers-table-row:hover .standings-pos-change,
+.teams-table-row:hover .standings-pos-change,
+.drivers-table-row:hover .standings-points-gap,
+.teams-table-row:hover .standings-points-gap{
   background-color: var(--text-general) !important;
   color: var(--negative-text);
+}
+
+.drivers-table-row:hover .standings-pos-change.up,
+.teams-table-row:hover .standings-pos-change.up {
+  color: var(--positive-general-darker) !important;
+}
+
+
+.drivers-table-row:hover .standings-pos-change.down,
+.teams-table-row:hover .standings-pos-change.down {
+  color: var(--negative-general) !important;
 }
 
 .drivers-table-row:hover,
@@ -3391,7 +3442,11 @@ DRIVERS TABLE
 .drivers-table-row .drivers-table-driver,
 .drivers-table-row .drivers-table-points,
 .drivers-table-row .drivers-table-position,
-.drivers-table-row .drivers-table-logo-div {
+.drivers-table-row .drivers-table-logo-div,
+.teams-table-row .standings-pos-change,
+.teams-table-row .standings-points-gap,
+.drivers-table-row .standings-pos-change,
+.drivers-table-row .standings-points-gap {
   background-color: var(--table-default);
 }
 
@@ -3400,7 +3455,11 @@ DRIVERS TABLE
 .drivers-table-row.odd .drivers-table-driver,
 .drivers-table-row.odd .drivers-table-points,
 .drivers-table-row.odd .drivers-table-position,
-.drivers-table-row.odd .drivers-table-logo-div {
+.drivers-table-row.odd .drivers-table-logo-div,
+.drivers-table-row.odd .standings-pos-change,
+.teams-table-row.odd .standings-pos-change,
+.teams-table-row.odd .standings-points-gap,
+.drivers-table-row.odd .standings-points-gap {
   background-color: var(--table-default-odd);
 }
 
@@ -3467,11 +3526,79 @@ DRIVERS TABLE
   align-items: center;
   justify-content: center;
   padding-top: 3px;
+  position: relative;
 }
 
 .drivers-table-data .drivers-table-points,
 .teams-table-data .teams-table-points {
   padding-top: 3px;
+}
+
+#season_viewer {
+  --standings-details-col-width: 0px;
+}
+
+#season_viewer.standings-details-enabled {
+  --standings-details-col-width: 44px;
+}
+
+.drivers-table-header .standings-pos-change,
+.teams-table-header .standings-pos-change,
+.drivers-table-header .standings-points-gap,
+.teams-table-header .standings-points-gap {
+  font-family: "Formula1Bold" !important;
+  padding-top: 0px !important;
+}
+
+.standings-pos-change,
+.standings-points-gap {
+  flex: 0 0 var(--standings-details-col-width);
+  width: var(--standings-details-col-width);
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  font-size: 13px;
+  line-height: 1;
+  font-family: 'NumbersFont';
+  padding-top: 0;
+}
+
+
+#season_viewer.standings-details-enabled .standings-pos-change,
+#season_viewer.standings-details-enabled .standings-points-gap {
+  padding-top: 3px;
+}
+
+.standings-pos-change.up {
+  color: var(--positive-general);
+}
+
+.standings-pos-change.down {
+  color: var(--negative-general);
+}
+
+.standings-pos-change.neutral {
+  color: var(--text-general);
+}
+
+.standings-points-gap {
+  color: var(--text-general);
+}
+
+.drivers-table-row:has(.drivers-table-points.eliminated) .standings-points-gap,
+.teams-table-row:has(.teams-table-points.eliminated) .standings-points-gap {
+  color: var(--table-dnf) !important;
+}
+
+#season_viewer.standings-details-enabled .drivers-table-row.last-title-contender {
+  border-bottom: 1px solid var(--table-dnf);
+}
+
+#season_viewer.standings-details-enabled .teams-table-row.last-title-contender {
+  border-bottom: 1px solid var(--table-dnf);
 }
 
 .drivers-table-data .drivers-table-position,
@@ -3488,6 +3615,10 @@ DRIVERS TABLE
   letter-spacing: -1.2px;
 }
 
+.standings-points-gap{
+  letter-spacing: -1.2px;
+}
+
 
 .drivers-table-header .drivers-table-position,
 .teams-table-header .teams-table-position {
@@ -3499,6 +3630,15 @@ DRIVERS TABLE
   padding: 6px 0 !important;
 }
 
+.racingpoint-team-table-logo,
+.jordan-team-table-logo {
+  padding: 9px 4px !important;
+}
+
+.cadillac-team-table-logo {
+  padding: 9px 5px !important;
+}
+
 .ferrari-team-table-logo {
   padding: 8px !important;
 }
@@ -3507,8 +3647,20 @@ DRIVERS TABLE
   margin-right: 3px !important;
 }
 
+.teams-table-logo-inner.mclaren-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 90%;
+  mask-size: 90%;
+  background-color: #f0f0f0;
+}
+
 .redbull-team-table-logo {
   padding: 13px 0px !important;
+}
+
+.ford-team-table-logo {
+  padding: 10px 4px !important;
 }
 
 .merc-team-table-logo {
@@ -3541,6 +3693,15 @@ DRIVERS TABLE
 
 .toyota-team-table-logo {
   padding: 13px 8px !important;
+}
+
+.teams-table-logo-inner.toyota-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
+  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--white-general);
+  width: 48px;
 }
 
 .porsche-team-table-logo {
@@ -3814,18 +3975,57 @@ phm
   padding-bottom: 10px;
 }
 
+.bento-grid .logo-up-down-extra{
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .logo-ferrari-table,
 .logo-andretti-table,
 .logo-renault-table {
   padding: 4px 3px;
 }
 
+.logo-bmw-table{
+  padding: 2px 0 0 0;
+}
+
+.bmw-team-table-logo {
+  padding: 4px 3px 1px 3px !important;
+}
+
 .logo-porsche-table {
   padding: 3px 3px;
 }
 
+.logo-ford-table,
+.logo-jordan-table,
+.logo-cadillac-table {
+  padding: 4px 2px;
+}
+
+.logo-racingpoint-table{
+  padding: 4px;
+}
+
 .logo-williams-table {
   padding: 6px 4px;
+}
+
+.logo-toyota-table{
+  width: 24px;
+}
+
+.logo-sauber-table{
+  height: 23px;
+}
+
+.drivers-table-logo-div:has(.logo-sauber-table),
+.drivers-table-logo-div:has(.logo-toyota-table){
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
 }
 
 .logo-merc-table {
@@ -3914,14 +4114,38 @@ phm
   background-color: var(--text-general);
 }
 
+.logo-mclaren-table {
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 85%;
+  mask-size: 85%;
+  background-color: var(--mclaren-primary);
+}
+
 .logo-williams-2026-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;  
   mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--williams-primary);
+}
+
+.logo-toyota-table {
+  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
+  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--toyota-primary);
+}
+
+.logo-sauber-table {
+  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
+  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--sauber-primary);
 }
 
 .alhoverback {
@@ -3974,16 +4198,20 @@ phm
 }
 
 .drivers-table-row:hover .logo-alpine-table,
+.drivers-table-row:hover .logo-mclaren-table,
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
-.drivers-table-row:hover .logo-williams-2026-table {
+.drivers-table-row:hover .logo-williams-2026-table,
+.drivers-table-row:hover .logo-toyota-table,
+.drivers-table-row:hover .logo-sauber-table {
   background-color: #f0f0f0;
 }
 
 .drivers-table-row:hover .logo-renault-table,
 .drivers-table-row:hover .logo-lotus-table,
 .drivers-table-row:hover .logo-andretti-table,
-.drivers-table-row:hover .logo-lotus-table {
+.drivers-table-row:hover .logo-lotus-table,
+.drivers-table-row:hover .logo-brawn-table {
   background-color: #333333;
 }
 
@@ -4692,10 +4920,10 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   border-left: 1px solid var(--table-dnf);
 }
 
-.drivers-table:has(.f2-table-data) .drivers-table-points,
-.teams-table:has(.f2-table-data) .teams-table-points, 
-.drivers-table:has(.f3-table-data) .drivers-table-points,
-.teams-table:has(.f3-table-data) .teams-table-points{
+.drivers-table:has(.f2-table-data) .standings-points-gap,
+.teams-table:has(.f2-table-data) .standings-points-gap, 
+.drivers-table:has(.f3-table-data) .standings-points-gap,
+.teams-table:has(.f3-table-data) .standings-points-gap{
   border-left: 1px solid var(--table-dnf);
 }
 
@@ -7649,6 +7877,7 @@ body.og-theme .records-list {
   border-radius: 10px;
   padding: 10px 20px;
   align-items: center;
+  height: 67px;
   position: relative;
   box-shadow: var(--shadow-s);
 }
@@ -7669,6 +7898,45 @@ body.og-theme .records-list {
   width: 37px;
   display: flex;
   justify-content: center;
+}
+
+.record-logo-div{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 45px;
+  height: 45px;
+}
+
+.record-logo-div img, .record-logo-div div {
+  width: 42px;
+  height: 42px;
+}
+
+.record-team-drivers{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.record-drivers-separator{
+  color: var(--text-general);
+  user-select: none;
+}
+
+.record-team-driver{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.record-driver-number{
+  font-family: 'NumbersFont';
+  letter-spacing: -1px;
+  padding-top: 1px;
+  height: 21px;
 }
 
 .record-name {
@@ -8305,17 +8573,12 @@ body.og-theme .records-list {
   padding-left: 25px;
   column-gap: 15px;
   font-size: 15px;
+  height: 45px;
 }
 
-/* .free-driver span.bold-font,
-.normal-driver span.bold-font,
-.drivers-table-driver span.bold-font,
-.driver-prediction span.bold-font,
-.modal-driver span.bold-font,
-.viewer-header-driver span.bold-font {
-  display: inline-block;
-  transform: skewX(-9deg)
-} */
+#recordsTypeDropdown{
+  min-width: 180px;
+}
 
 .free-driver:hover .bi-ban {
   color: var(--negative-text);
@@ -8818,6 +9081,8 @@ body.og-theme .records-list {
 .team-menu-logo {
   width: 50px;
   height: 42px;
+  display: flex;
+  align-items: center;
 }
 
 .team-menu-junior-generic {
@@ -8899,7 +9164,7 @@ body.og-theme .records-list {
   padding-left: 3px;
 }
 
-.team-menu-williams {
+.changable-team-menu-williams {
   width: 45px;
   height: 45px;
   padding-bottom: 11px;
@@ -8911,6 +9176,11 @@ body.og-theme .records-list {
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
+}
+
+.changable-team-menu-bmw {
+  width: 100%;
+  padding-left: 5px;
 }
 
 .changable-team-menu-brawn {
@@ -8948,12 +9218,59 @@ body.og-theme .records-list {
   padding-top: 7px;
 }
 
+.changable-team-menu-redbull {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 8px;
+  padding-left: 3px;
+  padding-top: 7px;
+}
+
+.changable-team-menu-ford {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-top: 6px;
+}
+
+.changable-team-menu-aston {
+  width: 50px;
+  height: 45px;
+  padding-bottom: 5px;
+  padding-left: 2px;
+  padding-top: 5px;
+  padding-right: 3px;
+}
+
+.changable-team-menu-racingpoint,
+.changable-team-menu-jordan {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-top: 6px;
+}
+
+.changable-team-menu-cadillac {
+  width: 45px;
+  height: 40px;
+  padding-bottom: 6px;
+  padding-left: 3px;
+  padding-top: 6px;
+}
+
 .team-menu-mclaren {
   width: 40px;
   height: 40px;
   padding-bottom: 4px;
   padding-top: 7px;
   padding-left: 6px;
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 90%;
+  mask-size: 90%;
+  background-color: var(--mclaren-primary);
 }
 
 .team-menu-ferrari {
@@ -9006,13 +9323,17 @@ body.og-theme .records-list {
   padding-top: 7px !important;
 }
 
-.changable-team-menu-stake,
-.changable-team-menu-sauber {
+.changable-team-menu-stake {
   width: 40px !important;
   height: 40px !important;
   padding-bottom: 3px !important;
   padding-top: 5px !important;
   padding-left: 7px !important;
+}
+
+.changable-team-menu-sauber {
+  width: 100% !important;
+  height: 30px !important;
 }
 
 .changable-team-menu-lotus {
@@ -9266,7 +9587,7 @@ body.og-theme .records-list {
   font-size: 20px;
   cursor: pointer;
   background-size: 200% 200%;
-  transition: all 0.15s;
+  transition: all 0.15s, transform 0s;
   display: inline-block;
 }
 
@@ -10025,13 +10346,17 @@ input[type='number'] {
 .color-selector {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px;
+}
+
+.color-selector .title-secondary{
+  width: 150px;
 }
 
 .logo-selector {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .logo-and-preview {
@@ -10041,13 +10366,13 @@ input[type='number'] {
   align-items: center;
 }
 
-.colors-selector .bold-font {
-  width: 22%;
+.title-secondary{
+  color: var(--text-secondary);
 }
 
 .logo-preview {
-  width: 50px;
-  height: 50px;
+  width: 30px;
+  height: 30px;
   background-color: transparent;
   border: solid 1px var(--toast-background);
 }
@@ -10069,8 +10394,8 @@ input[type='number'] {
 
 .custom-logo-selection {
   display: flex;
-  gap: 20px;
-  flex-direction: column;
+  gap: 10px;
+  flex-direction: row;
 }
 
 .colors-selector {
@@ -10346,10 +10671,7 @@ input[type='number'] {
 #felogo {
   width: 40px;
   height: 40px;
-  padding-bottom: 7px;
-  padding-top: 5px;
-  padding-left: 3px;
-  padding-right: 2px;
+  padding: 5px;
 }
 
 .porschelogo {
@@ -10537,6 +10859,12 @@ input[type='number'] {
   width: 40px;
   height: 40px;
   padding: 2px;
+  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask-size: 90%;
+  background-color: var(--mclaren-primary);
+  transition: opacity 0.15s;
+  mask-size: 90%;
 }
 
 .alfalogo,
@@ -10546,6 +10874,10 @@ input[type='number'] {
   padding: 3px;
 }
 
+.team-menu-logo .astonlogo, .team-menu-logo .redbulllogo, .team-menu-logo .mclarenlogo {
+  width: 50px;
+}
+
 .astonlogo,
 #aslogo {
   width: 40px;
@@ -10553,6 +10885,20 @@ input[type='number'] {
   padding-bottom: 5px;
   padding-left: 1px;
   padding-top: 5px;
+}
+
+.fordlogo,
+.jordanlogo,
+.cadillaclogo {
+  width: 40px;
+  height: 40px;
+  padding: 6px 2px;
+}
+
+.racingpointlogo{
+  width: 40px;
+  height: 40px;
+  padding: 5px;
 }
 
 .brawnlogo {
@@ -10582,8 +10928,16 @@ input[type='number'] {
 
 .sauberlogo {
   width: 40px;
-  height: 40px;
+  height: 31px;
   padding: 6px 5px;
+}
+
+.sauberlogo {
+  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
+  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--sauber-primary);
 }
 
 .hugologo {
@@ -10624,6 +10978,14 @@ input[type='number'] {
   padding: 7px 2px;
 }
 
+.toyotalogo {
+  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
+  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: #EB0A1B; /* toyota primary color, different from their background gray color */
+}
+
 .haaslogo,
 #halogo {
   width: 40px;
@@ -10661,6 +11023,7 @@ input[type='number'] {
 }
 
 .williamslogo,
+.bmwlogo,
 #wilogo {
   width: 40px;
   height: 40px;
@@ -10671,12 +11034,22 @@ input[type='number'] {
   transition: opacity 0.15s;
 }
 
+.team-menu-williams-replace.williamslogo{
+  width: 100%;
+  height: 100%;
+  padding: 0;
+}
+
 .williamslogo {
   -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
   mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
+}
+
+.bmwlogo {
+  padding: 1px;
 }
 
 .team1,
@@ -14117,6 +14490,11 @@ body:has(.active #mod25logo) .one-change {
   font-family: 'Formula1Bold';
 }
 
+/* not first li in a ul to have negative matgin-top */
+.news-article ul li:not(:first-child) {
+  margin-top: -15px;
+}
+
 .news-article-date {
   color: var(--news-date-text);
   display: flex;
@@ -14796,8 +15174,17 @@ p.news-error-api-key {
   transform: rotate(0deg);
 }
 
+#season_viewer .redesigned-dropdown-menu .redesigned-dropdown-item i.bi-check {
+  display: inline-block;
+  font-size: 18px;
+  margin-left: 8px;
+  transition: transform 0.15s, opacity 0.15s;
+  transform: rotate(0deg);
+}
+
 #newsTypeMenu .redesigned-dropdown-item i.unactive,
 #newsLanguageMenu .redesigned-dropdown-item i.unactive,
+#season_viewer .redesigned-dropdown-menu .redesigned-dropdown-item i.unactive,
 #aiModelmenu .dropdown-item i.unactive {
   transform: rotate(-90deg);
   opacity: 0;
@@ -15537,6 +15924,14 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   min-width: 280px;
 }
 
+#attributeMenu{
+  min-width: 200px;
+}
+
+#staffMenu{
+  min-width: 220px;
+}
+
 .redesigned-dropdown-item {
   padding: 4px 8px;
   border-radius: 7px;
@@ -15796,7 +16191,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   overflow: hidden;
   transform: translateY(-6px);
   pointer-events: none;
-  transition: max-height 0.25s ease, opacity 0.15s ease, transform 0.25s ease, padding 0.25s ease;
+  transition: max-height 0.15s ease, opacity 0.15s ease, transform 0.15s ease, padding 0.15s ease, margin 0.15s ease;
+}
+
+.news-options-context:not(.open){
+  margin-top: 0 !important;
 }
 
 .news-options-context.open{
@@ -15953,3 +16352,565 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
  
 .snowflake,.snowflake .inner{animation-iteration-count:infinite;animation-play-state:running}@keyframes snowflakes-fall{0%{transform:translateY(0)}100%{transform:translateY(110vh)}}@keyframes snowflakes-shake{0%,100%{transform:translateX(0)}50%{transform:translateX(80px)}}.snowflake{position:fixed;top:-10%;z-index:9999;-webkit-user-select:none;user-select:none;cursor:default;pointer-events:none;animation-name:snowflakes-shake;animation-duration:3s;animation-timing-function:ease-in-out}.snowflake .inner{animation-duration:10s;animation-name:snowflakes-fall;animation-timing-function:linear}.snowflake:nth-of-type(0){left:1%;animation-delay:0s}.snowflake:nth-of-type(0) .inner{animation-delay:0s}.snowflake:first-of-type{left:10%;animation-delay:1s}.snowflake:first-of-type .inner,.snowflake:nth-of-type(8) .inner{animation-delay:1s}.snowflake:nth-of-type(2){left:20%;animation-delay:.5s}.snowflake:nth-of-type(2) .inner,.snowflake:nth-of-type(6) .inner{animation-delay:6s}.snowflake:nth-of-type(3){left:30%;animation-delay:2s}.snowflake:nth-of-type(11) .inner,.snowflake:nth-of-type(3) .inner{animation-delay:4s}.snowflake:nth-of-type(4){left:40%;animation-delay:2s}.snowflake:nth-of-type(10) .inner,.snowflake:nth-of-type(4) .inner{animation-delay:2s}.snowflake:nth-of-type(5){left:50%;animation-delay:3s}.snowflake:nth-of-type(5) .inner{animation-delay:8s}.snowflake:nth-of-type(6){left:60%;animation-delay:2s}.snowflake:nth-of-type(7){left:70%;animation-delay:1s}.snowflake:nth-of-type(7) .inner{animation-delay:2.5s}.snowflake:nth-of-type(8){left:80%;animation-delay:0s}.snowflake:nth-of-type(9){left:90%;animation-delay:1.5s}.snowflake:nth-of-type(9) .inner{animation-delay:3s}.snowflake:nth-of-type(10){left:25%;animation-delay:0s}.snowflake:nth-of-type(11){left:65%;animation-delay:2.5s}
+
+
+/* BENTO GRID STYLES */
+
+.main-viewer-section:has(.season-review-bento:not(.d-none)){
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.season-review-bento {
+  display: flex;
+  width: 100%;
+  height: 800px;
+  align-items: center;
+  justify-content: center;
+}
+
+.bento-grid {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 12px;
+  padding: 2px 8px;
+  color: var(--text-general);
+} 
+
+.bento-item {
+  background-color: var(--superficials);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 15px;
+  justify-content: flex-start;
+  gap: 8px;
+  border-radius: 10px;
+  box-shadow: var(--shadow-m);
+  outline: 2px solid transparent;
+  transition: outline-color 0.15s ease, background-color 0.15s ease;
+  /* min-height: 120px; */
+}
+
+.item-1:hover, .item-2:hover, .item-3:hover, .item-5:hover, .item-6:hover, .item-7:hover, .item-8:hover, .item-9:hover, .item-10:hover {
+  outline-color: var(--new-primary);
+  background-color: color-mix(in srgb, var(--new-primary-transparent) 50%, var(--superficials))
+}
+
+.item-1:active, .item-2:active, .item-3:active, .item-5:active, .item-6:active, .item-7:active, .item-8:active, .item-9:active, .item-10:active {
+  transform: scale(0.98);
+}
+
+/* Layout específico de cada bloque */
+.item-1 {
+  grid-column: span 2;
+  grid-row: span 4;
+  cursor: pointer;
+}
+
+.item-2 {
+  grid-column: span 2;
+  grid-row: span 2;
+  cursor: pointer;
+}
+
+.item-3 {
+  grid-column: span 4;
+  grid-row: span 2;
+  cursor: pointer;
+}
+
+.item-4 {
+  grid-column: span 4;
+  grid-row: span 2;
+}
+
+.item-5 {
+  grid-column: span 2;
+  grid-row: span 2;
+  cursor: pointer;
+}
+
+.item-6 {
+  grid-column: span 1;
+  grid-row: span 1;
+  cursor: pointer;
+}
+
+.item-7 {
+  grid-column: span 2;
+  grid-row: span 1;
+  cursor: pointer;
+}
+
+.item-8 {
+  grid-column: span 2;
+  grid-row: span 1;
+  cursor: pointer;
+}
+
+.item-9 {
+  grid-column: span 2;
+  grid-row: span 1;
+  cursor: pointer;
+}
+
+.item-10 {
+  grid-column: span 1;
+  grid-row: span 1;
+  cursor: pointer;
+}
+
+.bento-grid .stats-header-separator{
+  background-color: var(--text-tertiary);
+}
+
+
+.bento-title{
+  font-size: 18px;
+  color: var(--text-general);
+}
+
+.bento-subtitle{
+  font-size: 16px;
+  font-family: "Formula1";
+  color: var(--text-tertiary);
+}
+
+.bento-driver-standings{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.bento-team-standings{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.bento-split-list{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 10px;
+}
+
+.bento-split-list .bento-standings-half + .bento-standings-half{
+  border-left: 2px solid var(--text-tertiary);
+  padding-left: 12px;
+}
+
+.bento-standings-half{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.season-review-driver{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.season-review-driver:has(.season-review-driver-position.champion) .season-review-driver-position{
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-driver:has(.season-review-driver-position.champion) .season-review-driver-points:not(.diff){
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-driver-logo-div{
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.season-review-driver-logo-div .drivers-table-logo{
+  width: 24px;
+  height: 24px;
+}
+
+.season-review-driver-name{
+  flex-grow: 1;
+  color: var(--text-general);
+}
+
+.season-review-driver-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 25px;
+  text-align: center;
+  padding-top: 2px;
+  height: 24px;
+}
+
+.season-review-driver-points{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 52px;
+  text-align: center;
+  padding-top: 2px;
+  height: 24px;
+}
+
+.season-review-driver-points.diff{
+  color: var(--text-tertiary);
+  margin-right: -15px;
+}
+
+#standings2ndhalf{
+  border-left: 1px solid var(--separator-light);
+  padding-left: 15px;
+}
+
+#standings1sthalf{
+  padding-right: 5px;
+}
+
+.season-review-driver-name span:not(.bold-font){
+  color: var(--text-secondary);
+}
+
+.season-review-driver-name span.bold-font{
+  text-transform: uppercase;
+}
+
+.season-review-team{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+}
+
+.season-review-team:has(.season-review-team-position.champion) .season-review-team-position{
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-team:has(.season-review-team-position.champion) .season-review-team-points:not(.diff){
+  border-right: 2px solid #FEDB37;
+  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.season-review-team-logo-div{
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.season-review-team-logo-div .drivers-table-logo{
+  width: 24px;
+  height: 24px;
+}
+
+.season-review-team-name{
+  flex-grow: 1;
+  text-transform: uppercase;
+  color: var(--text-general);
+}
+
+.season-review-team-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 25px;
+  text-align: center;
+  padding-top: 2px;
+  height: 24px;
+}
+
+.season-review-team-points{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 52px;
+  text-align: center;
+  padding-top: 2px;
+  height: 24px;
+}
+
+.season-review-team-points.diff{
+  color: var(--text-tertiary);
+  margin-right: -15px;
+}
+
+#teamStandings{
+  width: 100%;
+}
+
+.bento-comparison-container{
+  display: flex;
+  flex-direction: row;
+  gap: 9px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.bento-sub-item-comparison{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 50%;
+  gap: 4px;
+}
+
+.bento-qualifying-container{
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.bento-sub-item-qualifying{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  width: 33.333%;
+}
+
+.bento-sub-item-qualifying .bento-vertical-label{
+  font-size: 20px;
+}
+
+.poles-comparison,
+.q3-comparison,
+.q2-comparison{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.poles-comparison.with-scrollbar,
+.q3-comparison.with-scrollbar,
+.q2-comparison.with-scrollbar,
+.bento-driver-standings.with-scrollbar {
+  padding-right: 6px;
+}
+
+.bento-vertical-label{
+  writing-mode: vertical-rl;
+  text-orientation: sideways;
+  transform: rotate(180deg);
+  color: var(--text-tertiary);
+  font-size: 28px;
+  letter-spacing: 1px;
+  user-select: none;
+  line-height: 1;
+}
+
+.bento-subtitle{
+  color: var(--text-tertiary);
+}
+
+.race-comparison{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.quali-comparison{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.season-review-comparison-row{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 22px;
+  border-radius: 4px;
+  outline: 1px solid transparent;
+  padding: 0 6px;
+  cursor: pointer;
+}
+
+.season-review-comparison-row.fe:hover{
+  outline-color: var(--ferrari-primary);
+  background-color: color-mix(in srgb, var(--ferrari-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.mc:hover{
+  outline-color: var(--mclaren-primary);
+  background-color: color-mix(in srgb, var(--mclaren-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.rb:hover{
+  outline-color: var(--redbull-primary);
+  background-color: color-mix(in srgb, var(--redbull-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.me:hover{
+  outline-color: var(--mercedes-primary);
+  background-color: color-mix(in srgb, var(--mercedes-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.al:hover{
+  outline-color: var(--alpine-primary);
+  background-color: color-mix(in srgb, var(--alpine-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.wi:hover{
+  outline-color: var(--williams-primary);
+  background-color: color-mix(in srgb, var(--williams-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.ha:hover{
+  outline-color: var(--haas-primary);
+  background-color: color-mix(in srgb, var(--haas-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.at:hover{
+  outline-color: var(--alphatauri-primary);
+  background-color: color-mix(in srgb, var(--alphatauri-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.af:hover{
+  outline-color: var(--alfa-primary);
+  background-color: color-mix(in srgb, var(--alfa-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.as:hover{
+  outline-color: var(--aston-primary);
+  background-color: color-mix(in srgb, var(--aston-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row.ct:hover{
+  outline-color: var(--custom-team-primary);
+  background-color: color-mix(in srgb, var(--custom-team-primary) 12%, var(--superficials));
+}
+
+.season-review-comparison-row:active{
+  transform: scale(0.98);
+}
+
+.season-review-comparison-name{
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  color: var(--text-general);
+}
+
+.season-review-comparison-name.right{
+  text-align: right;
+}
+
+.season-review-comparison-score{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 26px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.season-review-qualifying-row{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 22px;
+  gap: 4px;
+}
+
+.season-review-qualifying-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 28px;
+  text-align: center;
+}
+
+.season-review-qualifying-name{
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  color: var(--text-general);
+}
+
+.season-review-qualifying-count{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 26px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.wins-drivers-list{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.season-review-wins-row{
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 22px;
+  gap: 4px;
+}
+
+.season-review-wins-position{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 28px;
+  text-align: center;
+}
+
+.season-review-wins-name{
+  flex: 1;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-general);
+}
+
+.season-review-wins-name .bold-font{
+  text-transform: uppercase;
+}
+
+.season-review-wins-name span:not(.bold-font){
+  color: var(--text-secondary);
+}
+
+.season-review-wins-count{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 26px;
+  text-align: center;
+  padding-top: 2px;
+}
+
+.podiums-teams-list .season-review-wins-position,
+.poles-teams-list .season-review-wins-position,
+.bento-split-list .season-review-wins-position{
+  width: 18px;
+}
+
+.podiums-teams-list .season-review-wins-name,
+.poles-teams-list .season-review-wins-name,
+.item-8 .bento-split-list .season-review-wins-name{
+  max-width: 120px;
+  font-size: 12px;
+}
+
+.item-7 .bento-split-list .season-review-wins-name,
+.item-9 .bento-split-list .season-review-wins-name{
+  max-width: 120px;
+}

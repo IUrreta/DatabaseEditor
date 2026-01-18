@@ -35,6 +35,7 @@ let h2hTeamList = []
 let graphTeamList = []
 let mode = "driver"
 let h2hData;
+let queuedAutoCompareDrivers = null;
 
 export let mid_grid = 10;
 export let max_races = 23;
@@ -576,6 +577,41 @@ export function hideComp() {
     })
 }
 
+export function queueAutoCompareDrivers(driver1Id, driver2Id) {
+    const d1 = String(driver1Id);
+    const d2 = String(driver2Id);
+    if (!d1 || !d2 || d1 === "undefined" || d2 === "undefined" || d1 === d2) return;
+    queuedAutoCompareDrivers = { d1, d2 };
+}
+
+function applyQueuedAutoCompareDrivers() {
+    if (!queuedAutoCompareDrivers) return;
+    if (mode !== "driver") return;
+
+    const zone = document.querySelector(".drivers-modal-zone");
+    if (!zone) return;
+
+    const { d1, d2 } = queuedAutoCompareDrivers;
+    const d1El = zone.querySelector(`.modal-driver[data-driverid="${d1}"]`);
+    const d2El = zone.querySelector(`.modal-driver[data-driverid="${d2}"]`);
+    if (!d1El || !d2El) return;
+
+    queuedAutoCompareDrivers = null;
+
+    const selectDriver = (el) => {
+        const h2hBtn = el.querySelector(".H2Hradio");
+        if (h2hBtn && h2hBtn.dataset.state !== "checked") h2hBtn.click();
+        const graphBtn = el.querySelector(".GraphButton");
+        if (graphBtn && graphBtn.dataset.state !== "checked") graphBtn.click();
+    };
+
+    selectDriver(d1El);
+    selectDriver(d2El);
+
+    const confirm = document.getElementById("confirmComparison");
+    if (confirm) confirm.click();
+}
+
 /**
  * Loads all the drivers into the menus of driver selection
  * @param {Object} drivers object with all the driver info
@@ -678,6 +714,8 @@ export function load_drivers_h2h(drivers) {
         dest.appendChild(newDiv)
     });
     buttonsListeners()
+
+    applyQueuedAutoCompareDrivers()
 
 
 

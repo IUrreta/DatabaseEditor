@@ -2318,7 +2318,7 @@ async function contextualizeNextSeasonGrid(newData) {
       `\n\n${title}\n`,
       ...Object.values(teams).map(team =>
         [
-          `\n**${team.name}**:\n`,
+          `\n\n**${team.name}**:\n\n`,
           team[driversKey].map(d => `- ${d.name}`).join('\n'),
         ].join('')
       )
@@ -2862,7 +2862,7 @@ async function contextualizeSeasonReview(newData) {
 
 
 async function askGenAI(messages, opts = {}) {
-  const aiModel = opts.model || "gpt-5-nano";
+  const aiModel = opts.model || "gpt-5-mini";
 
   const response = await fetch("/api/ask-openai", {
     method: "POST",

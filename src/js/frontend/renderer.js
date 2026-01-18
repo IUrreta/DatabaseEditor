@@ -4,7 +4,8 @@ import DOMPurify from 'dompurify';
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
-    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
+    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
+    populateSeasonReview
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
@@ -30,43 +31,18 @@ import {
 } from './head2head';
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
-import { loadRecordsList } from './seasonViewer';
+import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
 import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
 import members from "../../data/members.json"
+import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacements.js";
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
 
 
-const names_configs = {
-    "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
-    "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa": "ALFA ROMEO",
-    "audi": "AUDI", "sauber": "SAUBER", "stake": "STAKE SAUBER"
-}
-const pretty_names = {
-    "visarb": "Visa Cashapp RB", "toyota": "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
-    "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa": "Alfa Romeo",
-    "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
-}
-const abreviations_for_replacements = {
-    "visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
-    "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
-}
-const logos_configs = {
-    "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
-    "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
-    "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
-    "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.png", "stake": "../assets/images/kick.png"
-}
-const logos_classes_configs = {
-    "visarb": "visarblogo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
-    "porsche": "porschelogo", "brawn": "brawnlogo",
-    "alpine": "alpinelogo", "renault": "renaultlogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
-    "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
-}
 
 const driverTransferPill = document.getElementById("transferpill");       
 const editStatsPill = document.getElementById("statspill");
@@ -125,6 +101,7 @@ const updateInfo = document.querySelector(".update-info")
 const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequencyConfig");
 const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
 const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
+const forceEditorMinimapColorsToggle = document.getElementById("forceEditorMinimapColorsToggle");
 
 function updateTurningPointsFrequencyUI() {
     if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
@@ -182,6 +159,7 @@ let divBlocking = 1;
 let saveName;
 let tempImageData = null;
 let lastVisibleIndex = 0;
+let viewerLoaded = false;
 
 let calendarEditMode = "Start2024"
 
@@ -876,6 +854,7 @@ const messageHandlers = {
     },
     "Save loaded succesfully": (message) => {
         isSaveSelected = 1;
+        viewerLoaded = false;
         remove_drivers();
         removeStatsDrivers();
         listenersStaffGroups();
@@ -1023,8 +1002,14 @@ const messageHandlers = {
     "Record fetched": (message) => {
         loadRecordsList(message)
     },
+    "Team record fetched": (message) => {
+        loadTeamRecordsList(message)
+    },
     "Double points bug fixed": (message) => {
         //TODO CLICK ON THE FIRST EYAR OF yearMenu
+    },
+    "Season review data fetched": (message) => {
+        populateSeasonReview(message)
     }
 };
 
@@ -1441,12 +1426,28 @@ function manage_config(info, year_config = false) {
 
 function replace_all_teams(info) {
     let teams = info["teams"]
-    alphaTauriReplace(teams["alphatauri"])
-    alpineReplace(teams["alpine"])
-    alfaReplace(teams["alfa"])
-    update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
-    update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
-    update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
+    const alphatauri = teams["alphatauri"]
+    const alpine = teams["alpine"]
+    const alfa = teams["alfa"]
+    const redbull = teams["redbull"] || "redbull"
+    const aston = teams["aston"] || "aston"
+    const williams = teams["williams"] || "williams"
+    const haas = teams["haas"] || "haas"
+
+    alphaTauriReplace(alphatauri)
+    alpineReplace(alpine)
+    williamsReplace(williams)
+    haasReplace(haas)
+    alfaReplace(alfa)
+    redbullReplace(redbull)
+    astonReplace(aston)
+    update_logo("alpine", logos_configs[alpine], alpine)
+    update_logo("williams", logos_configs[williams], williams)
+    update_logo("haas", logos_configs[haas], haas)
+    update_logo("alfa", logos_configs[alfa], alfa)
+    update_logo("alphatauri", logos_configs[alphatauri], alphatauri)
+    update_logo("redbull", logos_configs[redbull], redbull)
+    update_logo("aston", logos_configs[aston], aston)
 
 }
 
@@ -1477,6 +1478,9 @@ function manage_config_content(info, year_config = false) {
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+        if (forceEditorMinimapColorsToggle) {
+            forceEditorMinimapColorsToggle.checked = parseInt(info["forceEditorMinimapColors"] || 0, 10) === 1;
+        }
 
         if (turningPointsFrequencySlider) {
             let presetIndex = info?.turningPointsFrequencyPreset;
@@ -1530,300 +1534,18 @@ function update_difficulty_info(triggerList) {
 }
 
 
-function alphaTauriReplace(info) {
-    document.querySelector("#alphaTauriReplaceButton").querySelector("button span").textContent = names_configs[info]
-    document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
-    combined_dict[8] = pretty_names[info]
-    abreviations_dict[8] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", { teamID: 8, newName: pretty_names[info] });
-    command.execute();
-    document.querySelectorAll(".at-teamname").forEach(function (elem) {
-        elem.dataset.teamshow = pretty_names[info]
-    })
-    document.querySelectorAll(".at-name").forEach(function (elem) {
-        //if it has the class complete, put names_configs[info], else out VCARB
-        let name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : names_configs[info];
-        if (elem.parentElement.classList.contains("car-title")) {
-            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            if (match) {
-                name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : pretty_names[info];
-                elem.textContent = `${name} ${match[2]}`;
-            }
-        }
-        else{
-            elem.textContent = name
-        }
-        
-    })
-    if (info !== "alphatauri") {
-        document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                let newElem;
-                if (info === "porsche" || info === "toyota") {
-                    newElem = document.createElement("img");
-                    newElem.src = logos_configs[info];
-                } else {
-                    newElem = document.createElement("div");
-                }
-                newElem.className = elem.className;
-                newElem.classList.remove("alphataurilogo", "toyotalogo", "hugologo", "porschelogo", "visarblogo", "ferrarilogo", "brawnlogo");
-                newElem.classList.add(logos_classes_configs[info])
-                elem.replaceWith(newElem);
-            }
-            if (elem.classList.contains("secondary")) {
-                if (info !== "toyota") {
-                    elem.src = elem.src.slice(0, -4) + "2.png"
-                }
-            }
-
-        })
-        let alphaVarName = "--alphatauri-primary"
-        let newVarName = "--" + info + "-primary"
-        change_css_variables(alphaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("80", value)
-        alphaVarName = "--alphatauri-secondary"
-        newVarName = "--" + info + "-secondary"
-        change_css_variables(alphaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("81", value)
-        alphaVarName = "--alphatauri-primary-transparent"
-        newVarName = "--" + info + "-primary-transparent"
-        change_css_variables(alphaVarName, newVarName)
-        alphaVarName = "--alphatauri-secondary-transparent"
-        newVarName = "--" + info + "-secondary-transparent"
-        change_css_variables(alphaVarName, newVarName)
-    }
-    else {
-        document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alphataurilogo")
-                elem.classList.remove("toyotalogo")
-                elem.classList.remove("hugologo")
-                elem.classList.remove("porschelogo")
-                elem.classList.remove("visarblogo")
-                elem.classList.remove("ferrarilogo")
-                elem.classList.remove("brawnlogo")
-                elem.classList.add("alphataurilogo")
-            }
-            if (elem.classList.contains("secondary")) {
-                elem.src = elem.src.slice(0, -4) + "2.png"
-            }
-        })
-        let alphaVarName = "--alphatauri-primary"
-        let newVarName = "--alphatauri-original"
-        change_css_variables(alphaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-original").trim();
-        edit_colors_dict("80", value)
-        alphaVarName = "--alphatauri-secondary"
-        newVarName = "--alphatauri-secondary-original"
-        change_css_variables(alphaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-secondary-original").trim();
-        edit_colors_dict("81", value)
-        alphaVarName = "--alphatauri-primary-transparent"
-        newVarName = "--alphatauri-primary-transparent-original"
-        change_css_variables(alphaVarName, newVarName)
-        alphaVarName = "--alphatauri-secondary-transparent"
-        newVarName = "--alphatauri-secondary-transparent-original"
-        change_css_variables(alphaVarName, newVarName)
-    }
-    document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function (elem) {
-        let classes = elem.className.split(" ")
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
-                elem.classList.remove(cl)
-                elem.classList.add("changable-team-menu-" + info)
-            }
-        })
-    })
-}
-
-function alpineReplace(info) {
-    document.querySelector("#alpineReplaceButton").querySelector("button span").textContent = names_configs[info]
-    document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
-    combined_dict[5] = pretty_names[info]
-    abreviations_dict[5] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", { teamID: 5, newName: pretty_names[info] });
-    command.execute();
-    document.querySelectorAll(".al-teamname").forEach(function (elem) {
-        elem.dataset.teamshow = pretty_names[info]
-    })
-    document.querySelectorAll(".alpine-name").forEach(function (elem) {
-        let name = names_configs[info]
-        if (elem.parentElement.classList.contains("car-title")) {
-            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            if (match) {
-                name = pretty_names[info]
-                elem.textContent = `${name} ${match[2]}`;
-            }
-        }
-        else{
-            elem.textContent = name
-        }
-    })
-    if (info !== "alpine") {
-        document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.classList.remove("alpinelogo")
-                elem.classList.remove("andrettilogo")
-                elem.classList.remove("renaultlogo")
-                elem.classList.remove("lotuslogo")
-                elem.classList.add(logos_classes_configs[info])
-            }
-            if (elem.classList.contains("secondary")) {
-                elem.src = elem.src.slice(0, -4) + "2.png"
-            }
-        })
-        let alpineVarName = "--alpine-primary"
-        let newVarName = "--" + info + "-primary"
-        change_css_variables(alpineVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("50", value)
-        alpineVarName = "--alpine-secondary"
-        newVarName = "--" + info + "-secondary"
-        change_css_variables(alpineVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("51", value)
-        alpineVarName = "--alpine-primary-transparent"
-        newVarName = "--" + info + "-primary-transparent"
-        change_css_variables(alpineVarName, newVarName)
-        alpineVarName = "--alpine-secondary-transparent"
-        newVarName = "--" + info + "-secondary-transparent"
-        change_css_variables(alpineVarName, newVarName)
-    }
-    else {
-        document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alpinelogo")
-                elem.classList.remove("andrettilogo")
-                elem.classList.remove("renaultlogo")
-                elem.classList.remove("lotuslogo")
-                elem.classList.add("alpinelogo")
-            }
-            if (elem.classList.contains("secondary")) {
-                elem.src = elem.src.slice(0, -4) + "2.png"
-            }
-        })
-        let alpineVarName = "--alpine-primary"
-        let newVarName = "--alpine-original"
-        change_css_variables(alpineVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-original").trim();
-        edit_colors_dict("50", value)
-        alpineVarName = "--alpine-secondary"
-        newVarName = "--alpine-secondary-original"
-        change_css_variables(alpineVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-secondary-original").trim();
-        edit_colors_dict("51", value)
-        alpineVarName = "--alpine-primary-transparent"
-        newVarName = "--alpine-primary-transparent-original"
-        change_css_variables(alpineVarName, newVarName)
-        alpineVarName = "--alpine-secondary-transparent"
-        newVarName = "--alpine-secondary-transparent-original"
-        change_css_variables(alpineVarName, newVarName)
-    }
-    document.querySelectorAll(".team-menu-alpine-replace").forEach(function (elem) {
-        let classes = elem.className.split(" ")
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
-                elem.classList.remove(cl)
-                elem.classList.add("changable-team-menu-" + info)
-            }
-        })
-    })
-}
-
-function alfaReplace(info) {
-    document.querySelector("#alfaReplaceButton").querySelector("button span").textContent = names_configs[info]
-    document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
-    combined_dict[9] = pretty_names[info]
-    abreviations_dict[9] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", { teamID: 9, newName: pretty_names[info] });
-    command.execute();
-    document.querySelectorAll(".af-teamname").forEach(function (elem) {
-        elem.dataset.teamshow = pretty_names[info]
-    })
-    document.querySelectorAll(".alfa-name").forEach(function (elem) {
-        let name = names_configs[info]
-        if (elem.parentElement.classList.contains("car-title")) {
-            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            if (match) {
-                name = pretty_names[info]
-                elem.textContent = `${name} ${match[2]}`;
-            }  
-        }
-        else{
-            elem.textContent = name
-        }
-    })
-    if (info !== "alfa") {
-        document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alfaromeologo")
-                elem.classList.remove("audilogo")
-                elem.classList.remove("sauberlogo")
-                elem.classList.add(logos_classes_configs[info])
-            }
-        })
-        let alfaVarName = "--alfa-primary"
-        let newVarName = "--" + info + "-primary"
-        change_css_variables(alfaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("90", value)
-        alfaVarName = "--alfa-secondary"
-        newVarName = "--" + info + "-secondary"
-        change_css_variables(alfaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("91", value)
-        alfaVarName = "--alfa-primary-transparent"
-        newVarName = "--" + info + "-primary-transparent"
-        change_css_variables(alfaVarName, newVarName)
-        alfaVarName = "--alfa-secondary-transparent"
-        newVarName = "--" + info + "-secondary-transparent"
-        change_css_variables(alfaVarName, newVarName)
-    }
-    else {
-        document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.className = "alfalogo-replace alfalogo"
-            }
-        })
-        let alfaVarName = "--alfa-primary"
-        let newVarName = "--alfa-original"
-        change_css_variables(alfaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-original").trim();
-        edit_colors_dict("90", value)
-        alfaVarName = "--alfa-secondary"
-        newVarName = "--alfa-secondary-original"
-        change_css_variables(alfaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-secondary-original").trim();
-        edit_colors_dict("91", value)
-        alfaVarName = "--alfa-primary-transparent"
-        newVarName = "--alfa-primary-transparent-original"
-        change_css_variables(alfaVarName, newVarName)
-        alfaVarName = "--alfa-secondary-transparent"
-        newVarName = "--alfa-secondary-transparent-original"
-        change_css_variables(alfaVarName, newVarName)
-    }
-    document.querySelectorAll(".team-menu-alfa-replace").forEach(function (elem) {
-        let classes = elem.className.split(" ")
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
-                elem.classList.remove(cl)
-                elem.classList.add("changable-team-menu-" + info)
-            }
-        })
-    })
-}
-
 function change_css_variables(oldVar, newVar) {
     let root = document.documentElement;
     let newVal = getComputedStyle(root).getPropertyValue(newVar).trim();
     root.style.setProperty(oldVar, newVal);
 }
+
+const { alphaTauriReplace, alpineReplace, williamsReplace, haasReplace, alfaReplace, redbullReplace, astonReplace } = createTeamReplacers({
+    combined_dict,
+    abreviations_dict,
+    edit_colors_dict,
+    change_css_variables
+});
 
 function replace_modal_teams(version) {
     if (version === 2024) {
@@ -1855,7 +1577,11 @@ document.querySelectorAll(".team-change-button").forEach(function (elem) {
 document.querySelector("#configDetailsButton").addEventListener("click", function () {
     let alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
     let alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
+    let williams = document.querySelector("#williamsReplaceButton").querySelector("button").dataset.value
+    let haas = document.querySelector("#haasReplaceButton").querySelector("button").dataset.value
     let alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
+    let redbull = document.querySelector("#redbullReplaceButton").querySelector("button").dataset.value
+    let aston = document.querySelector("#astonReplaceButton").querySelector("button").dataset.value
     let mentalityFrozen = 0;
     if (document.getElementById("freezeMentalityToggle").checked) {
         mentalityFrozen = 1;
@@ -1863,6 +1589,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let refurbish = 0;
     if (document.getElementById("refurbishingToggle").checked) {
         refurbish = 1;
+    }
+    let forceEditorMinimapColors = 0;
+    if (forceEditorMinimapColorsToggle && forceEditorMinimapColorsToggle.checked) {
+        forceEditorMinimapColors = 1;
     }
     let difficulty = 0;
     let disabledList = {}
@@ -1875,9 +1605,14 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let data = {
         alphatauri: alphatauri,
         alpine: alpine,
+        williams: williams,
+        haas: haas,
         alfa: alfa,
+        redbull: redbull,
+        aston: aston,
         frozenMentality: mentalityFrozen,
         refurbish: refurbish,
+        forceEditorMinimapColors: forceEditorMinimapColors,
         disabled: disabledList,
         triggerList: triggerList,
         playerTeam: playerTeam
@@ -1898,7 +1633,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     if (isSaveSelected === 1) {
         const command = new Command("configUpdate", data);
         command.execute();
-        let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
+        let info = { teams: { alphatauri: alphatauri, alpine: alpine, williams: williams, haas: haas, alfa: alfa, redbull: redbull, aston: aston } }
         replace_all_teams(info)
         reloadTables()
         if (tempImageData) {
@@ -2099,6 +1834,10 @@ h2hPill.addEventListener("click", function () {
 })
 
 viewPill.addEventListener("click", function () {
+    if (!viewerLoaded) {
+        viewerLoaded = true
+        document.getElementById("reviewpill").click();
+    }
     manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()

@@ -160,9 +160,10 @@ export const names_full = {
 
 //seasonViewer
 export let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-williams-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
-    "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-alphatauri-table", "porsche": "logo-porsche-table",
-    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table"
+    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-sauber-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
+    "brawn": "logo-brawn-table", "toyota": "logo-toyota-table", "alphatauri": "logo-alphatauri-table", "porsche": "logo-porsche-table",
+    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table",
+    "cadillac": "logo-cadillac-table", "ford": "logo-ford-table", "racingpoint": "logo-racingpoint-table", "jordan": "logo-jordan-table"
 }
 
 export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
@@ -564,3 +565,36 @@ export const turningPointsTuningByType = {
     },
 };
 
+export const defaultColors = {
+  1: 4293394477,
+  2: 4294934528,
+  3: 4281758150,
+  4: 4280808658,
+  5: 4278227916,
+  6: 4284794111,
+  7: 4290165437,
+  8: 4284912383,
+  9: 4283621970,
+  10: 4280457585
+};
+
+export const customColors = {
+    "audi": "#C00A26",
+    "sauber": "#f50537",
+    "stake": "#54d650",
+    "visarb": "#6c8ff3",
+    "toyota": "#989898",
+    "brawn": "#d0e610",
+    "porsche": "#873AC4",
+    "alphatauri": "#5E8FAA",
+    "hugo": "#bd9514",
+    "lotus": "#b09247",
+    "renault": "#b09247",
+    "andretti": "#fac51c",
+    "alpine": "#F168BA",
+    "racingpoint": "#F395C7",
+    "jordan": "#e6e624",
+    "bmw": "#f1f1f1",
+    "cadillac": "#111111",
+    "ford": "#3172bf"
+}

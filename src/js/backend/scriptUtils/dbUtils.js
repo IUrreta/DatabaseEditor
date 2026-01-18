@@ -3,7 +3,7 @@ import { engine_unitValueToValue } from "./carConstants.js";
 import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
 import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
-import { default_dict, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
+import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
 
 
@@ -13,6 +13,22 @@ import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } f
 export function argbToHex(argb) {
   const rgb = argb & 0xFFFFFF; // Ignora el canal alfa
   return `#${rgb.toString(16).padStart(6, '0').toUpperCase()}`;
+}
+
+export function hexToArgb(hex) {
+  hex = hex.replace("#", "");
+
+  if (hex.length === 3) {
+    hex = hex.split("").map(c => c + c).join("");
+  }
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  const a = 255;
+
+  return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
 }
 
 export function getDate() {
@@ -153,7 +169,7 @@ function fetchJuniorContracts(driverID) {
       AND (ContractType = 0 OR ContractType = 3)
       AND TeamID BETWEEN 11 AND 31
   `, [driverID], 'allRows');
-  
+
   let juniorFormulaInfo = {
     teamId: -1,
     posInTeam: -1
@@ -959,6 +975,146 @@ export function fetchTeamsStandings(year, formula = 1) {
       `, [year, formula], 'allRows') || [];
 }
 
+export function fetchTeamsStandingsWithPoints(year, formula = 1) {
+  return queryDB(`
+        SELECT TeamID, Position, Points
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY Position
+      `, [year, formula], 'allRows') || [];
+}
+
+function fetchTeamSeasonCountsFromRaceResults(year, extraWhereSql) {
+  const isCreateATeam = !!getGlobals().isCreateATeam;
+  const teamFilterSql = isCreateATeam
+    ? `(rr.TeamID BETWEEN 1 AND 10 OR rr.TeamID = 32)`
+    : `(rr.TeamID BETWEEN 1 AND 10)`;
+
+  const rows = queryDB(`
+    SELECT rr.TeamID, COUNT(*) AS Cnt
+    FROM Races_Results rr
+    WHERE rr.Season = ?
+      AND ${teamFilterSql}
+      AND ${extraWhereSql}
+    GROUP BY rr.TeamID
+    ORDER BY Cnt DESC, rr.TeamID ASC
+  `, [year], 'allRows') || [];
+
+  return rows.map(r => ({
+    teamId: r[0],
+    value: r[1] ?? 0,
+  }));
+}
+
+export function fetchTeamSeasonWinsTotals(year, formula = 1) {
+  if (Number(formula) !== 1) return [];
+  return fetchTeamSeasonCountsFromRaceResults(year, `rr.FinishingPos = 1`);
+}
+
+export function fetchTeamSeasonPodiumsTotals(year, formula = 1) {
+  if (Number(formula) !== 1) return [];
+  return fetchTeamSeasonCountsFromRaceResults(year, `rr.FinishingPos BETWEEN 1 AND 3`);
+}
+
+export function fetchTeamSeasonPolesTotals(year, formula = 1) {
+  if (Number(formula) !== 1) return [];
+  return fetchTeamSeasonCountsFromRaceResults(year, `rr.StartingPos = 1`);
+}
+
+export function fetchDriversStandings(year, formula = 1) {
+  if (Number(formula) === 1) {
+    const rows = queryDB(`
+      SELECT
+        ds.DriverID,
+        ds.Position,
+        ds.Points,
+        COALESCE((
+          SELECT rr.TeamID
+          FROM Races_Results rr
+          JOIN Races r ON r.RaceID = rr.RaceID
+          WHERE rr.DriverID = ds.DriverID
+            AND r.SeasonID = ?
+          ORDER BY r.Day DESC, r.RaceID DESC
+          LIMIT 1
+        ), -1) AS TeamID
+      FROM Races_DriverStandings ds
+      WHERE ds.SeasonID = ?
+        AND ds.RaceFormula = ?
+        AND EXISTS (
+          SELECT 1
+          FROM Races_Results rr2
+          WHERE rr2.Season = ?
+            AND rr2.DriverID = ds.DriverID
+            AND rr2.FinishingPos > 0
+            AND rr2.FinishingPos != 99
+          LIMIT 1
+        )
+      ORDER BY ds.Position
+    `, [year, year, formula, year], 'allRows');
+
+    const formatted = rows.map(r => {
+      let names = queryDB(`
+        SELECT FirstName, LastName, 1, 1
+        FROM Staff_BasicData
+        WHERE StaffID = ?
+      `, [r[0]], 'singleRow');
+      let name = formatNamesSimple(names);
+      return {
+        DriverID: r[0],
+        DriverName: name[0],
+        Position: r[1],
+        Points: r[2],
+        TeamID: r[3]
+      }
+    });
+
+    return formatted;
+
+  }
+
+  return queryDB(`
+    SELECT
+      ds.DriverID,
+      ds.Position,
+      ds.Points,
+      COALESCE((
+        SELECT fr.TeamID
+        FROM Races_FeatureRaceResults fr
+        JOIN Races r ON r.RaceID = fr.RaceID
+        WHERE fr.DriverID = ds.DriverID
+          AND fr.SeasonID = ?
+          AND fr.RaceFormula = ?
+        ORDER BY r.Day DESC, r.RaceID DESC
+        LIMIT 1
+      ), -1) AS TeamID
+    FROM Races_DriverStandings ds
+    WHERE ds.SeasonID = ?
+      AND ds.RaceFormula = ?
+      AND EXISTS (
+        SELECT 1
+        FROM Races_FeatureRaceResults fr2
+        WHERE fr2.SeasonID = ?
+          AND fr2.RaceFormula = ?
+          AND fr2.DriverID = ds.DriverID
+          AND fr2.FinishingPos > 0
+          AND fr2.FinishingPos != 99
+        LIMIT 1
+      )
+    ORDER BY ds.Position
+  `, [year, formula, year, formula, year, formula], 'allRows') || [];
+}
+
+export function fetchTeamsStandingsWithPositionChange(year, formula = 1) {
+  return queryDB(`
+        SELECT TeamID, Position, LastPositionChange
+        FROM Races_TeamStandings
+        WHERE SeasonID = ?
+          AND RaceFormula = ?
+        ORDER BY Position
+      `, [year, formula], 'allRows') || [];
+}
+
 export function fetchPointsRegulations() {
   const pointScheme = queryDB(`SELECT CurrentValue FROM Regulations_Enum_Changes WHERE ChangeID = 7`, [], 'singleValue');
   const twoBiggestPoints = queryDB(`SELECT Points FROM Regulations_NonTechnical_PointSchemes WHERE (PointScheme = ?) AND (RacePos = 1 OR RacePos = 2); `, [pointScheme], 'allRows');
@@ -1085,7 +1241,7 @@ export function fetchOneDriverSeasonResults(driver, year, isCurrentYear = true, 
     return null;
   }
 
-  
+
 }
 
 
@@ -1452,6 +1608,168 @@ export function ensureCustomDoDRankingTable() {
 
 }
 
+export function fetchDriverOfTheDayCounts(season) {
+  ensureCustomDoDRankingTable();
+
+  const rows = queryDB(`
+    SELECT
+      t.DriverID,
+      (
+        SELECT w.Name
+        FROM Custom_DriverOfTheDay_Ranking w
+        JOIN Races r ON r.RaceID = w.RaceID
+        WHERE w.Season = ?
+          AND w.Rank = 1
+          AND w.DriverID = t.DriverID
+        ORDER BY r.Day DESC, w.RaceID DESC
+        LIMIT 1
+      ) AS Name,
+      COALESCE((
+        SELECT w.TeamID
+        FROM Custom_DriverOfTheDay_Ranking w
+        JOIN Races r ON r.RaceID = w.RaceID
+        WHERE w.Season = ?
+          AND w.Rank = 1
+          AND w.DriverID = t.DriverID
+        ORDER BY r.Day DESC, w.RaceID DESC
+        LIMIT 1
+      ), -1) AS TeamID,
+      COUNT(*) AS Count
+    FROM Custom_DriverOfTheDay_Ranking t
+    WHERE t.Season = ?
+      AND t.Rank = 1
+    GROUP BY t.DriverID
+    ORDER BY Count DESC
+  `, [season, season, season], 'allRows') || [];
+
+  return rows.map(r => ({
+    id: Number(r[0]),
+    name: r[1],
+    teamId: Number(r[2]),
+    count: Number(r[3]) || 0
+  }));
+}
+
+export function fetchTeamMateQualiRaceHeadToHead(season) {
+  const globals = getGlobals();
+  const teams = globals.isCreateATeam
+    ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
+    : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+  const lastRaceId = queryDB(`
+    SELECT RaceID
+    FROM Races
+    WHERE SeasonID = ?
+    ORDER BY Day DESC, RaceID DESC
+    LIMIT 1
+  `, [season], 'singleValue');
+
+  if (!lastRaceId) return [];
+
+  const normalizePos = (pos) => {
+    const n = Number(pos);
+    if (!Number.isFinite(n) || n <= 0 || n === 99) return 999;
+    return n;
+  };
+
+  const pickTwoDriversForTeamAtLastRace = (teamId) => {
+    const rows = queryDB(`
+      SELECT DriverID, FinishingPos
+      FROM Races_Results
+      WHERE Season = ?
+        AND RaceID = ?
+        AND TeamID = ?
+      ORDER BY
+        CASE
+          WHEN FinishingPos IS NULL OR FinishingPos <= 0 OR FinishingPos = 99 THEN 999
+          ELSE FinishingPos
+        END ASC,
+        DriverID ASC
+    `, [season, lastRaceId, teamId], 'allRows') || [];
+
+    const ids = [];
+    for (const r of rows) {
+      const id = Number(r[0]);
+      if (!Number.isFinite(id)) continue;
+      if (!ids.includes(id)) ids.push(id);
+      if (ids.length >= 2) break;
+    }
+    return ids;
+  };
+
+  const getDriverName = (driverId) => {
+    const row = queryDB(`
+      SELECT FirstName, LastName, StaffID, 1
+      FROM Staff_BasicData
+      WHERE StaffID = ?
+    `, [driverId], 'singleRow');
+    const formatted = formatNamesSimple(row || ["", "", driverId, 1]);
+    return formatted[0] || "";
+  };
+
+  const results = [];
+
+  for (const teamId of teams) {
+    const driverIds = pickTwoDriversForTeamAtLastRace(teamId);
+    if (driverIds.length < 2) continue;
+
+    const [driver1Id, driver2Id] = driverIds;
+    const driver1Name = getDriverName(driver1Id);
+    const driver2Name = getDriverName(driver2Id);
+
+    const rows = queryDB(`
+      SELECT RaceID, DriverID, FinishingPos, StartingPos
+      FROM Races_Results
+      WHERE Season = ?
+        AND TeamID = ?
+        AND DriverID IN (?, ?)
+      ORDER BY RaceID
+    `, [season, teamId, driver1Id, driver2Id], 'allRows') || [];
+
+    const byRace = new Map();
+    for (const [raceId, driverId, finishingPos, startingPos] of rows) {
+      const rid = Number(raceId);
+      if (!byRace.has(rid)) byRace.set(rid, new Map());
+      byRace.get(rid).set(Number(driverId), { finishingPos, startingPos });
+    }
+
+    let raceAhead1 = 0, raceAhead2 = 0;
+    let qualiAhead1 = 0, qualiAhead2 = 0;
+
+    for (const raceMap of byRace.values()) {
+      const d1 = raceMap.get(driver1Id);
+      const d2 = raceMap.get(driver2Id);
+      if (!d1 || !d2) continue;
+
+      const fin1 = normalizePos(d1.finishingPos);
+      const fin2 = normalizePos(d2.finishingPos);
+      if (fin1 < fin2) raceAhead1++;
+      else if (fin2 < fin1) raceAhead2++;
+
+      const st1 = normalizePos(d1.startingPos);
+      const st2 = normalizePos(d2.startingPos);
+      if (st1 < st2) qualiAhead1++;
+      else if (st2 < st1) qualiAhead2++;
+    }
+
+    results.push({
+      teamId: Number(teamId),
+      driver1Id,
+      driver2Id,
+      driver1Name,
+      driver2Name,
+      raceHeadToHead: `${raceAhead1}-${raceAhead2}`,
+      qualiHeadToHead: `${qualiAhead1}-${qualiAhead2}`,
+      raceAhead1,
+      raceAhead2,
+      qualiAhead1,
+      qualiAhead2
+    });
+  }
+
+  return results;
+}
+
 function seededRandom(seed) {
   // xmur3 + mulberry32 style
   let t = (seed + 0x6D2B79F5) | 0;
@@ -1698,20 +2016,24 @@ function formatSeasonResultsF2F3(
   const latestTeamId =
     raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
 
-  const championshipPosition =
+  const standingsRow =
     queryDB(`
-      SELECT Position
+      SELECT Position, LastPositionChange
       FROM Races_Driverstandings
       WHERE RaceFormula = ?
         AND SeasonID = ?
         AND DriverID = ?
-    `, [formula, season, driverID], "singleValue") || 0;
+    `, [formula, season, driverID], "singleRow") || [0, 0];
+
+  const championshipPosition = Number(standingsRow[0]) || 0;
+  const lastPositionChange = Number(standingsRow[1]) || 0;
 
   return {
     driverName: nameFormatted,
     latestTeamId,
     driverId: driverID[0] || driverID,
     championshipPosition,
+    lastPositionChange,
     races: raceObjects
   };
 }
@@ -1945,20 +2267,24 @@ export function formatSeasonResults(
   const latestTeamId =
     raceObjects.length ? raceObjects[raceObjects.length - 1].teamId : teamID;
 
-  const championshipPosition =
+  const standingsRow =
     queryDB(`
-        SELECT Position
+        SELECT Position, LastPositionChange
         FROM Races_Driverstandings
         WHERE RaceFormula = ?
           AND SeasonID = ?
           AND DriverID = ?
-      `, [formula, season, driverID], "singleValue") || 0;
+      `, [formula, season, driverID], "singleRow") || [0, 0];
+
+  const championshipPosition = Number(standingsRow[0]) || 0;
+  const lastPositionChange = Number(standingsRow[1]) || 0;
 
   const payload = {
     driverName: nameFormatted,
     latestTeamId,
     driverId: driverID[0] || driverID,
     championshipPosition,
+    lastPositionChange,
     races: raceObjects
   };
 
@@ -2065,7 +2391,7 @@ export function fetchDriverContracts(id) {
         WHERE ContractType = 0 AND StaffID = ?
         AND (TeamID BETWEEN 1 AND 10 OR TeamID = 32)
     `, [id], 'singleRow');
-    //teamID between 1 and 1 10 (10 included) and alsoc na be 32
+  //teamID between 1 and 1 10 (10 included) and alsoc na be 32
   // Obtener el contrato futuro
   const futureContract = queryDB(`
         SELECT Salary, EndSeason, StartingBonus, RaceBonus, RaceBonusTargetPos, PosInTeam, TeamID
@@ -2549,11 +2875,29 @@ export function updateCustomConfig(data) {
   const alfaRomeo = data.alfa;
   const alphaTauri = data.alphatauri;
   const alpine = data.alpine;
+  const williams = data.williams;
+  const haas = data.haas;
+  const redbull = data.redbull;
+  const aston = data.aston;
   const primaryColor = data.primaryColor;
   const secondaryColor = data.secondaryColor;
   const difficulty = data.difficulty
   const playerTeam = data.playerTeam
   const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;
+  const forceEditorMinimapColors = data.forceEditorMinimapColors;
+  console.log("Updating custom config with data:", data);
+
+  const replacableTeamsDict = { 9: 'alfa', 8: 'alphatauri', 5: 'alpine', 7: 'haas', 3: 'redbull', 10: 'aston', 6: 'williams', }
+
+  const teamValues = {
+    alfa: alfaRomeo,
+    alphatauri: alphaTauri,
+    alpine: alpine,
+    williams: williams,
+    haas: haas,
+    redbull: redbull,
+    aston: aston,
+  };
 
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
@@ -2570,7 +2914,27 @@ export function updateCustomConfig(data) {
     VALUES ('alpine', ?)
   `, [alpine], 'run');
 
-  if (primaryColor){
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('williams', ?)
+  `, [williams], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('haas', ?)
+  `, [haas], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('redbull', ?)
+  `, [redbull], 'run');
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('aston', ?)
+  `, [aston], 'run');
+
+  if (primaryColor) {
     queryDB(`
       INSERT OR REPLACE INTO Custom_Save_Config (key, value)
       VALUES ('primaryColor', ?)
@@ -2583,12 +2947,56 @@ export function updateCustomConfig(data) {
       VALUES ('secondaryColor', ?)
     `, [secondaryColor], 'run');
   }
-  
+
   queryDB(`
     INSERT OR REPLACE INTO Custom_Save_Config (key, value)
     VALUES ('turningPointsFrequencyPreset', ?)
   `, [turningPointsFrequencyPreset], 'run');
-  
+
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES ('forceEditorMinimapColors', ?)
+  `, [String(forceEditorMinimapColors)], 'run');
+
+
+  // for (let teamId in replacableTeamsDict) {
+  //   const teamKey = replacableTeamsDict[teamId]; 
+
+  //   const hexValue = teamValues[teamKey]; 
+  //   const color = forceEditorMinimapColors
+  //     ? hexToArgb(hexValue)
+  //     : defaultColors[teamId];
+
+
+
+  //   queryDB(
+  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+  //     [color, teamId],
+  //     'run'
+  //   );
+  // }
+
+  // if (alfaRomeo === "audi") {
+  //   let color = customColors["audi"];
+  //   color = hexToArgb(color);
+  //   console.log("Updating Alfa Romeo color to:", color);
+  //   const teamId = 9;
+  //   queryDB(
+  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+  //     [color, teamId],
+  //     'run'
+  //   );
+  // }
+  // else {
+  //   const teamId = 9;
+  //   let color = defaultColors[teamId];
+  //   console.log("Reverting Alfa Romeo color to default:", color);
+  //   queryDB(
+  //     `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
+  //     [color, teamId],
+  //     'run'
+  //   );
+  // }
 
 
   //delete the difficulty key from Custom_Save_Config every time
@@ -2632,13 +3040,14 @@ export function fetchCustomConfig() {
     teams: {},
     primaryColor: null,
     secondaryColor: null,
-    turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset
+    turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset,
+    forceEditorMinimapColors: 0
   };
 
   rows.forEach(row => {
     const key = row[0];
     const value = row[1];
-    if (key === 'alphatauri' || key === 'alpine' || key === 'alfa') {
+    if (key === 'alphatauri' || key === 'alpine' || key === 'williams' || key === 'haas' || key === 'alfa' || key === 'redbull' || key === 'aston') {
       config.teams[key] = value;
     } else if (key === 'primaryColor') {
       config.primaryColor = value;
@@ -2649,7 +3058,9 @@ export function fetchCustomConfig() {
       config.difficulty = value;
     } else if (key === 'turningPointsFrequencyPreset') {
       config.turningPointsFrequencyPreset = parseInt(value, 10);
-      
+
+    } else if (key === 'forceEditorMinimapColors') {
+      config.forceEditorMinimapColors = parseInt(value, 10) === 1 ? 1 : 0;
     }
   });
 
@@ -2659,6 +3070,22 @@ export function fetchCustomConfig() {
   config.triggerList = triggers.triggerList
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
+
+  if (!config.teams.williams) {
+    config.teams.williams = 'williams';
+  }
+
+  if (!config.teams.haas) {
+    config.teams.haas = 'haas';
+  }
+
+  if (!config.teams.redbull) {
+    config.teams.redbull = 'redbull';
+  }
+
+  if (!config.teams.aston) {
+    config.teams.aston = 'aston';
+  }
 
   return config;
 }
