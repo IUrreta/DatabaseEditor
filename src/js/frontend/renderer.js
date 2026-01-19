@@ -1010,6 +1010,9 @@ const messageHandlers = {
     },
     "Season review data fetched": (message) => {
         populateSeasonReview(message)
+    },
+    "Session results fetched": (message) => {
+        window.dispatchEvent(new CustomEvent("sessionResultsFetched", { detail: message }));
     }
 };
 

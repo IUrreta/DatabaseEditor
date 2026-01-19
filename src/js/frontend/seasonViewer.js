@@ -32,10 +32,15 @@ let standingsDetailsEnabled = false;
 let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
+const sessionResultsEventsCache = new Map();
+let sessionResultsActiveGpAnchor = null;
+let sessionResultsActiveGpMeta = null;
 
 function ensureDropdownCheckIcons(menuEl) {
     if (!menuEl) return;
     menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        if (item.dataset.noCheck === "1") return;
+        if (item.closest(".dropdown-submenu-menu")) return;
         if (item.querySelector("i.bi-check")) return;
         const icon = document.createElement("i");
         icon.classList.add("bi", "bi-check", "unactive");
@@ -224,17 +229,18 @@ function updateAllTimeVisibilityForTeamsRecords() {
     if (!allTime) return;
 
     const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
-    const allowAllTime = currentFormula === 1 && driverOrTeams !== "teams" && typeVal !== "standings" && typeVal !== "seasonreview";
+    const allowAllTime = currentFormula === 1 && driverOrTeams !== "teams" && typeVal !== "standings" && typeVal !== "seasonreview" && typeVal !== "sessionresults";
     allTime.classList.toggle("d-none", !allowAllTime);
 }
 
 function updateTopPanelControlsVisibility() {
     const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
     const showStandingsOnlyControls = typeVal === "standings";
+    const hideDriversTeamsPills = typeVal === "seasonreview" || typeVal === "sessionresults";
 
     const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
     if (driversTeamsPills) {
-        driversTeamsPills.classList.toggle("d-none", typeVal === "seasonreview");
+        driversTeamsPills.classList.toggle("d-none", hideDriversTeamsPills);
     }
 
     const standingsDetailsButton = document.getElementById("standingsDetailsButton");
@@ -249,7 +255,7 @@ function updateTopPanelControlsVisibility() {
 
     const hideHistoric = document.querySelector(".hide-historic-drivers");
     if (hideHistoric) {
-        const showHideHistoric = currentFormula === 1 && !showStandingsOnlyControls && typeVal !== "seasonreview" && driverOrTeams !== "teams";
+        const showHideHistoric = currentFormula === 1 && !showStandingsOnlyControls && typeVal !== "seasonreview" && typeVal !== "sessionresults" && driverOrTeams !== "teams";
         hideHistoric.classList.toggle("d-none", !showHideHistoric);
     }
 
@@ -2174,7 +2180,7 @@ function manageRecordsSelected(forcedYearEl = null) {
     const isAllTime = el => el.dataset.year === "all";
 
     // si es standings y estaba en All Time, forzar primer año real
-    if ((typeVal === "standings" || typeVal === "seasonreview") && isAllTime(selectedEl)) {
+    if ((typeVal === "standings" || typeVal === "seasonreview" || typeVal === "sessionresults") && isAllTime(selectedEl)) {
         const firstReal = yearItems.find(i => !isAllTime(i));
         if (firstReal) selectedEl = firstReal;
     }
@@ -2199,6 +2205,9 @@ function manageRecordsSelected(forcedYearEl = null) {
     }
     else if (typeVal === "seasonreview") {
         manageSeasonReview();
+    }
+    else if (typeVal === "sessionresults") {
+        return;
     }
     else {
         if (driverOrTeams === "teams" && ["wins", "poles", "podiums", "dotd"].includes(typeVal) && selectedYear !== "all") {
@@ -3132,6 +3141,170 @@ function manageShowRecords() {
     updateTopPanelControlsVisibility();
 }
 
+function getGpDisplayName(trackId) {
+    const key = races_names?.[Number(trackId)];
+    return names_full?.[key] || key || `Track ${trackId}`;
+}
+
+function getSessionOptionsForWeekend(weekendType) {
+    const isSprint = Number(weekendType) === 1;
+    if (isSprint) {
+        return [
+            { key: "fp", label: "Free Practice" },
+            { key: "sprintquali", label: "Sprint Quali" },
+            { key: "sprintrace", label: "Sprint Race" },
+            { key: "quali", label: "Quali" },
+            { key: "race", label: "Race" }
+        ];
+    }
+    return [
+        { key: "fp1", label: "Free Practice 1" },
+        { key: "fp2", label: "Free Practice 2" },
+        { key: "fp3", label: "Free Practice 3" },
+        { key: "quali", label: "Qualifying" },
+        { key: "race", label: "Race" }
+    ];
+}
+
+async function ensureSessionResultsMenuPopulated() {
+    const gpMenu = document.getElementById("sessionResultsGpMenu");
+    if (!gpMenu) return;
+
+    const gpList = document.getElementById("sessionResultsGpList");
+    const sessionMenu = document.getElementById("sessionResultsSessionMenu");
+    if (!gpList || !sessionMenu) return;
+
+    const yearBtn = document.getElementById("yearButton");
+    const selectedYear = yearBtn?.dataset?.year;
+    if (!selectedYear || selectedYear === "all") {
+        gpList.innerHTML = "";
+        sessionMenu.classList.remove("is-open");
+        sessionMenu.innerHTML = "";
+        sessionResultsActiveGpAnchor = null;
+        sessionResultsActiveGpMeta = null;
+
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.textContent = "Select a Year";
+        gpList.appendChild(item);
+        return;
+    }
+
+    gpList.innerHTML = "";
+    sessionMenu.classList.remove("is-open");
+    sessionMenu.innerHTML = "";
+    sessionResultsActiveGpAnchor = null;
+    sessionResultsActiveGpMeta = null;
+
+    const loading = document.createElement("a");
+    loading.className = "redesigned-dropdown-item";
+    loading.textContent = "Loading...";
+    gpList.appendChild(loading);
+
+    try {
+        let events = sessionResultsEventsCache.get(selectedYear);
+        if (!Array.isArray(events)) {
+            const resp = await new Command("eventsFromRequest", { year: selectedYear, formula: 1 }).promiseExecute();
+            events = resp?.content?.events || [];
+            sessionResultsEventsCache.set(selectedYear, events);
+        }
+
+        gpList.innerHTML = "";
+        events.forEach((evt) => {
+            const raceId = evt?.[0];
+            const trackId = evt?.[1];
+            const weekendType = evt?.[2];
+
+            const trigger = document.createElement("a");
+            trigger.className = "redesigned-dropdown-item";
+            trigger.style.cursor = "pointer";
+
+            const label = document.createElement("span");
+            label.textContent = getGpDisplayName(trackId);
+            const chevron = document.createElement("i");
+            chevron.className = "bi bi-chevron-right";
+            trigger.appendChild(label);
+            trigger.appendChild(chevron);
+
+            trigger.addEventListener("mouseenter", () => {
+                sessionResultsActiveGpAnchor = trigger;
+                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
+                populateAndShowSessionResultsSessionMenu();
+            });
+
+            gpList.appendChild(trigger);
+        });
+
+        if (events.length === 0) {
+            const item = document.createElement("a");
+            item.className = "redesigned-dropdown-item";
+            item.textContent = "No events found";
+            gpList.appendChild(item);
+        }
+
+        if (!gpMenu.dataset.sessionResultsSessionMenuInit) {
+            gpMenu.dataset.sessionResultsSessionMenuInit = "1";
+
+            const reposition = () => populateAndShowSessionResultsSessionMenu({ repositionOnly: true });
+            document.getElementById("sessionResultsGpList")?.addEventListener("scroll", reposition);
+
+            gpMenu.addEventListener("mouseleave", () => {
+                sessionMenu.classList.remove("is-open");
+                sessionResultsActiveGpAnchor = null;
+                sessionResultsActiveGpMeta = null;
+            });
+        }
+    } catch (e) {
+        gpList.innerHTML = "";
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.textContent = "Failed to load events";
+        gpList.appendChild(item);
+        console.error(e);
+    }
+}
+
+function populateAndShowSessionResultsSessionMenu(opts = {}) {
+    const sessionMenu = document.getElementById("sessionResultsSessionMenu");
+    const gpMenu = document.getElementById("sessionResultsGpMenu");
+    const gpList = document.getElementById("sessionResultsGpList");
+    if (!sessionMenu || !gpMenu || !gpList) return;
+
+    if (!sessionResultsActiveGpAnchor || !sessionResultsActiveGpMeta) {
+        sessionMenu.classList.remove("is-open");
+        return;
+    }
+
+    const { year, raceId, weekendType } = sessionResultsActiveGpMeta;
+
+    if (!opts.repositionOnly) {
+        sessionMenu.innerHTML = "";
+        const options = getSessionOptionsForWeekend(weekendType);
+        options.forEach((opt) => {
+            const a = document.createElement("a");
+            a.className = "redesigned-dropdown-item";
+            a.style.cursor = "pointer";
+            a.textContent = opt.label;
+            a.addEventListener("click", () => {
+                const recordsButton = document.getElementById("recordsTypeButton");
+                if (recordsButton) {
+                    recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+                    recordsButton.dataset.value = "sessionresults";
+                }
+                syncRecordsTypeDropdownChecks();
+                updateTopPanelControlsVisibility();
+                new Command("sessionResultsRequest", { year, raceId, sessionKey: opt.key }).execute();
+            });
+            sessionMenu.appendChild(a);
+        });
+    }
+
+    // Position the session menu aligned with the hovered GP row (inside the scroll container)
+    const top = gpList.offsetTop + sessionResultsActiveGpAnchor.offsetTop - gpList.scrollTop;
+    sessionMenu.style.top = `${Math.max(0, top)}px`;
+    sessionMenu.classList.add("is-open");
+}
+
 function setYearButton(el) {
     const yearBtn = document.getElementById("yearButton");
     yearBtn.querySelector("span.dropdown-label").textContent = el.textContent.trim();
@@ -3497,7 +3670,7 @@ export function loadTeamRecordsList(payload) {
     });
 }
 
-document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {   
+document.querySelectorAll("#recordsTypeDropdown > a").forEach(function (elem) {   
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
@@ -3506,6 +3679,21 @@ document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
         manageRecordsSelected(null)
     })
 })
+
+document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("mouseenter", () => {
+    ensureSessionResultsMenuPopulated();
+});
+
+document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("click", () => {
+    const recordsButton = document.getElementById("recordsTypeButton");
+    if (recordsButton) {
+        recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+        recordsButton.dataset.value = "sessionresults";
+    }
+    syncRecordsTypeDropdownChecks();
+    updateTopPanelControlsVisibility();
+    manageRecordsSelected(null);
+});
 
 document.querySelector(".hide-historic-drivers").addEventListener("click", function () {
     this.classList.toggle("active");

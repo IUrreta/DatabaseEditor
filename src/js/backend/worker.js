@@ -7,6 +7,7 @@ import {
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
+  fetchSessionResults,
   getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
@@ -782,6 +783,20 @@ const workerCommands = {
   enginesRefresh: (data, postMessage) => {
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
+  },
+  eventsFromRequest: (data, postMessage) => {
+    const year = data.year;
+    const formula = data.formula ? Number(data.formula) : 1;
+    const events = fetchEventsFrom(year, formula);
+    postMessage({ responseMessage: "Events fetched", content: { year, formula, events } });
+  },
+  sessionResultsRequest: (data, postMessage) => {
+    const year = data.year;
+    const raceId = data.raceId;
+    const sessionKey = data.sessionKey;
+
+    const payload = fetchSessionResults(raceId, sessionKey);
+    postMessage({ responseMessage: "Session results fetched", content: { year, raceId, sessionKey, ...payload } });
   }
 
 
@@ -793,10 +808,10 @@ self.addEventListener('message', async (e) => {
   const { command, data } = e.data;
   if (workerCommands[command]) {
     try {
-      await workerCommands[command](data, (response) => postMessage(response));
+      await workerCommands[command](data, (response) => postMessage({ command, ...response }));
     } catch (error) {
       console.error(`[Worker] Error executing command '${command}':`, error);
-      postMessage({ responseMessage: "Error", error: error.message });
+      postMessage({ command, responseMessage: "Error", error: error.message });
     }
   } else {
     console.error(`[Worker] Unknown command: '${command}'`);

@@ -8580,6 +8580,70 @@ body.og-theme .records-list {
   min-width: 180px;
 }
 
+.dropdown-submenu {
+  position: relative;
+}
+
+.dropdown-global .redesigned-dropdown-menu.dropdown-submenu-menu {
+  top: 0;
+  left: 100%;
+  margin-top: 0;
+  margin-left: 6px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-6px);
+  pointer-events: none;
+}
+
+.dropdown-global .redesigned-dropdown-menu.dropdown-submenu-menu::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -6px;
+  width: 6px;
+  height: 100%;
+  background: transparent;
+}
+
+.dropdown-submenu:hover > .redesigned-dropdown-menu.dropdown-submenu-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.dropdown-submenu:not(:hover)  .dropdown-submenu-menu {
+  pointer-events: none;
+}
+
+.session-results-gp-menu {
+  min-width: 240px;
+  overflow: visible;
+}
+
+.session-results-scroll {
+  max-height: 340px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 2px;
+}
+
+.session-results-scroll .redesigned-dropdown-item {
+  min-width: 220px;
+}
+
+.session-results-session-menu {
+  min-width: 220px;
+  z-index: 120;
+}
+
+.dropdown-global .redesigned-dropdown-menu.dropdown-submenu-menu.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
 .free-driver:hover .bi-ban {
   color: var(--negative-text);
 }
@@ -14525,8 +14589,6 @@ body.default-theme .news-article-date {
 
 .news-article {
   color: color-mix(in srgb, var(--text-general) 80%, gray);
-  white-space: pre-wrap;
-  transition: opacity 0.15s;
   overflow-y: auto;
   padding-right: 10px;
   transition: opacity 0.15s ease;
@@ -15958,10 +16020,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .dropdown-global:has(.redesigned-dropdown.open) .redesigned-dropdown-menu {
-  opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
+
+
 
 /*svg image*/
 .redesigned-chevron {
