@@ -5,7 +5,8 @@ import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
-    populateSeasonReview
+    populateSeasonReview,
+    onSessionResultsFetched
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
@@ -1012,7 +1013,7 @@ const messageHandlers = {
         populateSeasonReview(message)
     },
     "Session results fetched": (message) => {
-        window.dispatchEvent(new CustomEvent("sessionResultsFetched", { detail: message }));
+        onSessionResultsFetched(message);
     }
 };
 

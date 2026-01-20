@@ -1732,8 +1732,6 @@ export function fetchTeamMateQualiRaceHeadToHead(season) {
         DriverID ASC
     `, [season, lastRaceId, teamId], 'allRows') || [];
 
-    console.log(`DEBUG: Team ${teamId} drivers at last race:`, rows);
-
     const ids = [];
     for (const r of rows) {
       const id = Number(r[0]);
@@ -2067,7 +2065,8 @@ function fetchRaceResultsRows(raceId) {
       res.SafetyCarDeployments,
       res.VirtualSafetyCarDeployments,
       res.Time,
-      res.Laps
+      res.Laps,
+      res.FastestLap
     FROM Staff_BasicData bas
     JOIN Races_Results res
       ON bas.StaffID = res.DriverID
@@ -2087,7 +2086,8 @@ function fetchSprintResultsRows(raceId) {
       res.ChampionshipPoints,
       res.DNF,
       res.RaceTime,
-      res.LapCount
+      res.LapCount,
+      res.FastestLap
     FROM Staff_BasicData bas
     JOIN Races_SprintResults res
       ON bas.StaffID = res.DriverID
@@ -2151,7 +2151,8 @@ export function fetchSessionResults(raceId, sessionKey) {
         laps: row[11],
         driverId,
         teamId,
-        name: nameFormatted
+        name: nameFormatted,
+        fastestLap: row[12]
       };
     });
     return { meta, results };

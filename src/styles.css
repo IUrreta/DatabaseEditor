@@ -890,7 +890,8 @@ input[type="checkbox"]:focus {
 .q3-comparison::-webkit-scrollbar,
 .q2-comparison::-webkit-scrollbar,
 .wins-drivers-list::-webkit-scrollbar,
-.bento-driver-standings::-webkit-scrollbar {
+.bento-driver-standings::-webkit-scrollbar,
+#sessionResultsGpMenu::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -913,7 +914,8 @@ input[type="checkbox"]:focus {
 .q3-comparison::-webkit-scrollbar-thumb,
 .q2-comparison::-webkit-scrollbar-thumb,
 .wins-drivers-list::-webkit-scrollbar-thumb,
-.bento-driver-standings::-webkit-scrollbar-thumb {
+.bento-driver-standings::-webkit-scrollbar-thumb,
+#sessionResultsGpMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -937,7 +939,8 @@ input[type="checkbox"]:focus {
 .q3-comparison::-webkit-scrollbar-thumb:hover,
 .q2-comparison::-webkit-scrollbar-thumb:hover,
 .wins-drivers-list::-webkit-scrollbar-thumb:hover,
-.bento-driver-standings::-webkit-scrollbar-thumb:hover {
+.bento-driver-standings::-webkit-scrollbar-thumb:hover,
+#sessionResultsGpMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -8626,6 +8629,24 @@ body.og-theme .records-list {
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 2px;
+}
+
+#sessionResultsGpList::-webkit-scrollbar {
+  width: 4px !important;
+}
+
+#sessionResultsGpList::-webkit-scrollbar-thumb {
+  background-color: var(--white-general);
+  border-radius: 3px !important;
+}
+
+#sessionResultsGpList::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-hover);
+}
+
+#sessionResultsGpList {
+  scrollbar-width: thin;
+  scrollbar-color: var(--white-general) transparent;
 }
 
 .session-results-scroll .redesigned-dropdown-item {
@@ -16983,4 +17004,272 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .item-7 .bento-split-list .season-review-wins-name,
 .item-9 .bento-split-list .season-review-wins-name{
   max-width: 120px;
+}
+
+.session-results-rows{
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  color: var(--text-general);
+}
+
+.session-results-title{
+  font-family: 'Formula1Dark' !important;
+  text-transform: uppercase;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 16px 20px 12px 18px;
+  letter-spacing: -0.3px;
+  color: var(--text-general);
+  position: relative;
+  overflow: hidden;
+}
+
+.session-results-title::before{
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--session-results-flag-bg, none);
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: 280px 100%;
+  opacity: 0.6;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 85%);
+  mask-image: linear-gradient(90deg, #000 0%, transparent 85%);
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  pointer-events: none;
+  z-index: 0;
+  width: 315px;
+}
+
+.session-results-title > *{
+  position: relative;
+  z-index: 1;
+}
+
+.session-results-title-main{
+  font-size: 24px;
+  line-height: 1;
+}
+
+.session-results-title-session{
+  font-family: 'Formula1Dark';
+  font-size: 24px;
+  line-height: 1;
+  color: var(--text-tertiary);
+}
+
+.session-results-title-round{
+  margin-left: auto;
+  font-family: 'Formula1Dark';
+  font-size: 16px;
+  line-height: 1;
+  color: var(--text-secondary);
+  letter-spacing: -0.2px;
+}
+
+.session-results-row{
+  display: grid;
+  grid-template-columns: 42px 46px 240px 340px 1fr 100px 130px 70px;
+  align-items: center;
+  background-color: var(--table-default);
+  column-gap: 8px;
+}
+
+.session-results-table.no-grid .session-results-row{
+  grid-template-columns: 42px 0px 240px 340px 1fr 100px 130px 70px;
+}
+
+.session-results-gained-lost.hidden{
+  padding: 0 !important;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.session-results-row.odd {
+  background-color: var(--table-default-odd);
+}
+
+.session-results-row > div {
+  padding: 4px 8px;
+  min-width: 0;
+}
+
+.session-results-row:hover {
+  background-color: var(--session-results-hover);
+}
+
+.session-results-row:hover .session-results-driver-name,
+.session-results-row:hover .session-results-engine-name,
+.session-results-row:hover .session-results-fastest-lap:not(.fastest),
+.session-results-row:hover .session-results-time {
+  color: var(--text-general);
+}
+
+.session-results-position {
+  font-family: 'NumbersFont';
+  font-size: 14px;
+  letter-spacing: -1.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 7px !important;
+}
+
+.session-results-gained-lost {
+  font-family: 'NumbersFont';
+  font-size: 13px;
+  letter-spacing: -1.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  line-height: 1;
+}
+
+.session-results-gained-lost.up {
+  color: var(--positive-general);
+}
+
+.session-results-gained-lost.down {
+  color: var(--negative-general);
+}
+
+.session-results-gained-lost.neutral {
+  color: var(--text-general);
+}
+
+.session-results-driver-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.session-results-first-name {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.session-results-surname {
+  text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
+.session-results-team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.session-results-team-name {
+  font-family: "Formula1Bold";
+  color: var(--text-general);
+  text-transform: uppercase;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.session-results-engine-name {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-family: "Formula1";
+  font-size: 13px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+  margin-left: 6px;
+}
+
+.session-results-spacer {
+  padding: 0 !important;
+}
+
+.session-results-fastest-lap,
+.session-results-time {
+  color: var(--text-secondary);
+}
+
+.session-results-row.leader .session-results-time {
+  color: var(--text-general);
+}
+
+.session-results-row.leader .session-results-fastest-lap:not(.fastest) {
+  color: var(--text-general);
+}
+
+.session-results-fastest-lap,
+.session-results-time,
+.session-results-points {
+  font-family: 'NumbersFont';
+  font-size: 14px;
+  letter-spacing: -1.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 7px !important;
+}
+
+.session-results-points.positive {
+  color: var(--positive-general);
+}
+
+.session-results-row:has(.session-results-position.champion) .session-results-position {
+  border-left: 2px solid #FEDB37;
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.session-results-row.odd:has(.session-results-position.champion) .session-results-position {
+  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
+}
+
+.session-results-row:has(.session-results-position.second) .session-results-position {
+  border-left: 2px solid #C0C0C0;
+  background: linear-gradient(90deg, rgba(192, 192, 192, 0.35) 0%, transparent 75%);
+}
+
+.session-results-row.odd:has(.session-results-position.second) .session-results-position {
+  background: linear-gradient(90deg, rgba(192, 192, 192, 0.35) 0%, transparent 75%);
+}
+
+.session-results-row:has(.session-results-position.third) .session-results-position {
+  border-left: 2px solid #CD7F32;
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.35) 0%, transparent 75%);
+}
+
+.session-results-row.odd:has(.session-results-position.third) .session-results-position {
+  background: linear-gradient(90deg, rgba(205, 127, 50, 0.35) 0%, transparent 75%);
+}
+
+.session-results-fastest-lap.fastest {
+  border-left: 2px solid #B14DFF;
+  background: linear-gradient(90deg, rgba(177, 77, 255, 0.35) 0%, transparent 75%);
+  text-decoration: none;
+  color: color-mix(in srgb, #B14DFF 70%, var(--text-general));
+}
+
+.session-results-driver-logo-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0 !important;
+  flex: 0 0 auto;
+}
+
+.session-results-driver-logo-div img, .session-results-driver-logo-div div {
+  width: 24px;
+  height: 24px;
 }

@@ -267,6 +267,8 @@ function manage_show_tables() {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
     recordsList.classList.add("d-none")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none")
     const seasonReviewBento = document.querySelector(".season-review-bento")
     seasonReviewBento.classList.add("d-none")
     if (isYearSelected) {
@@ -2225,6 +2227,8 @@ function manageSeasonReview(){
     const teamsTable = document.querySelector(".teams-table")
     driversTable.classList.add("d-none")
     teamsTable.classList.add("d-none")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none")
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.add("d-none")
 
@@ -3134,11 +3138,253 @@ function manageShowRecords() {
     teamsTable.classList.add("d-none")
     const seasonReviewBento = document.querySelector(".season-review-bento")
     seasonReviewBento.classList.add("d-none")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none")
 
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.remove("d-none")
     recordsList.innerHTML = ""
     updateTopPanelControlsVisibility();
+}
+
+function showSessionResultsTable() {
+    const driversTable = document.querySelector(".drivers-table")
+    const teamsTable = document.querySelector(".teams-table")
+    const seasonReviewBento = document.querySelector(".season-review-bento")
+    const recordsList = document.querySelector(".records-list")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+
+    if (driversTable) driversTable.classList.add("d-none")
+    if (teamsTable) teamsTable.classList.add("d-none")
+    if (seasonReviewBento) seasonReviewBento.classList.add("d-none")
+    if (recordsList) recordsList.classList.add("d-none")
+    if (sessionResultsTable) sessionResultsTable.classList.remove("d-none")
+
+    updateTopPanelControlsVisibility();
+}
+
+export function onSessionResultsFetched(data) {
+    const meta = data?.meta || {};
+    const headerMain = document.querySelector(".session-results-title-main");
+    const headerSession = document.querySelector(".session-results-title-session");
+    const headerRound = document.querySelector(".session-results-title-round");
+    if (headerMain && headerSession) {
+        const year = String(data?.year ?? "").trim();
+        const trackId = meta?.trackId;
+        const gpNameRaw = getGpDisplayName(trackId);
+        const hasGpSuffix = /\bGP\b/i.test(String(gpNameRaw));
+        const gpName = `${gpNameRaw}${hasGpSuffix ? "" : " GP"}`.trim();
+
+        const weekendType = meta?.weekendType;
+        const sessionKey = String(data?.sessionKey ?? meta?.sessionKey ?? "").trim();
+        const sessionLabel = getSessionOptionsForWeekend(weekendType).find(o => o.key === sessionKey)?.label
+            || sessionKey
+            || "";
+
+        headerMain.textContent = `${year} ${gpName}`.trim();
+        headerSession.textContent = String(sessionLabel);
+    }
+    if (headerRound) {
+        const yearKey = String(data?.year ?? "").trim();
+        const events = sessionResultsEventsCache.get(yearKey);
+        const raceId = Number(data?.raceId ?? meta?.raceId);
+        const total = Array.isArray(events) ? events.length : 0;
+        const idx = Array.isArray(events) ? events.findIndex(e => Number(e?.[0]) === raceId) : -1;
+        headerRound.textContent = (total > 0 && idx >= 0) ? `ROUND ${idx + 1}/${total}` : "";
+    }
+
+    document.querySelectorAll(".session-results-table .session-results-rows .session-results-row").forEach((el) => el.remove());
+
+    let results = data?.results ?? data;
+    const sessionKeyLower = String(data?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    const isRaceSession = sessionKeyLower === "race" || sessionKeyLower === "sprintrace";
+
+    const leaderRow = (Array.isArray(results) ? results : []).find(r => Number(r?.pos) === 1) || (Array.isArray(results) ? results[0] : null);
+    const leaderTime = leaderRow ? Number(leaderRow?.time) : null;
+    const leaderLaps = leaderRow ? Number(leaderRow?.laps) : null;
+
+    const fastestLapBest = (Array.isArray(results) ? results : [])
+        .map(r => Number(r?.fastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+
+    results.forEach((row, idx) => {
+        const sessionResultRow = document.createElement("div");
+        sessionResultRow.className = "session-results-row";
+        if (idx % 2 === 1) sessionResultRow.classList.add("odd");
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "session-results-position";
+        const pos = Number(row?.pos);
+        if (Number.isFinite(pos)) {
+            posDiv.textContent = String(pos);
+            if (pos === 1) sessionResultRow.classList.add("leader");
+            if (pos === 1) posDiv.classList.add("champion");
+            else if (pos === 2) posDiv.classList.add("second");
+            else if (pos === 3) posDiv.classList.add("third");
+        }
+        else {
+            posDiv.textContent = row?.pos ?? "";
+        }
+        sessionResultRow.appendChild(posDiv);
+
+        const gainedLostDiv = document.createElement("div");
+        gainedLostDiv.className = "session-results-gained-lost";
+        const gainedLostNumber = document.createElement("span");
+        gainedLostNumber.className = "session-results-gained-lost-number";
+        const gainedLostIcon = document.createElement("i");
+        gainedLostDiv.appendChild(gainedLostNumber);
+        gainedLostDiv.appendChild(gainedLostIcon);
+
+        const grid = Number(row?.grid);
+        const gained = Number.isFinite(grid) && Number.isFinite(pos) ? (grid - pos) : null;
+        if (Number.isFinite(gained) && gained > 0) {
+            gainedLostNumber.textContent = `+${gained}`;
+            gainedLostIcon.className = "bi bi-caret-up-fill";
+            gainedLostDiv.classList.add("up");
+        }
+        else if (Number.isFinite(gained) && gained < 0) {
+            gainedLostNumber.textContent = String(gained);
+            gainedLostIcon.className = "bi bi-caret-down-fill";
+            gainedLostDiv.classList.add("down");
+        }
+        else {
+            gainedLostNumber.textContent = "";
+            gainedLostIcon.className = "bi bi-dash";
+            gainedLostDiv.classList.add("neutral");
+        }
+        sessionResultRow.appendChild(gainedLostDiv);
+
+        const driverDiv = document.createElement("div");
+        driverDiv.className = "session-results-driver-name";
+        const driverName = String(row?.name ?? "");
+        const nameParts = driverName.split(" ");
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "session-results-first-name";
+        const surnameSpan = document.createElement("span");
+        surnameSpan.className = "bold-font session-results-surname";
+        format_name(driverName, nameParts, nameSpan, surnameSpan);
+        surnameSpan.textContent = String(surnameSpan.textContent || "").toUpperCase();
+        driverDiv.appendChild(nameSpan);
+        driverDiv.appendChild(surnameSpan);
+
+        sessionResultRow.appendChild(driverDiv);
+
+        const teamId = Number(row?.teamId ?? -1);
+        const teamDiv = document.createElement("div");
+        teamDiv.className = "session-results-team";
+
+        const logoDiv = Number.isFinite(teamId) && teamId !== -1
+            ? buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div session-results-driver-logo-div"
+            })
+            : (() => {
+                const empty = document.createElement("div");
+                empty.className = "drivers-table-logo-div session-results-driver-logo-div";
+                return empty;
+            })();
+        teamDiv.appendChild(logoDiv);
+
+        const teamNameSpan = document.createElement("span");
+        teamNameSpan.className = "session-results-team-name";
+        teamNameSpan.textContent = (Number.isFinite(teamId) && teamId !== -1) ? (combined_dict?.[teamId] ?? "") : "";
+        teamNameSpan.textContent = String(teamNameSpan.textContent || "").toUpperCase();
+        teamDiv.appendChild(teamNameSpan);
+
+        const engineNameSpan = document.createElement("span");
+        engineNameSpan.className = "session-results-engine-name";
+        if (currentFormula === 1 && Number.isFinite(teamId) && teamId !== -1) {
+            const engineId = engine_allocations?.[teamId];
+            const engineName = engineId != null ? engine_names?.[engineId] : "";
+            engineNameSpan.textContent = String(engineName || "").toUpperCase();
+        }
+        teamDiv.appendChild(engineNameSpan);
+
+        sessionResultRow.appendChild(teamDiv);
+
+        const spacerDiv = document.createElement("div");
+        spacerDiv.className = "session-results-spacer";
+        sessionResultRow.appendChild(spacerDiv);
+
+        const fastestLapDiv = document.createElement("div");
+        fastestLapDiv.className = "session-results-fastest-lap";
+        const fl = Number(row?.fastestLap);
+        if (Number.isFinite(fl) && fl > 0) {
+            fastestLapDiv.innerText = formatLapTime(fl);
+            if (fastestLapBest != null && Math.abs(fl - fastestLapBest) < 1e-6) {
+                fastestLapDiv.classList.add("fastest");
+            }
+        }
+        sessionResultRow.appendChild(fastestLapDiv);
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "session-results-time";
+        if (isRaceSession) {
+            const dnf = Number(row?.dnf) === 1;
+            const rowPos = Number(row?.pos);
+            const rowTime = Number(row?.time);
+            const rowLaps = Number(row?.laps);
+
+            if (dnf) {
+                timeDiv.innerText = "-";
+            }
+            else if (Number.isFinite(leaderLaps) && Number.isFinite(rowLaps) && rowLaps < leaderLaps) {
+                timeDiv.innerText = `+${leaderLaps - rowLaps} L`;
+            }
+            else if (Number.isFinite(rowPos) && rowPos === 1 && Number.isFinite(rowTime) && rowTime > 0) {
+                timeDiv.innerText = formatLapTime(rowTime);
+            }
+            else if (Number.isFinite(leaderTime) && leaderTime > 0 && Number.isFinite(rowTime) && rowTime > 0) {
+                const gap = rowTime - leaderTime;
+                timeDiv.innerText = gap > 0 ? `+${gap.toFixed(3)}` : "-";
+            }
+            else {
+                timeDiv.innerText = "-";
+            }
+        }
+        else {
+            const rowTime = Number(row?.time);
+            timeDiv.innerText = Number.isFinite(rowTime) && rowTime > 0 ? formatLapTime(rowTime) : "-";
+        }
+        sessionResultRow.appendChild(timeDiv);
+
+        const pointsDiv = document.createElement("div");
+        pointsDiv.className = "session-results-points";
+        const pts = Number(row?.points);
+        if (Number.isFinite(pts) && pts > 0) {
+            pointsDiv.textContent = `+${pts}`;
+            pointsDiv.classList.add("positive");
+        }
+        else if (Number.isFinite(pts)) {
+            pointsDiv.textContent = String(pts);
+        }
+        else {
+            pointsDiv.textContent = row?.points ?? "";
+        }
+        sessionResultRow.appendChild(pointsDiv);
+
+        const container = document.querySelector(".session-results-table .session-results-rows");
+        if (container) container.appendChild(sessionResultRow);
+    });
+    
+}
+
+//time comes in seconds.miliseconds, and I want it in hh:mm:ss.sss format (if no hh, then mm:ss.sss)
+function formatLapTime(lapTimeMs) {
+    const totalMs = Math.floor(lapTimeMs * 1000);
+    const hours = Math.floor(totalMs / 3600000);
+    const minutes = Math.floor((totalMs % 3600000) / 60000);
+    const seconds = Math.floor((totalMs % 60000) / 1000);
+    const milliseconds = totalMs % 1000;
+    //if it starts by a 0, remove it
+    if (hours > 0) {
+        return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+    }
+    else {
+        return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+    }
+    
 }
 
 function getGpDisplayName(trackId) {
@@ -3293,6 +3539,7 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
                 }
                 syncRecordsTypeDropdownChecks();
                 updateTopPanelControlsVisibility();
+                showSessionResultsTable();
                 new Command("sessionResultsRequest", { year, raceId, sessionKey: opt.key }).execute();
             });
             sessionMenu.appendChild(a);
