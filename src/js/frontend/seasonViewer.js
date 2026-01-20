@@ -1,4 +1,4 @@
-import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
+import { races_names, names_full, team_dict, codes_dict, countries_data, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H, queueAutoCompareDrivers } from './head2head';
 import { game_version, custom_team } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
@@ -3167,13 +3167,26 @@ export function onSessionResultsFetched(data) {
     const meta = data?.meta || {};
     const headerMain = document.querySelector(".session-results-title-main");
     const headerSession = document.querySelector(".session-results-title-session");
+    const headerTrack = document.querySelector(".session-results-title-track");
     const headerRound = document.querySelector(".session-results-title-round");
+    const titleEl = document.querySelector(".session-results-title");
+    
     if (headerMain && headerSession) {
         const year = String(data?.year ?? "").trim();
         const trackId = meta?.trackId;
         const gpNameRaw = getGpDisplayName(trackId);
-        const hasGpSuffix = /\bGP\b/i.test(String(gpNameRaw));
-        const gpName = `${gpNameRaw}${hasGpSuffix ? "" : " GP"}`.trim();
+        const gpNameRawStr = String(gpNameRaw || "").trim();
+        let gpName = gpNameRawStr;
+        if (/\bgrand prix\b/i.test(gpNameRawStr)) {
+            gpName = gpNameRawStr;
+        }
+        else if (/\bgp\b/i.test(gpNameRawStr)) {
+            gpName = gpNameRawStr.replace(/\bgp\b/ig, "Grand Prix");
+        }
+        else {
+            gpName = `${gpNameRawStr} Grand Prix`;
+        }
+        gpName = gpName.trim();
 
         const weekendType = meta?.weekendType;
         const sessionKey = String(data?.sessionKey ?? meta?.sessionKey ?? "").trim();
@@ -3184,6 +3197,13 @@ export function onSessionResultsFetched(data) {
         headerMain.textContent = `${year} ${gpName}`.trim();
         headerSession.textContent = String(sessionLabel);
     }
+    if (headerTrack) {
+        const trackId = Number(meta?.trackId);
+        const trackCode = races_names?.[trackId];
+        const trackName = trackCode ? countries_data?.[String(trackCode)]?.track : "";
+        headerTrack.textContent = String(trackName || "");
+        headerTrack.classList.toggle("d-none", !trackName);
+    }
     if (headerRound) {
         const yearKey = String(data?.year ?? "").trim();
         const events = sessionResultsEventsCache.get(yearKey);
@@ -3193,18 +3213,62 @@ export function onSessionResultsFetched(data) {
         headerRound.textContent = (total > 0 && idx >= 0) ? `ROUND ${idx + 1}/${total}` : "";
     }
 
+    if (titleEl) {
+        const trackId = Number(meta?.trackId);
+        const trackCode = races_names?.[trackId];
+        const flagKey = trackCode ? `${String(trackCode).toLowerCase()}0` : null;
+        const flagPath = flagKey ? codes_dict?.[flagKey] : null;
+        titleEl.style.setProperty(
+            "--session-results-flag-bg",
+            flagPath ? `url("${String(flagPath)}")` : "none"
+        );
+    }
+
     document.querySelectorAll(".session-results-table .session-results-rows .session-results-row").forEach((el) => el.remove());
 
-    let results = data?.results ?? data;
+    const rawResults = data?.results ?? data;
+    const results = Array.isArray(rawResults) ? rawResults : [];
     const sessionKeyLower = String(data?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
     const isRaceSession = sessionKeyLower === "race" || sessionKeyLower === "sprintrace";
+    const isQualiSession = sessionKeyLower === "quali" || sessionKeyLower === "sprintquali";
+    const isPracticeSession = sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3";
 
-    const leaderRow = (Array.isArray(results) ? results : []).find(r => Number(r?.pos) === 1) || (Array.isArray(results) ? results[0] : null);
+    const sessionResultsTable = document.querySelector(".session-results-table");
+    const hasGrid = results.some((r) => {
+        const grid = Number(r?.grid);
+        return Number.isFinite(grid) && grid > 0;
+    });
+    const hasTime = results.some((r) => {
+        const time = Number(r?.time);
+        return Number.isFinite(time) && time > 0;
+    });
+
+    if (sessionResultsTable) {
+        sessionResultsTable.classList.toggle("no-grid", !hasGrid);
+        sessionResultsTable.classList.toggle("no-time", !hasTime);
+        sessionResultsTable.classList.toggle("is-quali", isQualiSession);
+        sessionResultsTable.classList.toggle("is-practice", isPracticeSession);
+    }
+
+    const leaderRow = results.find(r => Number(r?.pos) === 1) || results[0] || null;
     const leaderTime = leaderRow ? Number(leaderRow?.time) : null;
     const leaderLaps = leaderRow ? Number(leaderRow?.laps) : null;
 
-    const fastestLapBest = (Array.isArray(results) ? results : [])
+    const fastestLapBest = results
         .map(r => Number(r?.fastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+
+    const q1Best = results
+        .map(r => Number(r?.q1FastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+    const q2Best = results
+        .map(r => Number(r?.q2FastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+    const q3Best = results
+        .map(r => Number(r?.q3FastestLap))
         .filter(v => Number.isFinite(v) && v > 0)
         .reduce((min, v) => (min == null || v < min ? v : min), null);
 
@@ -3215,6 +3279,7 @@ export function onSessionResultsFetched(data) {
 
         const posDiv = document.createElement("div");
         posDiv.className = "session-results-position";
+        posDiv.classList.add("session-results-cell");
         const pos = Number(row?.pos);
         if (Number.isFinite(pos)) {
             posDiv.textContent = String(pos);
@@ -3222,6 +3287,11 @@ export function onSessionResultsFetched(data) {
             if (pos === 1) posDiv.classList.add("champion");
             else if (pos === 2) posDiv.classList.add("second");
             else if (pos === 3) posDiv.classList.add("third");
+            if (isQualiSession) {
+                const q2CutPos = custom_team ? 16 : 15;
+                if (pos === q2CutPos) sessionResultRow.classList.add("quali-cut-q2");
+                if (pos === 10) sessionResultRow.classList.add("quali-cut-q3");
+            }
         }
         else {
             posDiv.textContent = row?.pos ?? "";
@@ -3230,6 +3300,7 @@ export function onSessionResultsFetched(data) {
 
         const gainedLostDiv = document.createElement("div");
         gainedLostDiv.className = "session-results-gained-lost";
+        gainedLostDiv.classList.add("session-results-cell");
         const gainedLostNumber = document.createElement("span");
         gainedLostNumber.className = "session-results-gained-lost-number";
         const gainedLostIcon = document.createElement("i");
@@ -3253,10 +3324,22 @@ export function onSessionResultsFetched(data) {
             gainedLostIcon.className = "bi bi-dash";
             gainedLostDiv.classList.add("neutral");
         }
+        if (!hasGrid) gainedLostDiv.classList.add("hidden");
         sessionResultRow.appendChild(gainedLostDiv);
 
         const driverDiv = document.createElement("div");
         driverDiv.className = "session-results-driver-name";
+        driverDiv.classList.add("session-results-cell");
+        const nat = String(row?.nationality ?? "").trim();
+        if (nat) {
+            const img = document.createElement("img");
+            img.className = "session-results-nationality-flag";
+            img.alt = nat;
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.src = `https://flagsapi.com/${nat}/flat/64.png`;
+            driverDiv.appendChild(img);
+        }
         const driverName = String(row?.name ?? "");
         const nameParts = driverName.split(" ");
         const nameSpan = document.createElement("span");
@@ -3273,6 +3356,7 @@ export function onSessionResultsFetched(data) {
         const teamId = Number(row?.teamId ?? -1);
         const teamDiv = document.createElement("div");
         teamDiv.className = "session-results-team";
+        teamDiv.classList.add("session-results-cell");
 
         const logoDiv = Number.isFinite(teamId) && teamId !== -1
             ? buildDriverLogoDiv(teamId, {
@@ -3307,8 +3391,44 @@ export function onSessionResultsFetched(data) {
         spacerDiv.className = "session-results-spacer";
         sessionResultRow.appendChild(spacerDiv);
 
+        const q1Div = document.createElement("div");
+        q1Div.className = "session-results-quali-lap session-results-q1";
+        q1Div.classList.add("session-results-cell");
+        const q1 = Number(row?.q1FastestLap);
+        q1Div.innerText = Number.isFinite(q1) && q1 > 0 ? formatLapTime(q1) : "-";
+        if (q1Best != null && Number.isFinite(q1) && q1 > 0 && Math.abs(q1 - q1Best) < 1e-6) q1Div.classList.add("fastest");
+        if (!isQualiSession) q1Div.classList.add("hidden");
+        sessionResultRow.appendChild(q1Div);
+
+        const q2Div = document.createElement("div");
+        q2Div.className = "session-results-quali-lap session-results-q2";
+        q2Div.classList.add("session-results-cell");
+        const q2 = Number(row?.q2FastestLap);
+        q2Div.innerText = Number.isFinite(q2) && q2 > 0 ? formatLapTime(q2) : "-";
+        if (q2Best != null && Number.isFinite(q2) && q2 > 0 && Math.abs(q2 - q2Best) < 1e-6) q2Div.classList.add("fastest");
+        if (!isQualiSession) q2Div.classList.add("hidden");
+        sessionResultRow.appendChild(q2Div);
+
+        const q3Div = document.createElement("div");
+        q3Div.className = "session-results-quali-lap session-results-q3";
+        q3Div.classList.add("session-results-cell");
+        const q3 = Number(row?.q3FastestLap);
+        q3Div.innerText = Number.isFinite(q3) && q3 > 0 ? formatLapTime(q3) : "-";
+        if (q3Best != null && Number.isFinite(q3) && q3 > 0 && Math.abs(q3 - q3Best) < 1e-6) q3Div.classList.add("fastest");
+        if (!isQualiSession) q3Div.classList.add("hidden");
+        sessionResultRow.appendChild(q3Div);
+
+        const lapsDiv = document.createElement("div");
+        lapsDiv.className = "session-results-laps";
+        lapsDiv.classList.add("session-results-cell");
+        const laps = Number(row?.laps);
+        lapsDiv.innerText = Number.isFinite(laps) && laps >= 0 ? String(laps) : "-";
+        if (!isPracticeSession) lapsDiv.classList.add("hidden");
+        sessionResultRow.appendChild(lapsDiv);
+
         const fastestLapDiv = document.createElement("div");
         fastestLapDiv.className = "session-results-fastest-lap";
+        fastestLapDiv.classList.add("session-results-cell");
         const fl = Number(row?.fastestLap);
         if (Number.isFinite(fl) && fl > 0) {
             fastestLapDiv.innerText = formatLapTime(fl);
@@ -3316,10 +3436,12 @@ export function onSessionResultsFetched(data) {
                 fastestLapDiv.classList.add("fastest");
             }
         }
+        if (isQualiSession) fastestLapDiv.classList.add("hidden");
         sessionResultRow.appendChild(fastestLapDiv);
 
         const timeDiv = document.createElement("div");
         timeDiv.className = "session-results-time";
+        timeDiv.classList.add("session-results-cell");
         if (isRaceSession) {
             const dnf = Number(row?.dnf) === 1;
             const rowPos = Number(row?.pos);
@@ -3347,10 +3469,13 @@ export function onSessionResultsFetched(data) {
             const rowTime = Number(row?.time);
             timeDiv.innerText = Number.isFinite(rowTime) && rowTime > 0 ? formatLapTime(rowTime) : "-";
         }
+        if (!hasTime) timeDiv.classList.add("hidden");
+        if (isQualiSession) timeDiv.classList.add("hidden");
         sessionResultRow.appendChild(timeDiv);
 
         const pointsDiv = document.createElement("div");
         pointsDiv.className = "session-results-points";
+        pointsDiv.classList.add("session-results-cell");
         const pts = Number(row?.points);
         if (Number.isFinite(pts) && pts > 0) {
             pointsDiv.textContent = `+${pts}`;
@@ -3363,11 +3488,97 @@ export function onSessionResultsFetched(data) {
             pointsDiv.textContent = row?.points ?? "";
         }
         sessionResultRow.appendChild(pointsDiv);
+        if (isPracticeSession) pointsDiv.classList.add("hidden");
 
         const container = document.querySelector(".session-results-table .session-results-rows");
         if (container) container.appendChild(sessionResultRow);
     });
-    
+
+    const footer = document.querySelector(".session-results-footer");
+    if (!footer) return;
+    footer.innerHTML = "";
+    footer.classList.add("d-none");
+
+    let fastestTime = null;
+    let fastestRow = null;
+
+    if (isQualiSession) {
+        results.forEach((r) => {
+            const times = [Number(r?.q1FastestLap), Number(r?.q2FastestLap), Number(r?.q3FastestLap)]
+                .filter((v) => Number.isFinite(v) && v > 0);
+            const best = times.length ? Math.min(...times) : null;
+            if (best != null && (fastestTime == null || best < fastestTime)) {
+                fastestTime = best;
+                fastestRow = r;
+            }
+        });
+    }
+    else if (fastestLapBest != null) {
+        fastestTime = fastestLapBest;
+        fastestRow = results.find((r) => {
+            const fl = Number(r?.fastestLap);
+            return Number.isFinite(fl) && fl > 0 && Math.abs(fl - fastestLapBest) < 1e-6;
+        }) || null;
+    }
+
+    if (!fastestRow || fastestTime == null) return;
+
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "session-results-footer-label";
+    labelDiv.textContent = "Fastest Lap";
+    footer.appendChild(labelDiv);
+
+    const footerDriverDiv = document.createElement("div");
+    footerDriverDiv.className = "session-results-driver-name";
+    const footerDriverName = String(fastestRow?.name ?? "");
+    const footerNameParts = footerDriverName.split(" ");
+    const footerNameSpan = document.createElement("span");
+    footerNameSpan.className = "session-results-first-name";
+    const footerSurnameSpan = document.createElement("span");
+    footerSurnameSpan.className = "bold-font session-results-surname";
+    format_name(footerDriverName, footerNameParts, footerNameSpan, footerSurnameSpan);
+    footerSurnameSpan.textContent = String(footerSurnameSpan.textContent || "").toUpperCase();
+    footerDriverDiv.appendChild(footerNameSpan);
+    footerDriverDiv.appendChild(footerSurnameSpan);
+    footer.appendChild(footerDriverDiv);
+
+    const footerTeamDiv = document.createElement("div");
+    footerTeamDiv.className = "session-results-team";
+    const footerTeamId = Number(fastestRow?.teamId ?? -1);
+    const footerLogoDiv = Number.isFinite(footerTeamId) && footerTeamId !== -1
+        ? buildDriverLogoDiv(footerTeamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div session-results-driver-logo-div"
+        })
+        : (() => {
+            const empty = document.createElement("div");
+            empty.className = "drivers-table-logo-div session-results-driver-logo-div";
+            return empty;
+        })();
+    footerTeamDiv.appendChild(footerLogoDiv);
+
+    const footerTeamNameSpan = document.createElement("span");
+    footerTeamNameSpan.className = "session-results-team-name";
+    footerTeamNameSpan.textContent = (Number.isFinite(footerTeamId) && footerTeamId !== -1) ? (combined_dict?.[footerTeamId] ?? "") : "";
+    footerTeamNameSpan.textContent = String(footerTeamNameSpan.textContent || "").toUpperCase();
+    footerTeamDiv.appendChild(footerTeamNameSpan);
+
+    const footerEngineNameSpan = document.createElement("span");
+    footerEngineNameSpan.className = "session-results-engine-name";
+    if (currentFormula === 1 && Number.isFinite(footerTeamId) && footerTeamId !== -1) {
+        const engineId = engine_allocations?.[footerTeamId];
+        const engineName = engineId != null ? engine_names?.[engineId] : "";
+        footerEngineNameSpan.textContent = String(engineName || "").toUpperCase();
+    }
+    footerTeamDiv.appendChild(footerEngineNameSpan);
+    footer.appendChild(footerTeamDiv);
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "session-results-footer-time";
+    timeDiv.textContent = formatLapTime(fastestTime);
+    footer.appendChild(timeDiv);
+
+    footer.classList.remove("d-none");
 }
 
 //time comes in seconds.miliseconds, and I want it in hh:mm:ss.sss format (if no hh, then mm:ss.sss)
@@ -3540,7 +3751,7 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
                 syncRecordsTypeDropdownChecks();
                 updateTopPanelControlsVisibility();
                 showSessionResultsTable();
-                new Command("sessionResultsRequest", { year, raceId, sessionKey: opt.key }).execute();
+                new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey: opt.key }).execute();
             });
             sessionMenu.appendChild(a);
         });

@@ -792,10 +792,11 @@ const workerCommands = {
   },
   sessionResultsRequest: (data, postMessage) => {
     const year = data.year;
+    const gameYear = data.gameYear;
     const raceId = data.raceId;
     const sessionKey = data.sessionKey;
 
-    const payload = fetchSessionResults(raceId, sessionKey);
+    const payload = fetchSessionResults(raceId, sessionKey, gameYear);
     postMessage({ responseMessage: "Session results fetched", content: { year, raceId, sessionKey, ...payload } });
   }
 

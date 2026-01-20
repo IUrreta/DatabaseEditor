@@ -147,7 +147,11 @@ export function checkYearSave() {
 }
 
 export function fetchNationality(driverID, gameYear) {
-  if (gameYear === "24") {
+  let year = String(gameYear || "").trim();
+  if (year === "2024") year = "24";
+  if (year === "2023") year = "23";
+
+  if (year === "24") {
     const countryID = queryDB(`
         SELECT CountryID 
         FROM Staff_BasicData 
@@ -171,7 +175,7 @@ export function fetchNationality(driverID, gameYear) {
     }
 
     return "";
-  } else if (gameYear === "23") {
+  } else if (year === "23") {
     const nationality = queryDB(`
         SELECT Nationality 
         FROM Staff_BasicData 
@@ -1956,97 +1960,35 @@ export function fetchLastCompletedRaceId(year, formula = 1) {
   `, [year], 'singleValue');
 }
 
-let _practiceResultsSchemaCache = null;
+function fetchPracticeResultsRows(raceId, practiceSession = 1) {
+  const raceIdNum = Number(raceId);
+  const sessionNum = Number(practiceSession);
 
-function resolveColumnName(columns, candidates) {
-  const cols = Array.isArray(columns) ? columns : [];
-  const lower = new Map(cols.map(c => [String(c).toLowerCase(), String(c)]));
-
-  for (const cand of candidates) {
-    const hit = lower.get(String(cand).toLowerCase());
-    if (hit) return hit;
+  if (!Number.isFinite(raceIdNum) || !Number.isFinite(sessionNum)) {
+    return { rows: [], error: "Invalid practice results query params." };
   }
-
-  for (const cand of candidates) {
-    const cLower = String(cand).toLowerCase();
-    const hit = cols.find(c => String(c).toLowerCase().includes(cLower));
-    if (hit) return String(hit);
-  }
-
-  return null;
-}
-
-function getPracticeResultsSchema() {
-  if (_practiceResultsSchemaCache) return _practiceResultsSchemaCache;
-
-  const infoRows = queryDB(`PRAGMA table_info('Races_PracticeResults')`, [], 'allRows') || [];
-  if (!infoRows.length) {
-    _practiceResultsSchemaCache = { ok: false, error: "Races_PracticeResults table not found." };
-    return _practiceResultsSchemaCache;
-  }
-
-  const columns = infoRows.map(r => r?.[1]).filter(Boolean).map(String);
-
-  const schema = {
-    ok: true,
-    driverIdCol: resolveColumnName(columns, ["DriverID", "DriverId", "Driver"]),
-    teamIdCol: resolveColumnName(columns, ["TeamID", "TeamId", "Team"]),
-    finishingPosCol: resolveColumnName(columns, ["FinishingPos", "FinishingPosition", "Position", "Pos"]),
-    fastestLapCol: resolveColumnName(columns, ["FastestLap", "LapTime", "Time", "BestLap", "BestLapTime"]),
-    raceIdCol: resolveColumnName(columns, ["RaceID", "RaceId"]),
-    raceFormulaCol: resolveColumnName(columns, ["RaceFormula"]),
-    stageCol: resolveColumnName(columns, ["PracticeStage", "PracticeSession", "Session", "Stage"]),
-  };
-
-  if (!schema.driverIdCol || !schema.teamIdCol || !schema.finishingPosCol || !schema.fastestLapCol || !schema.raceIdCol) {
-    _practiceResultsSchemaCache = { ok: false, error: "Races_PracticeResults schema not recognized." };
-    return _practiceResultsSchemaCache;
-  }
-
-  _practiceResultsSchemaCache = schema;
-  return _practiceResultsSchemaCache;
-}
-
-function fetchPracticeResultsRows(raceId, sessionIndex = 0) {
-  const schema = getPracticeResultsSchema();
-  if (!schema.ok) return { rows: [], error: schema.error };
-
-  const whereFormula = schema.raceFormulaCol ? `AND res."${schema.raceFormulaCol}" = 1` : "";
-
-  let stageValue = null;
-  if (schema.stageCol) {
-    const stageRows = queryDB(`
-      SELECT DISTINCT res."${schema.stageCol}"
-      FROM Races_PracticeResults res
-      WHERE res."${schema.raceIdCol}" = ?
-        ${whereFormula}
-      ORDER BY res."${schema.stageCol}"
-    `, [raceId], 'allRows') || [];
-
-    const stages = stageRows.map(r => r?.[0]).filter(v => v !== null && v !== undefined);
-    if (stages.length > 0 && sessionIndex >= stages.length) return { rows: [], error: null };
-    stageValue = stages[sessionIndex] ?? null;
-  }
-
-  const whereStage = (schema.stageCol && stageValue !== null) ? `AND res."${schema.stageCol}" = ?` : "";
-  const params = (schema.stageCol && stageValue !== null) ? [raceId, stageValue] : [raceId];
 
   const rows = queryDB(`
     SELECT
       bas.FirstName,
       bas.LastName,
-      res."${schema.driverIdCol}" AS DriverID,
-      res."${schema.teamIdCol}" AS TeamID,
-      res."${schema.finishingPosCol}" AS FinishingPos,
-      res."${schema.fastestLapCol}" AS FastestLap
+      res.DriverID,
+      res.TeamID,
+      res.BestLapTime,
+      res.LapCount
     FROM Staff_BasicData bas
     JOIN Races_PracticeResults res
-      ON bas.StaffID = res."${schema.driverIdCol}"
-    WHERE res."${schema.raceIdCol}" = ?
-      ${whereFormula}
-      ${whereStage}
-    ORDER BY res."${schema.finishingPosCol}"
-  `, params, 'allRows') || [];
+      ON bas.StaffID = res.DriverID
+    WHERE res.RaceID = ?
+      AND res.RaceFormula = 1
+      AND res.PracticeSession = ?
+    ORDER BY
+      CASE
+        WHEN res.BestLapTime IS NULL OR res.BestLapTime <= 0 THEN 1
+        ELSE 0
+      END,
+      res.BestLapTime ASC
+  `, [raceIdNum, sessionNum], 'allRows') || [];
 
   return { rows, error: null };
 }
@@ -2105,7 +2047,34 @@ function fetchQualifyingResultsRows(raceId, sprintShootout = 0) {
       res.DriverID,
       res.TeamID,
       res.FinishingPos,
-      res.FastestLap
+      (
+        SELECT q1.FastestLap
+        FROM Races_QualifyingResults q1
+        WHERE q1.RaceID = res.RaceID
+          AND q1.DriverID = res.DriverID
+          AND q1.RaceFormula = 1
+          AND q1.SprintShootout = ?
+          AND q1.QualifyingStage = 1
+      ) AS Q1FastestLap,
+      (
+        SELECT q2.FastestLap
+        FROM Races_QualifyingResults q2
+        WHERE q2.RaceID = res.RaceID
+          AND q2.DriverID = res.DriverID
+          AND q2.RaceFormula = 1
+          AND q2.SprintShootout = ?
+          AND q2.QualifyingStage = 2
+      ) AS Q2FastestLap,
+      (
+        SELECT q3.FastestLap
+        FROM Races_QualifyingResults q3
+        WHERE q3.RaceID = res.RaceID
+          AND q3.DriverID = res.DriverID
+          AND q3.RaceFormula = 1
+          AND q3.SprintShootout = ?
+          AND q3.QualifyingStage = 3
+      ) AS Q3FastestLap,
+      res.ChampionshipPoints
     FROM Staff_BasicData bas
     JOIN Races_QualifyingResults res
       ON bas.StaffID = res.DriverID
@@ -2118,12 +2087,13 @@ function fetchQualifyingResultsRows(raceId, sprintShootout = 0) {
            AND res2.DriverID = res.DriverID)
       AND SprintShootout = ?
     ORDER BY res.FinishingPos;
-  `, [raceId, raceId, sprintShootout], 'allRows') || [];
+  `, [sprintShootout, sprintShootout, sprintShootout, raceId, raceId, sprintShootout], 'allRows') || [];
 }
 
-export function fetchSessionResults(raceId, sessionKey) {
+export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
   const raceIdNum = Number(raceId);
   const key = String(sessionKey || "").toLowerCase();
+  const gy = String(gameYear || "").trim();
 
   const raceMeta = queryDB(`SELECT TrackID, WeekendType FROM Races WHERE RaceID = ?`, [raceIdNum], 'singleRow') || [];
   const trackId = Number(raceMeta[0]);
@@ -2152,7 +2122,8 @@ export function fetchSessionResults(raceId, sessionKey) {
         driverId,
         teamId,
         name: nameFormatted,
-        fastestLap: row[12]
+        fastestLap: row[12],
+        nationality: gy ? fetchNationality(driverId, gy) : "",
       };
     });
     return { meta, results };
@@ -2170,7 +2141,8 @@ export function fetchSessionResults(raceId, sessionKey) {
         laps: row[8],
         driverId,
         teamId,
-        name: nameFormatted
+        name: nameFormatted,
+        nationality: gy ? fetchNationality(driverId, gy) : "",
       };
     });
     return { meta, results };
@@ -2183,27 +2155,33 @@ export function fetchSessionResults(raceId, sessionKey) {
       const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
       return {
         pos: row[4],
-        fastestLap: row[5],
+        q1FastestLap: row[5],
+        q2FastestLap: row[6],
+        q3FastestLap: row[7],
         driverId,
         teamId,
-        name: nameFormatted
+        name: nameFormatted,
+        points: row[8],
+        nationality: gy ? fetchNationality(driverId, gy) : "",
       };
     });
     return { meta, results };
   }
 
   if (key === "fp" || key === "fp1" || key === "fp2" || key === "fp3") {
-    const sessionIndex = key === "fp2" ? 1 : (key === "fp3" ? 2 : 0);
-    const { rows, error } = fetchPracticeResultsRows(raceIdNum, sessionIndex);
+    const practiceSession = key === "fp2" ? 2 : (key === "fp3" ? 3 : 1);
+    const { rows, error } = fetchPracticeResultsRows(raceIdNum, practiceSession);
     if (error) return { meta: { ...meta, error }, results: [] };
-    const results = rows.map((row) => {
+    const results = rows.map((row, idx) => {
       const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
       return {
-        pos: row[4],
-        fastestLap: row[5],
+        pos: idx + 1,
+        fastestLap: row[4],
+        laps: row[5],
         driverId,
         teamId,
-        name: nameFormatted
+        name: nameFormatted,
+        nationality: gy ? fetchNationality(driverId, gy) : "",
       };
     });
     return { meta, results };

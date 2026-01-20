@@ -3567,6 +3567,7 @@ DRIVERS TABLE
   line-height: 1;
   font-family: 'NumbersFont';
   padding-top: 0;
+  letter-spacing: -1.3px;
 }
 
 
@@ -3978,7 +3979,7 @@ phm
   padding-bottom: 10px;
 }
 
-.bento-grid .logo-up-down-extra{
+.bento-grid .logo-up-down-extra, .session-results-table .logo-up-down-extra {
   padding-top: 8px;
   padding-bottom: 8px;
 }
@@ -4120,8 +4121,8 @@ phm
 .logo-mclaren-table {
   -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
   mask: url('/assets/images/mclaren.svg') no-repeat center;
-  -webkit-mask-size: 85%;
-  mask-size: 85%;
+  -webkit-mask-size: 75%;
+  mask-size: 75%;
   background-color: var(--mclaren-primary);
 }
 
@@ -8596,6 +8597,10 @@ body.og-theme .records-list {
   visibility: hidden;
   transform: translateX(-6px);
   pointer-events: none;
+}
+
+.dropdown-global .redesigned-dropdown-menu.dropdown-submenu-menu .dropdown-submenu-menu{
+  margin-left: 1px;
 }
 
 .dropdown-global .redesigned-dropdown-menu.dropdown-submenu-menu::before {
@@ -17017,33 +17022,37 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   font-family: 'Formula1Dark' !important;
   text-transform: uppercase;
   display: flex;
-  align-items: baseline;
-  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 10px;
   padding: 16px 20px 12px 18px;
   letter-spacing: -0.3px;
   color: var(--text-general);
   position: relative;
   overflow: hidden;
+  row-gap: 0px;
 }
 
 .session-results-title::before{
   content: '';
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--session-results-flag-window-width, 280px);
   background-image: var(--session-results-flag-bg, none);
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: 280px 100%;
-  opacity: 0.6;
-  -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 85%);
-  mask-image: linear-gradient(90deg, #000 0%, transparent 85%);
+  background-size: var(--session-results-flag-width, 280px) auto;
+  opacity: 0.5;
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
   mask-size: 100% 100%;
   pointer-events: none;
   z-index: 0;
-  width: 315px;
 }
 
 .session-results-title > *{
@@ -17052,18 +17061,31 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .session-results-title-main{
+  order: 1;
   font-size: 24px;
   line-height: 1;
 }
 
 .session-results-title-session{
+  order: 2;
   font-family: 'Formula1Dark';
   font-size: 24px;
   line-height: 1;
   color: var(--text-tertiary);
 }
 
+.session-results-title-track{
+  order: 4;
+  flex: 0 0 100%;
+  margin-top: 2px;
+  font-family: 'Formula1';
+  font-size: 14px;
+  line-height: 0.6;
+  color: var(--text-general);
+}
+
 .session-results-title-round{
+  order: 3;
   margin-left: auto;
   font-family: 'Formula1Dark';
   font-size: 16px;
@@ -17072,22 +17094,107 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -0.2px;
 }
 
-.session-results-row{
-  display: grid;
-  grid-template-columns: 42px 46px 240px 340px 1fr 100px 130px 70px;
+.session-results-footer{
+  display: flex;
   align-items: center;
+  gap: 10px;
+  padding: 10px 20px 10px 18px;
   background-color: var(--table-default);
-  column-gap: 8px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+  text-transform: uppercase;
 }
 
-.session-results-table.no-grid .session-results-row{
-  grid-template-columns: 42px 0px 240px 340px 1fr 100px 130px 70px;
+.session-results-footer-label{
+  font-family: 'Formula1Dark';
+  font-size: 16px;
+  color: color-mix(in srgb, #B14DFF 70%, var(--text-general));
+  flex: 0 0 auto;
+  padding-top: 5px;
+  line-height: 1;
+}
+
+.session-results-footer-time{
+  font-family: 'NumbersFont';
+  font-size: 14px;
+  letter-spacing: -1.2px;
+  color: var(--text-general);
+  flex: 0 0 auto;
+  padding-top: 3px;
+  padding-left: 15px;
+  border-left: 2px solid var(--text-tertiary);
+  color: color-mix(in srgb, #B14DFF 70%, var(--text-general));
+}
+
+.session-results-row{
+  display: grid;
+  grid-template-columns: 42px var(--session-results-col-grid, 46px) 280px 300px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-points, 70px);
+  align-items: center;
+  background-color: var(--table-default);
+  column-gap: 0px;
+}
+
+.session-results-cell{
+  margin: 0 4px;
+}
+
+.session-results-cell.hidden{
+  margin: 0;
+}
+
+.session-results-row > .session-results-cell:first-child{
+  margin-left: 0;
+}
+
+.session-results-row > .session-results-cell:last-child{
+  margin-right: 0;
+}
+
+.session-results-table.is-quali{
+  --session-results-col-q1: 100px;
+  --session-results-col-q2: 100px;
+  --session-results-col-q3: 100px;
+  --session-results-col-fl: 0px;
+  --session-results-col-time: 0px;
+}
+
+.session-results-table.is-practice{
+  --session-results-col-laps: 70px;
+  --session-results-col-points: 0px;
+}
+
+.session-results-table.no-grid{
+  --session-results-col-grid: 0px;
+}
+
+.session-results-table.no-time{
+  --session-results-col-time: 0px;
+}
+
+.session-results-row > div.hidden{
+  padding: 0 !important;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+  margin: 0;
 }
 
 .session-results-gained-lost.hidden{
   padding: 0 !important;
   overflow: hidden;
   visibility: hidden;
+  pointer-events: none;
+}
+
+.session-results-time.hidden{
+  padding: 0 !important;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.session-results-row.quali-cut-q2,
+.session-results-row.quali-cut-q3{
+  box-shadow: inset 0 -2px 0 var(--negative-general);
 }
 
 .session-results-row.odd {
@@ -17129,6 +17236,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   justify-content: center;
   gap: 2px;
   line-height: 1;
+  padding-top: 7px !important;
 }
 
 .session-results-gained-lost.up {
@@ -17146,7 +17254,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .session-results-driver-name {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   white-space: nowrap;
   min-width: 0;
 }
@@ -17156,12 +17264,22 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  text-transform: capitalize;
   min-width: 0;
 }
 
 .session-results-surname {
   text-transform: uppercase;
   flex: 0 0 auto;
+}
+
+.session-results-nationality-flag{
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex: 0 0 auto;
+  margin-right: 4px;
 }
 
 .session-results-team {
@@ -17196,6 +17314,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .session-results-fastest-lap,
+.session-results-laps,
+.session-results-quali-lap,
 .session-results-time {
   color: var(--text-secondary);
 }
@@ -17209,6 +17329,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 }
 
 .session-results-fastest-lap,
+.session-results-laps,
+.session-results-quali-lap,
 .session-results-time,
 .session-results-points {
   font-family: 'NumbersFont';
@@ -17227,10 +17349,12 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .session-results-row:has(.session-results-position.champion) .session-results-position {
   border-left: 2px solid #FEDB37;
+  color: #FEDB37;
   background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
 
 .session-results-row.odd:has(.session-results-position.champion) .session-results-position {
+  color: #FEDB37;
   background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, transparent 75%);
 }
 
@@ -17252,7 +17376,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   background: linear-gradient(90deg, rgba(205, 127, 50, 0.35) 0%, transparent 75%);
 }
 
-.session-results-fastest-lap.fastest {
+.session-results-fastest-lap.fastest,
+.session-results-quali-lap.fastest {
   border-left: 2px solid #B14DFF;
   background: linear-gradient(90deg, rgba(177, 77, 255, 0.35) 0%, transparent 75%);
   text-decoration: none;
