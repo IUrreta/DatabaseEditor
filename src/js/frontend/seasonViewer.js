@@ -1,6 +1,6 @@
-import { races_names, names_full, team_dict, codes_dict, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
+import { races_names, names_full, team_dict, codes_dict, countries_data, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H, queueAutoCompareDrivers } from './head2head';
-import { game_version, custom_team } from "./renderer";
+import { game_version, custom_team, manageSaveButton, new_update_notifications, updateFront } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
@@ -32,10 +32,23 @@ let standingsDetailsEnabled = false;
 let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
+const sessionResultsEventsCache = new Map();
+let sessionResultsActiveGpAnchor = null;
+let sessionResultsActiveGpMeta = null;
+let sessionResultsLastFetched = null;
+let sessionResultsEditMode = false;
+let sessionResultsDraggedRow = null;
+let sessionResultsDragRaf = 0;
+let sessionResultsDragY = 0;
+let sessionResultsPointsInfo = null;
+let sessionResultsPointsInfoPromise = null;
+let sessionResultsCompactMode = false;
 
 function ensureDropdownCheckIcons(menuEl) {
     if (!menuEl) return;
     menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        if (item.dataset.noCheck === "1") return;
+        if (item.closest(".dropdown-submenu-menu")) return;
         if (item.querySelector("i.bi-check")) return;
         const icon = document.createElement("i");
         icon.classList.add("bi", "bi-check", "unactive");
@@ -224,17 +237,30 @@ function updateAllTimeVisibilityForTeamsRecords() {
     if (!allTime) return;
 
     const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
-    const allowAllTime = currentFormula === 1 && driverOrTeams !== "teams" && typeVal !== "standings" && typeVal !== "seasonreview";
+    const allowAllTime = currentFormula === 1 && driverOrTeams !== "teams" && typeVal !== "standings" && typeVal !== "seasonreview" && typeVal !== "sessionresults";
     allTime.classList.toggle("d-none", !allowAllTime);
 }
 
 function updateTopPanelControlsVisibility() {
     const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
     const showStandingsOnlyControls = typeVal === "standings";
+    const hideDriversTeamsPills = typeVal === "seasonreview" || typeVal === "sessionresults";
+
+    const editToggle = document.getElementById("sessionResultsEditToggle");
+    if (editToggle) {
+        const meta = sessionResultsLastFetched?.meta || {};
+        const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+        const showEdit = typeVal === "sessionresults" && sessionKeyLower === "race";
+        editToggle.classList.toggle("d-none", !showEdit);
+    }
+    const compactToggle = document.getElementById("sessionResultsCompactToggle");
+    if (compactToggle) {
+        compactToggle.classList.toggle("d-none", typeVal !== "sessionresults");
+    }
 
     const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
     if (driversTeamsPills) {
-        driversTeamsPills.classList.toggle("d-none", typeVal === "seasonreview");
+        driversTeamsPills.classList.toggle("d-none", hideDriversTeamsPills);
     }
 
     const standingsDetailsButton = document.getElementById("standingsDetailsButton");
@@ -249,7 +275,7 @@ function updateTopPanelControlsVisibility() {
 
     const hideHistoric = document.querySelector(".hide-historic-drivers");
     if (hideHistoric) {
-        const showHideHistoric = currentFormula === 1 && !showStandingsOnlyControls && typeVal !== "seasonreview" && driverOrTeams !== "teams";
+        const showHideHistoric = currentFormula === 1 && !showStandingsOnlyControls && typeVal !== "seasonreview" && typeVal !== "sessionresults" && driverOrTeams !== "teams";
         hideHistoric.classList.toggle("d-none", !showHideHistoric);
     }
 
@@ -261,6 +287,8 @@ function manage_show_tables() {
     const recordsList = document.querySelector(".records-list")
     recordsList.innerHTML = ""
     recordsList.classList.add("d-none")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none")
     const seasonReviewBento = document.querySelector(".season-review-bento")
     seasonReviewBento.classList.add("d-none")
     if (isYearSelected) {
@@ -2174,7 +2202,7 @@ function manageRecordsSelected(forcedYearEl = null) {
     const isAllTime = el => el.dataset.year === "all";
 
     // si es standings y estaba en All Time, forzar primer año real
-    if ((typeVal === "standings" || typeVal === "seasonreview") && isAllTime(selectedEl)) {
+    if ((typeVal === "standings" || typeVal === "seasonreview" || typeVal === "sessionresults") && isAllTime(selectedEl)) {
         const firstReal = yearItems.find(i => !isAllTime(i));
         if (firstReal) selectedEl = firstReal;
     }
@@ -2200,6 +2228,9 @@ function manageRecordsSelected(forcedYearEl = null) {
     else if (typeVal === "seasonreview") {
         manageSeasonReview();
     }
+    else if (typeVal === "sessionresults") {
+        return;
+    }
     else {
         if (driverOrTeams === "teams" && ["wins", "poles", "podiums", "dotd"].includes(typeVal) && selectedYear !== "all") {
             new Command("teamRecordRequest", { type: typeVal, year: selectedYear, formula: currentFormula }).execute();
@@ -2216,6 +2247,8 @@ function manageSeasonReview(){
     const teamsTable = document.querySelector(".teams-table")
     driversTable.classList.add("d-none")
     teamsTable.classList.add("d-none")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none")
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.add("d-none")
 
@@ -3125,11 +3158,974 @@ function manageShowRecords() {
     teamsTable.classList.add("d-none")
     const seasonReviewBento = document.querySelector(".season-review-bento")
     seasonReviewBento.classList.add("d-none")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none")
 
     const recordsList = document.querySelector(".records-list")
     recordsList.classList.remove("d-none")
     recordsList.innerHTML = ""
     updateTopPanelControlsVisibility();
+}
+
+function showSessionResultsTable() {
+    const driversTable = document.querySelector(".drivers-table")
+    const teamsTable = document.querySelector(".teams-table")
+    const seasonReviewBento = document.querySelector(".season-review-bento")
+    const recordsList = document.querySelector(".records-list")
+    const sessionResultsTable = document.querySelector(".session-results-table")
+
+    if (driversTable) driversTable.classList.add("d-none")
+    if (teamsTable) teamsTable.classList.add("d-none")
+    if (seasonReviewBento) seasonReviewBento.classList.add("d-none")
+    if (recordsList) recordsList.classList.add("d-none")
+    if (sessionResultsTable) sessionResultsTable.classList.remove("d-none")
+
+    updateTopPanelControlsVisibility();
+}
+
+export function onSessionResultsFetched(data) {
+    sessionResultsLastFetched = data;
+    const meta = data?.meta || {};
+    const headerMain = document.querySelector(".session-results-title-main");
+    const headerSession = document.querySelector(".session-results-title-session");
+    const headerRound = document.querySelector(".session-results-title-round");
+    const titleEl = document.querySelector(".session-results-title");
+    const editToggle = document.getElementById("sessionResultsEditToggle");
+    
+    if (headerMain && headerSession) {
+        const year = String(data?.year ?? "").trim();
+        const trackId = meta?.trackId;
+        const gpNameRaw = getGpDisplayName(trackId);
+        const gpNameRawStr = String(gpNameRaw || "").trim();
+        let gpName = gpNameRawStr;
+        if (/\bgrand prix\b/i.test(gpNameRawStr)) {
+            gpName = gpNameRawStr;
+        }
+        else if (/\bgp\b/i.test(gpNameRawStr)) {
+            gpName = gpNameRawStr.replace(/\bgp\b/ig, "Grand Prix");
+        }
+        else {
+            gpName = `${gpNameRawStr} Grand Prix`;
+        }
+        gpName = gpName.trim();
+
+        const weekendType = meta?.weekendType;
+        const sessionKey = String(data?.sessionKey ?? meta?.sessionKey ?? "").trim();
+        const sessionLabel = getSessionOptionsForWeekend(weekendType).find(o => o.key === sessionKey)?.label
+            || sessionKey
+            || "";
+
+        headerMain.textContent = `${year} ${gpName}`.trim();
+        headerSession.textContent = String(sessionLabel);
+    }
+    if (headerRound) {
+        const yearKey = String(data?.year ?? "").trim();
+        const events = sessionResultsEventsCache.get(yearKey);
+        const raceId = Number(data?.raceId ?? meta?.raceId);
+        const total = Array.isArray(events) ? events.length : 0;
+        const idx = Array.isArray(events) ? events.findIndex(e => Number(e?.[0]) === raceId) : -1;
+        headerRound.textContent = (total > 0 && idx >= 0) ? `ROUND ${idx + 1}/${total}` : "";
+    }
+
+    if (titleEl) {
+        const trackId = Number(meta?.trackId);
+        const trackCode = races_names?.[trackId];
+        const flagKey = trackCode ? `${String(trackCode).toLowerCase()}0` : null;
+        const flagPath = flagKey ? codes_dict?.[flagKey] : null;
+        titleEl.style.setProperty(
+            "--session-results-flag-bg",
+            flagPath ? `url("${String(flagPath)}")` : "none"
+        );
+    }
+
+    document.querySelectorAll(".session-results-table .session-results-rows .session-results-row").forEach((el) => el.remove());
+
+    const rawResults = data?.results ?? data;
+    const results = Array.isArray(rawResults) ? rawResults : [];
+    const sessionKeyLower = String(data?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    const isMainRaceSession = sessionKeyLower === "race";
+    const isRaceSession = sessionKeyLower === "race" || sessionKeyLower === "sprintrace";
+    const isQualiSession = sessionKeyLower === "quali" || sessionKeyLower === "sprintquali";
+    const isPracticeSession = sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3";
+    const isEditRace = sessionResultsEditMode && isMainRaceSession;
+
+    if (!isMainRaceSession && sessionResultsEditMode) {
+        sessionResultsEditMode = false;
+        manageSaveButton(false);
+    }
+    if (editToggle) editToggle.classList.toggle("d-none", !isMainRaceSession);
+    if (editToggle) {
+        const label = editToggle.querySelector("span");
+        if (label) label.textContent = sessionResultsEditMode && isMainRaceSession ? "Cancel" : "Edit";
+    }
+
+    const sessionResultsTable = document.querySelector(".session-results-table");
+    const hasGrid = results.some((r) => {
+        const grid = Number(r?.grid);
+        return Number.isFinite(grid) && grid > 0;
+    });
+    const hasTime = results.some((r) => {
+        const time = Number(r?.time);
+        return Number.isFinite(time) && time > 0;
+    });
+
+    if (sessionResultsTable) {
+        sessionResultsTable.classList.toggle("no-grid", !hasGrid);
+        sessionResultsTable.classList.toggle("no-time", !hasTime);
+        sessionResultsTable.classList.toggle("is-quali", isQualiSession);
+        sessionResultsTable.classList.toggle("is-practice", isPracticeSession);
+        sessionResultsTable.classList.toggle("is-edit", isEditRace);
+        sessionResultsTable.classList.toggle("is-compact", sessionResultsCompactMode);
+    }
+
+    const leaderRow = results.find(r => Number(r?.pos) === 1) || results[0] || null;
+    const leaderTime = leaderRow ? Number(leaderRow?.time) : null;
+    const leaderLaps = leaderRow ? Number(leaderRow?.laps) : null;
+
+    const fastestLapBest = results
+        .map(r => Number(r?.fastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+
+    const q1Best = results
+        .map(r => Number(r?.q1FastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+    const q2Best = results
+        .map(r => Number(r?.q2FastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+    const q3Best = results
+        .map(r => Number(r?.q3FastestLap))
+        .filter(v => Number.isFinite(v) && v > 0)
+        .reduce((min, v) => (min == null || v < min ? v : min), null);
+
+    results.forEach((row, idx) => {
+        const sessionResultRow = document.createElement("div");
+        sessionResultRow.className = "session-results-row";
+        if (idx % 2 === 1) sessionResultRow.classList.add("odd");
+        if (row?.driverId != null) sessionResultRow.dataset.driverid = String(row.driverId);
+        sessionResultRow.dataset.dnf = Number(row?.dnf) === 1 ? "1" : "0";
+
+        const dragDiv = document.createElement("div");
+        dragDiv.className = "session-results-drag session-results-cell";
+        const dragIcon = document.createElement("div");
+        dragIcon.className = "session-results-drag-icon";
+        dragDiv.appendChild(dragIcon);
+        if (!isEditRace) {
+            dragDiv.classList.add("hidden");
+        } else {
+            dragDiv.classList.add("session-results-drag-handle");
+            dragDiv.draggable = true;
+            dragDiv.addEventListener("dragstart", (e) => {
+                sessionResultsDraggedRow = sessionResultRow;
+                sessionResultRow.classList.add("dragging");
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", "");
+            });
+            dragDiv.addEventListener("dragend", () => {
+                sessionResultRow.classList.remove("dragging");
+                sessionResultsDraggedRow = null;
+                if (sessionResultsDragRaf) {
+                    cancelAnimationFrame(sessionResultsDragRaf);
+                    sessionResultsDragRaf = 0;
+                }
+                const container = document.querySelector(".session-results-table .session-results-rows");
+                if (container) {
+                    reindexRaceEditPositions(container);
+                    updateRaceEditPoints();
+                }
+            });
+        }
+        sessionResultRow.appendChild(dragDiv);
+
+        const posDiv = document.createElement("div");
+        posDiv.className = "session-results-position";
+        posDiv.classList.add("session-results-cell");
+        const pos = Number(row?.pos);
+        if (Number.isFinite(pos)) {
+            posDiv.textContent = String(pos);
+            if (pos === 1) sessionResultRow.classList.add("leader");
+            if (pos === 1) posDiv.classList.add("champion");
+            else if (pos === 2) posDiv.classList.add("second");
+            else if (pos === 3) posDiv.classList.add("third");
+            if (isQualiSession) {
+                const q2CutPos = custom_team ? 16 : 15;
+                if (pos === q2CutPos) sessionResultRow.classList.add("quali-cut-q2");
+                if (pos === 10) sessionResultRow.classList.add("quali-cut-q3");
+            }
+        }
+        else {
+            posDiv.textContent = row?.pos ?? "";
+        }
+        sessionResultRow.appendChild(posDiv);
+
+        const gainedLostDiv = document.createElement("div");
+        gainedLostDiv.className = "session-results-gained-lost";
+        gainedLostDiv.classList.add("session-results-cell");
+        const gainedLostNumber = document.createElement("span");
+        gainedLostNumber.className = "session-results-gained-lost-number";
+        const gainedLostIcon = document.createElement("i");
+        gainedLostDiv.appendChild(gainedLostNumber);
+        gainedLostDiv.appendChild(gainedLostIcon);
+
+        const grid = Number(row?.grid);
+        const gained = Number.isFinite(grid) && Number.isFinite(pos) ? (grid - pos) : null;
+        if (Number.isFinite(gained) && gained > 0) {
+            gainedLostNumber.textContent = `+${gained}`;
+            gainedLostIcon.className = "bi bi-caret-up-fill";
+            gainedLostDiv.classList.add("up");
+        }
+        else if (Number.isFinite(gained) && gained < 0) {
+            gainedLostNumber.textContent = String(gained);
+            gainedLostIcon.className = "bi bi-caret-down-fill";
+            gainedLostDiv.classList.add("down");
+        }
+        else {
+            gainedLostNumber.textContent = "";
+            gainedLostIcon.className = "bi bi-dash";
+            gainedLostDiv.classList.add("neutral");
+        }
+        if (!hasGrid) gainedLostDiv.classList.add("hidden");
+        sessionResultRow.appendChild(gainedLostDiv);
+
+        const driverDiv = document.createElement("div");
+        driverDiv.className = "session-results-driver-name";
+        driverDiv.classList.add("session-results-cell");
+        const nat = String(row?.nationality ?? "").trim();
+        if (nat) {
+            const img = document.createElement("img");
+            img.className = "session-results-nationality-flag";
+            img.alt = nat;
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.src = `https://flagsapi.com/${nat}/flat/64.png`;
+            driverDiv.appendChild(img);
+        }
+        const driverName = String(row?.name ?? "");
+        const nameParts = driverName.split(" ");
+        const nameSpan = document.createElement("span");
+        nameSpan.className = "session-results-first-name";
+        const surnameSpan = document.createElement("span");
+        surnameSpan.className = "bold-font session-results-surname";
+        format_name(driverName, nameParts, nameSpan, surnameSpan);
+        surnameSpan.textContent = String(surnameSpan.textContent || "").toUpperCase();
+        driverDiv.appendChild(nameSpan);
+        driverDiv.appendChild(surnameSpan);
+
+        sessionResultRow.appendChild(driverDiv);
+
+        const teamId = Number(row?.teamId ?? -1);
+        const teamDiv = document.createElement("div");
+        teamDiv.className = "session-results-team";
+        teamDiv.classList.add("session-results-cell");
+
+        const logoDiv = Number.isFinite(teamId) && teamId !== -1
+            ? buildDriverLogoDiv(teamId, {
+                isF1: true,
+                wrapperClass: "drivers-table-logo-div session-results-driver-logo-div"
+            })
+            : (() => {
+                const empty = document.createElement("div");
+                empty.className = "drivers-table-logo-div session-results-driver-logo-div";
+                return empty;
+            })();
+        teamDiv.appendChild(logoDiv);
+
+        const teamNameSpan = document.createElement("span");
+        teamNameSpan.className = "session-results-team-name";
+        teamNameSpan.textContent = (Number.isFinite(teamId) && teamId !== -1) ? (combined_dict?.[teamId] ?? "") : "";
+        teamNameSpan.textContent = String(teamNameSpan.textContent || "").toUpperCase();
+        teamDiv.appendChild(teamNameSpan);
+
+        const engineNameSpan = document.createElement("span");
+        engineNameSpan.className = "session-results-engine-name";
+        if (currentFormula === 1 && Number.isFinite(teamId) && teamId !== -1) {
+            const engineId = engine_allocations?.[teamId];
+            const engineName = engineId != null ? engine_names?.[engineId] : "";
+            engineNameSpan.textContent = String(engineName || "").toUpperCase();
+        }
+        teamDiv.appendChild(engineNameSpan);
+
+        sessionResultRow.appendChild(teamDiv);
+
+        const spacerDiv = document.createElement("div");
+        spacerDiv.className = "session-results-spacer";
+        sessionResultRow.appendChild(spacerDiv);
+
+        const q1Div = document.createElement("div");
+        q1Div.className = "session-results-quali-lap session-results-q1";
+        q1Div.classList.add("session-results-cell");
+        const q1 = Number(row?.q1FastestLap);
+        q1Div.innerText = Number.isFinite(q1) && q1 > 0 ? formatLapTime(q1) : "-";
+        if (q1Best != null && Number.isFinite(q1) && q1 > 0 && Math.abs(q1 - q1Best) < 1e-6) q1Div.classList.add("fastest");
+        if (!isQualiSession) q1Div.classList.add("hidden");
+        sessionResultRow.appendChild(q1Div);
+
+        const q2Div = document.createElement("div");
+        q2Div.className = "session-results-quali-lap session-results-q2";
+        q2Div.classList.add("session-results-cell");
+        const q2 = Number(row?.q2FastestLap);
+        q2Div.innerText = Number.isFinite(q2) && q2 > 0 ? formatLapTime(q2) : "-";
+        if (q2Best != null && Number.isFinite(q2) && q2 > 0 && Math.abs(q2 - q2Best) < 1e-6) q2Div.classList.add("fastest");
+        if (!isQualiSession) q2Div.classList.add("hidden");
+        sessionResultRow.appendChild(q2Div);
+
+        const q3Div = document.createElement("div");
+        q3Div.className = "session-results-quali-lap session-results-q3";
+        q3Div.classList.add("session-results-cell");
+        const q3 = Number(row?.q3FastestLap);
+        q3Div.innerText = Number.isFinite(q3) && q3 > 0 ? formatLapTime(q3) : "-";
+        if (q3Best != null && Number.isFinite(q3) && q3 > 0 && Math.abs(q3 - q3Best) < 1e-6) q3Div.classList.add("fastest");
+        if (!isQualiSession) q3Div.classList.add("hidden");
+        sessionResultRow.appendChild(q3Div);
+
+        const lapsDiv = document.createElement("div");
+        lapsDiv.className = "session-results-laps";
+        lapsDiv.classList.add("session-results-cell");
+        const laps = Number(row?.laps);
+        lapsDiv.innerText = Number.isFinite(laps) && laps >= 0 ? String(laps) : "-";
+        if (!isPracticeSession) lapsDiv.classList.add("hidden");
+        sessionResultRow.appendChild(lapsDiv);
+
+        const fastestLapDiv = document.createElement("div");
+        fastestLapDiv.className = "session-results-fastest-lap";
+        fastestLapDiv.classList.add("session-results-cell");
+        const fl = Number(row?.fastestLap);
+        if (Number.isFinite(fl) && fl > 0) {
+            fastestLapDiv.innerText = formatLapTime(fl);
+            if (fastestLapBest != null && Math.abs(fl - fastestLapBest) < 1e-6) {
+                fastestLapDiv.classList.add("fastest");
+            }
+        }
+        if (isQualiSession) fastestLapDiv.classList.add("hidden");
+        sessionResultRow.appendChild(fastestLapDiv);
+
+        const timeDiv = document.createElement("div");
+        timeDiv.className = "session-results-time";
+        timeDiv.classList.add("session-results-cell");
+        if (isEditRace) {
+            const dnf = Number(row?.dnf) === 1;
+            const rowTime = Number(row?.time);
+            const input = document.createElement("input");
+            input.className = "session-results-time-input";
+            input.type = "text";
+            input.value = dnf ? "DNF" : ((Number.isFinite(rowTime) && rowTime > 0) ? formatLapTime(rowTime) : "");
+            input.placeholder = "DNF or 0:00.000";
+            input.addEventListener("input", () => {
+                const v = String(input.value || "").trim();
+                const isDnf = /^dnf$/i.test(v);
+                sessionResultRow.dataset.dnf = isDnf ? "1" : "0";
+                updateRaceEditPoints();
+            });
+            timeDiv.appendChild(input);
+        }
+        else if (isRaceSession) {
+            const dnf = Number(row?.dnf) === 1;
+            const rowPos = Number(row?.pos);
+            const rowTime = Number(row?.time);
+            const rowLaps = Number(row?.laps);
+
+            if (dnf) {
+                timeDiv.innerText = "-";
+            }
+            else if (Number.isFinite(leaderLaps) && Number.isFinite(rowLaps) && rowLaps < leaderLaps) {
+                timeDiv.innerText = `+${leaderLaps - rowLaps} L`;
+            }
+            else if (Number.isFinite(rowPos) && rowPos === 1 && Number.isFinite(rowTime) && rowTime > 0) {
+                timeDiv.innerText = formatLapTime(rowTime);
+            }
+            else if (Number.isFinite(leaderTime) && leaderTime > 0 && Number.isFinite(rowTime) && rowTime > 0) {
+                const gap = rowTime - leaderTime;
+                timeDiv.innerText = gap > 0 ? `+${gap.toFixed(3)}` : "-";
+            }
+            else {
+                timeDiv.innerText = "-";
+            }
+        }
+        else {
+            const rowTime = Number(row?.time);
+            timeDiv.innerText = Number.isFinite(rowTime) && rowTime > 0 ? formatLapTime(rowTime) : "-";
+        }
+        if (!hasTime) timeDiv.classList.add("hidden");
+        if (isQualiSession) timeDiv.classList.add("hidden");
+        sessionResultRow.appendChild(timeDiv);
+
+        const pointsDiv = document.createElement("div");
+        pointsDiv.className = "session-results-points";
+        pointsDiv.classList.add("session-results-cell");
+        const pts = Number(row?.points);
+        if (Number.isFinite(pts) && pts > 0) {
+            pointsDiv.textContent = `+${pts}`;
+            pointsDiv.classList.add("positive");
+        }
+        else if (Number.isFinite(pts)) {
+            pointsDiv.textContent = String(pts);
+        }
+        else {
+            pointsDiv.textContent = row?.points ?? "";
+        }
+        sessionResultRow.appendChild(pointsDiv);
+        if (isPracticeSession) pointsDiv.classList.add("hidden");
+        if (isEditRace) pointsDiv.dataset.static = "0";
+
+        const container = document.querySelector(".session-results-table .session-results-rows");
+        if (container) container.appendChild(sessionResultRow);
+    });
+    
+    const rowsContainer = document.querySelector(".session-results-table .session-results-rows");
+    if (rowsContainer && !rowsContainer.dataset.sessionResultsDnDInit) {
+        rowsContainer.dataset.sessionResultsDnDInit = "1";
+        rowsContainer.addEventListener("dragover", (e) => {
+            if (!sessionResultsEditMode) return;
+            if (!sessionResultsDraggedRow) return;
+            e.preventDefault();
+            sessionResultsDragY = e.clientY;
+            if (sessionResultsDragRaf) return;
+            sessionResultsDragRaf = requestAnimationFrame(() => {
+                sessionResultsDragRaf = 0;
+                if (!sessionResultsDraggedRow) return;
+                const afterEl = getDragAfterSessionResultsRow(rowsContainer, sessionResultsDragY);
+                if (afterEl == null) {
+                    if (sessionResultsDraggedRow.nextSibling) rowsContainer.appendChild(sessionResultsDraggedRow);
+                }
+                else if (afterEl !== sessionResultsDraggedRow) {
+                    if (afterEl.previousSibling !== sessionResultsDraggedRow) {
+                        rowsContainer.insertBefore(sessionResultsDraggedRow, afterEl);
+                    }
+                }
+            });
+        });
+    }
+    if (isEditRace && rowsContainer) {
+        reindexRaceEditPositions(rowsContainer);
+        ensureSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
+        updateRaceEditPoints();
+        manageSaveButton(true, "custom", saveSessionResultsRaceEdits);
+    }
+
+    const footer = document.querySelector(".session-results-footer");
+    if (!footer) return;
+    footer.innerHTML = "";
+    footer.classList.add("d-none");
+
+    const trackId = Number(meta?.trackId);
+    const trackCode = races_names?.[trackId];
+    const trackName = trackCode ? countries_data?.[String(trackCode)]?.track : "";
+
+    let fastestTime = null;
+    let fastestRow = null;
+
+    if (isQualiSession) {
+        results.forEach((r) => {
+            const times = [Number(r?.q1FastestLap), Number(r?.q2FastestLap), Number(r?.q3FastestLap)]
+                .filter((v) => Number.isFinite(v) && v > 0);
+            const best = times.length ? Math.min(...times) : null;
+            if (best != null && (fastestTime == null || best < fastestTime)) {
+                fastestTime = best;
+                fastestRow = r;
+            }
+        });
+    }
+    else if (fastestLapBest != null) {
+        fastestTime = fastestLapBest;
+        fastestRow = results.find((r) => {
+            const fl = Number(r?.fastestLap);
+            return Number.isFinite(fl) && fl > 0 && Math.abs(fl - fastestLapBest) < 1e-6;
+        }) || null;
+    }
+
+    if (!fastestRow || fastestTime == null) return;
+
+    const labelDiv = document.createElement("div");
+    labelDiv.className = "session-results-footer-label";
+    labelDiv.textContent = "Fastest Lap";
+    footer.appendChild(labelDiv);
+
+    const footerDriverDiv = document.createElement("div");
+    footerDriverDiv.className = "session-results-driver-name";
+    const footerDriverName = String(fastestRow?.name ?? "");
+    const footerNameParts = footerDriverName.split(" ");
+    const footerNameSpan = document.createElement("span");
+    footerNameSpan.className = "session-results-first-name";
+    const footerSurnameSpan = document.createElement("span");
+    footerSurnameSpan.className = "bold-font session-results-surname";
+    format_name(footerDriverName, footerNameParts, footerNameSpan, footerSurnameSpan);
+    footerSurnameSpan.textContent = String(footerSurnameSpan.textContent || "").toUpperCase();
+    footerDriverDiv.appendChild(footerNameSpan);
+    footerDriverDiv.appendChild(footerSurnameSpan);
+    footer.appendChild(footerDriverDiv);
+
+    const footerTeamDiv = document.createElement("div");
+    footerTeamDiv.className = "session-results-team";
+    const footerTeamId = Number(fastestRow?.teamId ?? -1);
+    const footerLogoDiv = Number.isFinite(footerTeamId) && footerTeamId !== -1
+        ? buildDriverLogoDiv(footerTeamId, {
+            isF1: true,
+            wrapperClass: "drivers-table-logo-div session-results-driver-logo-div"
+        })
+        : (() => {
+            const empty = document.createElement("div");
+            empty.className = "drivers-table-logo-div session-results-driver-logo-div";
+            return empty;
+        })();
+    footerTeamDiv.appendChild(footerLogoDiv);
+
+    const footerTeamNameSpan = document.createElement("span");
+    footerTeamNameSpan.className = "session-results-team-name";
+    footerTeamNameSpan.textContent = (Number.isFinite(footerTeamId) && footerTeamId !== -1) ? (combined_dict?.[footerTeamId] ?? "") : "";
+    footerTeamNameSpan.textContent = String(footerTeamNameSpan.textContent || "").toUpperCase();
+    footerTeamDiv.appendChild(footerTeamNameSpan);
+
+    const footerEngineNameSpan = document.createElement("span");
+    footerEngineNameSpan.className = "session-results-engine-name";
+    if (currentFormula === 1 && Number.isFinite(footerTeamId) && footerTeamId !== -1) {
+        const engineId = engine_allocations?.[footerTeamId];
+        const engineName = engineId != null ? engine_names?.[engineId] : "";
+        footerEngineNameSpan.textContent = String(engineName || "").toUpperCase();
+    }
+    footerTeamDiv.appendChild(footerEngineNameSpan);
+    footer.appendChild(footerTeamDiv);
+
+    const rightDiv = document.createElement("div");
+    rightDiv.className = "session-results-footer-right";
+
+    const timeDiv = document.createElement("div");
+    timeDiv.className = "session-results-footer-time";
+    timeDiv.textContent = formatLapTime(fastestTime);
+    footer.appendChild(timeDiv);
+
+    const trackDiv = document.createElement("div");
+    trackDiv.className = "session-results-footer-track";
+    trackDiv.textContent = String(trackName || "");
+    trackDiv.classList.toggle("d-none", !trackName);
+    rightDiv.appendChild(trackDiv);
+
+    footer.appendChild(rightDiv);
+
+    footer.classList.remove("d-none");
+}
+
+function getDragAfterSessionResultsRow(container, y) {
+    const rows = [...container.querySelectorAll(".session-results-row:not(.dragging)")];
+    return rows.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset, element: child };
+        }
+        return closest;
+    }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+}
+
+function reindexRaceEditPositions(container) {
+    const rows = Array.from(container.querySelectorAll(".session-results-row"));
+    rows.forEach((rowEl, i) => {
+        const posDiv = rowEl.querySelector(".session-results-position");
+        if (!posDiv) return;
+        const pos = i + 1;
+        posDiv.textContent = String(pos);
+        posDiv.classList.toggle("champion", pos === 1);
+        posDiv.classList.toggle("second", pos === 2);
+        posDiv.classList.toggle("third", pos === 3);
+        rowEl.classList.toggle("leader", pos === 1);
+    });
+}
+
+function parseSessionResultsTimeToSeconds(txt) {
+    const s = String(txt || "").trim();
+    if (!s || s === "-") return null;
+    if (/^dnf$/i.test(s)) return null;
+    const parts = s.split(":").map(p => p.trim());
+    if (parts.length === 3) {
+        const h = Number(parts[0]);
+        const m = Number(parts[1]);
+        const sec = Number(parts[2]);
+        if (![h, m, sec].every(Number.isFinite)) return null;
+        return h * 3600 + m * 60 + sec;
+    }
+    if (parts.length === 2) {
+        const m = Number(parts[0]);
+        const sec = Number(parts[1]);
+        if (![m, sec].every(Number.isFinite)) return null;
+        return m * 60 + sec;
+    }
+    const sec = Number(parts[0]);
+    return Number.isFinite(sec) ? sec : null;
+}
+
+async function saveSessionResultsRaceEdits() {
+    if (!sessionResultsEditMode || !sessionResultsLastFetched) return;
+    const meta = sessionResultsLastFetched?.meta || {};
+    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+    const year = String(sessionResultsLastFetched?.year ?? "").trim();
+    if (!Number.isFinite(raceId)) return;
+
+    const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
+    const timeByDriver = new Map(original.map(r => [String(r?.driverId), Number(r?.time)]));
+    const dnfByDriver = new Map(original.map(r => [String(r?.driverId), Number(r?.dnf) === 1 ? 1 : 0]));
+
+    const container = document.querySelector(".session-results-table .session-results-rows");
+    if (!container) return;
+    const rows = Array.from(container.querySelectorAll(".session-results-row"));
+    const edits = [];
+
+    for (let i = 0; i < rows.length; i++) {
+        const rowEl = rows[i];
+        const driverId = Number(rowEl.dataset.driverid);
+        if (!Number.isFinite(driverId)) continue;
+
+        const input = rowEl.querySelector(".session-results-time-input");
+        const txt = input ? input.value : "";
+        const isDnf = /^dnf$/i.test(String(txt || "").trim());
+        let dnf = isDnf ? 1 : 0;
+
+        let time = isDnf ? 0 : parseSessionResultsTimeToSeconds(txt);
+        if (time == null && !isDnf) {
+            const orig = timeByDriver.get(String(driverId));
+            time = Number.isFinite(orig) ? orig : 0;
+            dnf = dnfByDriver.get(String(driverId)) ?? 0;
+        }
+
+        edits.push({ driverId, finishingPos: i + 1, time, dnf });
+    }
+
+    try {
+        const resp = await new Command("editRaceResults", { raceId, edits }).promiseExecute();
+        await updateFront(resp);
+        sessionResultsEditMode = false;
+        manageSaveButton(false);
+        new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey: "race" }).execute();
+    } catch (e) {
+        new_update_notifications("Failed to save race results", "error");
+        console.error(e);
+    }
+}
+
+async function ensureSessionResultsPointsInfo() {
+    if (sessionResultsPointsInfo) return sessionResultsPointsInfo;
+    if (sessionResultsPointsInfoPromise) return sessionResultsPointsInfoPromise;
+    sessionResultsPointsInfoPromise = new Command("pointsRegulationsRequest", {}).promiseExecute()
+        .then((resp) => {
+            sessionResultsPointsInfo = resp?.content ?? null;
+            return sessionResultsPointsInfo;
+        })
+        .catch((e) => {
+            console.error(e);
+            return null;
+        })
+        .finally(() => {
+            sessionResultsPointsInfoPromise = null;
+        });
+    return sessionResultsPointsInfoPromise;
+}
+
+function updateRaceEditPoints() {
+    if (!sessionResultsEditMode || !sessionResultsLastFetched) return;
+    const meta = sessionResultsLastFetched?.meta || {};
+    const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    if (sessionKeyLower !== "race") return;
+
+    const container = document.querySelector(".session-results-table .session-results-rows");
+    if (!container) return;
+
+    const pointsInfo = sessionResultsPointsInfo;
+    if (!pointsInfo || !Array.isArray(pointsInfo.positionAndPoints)) return;
+
+    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+    const yearKey = String(sessionResultsLastFetched?.year ?? "").trim();
+    const events = sessionResultsEventsCache.get(yearKey);
+    const lastRaceId = Array.isArray(events) && events.length
+        ? Math.max(...events.map(e => Number(e?.[0])).filter(Number.isFinite))
+        : null;
+
+    const doublePoints = Number(pointsInfo?.isLastraceDouble) === 1 && Number.isFinite(lastRaceId) && Number(raceId) === Number(lastRaceId);
+    const flBonusEnabled = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+
+    const posToPts = new Map(pointsInfo.positionAndPoints
+        .map(r => [Number(r?.[0]), Number(r?.[1])])
+        .filter(([p, pts]) => Number.isFinite(p) && Number.isFinite(pts)));
+
+    const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
+    const flByDriver = new Map(original.map(r => [Number(r?.driverId), Number(r?.fastestLap)]));
+
+    let fastestDriverId = null;
+    let fastestLap = null;
+    for (const [driverId, fl] of flByDriver.entries()) {
+        if (Number.isFinite(fl) && fl > 0 && (fastestLap == null || fl < fastestLap)) {
+            fastestLap = fl;
+            fastestDriverId = driverId;
+        }
+    }
+
+    const rows = Array.from(container.querySelectorAll(".session-results-row"));
+    rows.forEach((rowEl, idx) => {
+        const pos = idx + 1;
+        const driverId = Number(rowEl.dataset.driverid);
+        const dnf = Number(rowEl.dataset.dnf) === 1;
+        let pts = 0;
+        if (!dnf) {
+            pts = Number(posToPts.get(pos) ?? 0);
+            if (flBonusEnabled && fastestDriverId != null && driverId === fastestDriverId && pos <= 10 && pts > 0) {
+                pts += 1;
+            }
+            if (doublePoints) pts *= 2;
+        }
+
+        const pointsDiv = rowEl.querySelector(".session-results-points");
+        if (!pointsDiv) return;
+        pointsDiv.classList.remove("positive");
+        pointsDiv.textContent = String(pts);
+        if (pts > 0) {
+            pointsDiv.textContent = `+${pts}`;
+            pointsDiv.classList.add("positive");
+        }
+    });
+}
+
+function setupSessionResultsEditToggle() {
+    const btn = document.getElementById("sessionResultsEditToggle");
+    if (!btn || btn.dataset.init) return;
+    btn.dataset.init = "1";
+    btn.addEventListener("click", () => {
+        if (!sessionResultsLastFetched) return;
+        const meta = sessionResultsLastFetched?.meta || {};
+        const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+        if (sessionKeyLower !== "race") return;
+        sessionResultsEditMode = !sessionResultsEditMode;
+        if (!sessionResultsEditMode) {
+            manageSaveButton(false);
+        }
+        onSessionResultsFetched(sessionResultsLastFetched);
+    });
+}
+
+function setupSessionResultsCompactToggle() {
+    const btn = document.getElementById("sessionResultsCompactToggle");
+    if (!btn || btn.dataset.init) return;
+    btn.dataset.init = "1";
+    btn.addEventListener("click", () => {
+        sessionResultsCompactMode = !sessionResultsCompactMode;
+        btn.querySelector("span").textContent = sessionResultsCompactMode ? "Compacted" : "Compact";
+        const table = document.querySelector(".session-results-table");
+        if (table) table.classList.toggle("is-compact", sessionResultsCompactMode);
+    });
+}
+
+setupSessionResultsEditToggle();
+setupSessionResultsCompactToggle();
+
+//time comes in seconds.miliseconds, and I want it in hh:mm:ss.sss format (if no hh, then mm:ss.sss)
+function formatLapTime(lapTimeMs) {
+    const totalMs = Math.floor(lapTimeMs * 1000);
+    const hours = Math.floor(totalMs / 3600000);
+    const minutes = Math.floor((totalMs % 3600000) / 60000);
+    const seconds = Math.floor((totalMs % 60000) / 1000);
+    const milliseconds = totalMs % 1000;
+    //if it starts by a 0, remove it
+    if (hours > 0) {
+        return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+    }
+    else {
+        return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+    }
+    
+}
+
+function getGpDisplayName(trackId) {
+    const key = races_names?.[Number(trackId)];
+    return names_full?.[key] || key || `Track ${trackId}`;
+}
+
+function getSessionOptionsForWeekend(weekendType) {
+    const isSprint = Number(weekendType) === 1;
+    if (isSprint) {
+        return [
+            { key: "fp", label: "Free Practice" },
+            { key: "sprintquali", label: "Sprint Quali" },
+            { key: "sprintrace", label: "Sprint Race" },
+            { key: "quali", label: "Quali" },
+            { key: "race", label: "Race" }
+        ];
+    }
+    return [
+        { key: "fp1", label: "Free Practice 1" },
+        { key: "fp2", label: "Free Practice 2" },
+        { key: "fp3", label: "Free Practice 3" },
+        { key: "quali", label: "Qualifying" },
+        { key: "race", label: "Race" }
+    ];
+}
+
+function getLatestYearFromMenu() {
+    const yearMenu = document.getElementById("yearMenu");
+    const years = yearMenu
+        ? Array.from(yearMenu.querySelectorAll("a"))
+            .map(a => Number(a.dataset.year))
+            .filter(n => Number.isFinite(n))
+        : [];
+    return years.length ? Math.max(...years) : null;
+}
+
+function openSessionResultsForRace(year, raceId, sessionKey) {
+    const recordsButton = document.getElementById("recordsTypeButton");
+    if (recordsButton) {
+        recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+        recordsButton.dataset.value = "sessionresults";
+    }
+    syncRecordsTypeDropdownChecks();
+    updateTopPanelControlsVisibility();
+    showSessionResultsTable();
+    new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey }).execute();
+}
+
+async function ensureSessionResultsMenuPopulated() {
+    const gpMenu = document.getElementById("sessionResultsGpMenu");
+    if (!gpMenu) return;
+
+    const gpList = document.getElementById("sessionResultsGpList");
+    const sessionMenu = document.getElementById("sessionResultsSessionMenu");
+    if (!gpList || !sessionMenu) return;
+
+    const yearBtn = document.getElementById("yearButton");
+    const selectedYear = yearBtn?.dataset?.year;
+    if (!selectedYear || selectedYear === "all") {
+        gpList.innerHTML = "";
+        sessionMenu.classList.remove("is-open");
+        sessionMenu.innerHTML = "";
+        sessionResultsActiveGpAnchor = null;
+        sessionResultsActiveGpMeta = null;
+
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.textContent = "Select a Year";
+        gpList.appendChild(item);
+        return;
+    }
+
+    gpList.innerHTML = "";
+    sessionMenu.classList.remove("is-open");
+    sessionMenu.innerHTML = "";
+    sessionResultsActiveGpAnchor = null;
+    sessionResultsActiveGpMeta = null;
+
+    const loading = document.createElement("a");
+    loading.className = "redesigned-dropdown-item";
+    loading.textContent = "Loading...";
+    gpList.appendChild(loading);
+
+    try {
+        let events = sessionResultsEventsCache.get(selectedYear);
+        if (!Array.isArray(events)) {
+            const resp = await new Command("eventsFromRequest", { year: selectedYear, formula: 1 }).promiseExecute();
+            events = resp?.content?.events || [];
+            sessionResultsEventsCache.set(selectedYear, events);
+        }
+
+        gpList.innerHTML = "";
+        const doneEvents = (Array.isArray(events) ? events : []).filter((e) => {
+            const state = Number(e?.[3]);
+            return state === 1 || state === 2;
+        });
+
+        doneEvents.forEach((evt) => {
+            const raceId = evt?.[0];
+            const trackId = evt?.[1];
+            const weekendType = evt?.[2];
+
+            const trigger = document.createElement("a");
+            trigger.className = "redesigned-dropdown-item";
+            trigger.style.cursor = "pointer";
+
+            const label = document.createElement("span");
+            label.textContent = getGpDisplayName(trackId);
+            const chevron = document.createElement("i");
+            chevron.className = "bi bi-chevron-right";
+            trigger.appendChild(label);
+            trigger.appendChild(chevron);
+
+            trigger.addEventListener("mouseenter", () => {
+                sessionResultsActiveGpAnchor = trigger;
+                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
+                populateAndShowSessionResultsSessionMenu();
+            });
+
+            trigger.addEventListener("click", () => {
+                sessionResultsActiveGpAnchor = trigger;
+                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
+                openSessionResultsForRace(selectedYear, raceId, "race");
+            });
+
+            gpList.appendChild(trigger);
+        });
+
+        if (doneEvents.length === 0) {
+            const item = document.createElement("a");
+            item.className = "redesigned-dropdown-item";
+            item.textContent = "No completed races";
+            gpList.appendChild(item);
+        }
+
+        if (!gpMenu.dataset.sessionResultsSessionMenuInit) {
+            gpMenu.dataset.sessionResultsSessionMenuInit = "1";
+
+            const reposition = () => populateAndShowSessionResultsSessionMenu({ repositionOnly: true });
+            document.getElementById("sessionResultsGpList")?.addEventListener("scroll", reposition);
+
+            gpMenu.addEventListener("mouseleave", () => {
+                sessionMenu.classList.remove("is-open");
+                sessionResultsActiveGpAnchor = null;
+                sessionResultsActiveGpMeta = null;
+            });
+        }
+    } catch (e) {
+        gpList.innerHTML = "";
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.textContent = "Failed to load events";
+        gpList.appendChild(item);
+        console.error(e);
+    }
+}
+
+function populateAndShowSessionResultsSessionMenu(opts = {}) {
+    const sessionMenu = document.getElementById("sessionResultsSessionMenu");
+    const gpMenu = document.getElementById("sessionResultsGpMenu");
+    const gpList = document.getElementById("sessionResultsGpList");
+    if (!sessionMenu || !gpMenu || !gpList) return;
+
+    if (!sessionResultsActiveGpAnchor || !sessionResultsActiveGpMeta) {
+        sessionMenu.classList.remove("is-open");
+        return;
+    }
+
+    const { year, raceId, weekendType } = sessionResultsActiveGpMeta;
+
+    if (!opts.repositionOnly) {
+        sessionMenu.innerHTML = "";
+        const optionsAll = getSessionOptionsForWeekend(weekendType);
+        const latestYear = getLatestYearFromMenu();
+        const isLatestYear = latestYear == null ? true : Number(year) === Number(latestYear);
+        const options = isLatestYear
+            ? optionsAll
+            : optionsAll.filter((o) => o.key === "race" || (o.key === "sprintrace" && Number(weekendType) === 1));
+
+        options.forEach((opt) => {
+            const a = document.createElement("a");
+            a.className = "redesigned-dropdown-item";
+            a.style.cursor = "pointer";
+            a.textContent = opt.label;
+            a.addEventListener("click", () => {
+                openSessionResultsForRace(year, raceId, opt.key);
+            });
+            sessionMenu.appendChild(a);
+        });
+    }
+
+    // Position the session menu aligned with the hovered GP row (inside the scroll container)
+    const top = sessionResultsActiveGpAnchor.offsetTop - gpList.scrollTop;
+    sessionMenu.style.top = `${Math.max(0, top)}px`;
+    sessionMenu.classList.add("is-open");
 }
 
 function setYearButton(el) {
@@ -3497,7 +4493,7 @@ export function loadTeamRecordsList(payload) {
     });
 }
 
-document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {   
+document.querySelectorAll("#recordsTypeDropdown > a").forEach(function (elem) {   
     elem.addEventListener("click", function () {
         document.querySelector("#recordsTypeButton span").textContent = elem.textContent
         document.querySelector("#recordsTypeButton").dataset.value = elem.dataset.value
@@ -3506,6 +4502,21 @@ document.querySelectorAll("#recordsTypeDropdown a").forEach(function (elem) {
         manageRecordsSelected(null)
     })
 })
+
+document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("mouseenter", () => {
+    ensureSessionResultsMenuPopulated();
+});
+
+document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("click", () => {
+    const recordsButton = document.getElementById("recordsTypeButton");
+    if (recordsButton) {
+        recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+        recordsButton.dataset.value = "sessionresults";
+    }
+    syncRecordsTypeDropdownChecks();
+    updateTopPanelControlsVisibility();
+    manageRecordsSelected(null);
+});
 
 document.querySelector(".hide-historic-drivers").addEventListener("click", function () {
     this.classList.toggle("active");

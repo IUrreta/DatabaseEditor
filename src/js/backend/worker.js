@@ -7,6 +7,8 @@ import {
   editEngines, updateCustomConfig, fetchCustomConfig,
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
+  fetchSessionResults,
+  editRaceResults,
   getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
@@ -782,6 +784,36 @@ const workerCommands = {
   enginesRefresh: (data, postMessage) => {
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
+  },
+  eventsFromRequest: (data, postMessage) => {
+    const year = data.year;
+    const formula = data.formula ? Number(data.formula) : 1;
+    const events = fetchEventsFrom(year, formula);
+    postMessage({ responseMessage: "Events fetched", content: { year, formula, events } });
+  },
+  sessionResultsRequest: (data, postMessage) => {
+    const year = data.year;
+    const gameYear = data.gameYear;
+    const raceId = data.raceId;
+    const sessionKey = data.sessionKey;
+
+    const payload = fetchSessionResults(raceId, sessionKey, gameYear);
+    postMessage({ responseMessage: "Session results fetched", content: { year, raceId, sessionKey, ...payload } });
+  },
+  editRaceResults: (data, postMessage) => {
+    const raceId = data.raceId;
+    const edits = data.edits;
+    const res = editRaceResults(raceId, edits);
+    postMessage({
+      responseMessage: res.ok ? "Race results updated" : "Error",
+      noti_msg: res.ok ? "Race results updated" : (res.error || "Failed to update race results"),
+      unlocksDownload: true,
+      isEditCommand: true
+    });
+  },
+  pointsRegulationsRequest: (data, postMessage) => {
+    const pointsInfo = fetchPointsRegulations();
+    postMessage({ responseMessage: "Points regulations fetched", content: pointsInfo });
   }
 
 
@@ -793,10 +825,10 @@ self.addEventListener('message', async (e) => {
   const { command, data } = e.data;
   if (workerCommands[command]) {
     try {
-      await workerCommands[command](data, (response) => postMessage(response));
+      await workerCommands[command](data, (response) => postMessage({ command, ...response }));
     } catch (error) {
       console.error(`[Worker] Error executing command '${command}':`, error);
-      postMessage({ responseMessage: "Error", error: error.message });
+      postMessage({ command, responseMessage: "Error", error: error.message });
     }
   } else {
     console.error(`[Worker] Unknown command: '${command}'`);

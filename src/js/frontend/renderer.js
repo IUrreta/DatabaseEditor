@@ -5,7 +5,8 @@ import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
-    populateSeasonReview
+    populateSeasonReview,
+    onSessionResultsFetched
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
 import {
@@ -702,13 +703,19 @@ export function first_show_animation() {
     }
 }
 
-export function manageSaveButton(show, mode) {
+let saveButtonCustomHandler = null;
+
+export function manageSaveButton(show, mode, customHandler) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
     button.removeEventListener("click", regulationsModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
+    if (saveButtonCustomHandler) {
+        button.removeEventListener("click", saveButtonCustomHandler);
+        saveButtonCustomHandler = null;
+    }
 
     if (!show) {
         button.classList.add("d-none")
@@ -731,6 +738,10 @@ export function manageSaveButton(show, mode) {
     }
     else if (mode === "performance") {
         button.addEventListener("click", performanceModeHandler);
+    }
+    else if (mode === "custom" && typeof customHandler === "function") {
+        saveButtonCustomHandler = customHandler;
+        button.addEventListener("click", saveButtonCustomHandler);
     }
 }
 
@@ -1010,6 +1021,9 @@ const messageHandlers = {
     },
     "Season review data fetched": (message) => {
         populateSeasonReview(message)
+    },
+    "Session results fetched": (message) => {
+        onSessionResultsFetched(message);
     }
 };
 
