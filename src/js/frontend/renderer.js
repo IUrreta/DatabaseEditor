@@ -703,13 +703,19 @@ export function first_show_animation() {
     }
 }
 
-export function manageSaveButton(show, mode) {
+let saveButtonCustomHandler = null;
+
+export function manageSaveButton(show, mode, customHandler) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
     button.removeEventListener("click", regulationsModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
+    if (saveButtonCustomHandler) {
+        button.removeEventListener("click", saveButtonCustomHandler);
+        saveButtonCustomHandler = null;
+    }
 
     if (!show) {
         button.classList.add("d-none")
@@ -732,6 +738,10 @@ export function manageSaveButton(show, mode) {
     }
     else if (mode === "performance") {
         button.addEventListener("click", performanceModeHandler);
+    }
+    else if (mode === "custom" && typeof customHandler === "function") {
+        saveButtonCustomHandler = customHandler;
+        button.addEventListener("click", saveButtonCustomHandler);
     }
 }
 

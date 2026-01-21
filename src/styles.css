@@ -891,7 +891,8 @@ input[type="checkbox"]:focus {
 .q2-comparison::-webkit-scrollbar,
 .wins-drivers-list::-webkit-scrollbar,
 .bento-driver-standings::-webkit-scrollbar,
-#sessionResultsGpMenu::-webkit-scrollbar {
+#sessionResultsGpMenu::-webkit-scrollbar,
+#engineMenu::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -915,7 +916,8 @@ input[type="checkbox"]:focus {
 .q2-comparison::-webkit-scrollbar-thumb,
 .wins-drivers-list::-webkit-scrollbar-thumb,
 .bento-driver-standings::-webkit-scrollbar-thumb,
-#sessionResultsGpMenu::-webkit-scrollbar-thumb {
+#sessionResultsGpMenu::-webkit-scrollbar-thumb,
+#engineMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -940,8 +942,14 @@ input[type="checkbox"]:focus {
 .q2-comparison::-webkit-scrollbar-thumb:hover,
 .wins-drivers-list::-webkit-scrollbar-thumb:hover,
 .bento-driver-standings::-webkit-scrollbar-thumb:hover,
-#sessionResultsGpMenu::-webkit-scrollbar-thumb:hover {
+#sessionResultsGpMenu::-webkit-scrollbar-thumb:hover,
+#engineMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
+}
+
+#engineMenu {
+  max-height: 300px;
+  overflow-y: scroll;
 }
 
 #allDrivers {
@@ -3982,6 +3990,11 @@ phm
 .bento-grid .logo-up-down-extra, .session-results-table .logo-up-down-extra {
   padding-top: 8px;
   padding-bottom: 8px;
+}
+
+.records-list .logo-up-down-extra {
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .logo-ferrari-table,
@@ -16445,7 +16458,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 /* BENTO GRID STYLES */
 
-.main-viewer-section:has(.season-review-bento:not(.d-none)){
+.main-viewer-section:has(.season-review-bento:not(.d-none)), .main-viewer-section:has(.session-results-table:not(.d-none)) {
   background-color: transparent;
   box-shadow: none;
 }
@@ -16453,7 +16466,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-bento {
   display: flex;
   width: 100%;
-  height: 800px;
+  height: calc(100vh - 160px);
   align-items: center;
   justify-content: center;
 }
@@ -17031,6 +17044,24 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   position: relative;
   overflow: hidden;
   row-gap: 0px;
+  background-color: var(--generals);
+  box-shadow: var(--shadow-s);
+  border-top-right-radius: 10px;
+  border-top-left-radius: 10px;
+}
+
+#sessionResultsEditToggle{
+  cursor: pointer;
+}
+
+#sessionResultsCompactToggle{
+  cursor: pointer;
+}
+
+.session-results-table.is-compact{
+  width: 55vw;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .session-results-title::before{
@@ -17099,9 +17130,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   align-items: center;
   gap: 10px;
   padding: 10px 20px 10px 18px;
-  background-color: var(--table-default);
+  background-color: var(--generals);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
   text-transform: uppercase;
+  border-bottom-right-radius: 10px;
+  border-bottom-left-radius: 10px;
 }
 
 .session-results-footer-label{
@@ -17111,6 +17144,11 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   flex: 0 0 auto;
   padding-top: 5px;
   line-height: 1;
+}
+
+.session-results-footer-right{
+  margin-left: auto;
+  color: var(--text-secondary);
 }
 
 .session-results-footer-time{
@@ -17127,7 +17165,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .session-results-row{
   display: grid;
-  grid-template-columns: 42px var(--session-results-col-grid, 46px) 280px 300px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-points, 70px);
+  grid-template-columns: var(--session-results-col-drag, 0px) 42px var(--session-results-col-grid, 46px) 280px 340px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-points, 70px);
   align-items: center;
   background-color: var(--table-default);
   column-gap: 0px;
@@ -17147,6 +17185,56 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .session-results-row > .session-results-cell:last-child{
   margin-right: 0;
+}
+
+.session-results-table.is-edit{
+  --session-results-col-drag: 22px;
+}
+
+.session-results-drag{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.session-results-drag-handle{
+  cursor: grab;
+}
+
+.session-results-drag-handle:active{
+  cursor: grabbing;
+}
+
+.session-results-drag-icon{
+  width: 12px;
+  height: 18px;
+  background:
+    radial-gradient(circle, var(--text-tertiary) 1.2px, transparent 1.3px) 0 0/6px 6px;
+  opacity: 0.8;
+}
+
+.session-results-row.dragging{
+  opacity: 0.7;
+}
+
+.session-results-time-input{
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.2);
+  color: var(--text-general);
+  border-radius: 6px;
+  padding: 0px 4px;
+  font-family: 'NumbersFont', 'Formula1', sans-serif;
+  font-size: 14px;
+  letter-spacing: -1.2px;
+  text-align: center;
+  height: 20px;
+}
+
+.session-results-time-input:disabled{
+  opacity: 0.6;
 }
 
 .session-results-table.is-quali{
@@ -17206,6 +17294,12 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   min-width: 0;
 }
 
+@media (max-height: 950px) {
+  .session-results-row > div {
+    padding: 2px 8px;
+  }
+}
+
 .session-results-row:hover {
   background-color: var(--session-results-hover);
 }
@@ -17213,7 +17307,9 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .session-results-row:hover .session-results-driver-name,
 .session-results-row:hover .session-results-engine-name,
 .session-results-row:hover .session-results-fastest-lap:not(.fastest),
-.session-results-row:hover .session-results-time {
+.session-results-row:hover .session-results-time,
+.session-results-row:hover .session-results-laps,
+.session-results-row:hover .session-results-quali-lap:not(.fastest){
   color: var(--text-general);
 }
 
@@ -17225,6 +17321,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   align-items: center;
   justify-content: center;
   padding-top: 7px !important;
+  margin-left: 0px;
 }
 
 .session-results-gained-lost {
@@ -17333,7 +17430,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .session-results-quali-lap,
 .session-results-time,
 .session-results-points {
-  font-family: 'NumbersFont';
+  font-family: 'NumbersFont', 'Formula1', sans-serif;
   font-size: 14px;
   letter-spacing: -1.2px;
   display: flex;

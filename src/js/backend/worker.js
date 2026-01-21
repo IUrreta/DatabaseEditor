@@ -8,6 +8,7 @@ import {
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
   fetchSessionResults,
+  editRaceResults,
   getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
@@ -798,6 +799,21 @@ const workerCommands = {
 
     const payload = fetchSessionResults(raceId, sessionKey, gameYear);
     postMessage({ responseMessage: "Session results fetched", content: { year, raceId, sessionKey, ...payload } });
+  },
+  editRaceResults: (data, postMessage) => {
+    const raceId = data.raceId;
+    const edits = data.edits;
+    const res = editRaceResults(raceId, edits);
+    postMessage({
+      responseMessage: res.ok ? "Race results updated" : "Error",
+      noti_msg: res.ok ? "Race results updated" : (res.error || "Failed to update race results"),
+      unlocksDownload: true,
+      isEditCommand: true
+    });
+  },
+  pointsRegulationsRequest: (data, postMessage) => {
+    const pointsInfo = fetchPointsRegulations();
+    postMessage({ responseMessage: "Points regulations fetched", content: pointsInfo });
   }
 
 

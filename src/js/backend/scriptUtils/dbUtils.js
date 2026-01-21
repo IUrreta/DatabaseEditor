@@ -1925,7 +1925,7 @@ export function fetchEventsDoneBefore(year, day) {
 
 export function fetchEventsFrom(year, formula = 1) {
   const seasonEventsRows = queryDB(`
-      SELECT r.RaceID, r.TrackID, r.WeekendType, t.isF2Race, t.IsF3Race
+      SELECT r.RaceID, r.TrackID, r.WeekendType, r.State, t.isF2Race, t.IsF3Race
       FROM Races r
       LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
       WHERE r.SeasonID = ?
@@ -1933,10 +1933,10 @@ export function fetchEventsFrom(year, formula = 1) {
     `, [year], 'allRows') || [];
 
   if (Number(formula) === 2) {
-    return seasonEventsRows.filter(row => Number(row[3]) === 1);
+    return seasonEventsRows.filter(row => Number(row[4]) === 1);
   }
   if (Number(formula) === 3) {
-    return seasonEventsRows.filter(row => Number(row[4]) === 1);
+    return seasonEventsRows.filter(row => Number(row[5]) === 1);
   }
   return seasonEventsRows;
 }
@@ -2188,6 +2188,117 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
   }
 
   return { meta: { ...meta, error: "Unknown session key" }, results: [] };
+}
+
+export function editRaceResults(raceId, edits = []) {
+  const raceIdNum = Number(raceId);
+  if (!Number.isFinite(raceIdNum)) return { ok: false, error: "Invalid raceId" };
+  if (!Array.isArray(edits) || edits.length === 0) return { ok: false, error: "No edits provided" };
+
+  try {
+    queryDB(`BEGIN IMMEDIATE`, [], "run");
+
+    const rowCount = Number(queryDB(`SELECT COUNT(*) FROM Races_Results WHERE RaceID = ?`, [raceIdNum], "singleValue") ?? 0);
+    if (rowCount > 0 && edits.length !== rowCount) {
+      queryDB(`ROLLBACK`, [], "run");
+      return { ok: false, error: `Edits count (${edits.length}) does not match race entries (${rowCount}).` };
+    }
+
+    for (const edit of edits) {
+      const driverId = Number(edit?.driverId);
+      const finishingPos = Number(edit?.finishingPos);
+      const time = Number(edit?.time);
+      const dnf = Number(edit?.dnf);
+      if (!Number.isFinite(driverId) || !Number.isFinite(finishingPos) || !Number.isFinite(time) || !(dnf === 0 || dnf === 1)) {
+        queryDB(`ROLLBACK`, [], "run");
+        return { ok: false, error: "Invalid edits payload" };
+      }
+    }
+    const posSet = new Set(edits.map(e => Number(e?.finishingPos)));
+    if (posSet.size !== edits.length) {
+      queryDB(`ROLLBACK`, [], "run");
+      return { ok: false, error: "Duplicate finishing positions in edits." };
+    }
+
+    // Avoid UNIQUE constraint collisions while reordering (Season, RaceID, FinishingPos)
+    queryDB(
+      `UPDATE Races_Results SET FinishingPos = COALESCE(FinishingPos, 0) + 1000 WHERE RaceID = ?`,
+      [raceIdNum],
+      "run"
+    );
+
+    for (const edit of edits) {
+      const dnf = Number(edit.dnf) === 1 ? 1 : 0;
+      const time = dnf ? 0 : Number(edit.time);
+      queryDB(
+        `UPDATE Races_Results SET FinishingPos = ?, Time = ?, DNF = ? WHERE RaceID = ? AND DriverID = ?`,
+        [Number(edit.finishingPos), time, dnf, raceIdNum, Number(edit.driverId)],
+        "run"
+      );
+    }
+
+    // Recalculate points for the edited race
+    queryDB(`UPDATE Races_Results SET Points = 0 WHERE RaceID = ?`, [raceIdNum], "run");
+
+    const regs = fetchPointsRegulations();
+    const posPoints = new Map(
+      (Array.isArray(regs?.positionAndPoints) ? regs.positionAndPoints : [])
+        .map((r) => [Number(r?.[0]), Number(r?.[1])])
+        .filter(([p, pts]) => Number.isFinite(p) && Number.isFinite(pts))
+    );
+
+    const seasonId = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceIdNum], "singleValue");
+    const lastRaceId = seasonId != null
+      ? queryDB(`SELECT RaceID FROM Races WHERE SeasonID = ? ORDER BY Day DESC, RaceID DESC LIMIT 1`, [seasonId], "singleValue")
+      : null;
+    const isLastRace = Number(lastRaceId) === raceIdNum;
+    const doublePoints = isLastRace && Number(regs?.isLastraceDouble) === 1;
+    const flBonusEnabled = Number(regs?.fastestLapBonusPoint) === 1;
+
+    const rows = queryDB(
+      `SELECT DriverID, FinishingPos, DNF, FastestLap FROM Races_Results WHERE RaceID = ? ORDER BY FinishingPos`,
+      [raceIdNum],
+      "allRows"
+    ) || [];
+
+    let fastestDriverId = null;
+    let fastestLap = null;
+    let fastestPos = null;
+
+    for (const r of rows) {
+      const fl = Number(r?.[3]);
+      if (Number.isFinite(fl) && fl > 0 && (fastestLap == null || fl < fastestLap)) {
+        fastestLap = fl;
+        fastestDriverId = Number(r?.[0]);
+        fastestPos = Number(r?.[1]);
+      }
+    }
+
+    for (const r of rows) {
+      const driverId = Number(r?.[0]);
+      const pos = Number(r?.[1]);
+      const dnf = Number(r?.[2]) === 1;
+
+      let pts = 0;
+      if (!dnf && Number.isFinite(pos) && pos >= 1 && pos <= 11) {
+        pts = Number(posPoints.get(pos) ?? 0);
+      }
+
+      if (flBonusEnabled && fastestDriverId != null && driverId === fastestDriverId && Number(fastestPos) <= 10 && !dnf) {
+        pts += 1;
+      }
+
+      if (doublePoints) pts *= 2;
+
+      queryDB(`UPDATE Races_Results SET Points = ? WHERE RaceID = ? AND DriverID = ?`, [pts, raceIdNum, driverId], "run");
+    }
+
+    queryDB(`COMMIT`, [], "run");
+    return { ok: true };
+  } catch (e) {
+    try { queryDB(`ROLLBACK`, [], "run"); } catch (e2) { /* ignore */ }
+    return { ok: false, error: e?.message || String(e) };
+  }
 }
 
 

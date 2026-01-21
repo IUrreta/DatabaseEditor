@@ -1,6 +1,6 @@
 import { races_names, names_full, team_dict, codes_dict, countries_data, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H, queueAutoCompareDrivers } from './head2head';
-import { game_version, custom_team } from "./renderer";
+import { game_version, custom_team, manageSaveButton, new_update_notifications, updateFront } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
@@ -35,6 +35,14 @@ let driversStandingsHeightListenerAttached = false;
 const sessionResultsEventsCache = new Map();
 let sessionResultsActiveGpAnchor = null;
 let sessionResultsActiveGpMeta = null;
+let sessionResultsLastFetched = null;
+let sessionResultsEditMode = false;
+let sessionResultsDraggedRow = null;
+let sessionResultsDragRaf = 0;
+let sessionResultsDragY = 0;
+let sessionResultsPointsInfo = null;
+let sessionResultsPointsInfoPromise = null;
+let sessionResultsCompactMode = false;
 
 function ensureDropdownCheckIcons(menuEl) {
     if (!menuEl) return;
@@ -237,6 +245,18 @@ function updateTopPanelControlsVisibility() {
     const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
     const showStandingsOnlyControls = typeVal === "standings";
     const hideDriversTeamsPills = typeVal === "seasonreview" || typeVal === "sessionresults";
+
+    const editToggle = document.getElementById("sessionResultsEditToggle");
+    if (editToggle) {
+        const meta = sessionResultsLastFetched?.meta || {};
+        const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+        const showEdit = typeVal === "sessionresults" && sessionKeyLower === "race";
+        editToggle.classList.toggle("d-none", !showEdit);
+    }
+    const compactToggle = document.getElementById("sessionResultsCompactToggle");
+    if (compactToggle) {
+        compactToggle.classList.toggle("d-none", typeVal !== "sessionresults");
+    }
 
     const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
     if (driversTeamsPills) {
@@ -3164,12 +3184,13 @@ function showSessionResultsTable() {
 }
 
 export function onSessionResultsFetched(data) {
+    sessionResultsLastFetched = data;
     const meta = data?.meta || {};
     const headerMain = document.querySelector(".session-results-title-main");
     const headerSession = document.querySelector(".session-results-title-session");
-    const headerTrack = document.querySelector(".session-results-title-track");
     const headerRound = document.querySelector(".session-results-title-round");
     const titleEl = document.querySelector(".session-results-title");
+    const editToggle = document.getElementById("sessionResultsEditToggle");
     
     if (headerMain && headerSession) {
         const year = String(data?.year ?? "").trim();
@@ -3197,13 +3218,6 @@ export function onSessionResultsFetched(data) {
         headerMain.textContent = `${year} ${gpName}`.trim();
         headerSession.textContent = String(sessionLabel);
     }
-    if (headerTrack) {
-        const trackId = Number(meta?.trackId);
-        const trackCode = races_names?.[trackId];
-        const trackName = trackCode ? countries_data?.[String(trackCode)]?.track : "";
-        headerTrack.textContent = String(trackName || "");
-        headerTrack.classList.toggle("d-none", !trackName);
-    }
     if (headerRound) {
         const yearKey = String(data?.year ?? "").trim();
         const events = sessionResultsEventsCache.get(yearKey);
@@ -3229,9 +3243,21 @@ export function onSessionResultsFetched(data) {
     const rawResults = data?.results ?? data;
     const results = Array.isArray(rawResults) ? rawResults : [];
     const sessionKeyLower = String(data?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    const isMainRaceSession = sessionKeyLower === "race";
     const isRaceSession = sessionKeyLower === "race" || sessionKeyLower === "sprintrace";
     const isQualiSession = sessionKeyLower === "quali" || sessionKeyLower === "sprintquali";
     const isPracticeSession = sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3";
+    const isEditRace = sessionResultsEditMode && isMainRaceSession;
+
+    if (!isMainRaceSession && sessionResultsEditMode) {
+        sessionResultsEditMode = false;
+        manageSaveButton(false);
+    }
+    if (editToggle) editToggle.classList.toggle("d-none", !isMainRaceSession);
+    if (editToggle) {
+        const label = editToggle.querySelector("span");
+        if (label) label.textContent = sessionResultsEditMode && isMainRaceSession ? "Cancel" : "Edit";
+    }
 
     const sessionResultsTable = document.querySelector(".session-results-table");
     const hasGrid = results.some((r) => {
@@ -3248,6 +3274,8 @@ export function onSessionResultsFetched(data) {
         sessionResultsTable.classList.toggle("no-time", !hasTime);
         sessionResultsTable.classList.toggle("is-quali", isQualiSession);
         sessionResultsTable.classList.toggle("is-practice", isPracticeSession);
+        sessionResultsTable.classList.toggle("is-edit", isEditRace);
+        sessionResultsTable.classList.toggle("is-compact", sessionResultsCompactMode);
     }
 
     const leaderRow = results.find(r => Number(r?.pos) === 1) || results[0] || null;
@@ -3276,6 +3304,40 @@ export function onSessionResultsFetched(data) {
         const sessionResultRow = document.createElement("div");
         sessionResultRow.className = "session-results-row";
         if (idx % 2 === 1) sessionResultRow.classList.add("odd");
+        if (row?.driverId != null) sessionResultRow.dataset.driverid = String(row.driverId);
+        sessionResultRow.dataset.dnf = Number(row?.dnf) === 1 ? "1" : "0";
+
+        const dragDiv = document.createElement("div");
+        dragDiv.className = "session-results-drag session-results-cell";
+        const dragIcon = document.createElement("div");
+        dragIcon.className = "session-results-drag-icon";
+        dragDiv.appendChild(dragIcon);
+        if (!isEditRace) {
+            dragDiv.classList.add("hidden");
+        } else {
+            dragDiv.classList.add("session-results-drag-handle");
+            dragDiv.draggable = true;
+            dragDiv.addEventListener("dragstart", (e) => {
+                sessionResultsDraggedRow = sessionResultRow;
+                sessionResultRow.classList.add("dragging");
+                e.dataTransfer.effectAllowed = "move";
+                e.dataTransfer.setData("text/plain", "");
+            });
+            dragDiv.addEventListener("dragend", () => {
+                sessionResultRow.classList.remove("dragging");
+                sessionResultsDraggedRow = null;
+                if (sessionResultsDragRaf) {
+                    cancelAnimationFrame(sessionResultsDragRaf);
+                    sessionResultsDragRaf = 0;
+                }
+                const container = document.querySelector(".session-results-table .session-results-rows");
+                if (container) {
+                    reindexRaceEditPositions(container);
+                    updateRaceEditPoints();
+                }
+            });
+        }
+        sessionResultRow.appendChild(dragDiv);
 
         const posDiv = document.createElement("div");
         posDiv.className = "session-results-position";
@@ -3442,7 +3504,23 @@ export function onSessionResultsFetched(data) {
         const timeDiv = document.createElement("div");
         timeDiv.className = "session-results-time";
         timeDiv.classList.add("session-results-cell");
-        if (isRaceSession) {
+        if (isEditRace) {
+            const dnf = Number(row?.dnf) === 1;
+            const rowTime = Number(row?.time);
+            const input = document.createElement("input");
+            input.className = "session-results-time-input";
+            input.type = "text";
+            input.value = dnf ? "DNF" : ((Number.isFinite(rowTime) && rowTime > 0) ? formatLapTime(rowTime) : "");
+            input.placeholder = "DNF or 0:00.000";
+            input.addEventListener("input", () => {
+                const v = String(input.value || "").trim();
+                const isDnf = /^dnf$/i.test(v);
+                sessionResultRow.dataset.dnf = isDnf ? "1" : "0";
+                updateRaceEditPoints();
+            });
+            timeDiv.appendChild(input);
+        }
+        else if (isRaceSession) {
             const dnf = Number(row?.dnf) === 1;
             const rowPos = Number(row?.pos);
             const rowTime = Number(row?.time);
@@ -3489,15 +3567,51 @@ export function onSessionResultsFetched(data) {
         }
         sessionResultRow.appendChild(pointsDiv);
         if (isPracticeSession) pointsDiv.classList.add("hidden");
+        if (isEditRace) pointsDiv.dataset.static = "0";
 
         const container = document.querySelector(".session-results-table .session-results-rows");
         if (container) container.appendChild(sessionResultRow);
     });
+    
+    const rowsContainer = document.querySelector(".session-results-table .session-results-rows");
+    if (rowsContainer && !rowsContainer.dataset.sessionResultsDnDInit) {
+        rowsContainer.dataset.sessionResultsDnDInit = "1";
+        rowsContainer.addEventListener("dragover", (e) => {
+            if (!sessionResultsEditMode) return;
+            if (!sessionResultsDraggedRow) return;
+            e.preventDefault();
+            sessionResultsDragY = e.clientY;
+            if (sessionResultsDragRaf) return;
+            sessionResultsDragRaf = requestAnimationFrame(() => {
+                sessionResultsDragRaf = 0;
+                if (!sessionResultsDraggedRow) return;
+                const afterEl = getDragAfterSessionResultsRow(rowsContainer, sessionResultsDragY);
+                if (afterEl == null) {
+                    if (sessionResultsDraggedRow.nextSibling) rowsContainer.appendChild(sessionResultsDraggedRow);
+                }
+                else if (afterEl !== sessionResultsDraggedRow) {
+                    if (afterEl.previousSibling !== sessionResultsDraggedRow) {
+                        rowsContainer.insertBefore(sessionResultsDraggedRow, afterEl);
+                    }
+                }
+            });
+        });
+    }
+    if (isEditRace && rowsContainer) {
+        reindexRaceEditPositions(rowsContainer);
+        ensureSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
+        updateRaceEditPoints();
+        manageSaveButton(true, "custom", saveSessionResultsRaceEdits);
+    }
 
     const footer = document.querySelector(".session-results-footer");
     if (!footer) return;
     footer.innerHTML = "";
     footer.classList.add("d-none");
+
+    const trackId = Number(meta?.trackId);
+    const trackCode = races_names?.[trackId];
+    const trackName = trackCode ? countries_data?.[String(trackCode)]?.track : "";
 
     let fastestTime = null;
     let fastestRow = null;
@@ -3573,13 +3687,233 @@ export function onSessionResultsFetched(data) {
     footerTeamDiv.appendChild(footerEngineNameSpan);
     footer.appendChild(footerTeamDiv);
 
+    const rightDiv = document.createElement("div");
+    rightDiv.className = "session-results-footer-right";
+
     const timeDiv = document.createElement("div");
     timeDiv.className = "session-results-footer-time";
     timeDiv.textContent = formatLapTime(fastestTime);
     footer.appendChild(timeDiv);
 
+    const trackDiv = document.createElement("div");
+    trackDiv.className = "session-results-footer-track";
+    trackDiv.textContent = String(trackName || "");
+    trackDiv.classList.toggle("d-none", !trackName);
+    rightDiv.appendChild(trackDiv);
+
+    footer.appendChild(rightDiv);
+
     footer.classList.remove("d-none");
 }
+
+function getDragAfterSessionResultsRow(container, y) {
+    const rows = [...container.querySelectorAll(".session-results-row:not(.dragging)")];
+    return rows.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+            return { offset, element: child };
+        }
+        return closest;
+    }, { offset: Number.NEGATIVE_INFINITY, element: null }).element;
+}
+
+function reindexRaceEditPositions(container) {
+    const rows = Array.from(container.querySelectorAll(".session-results-row"));
+    rows.forEach((rowEl, i) => {
+        const posDiv = rowEl.querySelector(".session-results-position");
+        if (!posDiv) return;
+        const pos = i + 1;
+        posDiv.textContent = String(pos);
+        posDiv.classList.toggle("champion", pos === 1);
+        posDiv.classList.toggle("second", pos === 2);
+        posDiv.classList.toggle("third", pos === 3);
+        rowEl.classList.toggle("leader", pos === 1);
+    });
+}
+
+function parseSessionResultsTimeToSeconds(txt) {
+    const s = String(txt || "").trim();
+    if (!s || s === "-") return null;
+    if (/^dnf$/i.test(s)) return null;
+    const parts = s.split(":").map(p => p.trim());
+    if (parts.length === 3) {
+        const h = Number(parts[0]);
+        const m = Number(parts[1]);
+        const sec = Number(parts[2]);
+        if (![h, m, sec].every(Number.isFinite)) return null;
+        return h * 3600 + m * 60 + sec;
+    }
+    if (parts.length === 2) {
+        const m = Number(parts[0]);
+        const sec = Number(parts[1]);
+        if (![m, sec].every(Number.isFinite)) return null;
+        return m * 60 + sec;
+    }
+    const sec = Number(parts[0]);
+    return Number.isFinite(sec) ? sec : null;
+}
+
+async function saveSessionResultsRaceEdits() {
+    if (!sessionResultsEditMode || !sessionResultsLastFetched) return;
+    const meta = sessionResultsLastFetched?.meta || {};
+    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+    const year = String(sessionResultsLastFetched?.year ?? "").trim();
+    if (!Number.isFinite(raceId)) return;
+
+    const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
+    const timeByDriver = new Map(original.map(r => [String(r?.driverId), Number(r?.time)]));
+    const dnfByDriver = new Map(original.map(r => [String(r?.driverId), Number(r?.dnf) === 1 ? 1 : 0]));
+
+    const container = document.querySelector(".session-results-table .session-results-rows");
+    if (!container) return;
+    const rows = Array.from(container.querySelectorAll(".session-results-row"));
+    const edits = [];
+
+    for (let i = 0; i < rows.length; i++) {
+        const rowEl = rows[i];
+        const driverId = Number(rowEl.dataset.driverid);
+        if (!Number.isFinite(driverId)) continue;
+
+        const input = rowEl.querySelector(".session-results-time-input");
+        const txt = input ? input.value : "";
+        const isDnf = /^dnf$/i.test(String(txt || "").trim());
+        let dnf = isDnf ? 1 : 0;
+
+        let time = isDnf ? 0 : parseSessionResultsTimeToSeconds(txt);
+        if (time == null && !isDnf) {
+            const orig = timeByDriver.get(String(driverId));
+            time = Number.isFinite(orig) ? orig : 0;
+            dnf = dnfByDriver.get(String(driverId)) ?? 0;
+        }
+
+        edits.push({ driverId, finishingPos: i + 1, time, dnf });
+    }
+
+    try {
+        const resp = await new Command("editRaceResults", { raceId, edits }).promiseExecute();
+        await updateFront(resp);
+        sessionResultsEditMode = false;
+        manageSaveButton(false);
+        new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey: "race" }).execute();
+    } catch (e) {
+        new_update_notifications("Failed to save race results", "error");
+        console.error(e);
+    }
+}
+
+async function ensureSessionResultsPointsInfo() {
+    if (sessionResultsPointsInfo) return sessionResultsPointsInfo;
+    if (sessionResultsPointsInfoPromise) return sessionResultsPointsInfoPromise;
+    sessionResultsPointsInfoPromise = new Command("pointsRegulationsRequest", {}).promiseExecute()
+        .then((resp) => {
+            sessionResultsPointsInfo = resp?.content ?? null;
+            return sessionResultsPointsInfo;
+        })
+        .catch((e) => {
+            console.error(e);
+            return null;
+        })
+        .finally(() => {
+            sessionResultsPointsInfoPromise = null;
+        });
+    return sessionResultsPointsInfoPromise;
+}
+
+function updateRaceEditPoints() {
+    if (!sessionResultsEditMode || !sessionResultsLastFetched) return;
+    const meta = sessionResultsLastFetched?.meta || {};
+    const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    if (sessionKeyLower !== "race") return;
+
+    const container = document.querySelector(".session-results-table .session-results-rows");
+    if (!container) return;
+
+    const pointsInfo = sessionResultsPointsInfo;
+    if (!pointsInfo || !Array.isArray(pointsInfo.positionAndPoints)) return;
+
+    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+    const yearKey = String(sessionResultsLastFetched?.year ?? "").trim();
+    const events = sessionResultsEventsCache.get(yearKey);
+    const lastRaceId = Array.isArray(events) && events.length
+        ? Math.max(...events.map(e => Number(e?.[0])).filter(Number.isFinite))
+        : null;
+
+    const doublePoints = Number(pointsInfo?.isLastraceDouble) === 1 && Number.isFinite(lastRaceId) && Number(raceId) === Number(lastRaceId);
+    const flBonusEnabled = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+
+    const posToPts = new Map(pointsInfo.positionAndPoints
+        .map(r => [Number(r?.[0]), Number(r?.[1])])
+        .filter(([p, pts]) => Number.isFinite(p) && Number.isFinite(pts)));
+
+    const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
+    const flByDriver = new Map(original.map(r => [Number(r?.driverId), Number(r?.fastestLap)]));
+
+    let fastestDriverId = null;
+    let fastestLap = null;
+    for (const [driverId, fl] of flByDriver.entries()) {
+        if (Number.isFinite(fl) && fl > 0 && (fastestLap == null || fl < fastestLap)) {
+            fastestLap = fl;
+            fastestDriverId = driverId;
+        }
+    }
+
+    const rows = Array.from(container.querySelectorAll(".session-results-row"));
+    rows.forEach((rowEl, idx) => {
+        const pos = idx + 1;
+        const driverId = Number(rowEl.dataset.driverid);
+        const dnf = Number(rowEl.dataset.dnf) === 1;
+        let pts = 0;
+        if (!dnf) {
+            pts = Number(posToPts.get(pos) ?? 0);
+            if (flBonusEnabled && fastestDriverId != null && driverId === fastestDriverId && pos <= 10 && pts > 0) {
+                pts += 1;
+            }
+            if (doublePoints) pts *= 2;
+        }
+
+        const pointsDiv = rowEl.querySelector(".session-results-points");
+        if (!pointsDiv) return;
+        pointsDiv.classList.remove("positive");
+        pointsDiv.textContent = String(pts);
+        if (pts > 0) {
+            pointsDiv.textContent = `+${pts}`;
+            pointsDiv.classList.add("positive");
+        }
+    });
+}
+
+function setupSessionResultsEditToggle() {
+    const btn = document.getElementById("sessionResultsEditToggle");
+    if (!btn || btn.dataset.init) return;
+    btn.dataset.init = "1";
+    btn.addEventListener("click", () => {
+        if (!sessionResultsLastFetched) return;
+        const meta = sessionResultsLastFetched?.meta || {};
+        const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+        if (sessionKeyLower !== "race") return;
+        sessionResultsEditMode = !sessionResultsEditMode;
+        if (!sessionResultsEditMode) {
+            manageSaveButton(false);
+        }
+        onSessionResultsFetched(sessionResultsLastFetched);
+    });
+}
+
+function setupSessionResultsCompactToggle() {
+    const btn = document.getElementById("sessionResultsCompactToggle");
+    if (!btn || btn.dataset.init) return;
+    btn.dataset.init = "1";
+    btn.addEventListener("click", () => {
+        sessionResultsCompactMode = !sessionResultsCompactMode;
+        btn.querySelector("span").textContent = sessionResultsCompactMode ? "Compacted" : "Compact";
+        const table = document.querySelector(".session-results-table");
+        if (table) table.classList.toggle("is-compact", sessionResultsCompactMode);
+    });
+}
+
+setupSessionResultsEditToggle();
+setupSessionResultsCompactToggle();
 
 //time comes in seconds.miliseconds, and I want it in hh:mm:ss.sss format (if no hh, then mm:ss.sss)
 function formatLapTime(lapTimeMs) {
@@ -3621,6 +3955,28 @@ function getSessionOptionsForWeekend(weekendType) {
         { key: "quali", label: "Qualifying" },
         { key: "race", label: "Race" }
     ];
+}
+
+function getLatestYearFromMenu() {
+    const yearMenu = document.getElementById("yearMenu");
+    const years = yearMenu
+        ? Array.from(yearMenu.querySelectorAll("a"))
+            .map(a => Number(a.dataset.year))
+            .filter(n => Number.isFinite(n))
+        : [];
+    return years.length ? Math.max(...years) : null;
+}
+
+function openSessionResultsForRace(year, raceId, sessionKey) {
+    const recordsButton = document.getElementById("recordsTypeButton");
+    if (recordsButton) {
+        recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+        recordsButton.dataset.value = "sessionresults";
+    }
+    syncRecordsTypeDropdownChecks();
+    updateTopPanelControlsVisibility();
+    showSessionResultsTable();
+    new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey }).execute();
 }
 
 async function ensureSessionResultsMenuPopulated() {
@@ -3667,7 +4023,12 @@ async function ensureSessionResultsMenuPopulated() {
         }
 
         gpList.innerHTML = "";
-        events.forEach((evt) => {
+        const doneEvents = (Array.isArray(events) ? events : []).filter((e) => {
+            const state = Number(e?.[3]);
+            return state === 1 || state === 2;
+        });
+
+        doneEvents.forEach((evt) => {
             const raceId = evt?.[0];
             const trackId = evt?.[1];
             const weekendType = evt?.[2];
@@ -3689,13 +4050,19 @@ async function ensureSessionResultsMenuPopulated() {
                 populateAndShowSessionResultsSessionMenu();
             });
 
+            trigger.addEventListener("click", () => {
+                sessionResultsActiveGpAnchor = trigger;
+                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
+                openSessionResultsForRace(selectedYear, raceId, "race");
+            });
+
             gpList.appendChild(trigger);
         });
 
-        if (events.length === 0) {
+        if (doneEvents.length === 0) {
             const item = document.createElement("a");
             item.className = "redesigned-dropdown-item";
-            item.textContent = "No events found";
+            item.textContent = "No completed races";
             gpList.appendChild(item);
         }
 
@@ -3736,29 +4103,27 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
 
     if (!opts.repositionOnly) {
         sessionMenu.innerHTML = "";
-        const options = getSessionOptionsForWeekend(weekendType);
+        const optionsAll = getSessionOptionsForWeekend(weekendType);
+        const latestYear = getLatestYearFromMenu();
+        const isLatestYear = latestYear == null ? true : Number(year) === Number(latestYear);
+        const options = isLatestYear
+            ? optionsAll
+            : optionsAll.filter((o) => o.key === "race" || (o.key === "sprintrace" && Number(weekendType) === 1));
+
         options.forEach((opt) => {
             const a = document.createElement("a");
             a.className = "redesigned-dropdown-item";
             a.style.cursor = "pointer";
             a.textContent = opt.label;
             a.addEventListener("click", () => {
-                const recordsButton = document.getElementById("recordsTypeButton");
-                if (recordsButton) {
-                    recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
-                    recordsButton.dataset.value = "sessionresults";
-                }
-                syncRecordsTypeDropdownChecks();
-                updateTopPanelControlsVisibility();
-                showSessionResultsTable();
-                new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey: opt.key }).execute();
+                openSessionResultsForRace(year, raceId, opt.key);
             });
             sessionMenu.appendChild(a);
         });
     }
 
     // Position the session menu aligned with the hovered GP row (inside the scroll container)
-    const top = gpList.offsetTop + sessionResultsActiveGpAnchor.offsetTop - gpList.scrollTop;
+    const top = sessionResultsActiveGpAnchor.offsetTop - gpList.scrollTop;
     sessionMenu.style.top = `${Math.max(0, top)}px`;
     sessionMenu.classList.add("is-open");
 }
