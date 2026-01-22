@@ -75,12 +75,11 @@ export function updateRegulations(data) {
   const pointSchemes = data?.pointSchemes || {};
   for (const [schemeIdStr, rows] of Object.entries(pointSchemes)) {
     const schemeId = Number(schemeIdStr);
-    if (!Number.isFinite(schemeId) || !Array.isArray(rows)) continue;
+    if (!Array.isArray(rows)) continue;
 
     for (const r of rows) {
       const racePos = Number(r?.RacePos);
       const points = Number(r?.Points ?? 0);
-      if (!Number.isFinite(racePos)) continue;
 
       const present = isRowPresent(
         `SELECT 1 FROM Regulations_NonTechnical_PointSchemes WHERE PointScheme = ? AND RacePos = ? LIMIT 1`,
@@ -109,13 +108,12 @@ export function updateRegulations(data) {
   const partResources = data?.partResources || {};
   for (const [packageIdStr, rows] of Object.entries(partResources)) {
     const packageId = Number(packageIdStr);
-    if (!Number.isFinite(packageId) || !Array.isArray(rows)) continue;
+    if (!Array.isArray(rows)) continue;
 
     for (const r of rows) {
       const standingPos = Number(r?.StandingPos);
       const wind = Number(r?.WindTunnelBlocks ?? 0);
       const cfd = Number(r?.CfdBlocks ?? 0);
-      if (!Number.isFinite(standingPos)) continue;
 
       const present = isRowPresent(
         `SELECT 1 FROM Regulations_NonTechnical_PartResources WHERE ResourcePackage = ? AND StandingPos = ? LIMIT 1`,

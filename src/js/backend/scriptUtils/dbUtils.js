@@ -72,7 +72,6 @@ export function hexToDbArgb(hex, defaultAlpha = 255) {
 
 function clampByte(n) {
   const x = Number(n);
-  if (!Number.isFinite(x)) return 255;
   return Math.max(0, Math.min(255, Math.round(x)));
 }
 
@@ -1325,7 +1324,7 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   if (p1 && p2) {
     const p1Time = Number(p1[10]), p2Time = Number(p2[10]);
     const p1Laps = Number(p1[11]), p2Laps = Number(p2[11]);
-    if (Number.isFinite(p1Time) && Number.isFinite(p2Time) && p1Laps === p2Laps) {
+    if (p1Laps === p2Laps) {
       const gapBehind = p2Time - p1Time;
       if (gapBehind > 0) {
         const blocks = Math.floor(gapBehind / dominanceBlock);
@@ -1351,7 +1350,6 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
   const gridFactor = gridSize > 0 ? (gridSize / 20) : 1;
 
   const teamBonus = (teamRank, finishingPos) => {
-    if (!Number.isFinite(teamRank) || !Number.isFinite(finishingPos)) return 0;
     const expectedPos = (2 * teamRank - 0.5) * gridFactor; // 2 coches por equipo
     const delta = expectedPos - finishingPos; // + si rinde mejor que lo esperado
     let bonus = delta * TEAM_WEIGHT;
@@ -1375,7 +1373,7 @@ export function computeDriverOfTheDayFromRows_fast(rows, raceId, opts = {}) {
     const gain = startingPos - finishingPos;
     const ps = posScore(finishingPos);
     const tr = Number(teamRankByTeamId.get(teamId));
-    const tb = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
+    const tb = teamBonus(tr, finishingPos);
     const dominanceBonus = (finishingPos === 1) ? p1GapBonus : 0;
 
     const rand = seededRandom(Number(raceId));
@@ -1415,7 +1413,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
   if (p1 && p2) {
     const p1Time = Number(p1[10]), p2Time = Number(p2[10]);
     const p1Laps = Number(p1[11]), p2Laps = Number(p2[11]);
-    if (Number.isFinite(p1Time) && Number.isFinite(p2Time) && p1Laps === p2Laps) {
+    if (p1Laps === p2Laps) {
       const gapBehind = p2Time - p1Time; // s
       if (gapBehind > 0) {
         const blocks = Math.floor(gapBehind / 4);
@@ -1438,7 +1436,6 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
   const gridSize = validRows.length;
 
   const teamBonus = (teamRank, finishingPos) => {
-    if (!Number.isFinite(teamRank) || !Number.isFinite(finishingPos)) return 0;
     const factor = gridSize > 0 ? (gridSize / 20) : 1;
     const expectedPos = (2 * teamRank - 0.5) * factor;
     const delta = expectedPos - finishingPos;
@@ -1467,7 +1464,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     const gain = startingPos - finishingPos;
     const ps = posScore(finishingPos);
     const tr = Number(teamRankByTeamId.get(teamId));
-    const tb = Number.isFinite(tr) ? teamBonus(tr, finishingPos) : 0;
+    const tb = teamBonus(tr, finishingPos);
 
     const dominanceBonus = (finishingPos === 1) ? p1GapBonus : 0;
     const poleBonus = (startingPos === 1) ? 1.0 : 0.0;
@@ -1576,7 +1573,7 @@ function roundPercentsToTargetSum(values, opts = {}) {
 
   const rawUnits = values.map(v => {
     const unit = Math.round((Number(v) || 0) * factor * 1e12) / 1e12;
-    return Number.isFinite(unit) ? unit : 0;
+    return unit;
   });
 
   const floorUnits = rawUnits.map(u => Math.floor(u));
@@ -1718,7 +1715,7 @@ export function fetchTeamMateQualiRaceHeadToHead(season) {
 
   const normalizePos = (pos) => {
     const n = Number(pos);
-    if (!Number.isFinite(n) || n <= 0 || n === 99) return 999;
+    if (n <= 0 || n === 99) return 999;
     return n;
   };
 
@@ -1740,7 +1737,6 @@ export function fetchTeamMateQualiRaceHeadToHead(season) {
     const ids = [];
     for (const r of rows) {
       const id = Number(r[0]);
-      if (!Number.isFinite(id)) continue;
       if (!ids.includes(id)) ids.push(id);
       if (ids.length >= 2) break;
     }
@@ -1964,10 +1960,6 @@ export function fetchLastCompletedRaceId(year, formula = 1) {
 function fetchPracticeResultsRows(raceId, practiceSession = 1) {
   const raceIdNum = Number(raceId);
   const sessionNum = Number(practiceSession);
-
-  if (!Number.isFinite(raceIdNum) || !Number.isFinite(sessionNum)) {
-    return { rows: [], error: "Invalid practice results query params." };
-  }
 
   const rows = queryDB(`
     SELECT
@@ -2193,7 +2185,6 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
 
 function recalculateF1StandingsForSeason(seasonId) {
   const seasonNum = Number(seasonId);
-  if (!Number.isFinite(seasonNum)) return;
 
   const driverRows = queryDB(
     `SELECT DriverID, Position FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1`,
@@ -2206,9 +2197,8 @@ function recalculateF1StandingsForSeason(seasonId) {
   driverRows.forEach((r) => {
     const driverId = Number(r?.[0]);
     const pos = Number(r?.[1]);
-    if (!Number.isFinite(driverId)) return;
     driverIds.push(driverId);
-    if (Number.isFinite(pos)) existingDriverPos.set(driverId, pos);
+    existingDriverPos.set(driverId, pos);
   });
 
   const racePointsRows = queryDB(
@@ -2257,22 +2247,19 @@ function recalculateF1StandingsForSeason(seasonId) {
   racePointsRows.forEach((r) => {
     const driverId = Number(r?.[0]);
     const pts = Number(r?.[1] ?? 0);
-    if (!Number.isFinite(driverId)) return;
-    pointsByDriver.set(driverId, Number.isFinite(pts) ? pts : 0);
+    pointsByDriver.set(driverId, pts);
   });
   sprintPointsRows.forEach((r) => {
     const driverId = Number(r?.[0]);
     const pts = Number(r?.[1] ?? 0);
-    if (!Number.isFinite(driverId)) return;
     const prev = Number(pointsByDriver.get(driverId) ?? 0);
-    pointsByDriver.set(driverId, prev + (Number.isFinite(pts) ? pts : 0));
+    pointsByDriver.set(driverId, prev + pts);
   });
   qualiPointsRows.forEach((r) => {
     const driverId = Number(r?.[0]);
     const pts = Number(r?.[1] ?? 0);
-    if (!Number.isFinite(driverId)) return;
     const prev = Number(pointsByDriver.get(driverId) ?? 0);
-    pointsByDriver.set(driverId, prev + (Number.isFinite(pts) ? pts : 0));
+    pointsByDriver.set(driverId, prev + pts);
   });
 
   const finishCountsRows = queryDB(
@@ -2291,9 +2278,8 @@ function recalculateF1StandingsForSeason(seasonId) {
     const driverId = Number(r?.[0]);
     const finPos = Number(r?.[1]);
     const cnt = Number(r?.[2] ?? 0);
-    if (!Number.isFinite(driverId) || !Number.isFinite(finPos)) return;
     if (!countsByDriver.has(driverId)) countsByDriver.set(driverId, new Map());
-    countsByDriver.get(driverId).set(finPos, Number.isFinite(cnt) ? cnt : 0);
+    countsByDriver.get(driverId).set(finPos, cnt);
   });
 
   const sortedDrivers = driverIds.slice().sort((a, b) => {
@@ -2336,9 +2322,8 @@ function recalculateF1StandingsForSeason(seasonId) {
   teamRows.forEach((r) => {
     const teamId = Number(r?.[0]);
     const pos = Number(r?.[1]);
-    if (!Number.isFinite(teamId)) return;
     teamIds.push(teamId);
-    if (Number.isFinite(pos)) existingTeamPos.set(teamId, pos);
+    existingTeamPos.set(teamId, pos);
   });
 
   const raceTeamPointsRows = queryDB(
@@ -2387,22 +2372,19 @@ function recalculateF1StandingsForSeason(seasonId) {
   raceTeamPointsRows.forEach((r) => {
     const teamId = Number(r?.[0]);
     const pts = Number(r?.[1] ?? 0);
-    if (!Number.isFinite(teamId)) return;
-    pointsByTeam.set(teamId, Number.isFinite(pts) ? pts : 0);
+    pointsByTeam.set(teamId, pts);
   });
   sprintTeamPointsRows.forEach((r) => {
     const teamId = Number(r?.[0]);
     const pts = Number(r?.[1] ?? 0);
-    if (!Number.isFinite(teamId)) return;
     const prev = Number(pointsByTeam.get(teamId) ?? 0);
-    pointsByTeam.set(teamId, prev + (Number.isFinite(pts) ? pts : 0));
+    pointsByTeam.set(teamId, prev + pts);
   });
   qualiTeamPointsRows.forEach((r) => {
     const teamId = Number(r?.[0]);
     const pts = Number(r?.[1] ?? 0);
-    if (!Number.isFinite(teamId)) return;
     const prev = Number(pointsByTeam.get(teamId) ?? 0);
-    pointsByTeam.set(teamId, prev + (Number.isFinite(pts) ? pts : 0));
+    pointsByTeam.set(teamId, prev + pts);
   });
 
   const teamFinishCountsRows = queryDB(
@@ -2421,9 +2403,8 @@ function recalculateF1StandingsForSeason(seasonId) {
     const teamId = Number(r?.[0]);
     const finPos = Number(r?.[1]);
     const cnt = Number(r?.[2] ?? 0);
-    if (!Number.isFinite(teamId) || !Number.isFinite(finPos)) return;
     if (!countsByTeam.has(teamId)) countsByTeam.set(teamId, new Map());
-    countsByTeam.get(teamId).set(finPos, Number.isFinite(cnt) ? cnt : 0);
+    countsByTeam.get(teamId).set(finPos, cnt);
   });
 
   const sortedTeams = teamIds.slice().sort((a, b) => {
@@ -2459,7 +2440,6 @@ function recalculateF1StandingsForSeason(seasonId) {
 
 export function editRaceResults(raceId, edits = []) {
   const raceIdNum = Number(raceId);
-  if (!Number.isFinite(raceIdNum)) return { ok: false, error: "Invalid raceId" };
   if (!Array.isArray(edits) || edits.length === 0) return { ok: false, error: "No edits provided" };
 
   try {
@@ -2476,7 +2456,7 @@ export function editRaceResults(raceId, edits = []) {
       const finishingPos = Number(edit?.finishingPos);
       const time = Number(edit?.time);
       const dnf = Number(edit?.dnf);
-      if (!Number.isFinite(driverId) || !Number.isFinite(finishingPos) || !Number.isFinite(time) || !(dnf === 0 || dnf === 1)) {
+      if (!(dnf === 0 || dnf === 1)) {
         queryDB(`ROLLBACK`, [], "run");
         return { ok: false, error: "Invalid edits payload" };
       }
@@ -2511,7 +2491,6 @@ export function editRaceResults(raceId, edits = []) {
     const posPoints = new Map(
       (Array.isArray(regs?.positionAndPoints) ? regs.positionAndPoints : [])
         .map((r) => [Number(r?.[0]), Number(r?.[1])])
-        .filter(([p, pts]) => Number.isFinite(p) && Number.isFinite(pts))
     );
 
     const seasonId = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceIdNum], "singleValue");
@@ -2534,7 +2513,7 @@ export function editRaceResults(raceId, edits = []) {
 
     for (const r of rows) {
       const fl = Number(r?.[3]);
-      if (Number.isFinite(fl) && fl > 0 && (fastestLap == null || fl < fastestLap)) {
+      if (fl > 0 && (fastestLap == null || fl < fastestLap)) {
         fastestLap = fl;
         fastestDriverId = Number(r?.[0]);
         fastestPos = Number(r?.[1]);
@@ -2547,7 +2526,7 @@ export function editRaceResults(raceId, edits = []) {
       const dnf = Number(r?.[2]) === 1;
 
       let pts = 0;
-      if (!dnf && Number.isFinite(pos) && pos >= 1 && pos <= 11) {
+      if (!dnf && pos >= 1 && pos <= 11) {
         pts = Number(posPoints.get(pos) ?? 0);
       }
 
@@ -2656,7 +2635,7 @@ function formatSeasonResultsF2F3(
     base.qualifyingPoints = qualiRow[1] ?? 0;
     base.startingPos = qualiPos;
     const invertLimit = Number(formula) === 2 ? 10 : (Number(formula) === 3 ? 12 : 0);
-    if (invertLimit > 0 && Number.isFinite(Number(qualiPos))) {
+    if (invertLimit > 0) {
       const qPos = Number(qualiPos);
       base.sprintQualiPos = (qPos > 0 && qPos <= invertLimit) ? (invertLimit + 1 - qPos) : qPos;
     } else {
@@ -3162,7 +3141,7 @@ export function fetchJuniorTeamDriverNames(teamId) {
 
   rows.forEach(([firstName, lastName, posInTeam]) => {
     const pos = Number(posInTeam);
-    if (!Number.isFinite(pos) || pos < 1 || pos > maxCars) return;
+    if (pos < 1 || pos > maxCars) return;
     if (byPos.has(pos)) return;
 
     const name = formatStaffNameFromLocKeys(firstName, lastName);

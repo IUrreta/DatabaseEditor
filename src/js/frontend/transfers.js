@@ -721,7 +721,7 @@ export function manage_modal(info) {
         const juniorTeamId = Number(info[2][6]);
         const juniorButton = document.getElementById("juniorTeamContractButton");
         const posInput = document.getElementById("juniorPosInTeam");
-        if (juniorButton && Number.isFinite(juniorTeamId)) {
+        if (juniorButton) {
             juniorTeamIdActive = juniorTeamId;
             juniorContractDirty = false;
             juniorButton.dataset.teamid = String(juniorTeamId);
@@ -731,7 +731,7 @@ export function manage_modal(info) {
             setJuniorPosInputLimits(juniorTeamId);
             if (posInput) {
                 const pos = Number(info[2][5]);
-                posInput.value = Number.isFinite(pos) ? String(pos) : "1";
+                posInput.value = String(pos);
             }
 
             const listDiv = document.querySelector(".junior-team-drivers-list");
@@ -806,10 +806,6 @@ function setJuniorPosInputLimits(teamId) {
     input.max = String(maxCars);
 
     const current = Number(input.value || 1);
-    if (!Number.isFinite(current)) {
-        input.value = "1";
-        return;
-    }
     input.value = String(Math.min(maxCars, Math.max(1, current)));
 }
 
@@ -824,7 +820,6 @@ function renderJuniorDriversList() {
     const driversByPos = new Map();
     (juniorTeamDrivers || []).forEach((d) => {
         const pos = Number(d?.posInTeam);
-        if (!Number.isFinite(pos)) return;
         driversByPos.set(pos, d?.name || "Free driver");
     });
 
@@ -937,7 +932,7 @@ function ensureJuniorTeamDropdownBuilt() {
             const max = Number(posInput.max || 1);
             const min = Number(posInput.min || 1);
             const cur = Number(posInput.value || min);
-            const normalized = Number.isFinite(cur) ? cur : min;
+            const normalized = cur;
 
             let next = normalized + delta;
             if (next > max) next = min;
@@ -961,10 +956,8 @@ export function loadJuniorTeamDrivers(payload) {
     if (!listDiv) return;
 
     const teamId = Number(payload?.teamID);
-    if (Number.isFinite(teamId)) {
-        juniorTeamIdActive = teamId;
-        setJuniorPosInputLimits(teamId);
-    }
+    juniorTeamIdActive = teamId;
+    setJuniorPosInputLimits(teamId);
 
     juniorTeamDrivers = Array.isArray(payload?.driverNames) ? payload.driverNames : [];
     renderJuniorDriversList();
@@ -1021,7 +1014,6 @@ function formatNumber(num) {
 
 function formatPosInTeamFutureLabel(pos) {
     const n = Math.trunc(Number(pos));
-    if (!Number.isFinite(n)) return "";
     if (n === 1) return "Car 1";
     if (n === 2) return "Car 2";
     return `Reserve ${n}`;
@@ -1041,12 +1033,8 @@ function getPosInTeamFutureValue(input) {
     if (!input) return NaN;
 
     const parsed = parsePosInTeamFutureValue(input.value);
-    if (Number.isFinite(parsed)) return parsed;
-
     const fromDataset = Number(input.dataset.posValue);
-    if (Number.isFinite(fromDataset)) return fromDataset;
-
-    return 1;
+    return parsed || fromDataset || 1;
 }
 
 function setPosInTeamFutureValue(input, pos, opts = {}) {
@@ -1056,9 +1044,8 @@ function setPosInTeamFutureValue(input, pos, opts = {}) {
     const max = input.max !== "" ? Number(input.max) : Infinity;
 
     let next = Math.trunc(Number(pos));
-    if (!Number.isFinite(next)) next = 1;
-    if (Number.isFinite(min)) next = Math.max(min, next);
-    if (Number.isFinite(max)) next = Math.min(max, next);
+    next = Math.max(min, next);
+    next = Math.min(max, next);
 
     input.dataset.posValue = String(next);
     input.value = formatPosInTeamFutureLabel(next);
@@ -1172,14 +1159,14 @@ function attachHoldWithAttrClamp(btn, input, step, opts = {}) {
         max: Infinity,
         format,
         onChange: (val) => {
-            if (typeof val !== "number" || !Number.isFinite(val)) return;
+            if (typeof val !== "number") return;
 
             const min = input.min !== "" ? Number(input.min) : -Infinity;
             const max = input.max !== "" ? Number(input.max) : Infinity;
             let clamped = val;
 
-            if (Number.isFinite(min)) clamped = Math.max(min, clamped);
-            if (Number.isFinite(max)) clamped = Math.min(max, clamped);
+            clamped = Math.max(min, clamped);
+            clamped = Math.min(max, clamped);
 
             if (clamped === val) return;
 

@@ -143,10 +143,6 @@ function setStandingsPositionChange(changeDiv, lastPositionChange) {
 function setStandingsPointsGap(gapDiv, gapToLeader) {
     if (!gapDiv) return;
     const gap = Number(gapToLeader);
-    if (!Number.isFinite(gap)) {
-        gapDiv.textContent = "";
-        return;
-    }
     gapDiv.textContent = gap === 0 ? "0" : `+${Math.max(0, gap)}`;
 }
 
@@ -360,7 +356,7 @@ function updateSeriesControls() {
 document.querySelectorAll("#seriesTypeDropdown a").forEach(function (elem) {    
     elem.addEventListener("click", function () {
         const value = parseInt(elem.dataset.value, 10)
-        currentFormula = Number.isFinite(value) ? value : 1
+        currentFormula = value
         const seriesButton = document.getElementById("seriesTypeButton")        
         seriesButton.querySelector("span.dropdown-label").textContent = elem.textContent
         seriesButton.dataset.value = elem.dataset.value
@@ -1174,7 +1170,7 @@ export function new_load_teams_table(data) {
         }
     });
 
-    const needsFallbackPositions = teamRows.some(team => !Number.isFinite(Number(team.pos)));
+    const needsFallbackPositions = false;
     const sortByPoints = currentFormula !== 1 || needsFallbackPositions;
     if (sortByPoints) {
         const sorted = [...teamRows].sort((a, b) => b.points - a.points);
@@ -1209,7 +1205,7 @@ export function new_load_teams_table(data) {
 
 function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows = []) {
     const sortedTeams = [...teamRows]
-        .filter(team => team && Number.isFinite(Number(team.pos)))
+        .filter(team => team)
         .sort((a, b) => Number(a.pos) - Number(b.pos));
 
     const leaderTeam = sortedTeams.find(team => Number(team.pos) === 1) || sortedTeams[0];
@@ -1333,7 +1329,7 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
     const safePoints = (v) => {
         if (v === -1) return 0; // DNF → 0 puntos
         const n = parseInt(v);
-        return Number.isFinite(n) ? Math.max(0, n) : 0;
+        return Math.max(0, n);
     };
 
     const pickTopEntries = (pair) => {
@@ -1777,7 +1773,7 @@ function new_addDriver(driver, races_done, odd) {
                 const racePointsRaw = parseInt(race.points);
                 const featurePoints = racePointsRaw === -1
                     ? -1
-                    : (Number.isFinite(racePointsRaw) ? racePointsRaw : 0) + Math.max(0, qualiPoints);
+                    : racePointsRaw + Math.max(0, qualiPoints);
                 const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
                 const hasSprintPos = typeof race.sprintPos !== "undefined" && race.sprintPos !== null;
 
@@ -2321,7 +2317,7 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     const parseHeadToHead = (value) => {
         if (typeof value === "string") {
             const parts = value.split("-").map(x => parseInt(x, 10));
-            if (parts.length === 2 && parts.every(n => Number.isFinite(n))) {
+            if (parts.length === 2) {
                 return parts;
             }
         }
@@ -2338,9 +2334,7 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
         teamsStandings.forEach((row) => {
             const teamId = Number(Array.isArray(row) ? row[0] : (row?.TeamID ?? row?.teamId));
             const pos = Number(Array.isArray(row) ? row[1] : (row?.Position ?? row?.position));
-            if (Number.isFinite(teamId) && Number.isFinite(pos)) {
-                teamPositionById.set(teamId, pos);
-            }
+            teamPositionById.set(teamId, pos);
         });
     }
 
@@ -2378,7 +2372,7 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
         score1Div.textContent = String(score1);
         row.appendChild(score1Div);
 
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
@@ -2401,7 +2395,7 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
 
         const driver1Id = Number(item?.driver1Id ?? item?.Driver1ID ?? item?.Driver1Id);
         const driver2Id = Number(item?.driver2Id ?? item?.Driver2ID ?? item?.Driver2Id);
-        if (Number.isFinite(driver1Id) && Number.isFinite(driver2Id)) {
+        if (driver1Id > 0 && driver2Id > 0) {
             row.addEventListener("click", () => startH2HFromSeasonReview(driver1Id, driver2Id));
         }
 
@@ -2411,13 +2405,13 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     ordered.forEach((item) => {
         let race1 = Number(item?.raceAhead1);
         let race2 = Number(item?.raceAhead2);
-        if (!Number.isFinite(race1) || !Number.isFinite(race2)) {
+        if (!race1 && !race2) {
             [race1, race2] = parseHeadToHead(item?.raceHeadToHead);
         }
 
         let quali1 = Number(item?.qualiAhead1);
         let quali2 = Number(item?.qualiAhead2);
-        if (!Number.isFinite(quali1) || !Number.isFinite(quali2)) {
+        if (!quali1 && !quali2) {
             [quali1, quali2] = parseHeadToHead(item?.qualiHeadToHead);
         }
 
@@ -2437,9 +2431,7 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
     let championClinched = false;
     if (isF1 && data.length > 1 && meta && Array.isArray(meta.events) && meta.events.length > 0 && meta.pointsInfo) {
         const lastRaceDoneId = Number(meta.lastRaceDoneId);
-        const lastRaceIndex = Number.isFinite(lastRaceDoneId)
-            ? meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId)
-            : -1;
+        const lastRaceIndex = meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId);
 
         if (lastRaceIndex >= 0) {
             const racesLeft = meta.events.length - (lastRaceIndex + 1);
@@ -2469,7 +2461,7 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
         driverDiv.appendChild(posDiv);
 
         const teamId = Number(driver.TeamID ?? driver.teamId ?? driver.teamID ?? driver.TeamId ?? -1);
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1,
                 wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
@@ -2565,9 +2557,7 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
     let championClinched = false;
     if (currentFormula === 1 && data.length > 1 && meta && Array.isArray(meta.events) && meta.events.length > 0 && meta.pointsInfo) {
         const lastRaceDoneId = Number(meta.lastRaceDoneId);
-        const lastRaceIndex = Number.isFinite(lastRaceDoneId)
-            ? meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId)
-            : -1;
+        const lastRaceIndex = meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId);
 
         if (lastRaceIndex >= 0) {
             const racesLeft = meta.events.length - (lastRaceIndex + 1);
@@ -2606,7 +2596,7 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
         teamDiv.appendChild(posDiv);
 
         const teamId = Number(teamObj.TeamID ?? teamObj.teamId ?? teamObj.teamID ?? teamObj.TeamId ?? -1);
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div season-review-team-logo-div"
@@ -2670,7 +2660,7 @@ function populateQualifyingAnalysisSeasonReview(data) {
         posDiv.textContent = String(position);
         row.appendChild(posDiv);
 
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
@@ -2771,7 +2761,7 @@ function populateWinsDriversSeasonReview(data) {
         row.appendChild(posDiv);
 
         const teamId = Number(record?.teamId ?? -1);
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
@@ -2848,8 +2838,8 @@ function populateTeamsAggregateSeasonReview(driverRecords, containerSelector, li
     driverRecords.forEach((rec) => {
         const teamId = Number(rec?.teamId ?? -1);
         const value = Number(rec?.value ?? 0);
-        if (!Number.isFinite(teamId) || teamId === -1) return;
-        if (!Number.isFinite(value) || value <= 0) return;
+        if (teamId === -1) return;
+        if (value <= 0) return;
         totalsByTeamId.set(teamId, (totalsByTeamId.get(teamId) || 0) + value);
     });
 
@@ -2912,7 +2902,7 @@ function populateDriverOfTheDaySeasonReview(data) {
         row.appendChild(posDiv);
 
         const teamId = Number(d?.teamId ?? -1);
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
@@ -2945,8 +2935,8 @@ function computeTeamTotalsFromDriverRecords(driverRecords) {
     (driverRecords || []).forEach((rec) => {
         const teamId = Number(rec?.teamId ?? -1);
         const value = Number(rec?.value ?? 0);
-        if (!Number.isFinite(teamId) || teamId === -1) return;
-        if (!Number.isFinite(value) || value <= 0) return;
+        if (teamId === -1) return;
+        if (value <= 0) return;
         totalsByTeamId.set(teamId, (totalsByTeamId.get(teamId) || 0) + value);
     });
 
@@ -3060,7 +3050,7 @@ function populatePodiumsDriversSeasonReview(podiumsRecords) {
         row.appendChild(posDiv);
 
         const teamId = Number(record?.teamId ?? -1);
-        if (Number.isFinite(teamId) && teamId !== -1) {
+        if (teamId !== -1) {
             const logoDiv = buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div season-review-driver-logo-div"
@@ -3262,11 +3252,11 @@ export function onSessionResultsFetched(data) {
     const sessionResultsTable = document.querySelector(".session-results-table");
     const hasGrid = results.some((r) => {
         const grid = Number(r?.grid);
-        return Number.isFinite(grid) && grid > 0;
+        return grid > 0;
     });
     const hasTime = results.some((r) => {
         const time = Number(r?.time);
-        return Number.isFinite(time) && time > 0;
+        return time > 0;
     });
 
     if (sessionResultsTable) {
@@ -3284,20 +3274,20 @@ export function onSessionResultsFetched(data) {
 
     const fastestLapBest = results
         .map(r => Number(r?.fastestLap))
-        .filter(v => Number.isFinite(v) && v > 0)
+        .filter(v => v > 0)
         .reduce((min, v) => (min == null || v < min ? v : min), null);
 
     const q1Best = results
         .map(r => Number(r?.q1FastestLap))
-        .filter(v => Number.isFinite(v) && v > 0)
+        .filter(v => v > 0)
         .reduce((min, v) => (min == null || v < min ? v : min), null);
     const q2Best = results
         .map(r => Number(r?.q2FastestLap))
-        .filter(v => Number.isFinite(v) && v > 0)
+        .filter(v => v > 0)
         .reduce((min, v) => (min == null || v < min ? v : min), null);
     const q3Best = results
         .map(r => Number(r?.q3FastestLap))
-        .filter(v => Number.isFinite(v) && v > 0)
+        .filter(v => v > 0)
         .reduce((min, v) => (min == null || v < min ? v : min), null);
 
     results.forEach((row, idx) => {
@@ -3343,20 +3333,15 @@ export function onSessionResultsFetched(data) {
         posDiv.className = "session-results-position";
         posDiv.classList.add("session-results-cell");
         const pos = Number(row?.pos);
-        if (Number.isFinite(pos)) {
-            posDiv.textContent = String(pos);
-            if (pos === 1) sessionResultRow.classList.add("leader");
-            if (pos === 1) posDiv.classList.add("champion");
-            else if (pos === 2) posDiv.classList.add("second");
-            else if (pos === 3) posDiv.classList.add("third");
-            if (isQualiSession) {
-                const q2CutPos = custom_team ? 16 : 15;
-                if (pos === q2CutPos) sessionResultRow.classList.add("quali-cut-q2");
-                if (pos === 10) sessionResultRow.classList.add("quali-cut-q3");
-            }
-        }
-        else {
-            posDiv.textContent = row?.pos ?? "";
+        posDiv.textContent = String(pos);
+        if (pos === 1) sessionResultRow.classList.add("leader");
+        if (pos === 1) posDiv.classList.add("champion");
+        else if (pos === 2) posDiv.classList.add("second");
+        else if (pos === 3) posDiv.classList.add("third");
+        if (isQualiSession) {
+            const q2CutPos = custom_team ? 16 : 15;
+            if (pos === q2CutPos) sessionResultRow.classList.add("quali-cut-q2");
+            if (pos === 10) sessionResultRow.classList.add("quali-cut-q3");
         }
         sessionResultRow.appendChild(posDiv);
 
@@ -3370,13 +3355,13 @@ export function onSessionResultsFetched(data) {
         gainedLostDiv.appendChild(gainedLostIcon);
 
         const grid = Number(row?.grid);
-        const gained = Number.isFinite(grid) && Number.isFinite(pos) ? (grid - pos) : null;
-        if (Number.isFinite(gained) && gained > 0) {
+        const gained = grid - pos;
+        if (gained > 0) {
             gainedLostNumber.textContent = `+${gained}`;
             gainedLostIcon.className = "bi bi-caret-up-fill";
             gainedLostDiv.classList.add("up");
         }
-        else if (Number.isFinite(gained) && gained < 0) {
+        else if (gained < 0) {
             gainedLostNumber.textContent = String(gained);
             gainedLostIcon.className = "bi bi-caret-down-fill";
             gainedLostDiv.classList.add("down");
@@ -3420,7 +3405,7 @@ export function onSessionResultsFetched(data) {
         teamDiv.className = "session-results-team";
         teamDiv.classList.add("session-results-cell");
 
-        const logoDiv = Number.isFinite(teamId) && teamId !== -1
+        const logoDiv = teamId !== -1
             ? buildDriverLogoDiv(teamId, {
                 isF1: true,
                 wrapperClass: "drivers-table-logo-div session-results-driver-logo-div"
@@ -3434,13 +3419,13 @@ export function onSessionResultsFetched(data) {
 
         const teamNameSpan = document.createElement("span");
         teamNameSpan.className = "session-results-team-name";
-        teamNameSpan.textContent = (Number.isFinite(teamId) && teamId !== -1) ? (combined_dict?.[teamId] ?? "") : "";
+        teamNameSpan.textContent = (teamId !== -1) ? (combined_dict?.[teamId] ?? "") : "";
         teamNameSpan.textContent = String(teamNameSpan.textContent || "").toUpperCase();
         teamDiv.appendChild(teamNameSpan);
 
         const engineNameSpan = document.createElement("span");
         engineNameSpan.className = "session-results-engine-name";
-        if (currentFormula === 1 && Number.isFinite(teamId) && teamId !== -1) {
+        if (currentFormula === 1 && teamId !== -1) {
             const engineId = engine_allocations?.[teamId];
             const engineName = engineId != null ? engine_names?.[engineId] : "";
             engineNameSpan.textContent = String(engineName || "").toUpperCase();
@@ -3457,8 +3442,8 @@ export function onSessionResultsFetched(data) {
         q1Div.className = "session-results-quali-lap session-results-q1";
         q1Div.classList.add("session-results-cell");
         const q1 = Number(row?.q1FastestLap);
-        q1Div.innerText = Number.isFinite(q1) && q1 > 0 ? formatLapTime(q1) : "-";
-        if (q1Best != null && Number.isFinite(q1) && q1 > 0 && Math.abs(q1 - q1Best) < 1e-6) q1Div.classList.add("fastest");
+        q1Div.innerText = q1 > 0 ? formatLapTime(q1) : "-";
+        if (q1Best != null && q1 > 0 && Math.abs(q1 - q1Best) < 1e-6) q1Div.classList.add("fastest");
         if (!isQualiSession) q1Div.classList.add("hidden");
         sessionResultRow.appendChild(q1Div);
 
@@ -3466,8 +3451,8 @@ export function onSessionResultsFetched(data) {
         q2Div.className = "session-results-quali-lap session-results-q2";
         q2Div.classList.add("session-results-cell");
         const q2 = Number(row?.q2FastestLap);
-        q2Div.innerText = Number.isFinite(q2) && q2 > 0 ? formatLapTime(q2) : "-";
-        if (q2Best != null && Number.isFinite(q2) && q2 > 0 && Math.abs(q2 - q2Best) < 1e-6) q2Div.classList.add("fastest");
+        q2Div.innerText = q2 > 0 ? formatLapTime(q2) : "-";
+        if (q2Best != null && q2 > 0 && Math.abs(q2 - q2Best) < 1e-6) q2Div.classList.add("fastest");
         if (!isQualiSession) q2Div.classList.add("hidden");
         sessionResultRow.appendChild(q2Div);
 
@@ -3475,8 +3460,8 @@ export function onSessionResultsFetched(data) {
         q3Div.className = "session-results-quali-lap session-results-q3";
         q3Div.classList.add("session-results-cell");
         const q3 = Number(row?.q3FastestLap);
-        q3Div.innerText = Number.isFinite(q3) && q3 > 0 ? formatLapTime(q3) : "-";
-        if (q3Best != null && Number.isFinite(q3) && q3 > 0 && Math.abs(q3 - q3Best) < 1e-6) q3Div.classList.add("fastest");
+        q3Div.innerText = q3 > 0 ? formatLapTime(q3) : "-";
+        if (q3Best != null && q3 > 0 && Math.abs(q3 - q3Best) < 1e-6) q3Div.classList.add("fastest");
         if (!isQualiSession) q3Div.classList.add("hidden");
         sessionResultRow.appendChild(q3Div);
 
@@ -3484,7 +3469,7 @@ export function onSessionResultsFetched(data) {
         lapsDiv.className = "session-results-laps";
         lapsDiv.classList.add("session-results-cell");
         const laps = Number(row?.laps);
-        lapsDiv.innerText = Number.isFinite(laps) && laps >= 0 ? String(laps) : "-";
+        lapsDiv.innerText = laps >= 0 ? String(laps) : "-";
         if (!isPracticeSession) lapsDiv.classList.add("hidden");
         sessionResultRow.appendChild(lapsDiv);
 
@@ -3492,7 +3477,7 @@ export function onSessionResultsFetched(data) {
         fastestLapDiv.className = "session-results-fastest-lap";
         fastestLapDiv.classList.add("session-results-cell");
         const fl = Number(row?.fastestLap);
-        if (Number.isFinite(fl) && fl > 0) {
+        if (fl > 0) {
             fastestLapDiv.innerText = formatLapTime(fl);
             if (fastestLapBest != null && Math.abs(fl - fastestLapBest) < 1e-6) {
                 fastestLapDiv.classList.add("fastest");
@@ -3510,7 +3495,7 @@ export function onSessionResultsFetched(data) {
             const input = document.createElement("input");
             input.className = "session-results-time-input";
             input.type = "text";
-            input.value = dnf ? "DNF" : ((Number.isFinite(rowTime) && rowTime > 0) ? formatLapTime(rowTime) : "");
+            input.value = dnf ? "DNF" : ((rowTime > 0) ? formatLapTime(rowTime) : "");
             input.placeholder = "DNF or 0:00.000";
             input.addEventListener("input", () => {
                 const v = String(input.value || "").trim();
@@ -3529,13 +3514,13 @@ export function onSessionResultsFetched(data) {
             if (dnf) {
                 timeDiv.innerText = "-";
             }
-            else if (Number.isFinite(leaderLaps) && Number.isFinite(rowLaps) && rowLaps < leaderLaps) {
+            else if (rowLaps < leaderLaps) {
                 timeDiv.innerText = `+${leaderLaps - rowLaps} L`;
             }
-            else if (Number.isFinite(rowPos) && rowPos === 1 && Number.isFinite(rowTime) && rowTime > 0) {
+            else if (rowPos === 1 && rowTime > 0) {
                 timeDiv.innerText = formatLapTime(rowTime);
             }
-            else if (Number.isFinite(leaderTime) && leaderTime > 0 && Number.isFinite(rowTime) && rowTime > 0) {
+            else if (leaderTime > 0 && rowTime > 0) {
                 const gap = rowTime - leaderTime;
                 timeDiv.innerText = gap > 0 ? `+${gap.toFixed(3)}` : "-";
             }
@@ -3545,7 +3530,7 @@ export function onSessionResultsFetched(data) {
         }
         else {
             const rowTime = Number(row?.time);
-            timeDiv.innerText = Number.isFinite(rowTime) && rowTime > 0 ? formatLapTime(rowTime) : "-";
+            timeDiv.innerText = rowTime > 0 ? formatLapTime(rowTime) : "-";
         }
         if (!hasTime) timeDiv.classList.add("hidden");
         if (isQualiSession) timeDiv.classList.add("hidden");
@@ -3555,15 +3540,12 @@ export function onSessionResultsFetched(data) {
         pointsDiv.className = "session-results-points";
         pointsDiv.classList.add("session-results-cell");
         const pts = Number(row?.points);
-        if (Number.isFinite(pts) && pts > 0) {
+        if (pts > 0) {
             pointsDiv.textContent = `+${pts}`;
             pointsDiv.classList.add("positive");
         }
-        else if (Number.isFinite(pts)) {
-            pointsDiv.textContent = String(pts);
-        }
         else {
-            pointsDiv.textContent = row?.points ?? "";
+            pointsDiv.textContent = String(pts);
         }
         sessionResultRow.appendChild(pointsDiv);
         if (isPracticeSession) pointsDiv.classList.add("hidden");
@@ -3619,7 +3601,7 @@ export function onSessionResultsFetched(data) {
     if (isQualiSession) {
         results.forEach((r) => {
             const times = [Number(r?.q1FastestLap), Number(r?.q2FastestLap), Number(r?.q3FastestLap)]
-                .filter((v) => Number.isFinite(v) && v > 0);
+                .filter((v) => v > 0);
             const best = times.length ? Math.min(...times) : null;
             if (best != null && (fastestTime == null || best < fastestTime)) {
                 fastestTime = best;
@@ -3631,7 +3613,7 @@ export function onSessionResultsFetched(data) {
         fastestTime = fastestLapBest;
         fastestRow = results.find((r) => {
             const fl = Number(r?.fastestLap);
-            return Number.isFinite(fl) && fl > 0 && Math.abs(fl - fastestLapBest) < 1e-6;
+            return fl > 0 && Math.abs(fl - fastestLapBest) < 1e-6;
         }) || null;
     }
 
@@ -3659,7 +3641,7 @@ export function onSessionResultsFetched(data) {
     const footerTeamDiv = document.createElement("div");
     footerTeamDiv.className = "session-results-team";
     const footerTeamId = Number(fastestRow?.teamId ?? -1);
-    const footerLogoDiv = Number.isFinite(footerTeamId) && footerTeamId !== -1
+    const footerLogoDiv = footerTeamId !== -1
         ? buildDriverLogoDiv(footerTeamId, {
             isF1: true,
             wrapperClass: "drivers-table-logo-div session-results-driver-logo-div"
@@ -3673,13 +3655,13 @@ export function onSessionResultsFetched(data) {
 
     const footerTeamNameSpan = document.createElement("span");
     footerTeamNameSpan.className = "session-results-team-name";
-    footerTeamNameSpan.textContent = (Number.isFinite(footerTeamId) && footerTeamId !== -1) ? (combined_dict?.[footerTeamId] ?? "") : "";
+    footerTeamNameSpan.textContent = (footerTeamId !== -1) ? (combined_dict?.[footerTeamId] ?? "") : "";
     footerTeamNameSpan.textContent = String(footerTeamNameSpan.textContent || "").toUpperCase();
     footerTeamDiv.appendChild(footerTeamNameSpan);
 
     const footerEngineNameSpan = document.createElement("span");
     footerEngineNameSpan.className = "session-results-engine-name";
-    if (currentFormula === 1 && Number.isFinite(footerTeamId) && footerTeamId !== -1) {
+    if (currentFormula === 1 && footerTeamId !== -1) {
         const engineId = engine_allocations?.[footerTeamId];
         const engineName = engineId != null ? engine_names?.[engineId] : "";
         footerEngineNameSpan.textContent = String(engineName || "").toUpperCase();
@@ -3741,17 +3723,15 @@ function parseSessionResultsTimeToSeconds(txt) {
         const h = Number(parts[0]);
         const m = Number(parts[1]);
         const sec = Number(parts[2]);
-        if (![h, m, sec].every(Number.isFinite)) return null;
         return h * 3600 + m * 60 + sec;
     }
     if (parts.length === 2) {
         const m = Number(parts[0]);
         const sec = Number(parts[1]);
-        if (![m, sec].every(Number.isFinite)) return null;
         return m * 60 + sec;
     }
     const sec = Number(parts[0]);
-    return Number.isFinite(sec) ? sec : null;
+    return sec;
 }
 
 async function saveSessionResultsRaceEdits() {
@@ -3759,7 +3739,6 @@ async function saveSessionResultsRaceEdits() {
     const meta = sessionResultsLastFetched?.meta || {};
     const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
     const year = String(sessionResultsLastFetched?.year ?? "").trim();
-    if (!Number.isFinite(raceId)) return;
 
     const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
     const timeByDriver = new Map(original.map(r => [String(r?.driverId), Number(r?.time)]));
@@ -3773,7 +3752,6 @@ async function saveSessionResultsRaceEdits() {
     for (let i = 0; i < rows.length; i++) {
         const rowEl = rows[i];
         const driverId = Number(rowEl.dataset.driverid);
-        if (!Number.isFinite(driverId)) continue;
 
         const input = rowEl.querySelector(".session-results-time-input");
         const txt = input ? input.value : "";
@@ -3783,7 +3761,7 @@ async function saveSessionResultsRaceEdits() {
         let time = isDnf ? 0 : parseSessionResultsTimeToSeconds(txt);
         if (time == null && !isDnf) {
             const orig = timeByDriver.get(String(driverId));
-            time = Number.isFinite(orig) ? orig : 0;
+            time = orig;
             dnf = dnfByDriver.get(String(driverId)) ?? 0;
         }
 
@@ -3836,15 +3814,15 @@ function updateRaceEditPoints() {
     const yearKey = String(sessionResultsLastFetched?.year ?? "").trim();
     const events = sessionResultsEventsCache.get(yearKey);
     const lastRaceId = Array.isArray(events) && events.length
-        ? Math.max(...events.map(e => Number(e?.[0])).filter(Number.isFinite))
+        ? Math.max(...events.map(e => Number(e?.[0])))
         : null;
 
-    const doublePoints = Number(pointsInfo?.isLastraceDouble) === 1 && Number.isFinite(lastRaceId) && Number(raceId) === Number(lastRaceId);
+    const doublePoints = Number(pointsInfo?.isLastraceDouble) === 1 && lastRaceId != null && Number(raceId) === Number(lastRaceId);
     const flBonusEnabled = Number(pointsInfo?.fastestLapBonusPoint) === 1;
 
     const posToPts = new Map(pointsInfo.positionAndPoints
         .map(r => [Number(r?.[0]), Number(r?.[1])])
-        .filter(([p, pts]) => Number.isFinite(p) && Number.isFinite(pts)));
+    );
 
     const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
     const flByDriver = new Map(original.map(r => [Number(r?.driverId), Number(r?.fastestLap)]));
@@ -3852,7 +3830,7 @@ function updateRaceEditPoints() {
     let fastestDriverId = null;
     let fastestLap = null;
     for (const [driverId, fl] of flByDriver.entries()) {
-        if (Number.isFinite(fl) && fl > 0 && (fastestLap == null || fl < fastestLap)) {
+        if (fl > 0 && (fastestLap == null || fl < fastestLap)) {
             fastestLap = fl;
             fastestDriverId = driverId;
         }
@@ -3962,7 +3940,6 @@ function getLatestYearFromMenu() {
     const years = yearMenu
         ? Array.from(yearMenu.querySelectorAll("a"))
             .map(a => Number(a.dataset.year))
-            .filter(n => Number.isFinite(n))
         : [];
     return years.length ? Math.max(...years) : null;
 }
@@ -4196,7 +4173,7 @@ export function loadRecordsList(data) {
         numberAndName.appendChild(number)
 
         const recordTeamId = Number(record.teamId ?? -1);
-        if (Number.isFinite(recordTeamId) && recordTeamId !== -1) {
+        if (recordTeamId !== -1) {
             const logoDiv = buildDriverLogoDiv(recordTeamId, {
                 isF1: currentFormula === 1,
                 wrapperClass: "drivers-table-logo-div record-logo-div"
@@ -4394,8 +4371,8 @@ export function loadTeamRecordsList(payload) {
     data.forEach((item) => {
         const teamId = Number(item?.teamId ?? item?.TeamID ?? -1);
         const value = Number(item?.value ?? 0);
-        if (!Number.isFinite(teamId) || teamId === -1) return;
-        if (!Number.isFinite(value) || value <= 0) return;
+        if (teamId === -1) return;
+        if (value <= 0) return;
 
         const recordDiv = document.createElement("div");
         recordDiv.classList = "record-item";

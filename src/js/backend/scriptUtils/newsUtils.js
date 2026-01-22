@@ -320,31 +320,27 @@ function applyInvestmentEffect(turningPointData) {
             const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');
             let newLevel = 4;
             if (current) {
-                //get last digit
-                const currentLevel = parseInt(current.toString().slice(-1), 10);
-                if (!Number.isFinite(currentLevel)) continue;
-                const safeLevel = Math.min(5, Math.max(0, currentLevel));
-                if (safeLevel >= 4) {
-                    newLevel = 5;
-                }
-                const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString(), 10);
-                if (!Number.isFinite(newBuildingId)) continue;
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
-            }
+                 //get last digit
+                 const currentLevel = parseInt(current.toString().slice(-1), 10);
+                 const safeLevel = Math.min(5, Math.max(0, currentLevel));
+                 if (safeLevel >= 4) {
+                     newLevel = 5;
+                 }
+                 const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString(), 10);
+                 queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
+             }
 
         }
         else {//set to at least level 4
             const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');    
-            if (current) {
-                const currentStr = current.toString();
-                const currentLevel = parseInt(currentStr.slice(-1), 10);
-                if (!Number.isFinite(currentLevel)) continue;
-                const safeLevel = Math.min(5, Math.max(0, currentLevel));
-                const newLevel = safeLevel >= 5 ? 5 : 4;
-                const newBuildingId = parseInt(currentStr.slice(0, -1) + newLevel.toString(), 10);
-                if (!Number.isFinite(newBuildingId)) continue;
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
-            }
+             if (current) {
+                 const currentStr = current.toString();
+                 const currentLevel = parseInt(currentStr.slice(-1), 10);
+                 const safeLevel = Math.min(5, Math.max(0, currentLevel));
+                 const newLevel = safeLevel >= 5 ? 5 : 4;
+                 const newBuildingId = parseInt(currentStr.slice(0, -1) + newLevel.toString(), 10);
+                 queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
+             }
 
         }
 
@@ -1644,7 +1640,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         // --- MODO COMPRESIÓN (50%) basado en rendimiento (+ opcional standings) ---
         const vals = ids
             .map(id => performance[id])
-            .filter(v => typeof v === "number" && Number.isFinite(v));
+            .filter(v => typeof v === "number");
         const mean = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
 
         let maxAbsDev = 1e-9; // evita div/0

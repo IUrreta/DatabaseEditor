@@ -3082,7 +3082,6 @@ function manage_overlay(imageContainer, overlay, data, image) {
   let overlayDiv = null;
   const teamColorForId = (teamId, fallback = '#ffffff') => {
     const candidate = Number.parseInt(teamId, 10);
-    if (!Number.isFinite(candidate)) return fallback;
     return colors_dict?.[`${candidate}0`] ?? fallback;
   };
 
@@ -3192,7 +3191,7 @@ function manage_overlay(imageContainer, overlay, data, image) {
     overlayDiv.classList.add('reaction-overlay');
 
     const candidateTeamId = Number.parseInt(data?.driverTeamIdInTitle, 10);
-    const teamId = Number.isFinite(candidateTeamId) && candidateTeamId >= 1 && candidateTeamId <= 10
+    const teamId = candidateTeamId >= 1 && candidateTeamId <= 10
       ? candidateTeamId
       : (Math.floor(Math.random() * 10) + 1);
 

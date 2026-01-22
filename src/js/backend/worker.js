@@ -145,7 +145,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Year fetched", content: year });
 
     const previousYear = Number(year) - 1;
-    if (Number.isFinite(previousYear) && previousYear > 0) {
+    if (previousYear > 0) {
       const standings = fetchTeamsStandings(previousYear, 1);
       postMessage({
         responseMessage: "Previous year teams standings fetched",
@@ -250,7 +250,7 @@ const workerCommands = {
   },
   juniorTeamDriversRequest: (data, postMessage) => {
     const teamID = Number(data.teamID);
-    if (!Number.isFinite(teamID) || teamID < 11 || teamID > 31) {
+    if (teamID < 11 || teamID > 31) {
       postMessage({ responseMessage: "Error", error: "Invalid junior team id" });
       return;
     }

@@ -504,7 +504,7 @@ export function getSelectedTeamRecord(type, year, formula = 1) {
         const teamId = Number(r[0]);
         const driverId = Number(r[1]);
         const count = Number(r[4]) || 0;
-        if (!Number.isFinite(teamId) || !Number.isFinite(driverId) || count <= 0) return;
+        if (count <= 0) return;
         const name = formatNamesSimple([r[2], r[3]])[0];
         if (!breakdownByTeamId.has(teamId)) breakdownByTeamId.set(teamId, []);
         breakdownByTeamId.get(teamId).push({ id: driverId, name, count });
