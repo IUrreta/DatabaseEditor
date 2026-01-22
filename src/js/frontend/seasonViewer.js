@@ -3940,6 +3940,7 @@ function getLatestYearFromMenu() {
     const years = yearMenu
         ? Array.from(yearMenu.querySelectorAll("a"))
             .map(a => Number(a.dataset.year))
+            .filter(y => Number.isFinite(y))
         : [];
     return years.length ? Math.max(...years) : null;
 }

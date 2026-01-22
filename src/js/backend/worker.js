@@ -8,7 +8,6 @@ import {
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
   fetchSessionResults,
-  editRaceResults,
   getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
@@ -40,7 +39,7 @@ import {
   fixDoublePointsBug,
   getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
-import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord } from "./scriptUtils/recordUtils";
+import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord, editRaceResults } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
