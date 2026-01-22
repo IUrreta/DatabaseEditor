@@ -829,9 +829,9 @@ function orderTeamTemplatesByStandings(standingsRows) {
             if (!Array.isArray(row) || row.length < 2) return;
             const teamId = Number(row[0]);
             const position = Number(row[1]);
-            if (!Number.isFinite(teamId) || !Number.isFinite(position) || position <= 0) return;
+            if (position <= 0) return;
             const prev = positionByTeamId.get(teamId);
-            if (!Number.isFinite(prev) || position < prev) {
+            if (prev === undefined || position < prev) {
                 positionByTeamId.set(teamId, position);
             }
         });
@@ -840,17 +840,14 @@ function orderTeamTemplatesByStandings(standingsRows) {
     const decorated = templates.map((el, index) => {
         const staffSection = el.querySelector(".staff-section[data-teamid]");
         const teamId = staffSection ? Number(staffSection.dataset.teamid) : NaN;
-        const position = Number.isFinite(teamId) ? positionByTeamId.get(teamId) : undefined;
+        const position = positionByTeamId.get(teamId);
         return { el, index, teamId, position };
     });
 
     decorated.sort((a, b) => {
-        const aHas = Number.isFinite(a.position);
-        const bHas = Number.isFinite(b.position);
-        if (aHas && bHas) return a.position - b.position;
-        if (aHas) return -1;
-        if (bHas) return 1;
-        return a.index - b.index;
+        const aPos = a.position ?? 999;
+        const bPos = b.position ?? 999;
+        return aPos - bPos || a.index - b.index;
     });
 
     const frag = document.createDocumentFragment();

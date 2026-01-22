@@ -637,7 +637,7 @@ function buildHoldOptions(input, extra = {}) {
     const max = parseFloat(input.max);
     const isEngineStat = !!input.closest(".engine-performance-stat");
     const format = extra.format ?? ((val) => (
-        Number.isFinite(val) ? val.toFixed(2) : String(val)
+        val.toFixed(2)
     ));
     const opts = { ...extra, format };
     if (!Number.isNaN(min)) {

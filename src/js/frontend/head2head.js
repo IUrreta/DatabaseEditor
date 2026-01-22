@@ -1194,13 +1194,13 @@ function get_one_driver_points_format(driver, data) {
     driver["races"].forEach(function (elem) {
         d1_races.push(elem["raceId"]);
         let ptsThatRace = Number(elem["points"]);
-        if (!Number.isFinite(ptsThatRace) || ptsThatRace === -1) {
+        if (ptsThatRace === -1) {
             ptsThatRace = 0;
         }
         const qualiPts = Number(elem["qualifyingPoints"]);
-        const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+        const qPts = (qualiPts > 0) ? qualiPts : 0;
         const sprintPts = Number(elem["sprintPoints"]);
-        const sPts = (elem["sprintPoints"] != null && Number.isFinite(sprintPts) && sprintPts !== -1) ? sprintPts : 0;
+        const sPts = (elem["sprintPoints"] != null && sprintPts !== -1) ? sprintPts : 0;
         d1_points_provisional.push(ptsThatRace + qPts + sPts);
     })
     data[0].forEach(function (elem) {
@@ -1296,7 +1296,7 @@ function load_graphs_data(drivers) {
                 if (ptsThatRace === -1) ptsThatRace = 0;
 
                 const qualiPts = Number(r.qualifyingPoints);
-                const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+                const qPts = (qualiPts > 0) ? qualiPts : 0;
 
                 const sprintPts = (r.sprintPoints != null && r.sprintPoints !== -1)
                     ? Number(r.sprintPoints) : 0;

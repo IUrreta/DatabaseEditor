@@ -10,3 +10,7 @@
 - Added "Session Results" in Records dropdown
 - You can view session results from every session in the currebt season, only Races/Sprint races from past 5 seasons
 - Added Edit button in "Session Results" to edit race results. Drag rows to change position, and also ability to change race time ("DNF" will put DNF to that driver)
+
+## 22nd january
+- Drivers and teams standings are now updated after editing a race result
+- Records are also updated (not last win/podium)

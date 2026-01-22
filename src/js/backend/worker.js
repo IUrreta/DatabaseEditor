@@ -8,7 +8,6 @@ import {
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
   fetchSessionResults,
-  editRaceResults,
   getDate
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
@@ -40,7 +39,7 @@ import {
   fixDoublePointsBug,
   getFullFeederSeriesDetails
 } from "./scriptUtils/newsUtils";
-import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord } from "./scriptUtils/recordUtils";
+import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord, editRaceResults } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
@@ -145,7 +144,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Year fetched", content: year });
 
     const previousYear = Number(year) - 1;
-    if (Number.isFinite(previousYear) && previousYear > 0) {
+    if (previousYear > 0) {
       const standings = fetchTeamsStandings(previousYear, 1);
       postMessage({
         responseMessage: "Previous year teams standings fetched",
@@ -250,7 +249,7 @@ const workerCommands = {
   },
   juniorTeamDriversRequest: (data, postMessage) => {
     const teamID = Number(data.teamID);
-    if (!Number.isFinite(teamID) || teamID < 11 || teamID > 31) {
+    if (teamID < 11 || teamID > 31) {
       postMessage({ responseMessage: "Error", error: "Invalid junior team id" });
       return;
     }
