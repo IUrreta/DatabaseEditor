@@ -16466,7 +16466,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-bento {
   display: flex;
   width: 100%;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 140px);
   align-items: center;
   justify-content: center;
 }
@@ -17367,6 +17367,14 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 
 .session-results-surname {
   text-transform: uppercase;
+  flex: 0 0 auto;
+}
+
+.session-results-dotd {
+  color: var(--positive-general);
+  font-family: "Formula1Bold";
+  font-size: 12px;
+  margin-left: 6px;
   flex: 0 0 auto;
 }
 
