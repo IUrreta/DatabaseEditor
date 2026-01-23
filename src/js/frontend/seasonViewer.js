@@ -246,7 +246,7 @@ function updateTopPanelControlsVisibility() {
     if (editToggle) {
         const meta = sessionResultsLastFetched?.meta || {};
         const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
-        const showEdit = typeVal === "sessionresults" && sessionKeyLower === "race";
+        const showEdit = typeVal === "sessionresults" && (sessionKeyLower === "race" || sessionKeyLower === "sprintrace");
         editToggle.classList.toggle("d-none", !showEdit);
     }
     const compactToggle = document.getElementById("sessionResultsCompactToggle");
@@ -3237,13 +3237,15 @@ export function onSessionResultsFetched(data) {
     const isRaceSession = sessionKeyLower === "race" || sessionKeyLower === "sprintrace";
     const isQualiSession = sessionKeyLower === "quali" || sessionKeyLower === "sprintquali";
     const isPracticeSession = sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3";
-    const isEditRace = sessionResultsEditMode && isMainRaceSession;
+    const isEditableResultsSession = isMainRaceSession || sessionKeyLower === "sprintrace";
+    const isEditRace = sessionResultsEditMode && isEditableResultsSession;
+    const dotdDriverId = Number(meta?.dotdDriverId);
 
-    if (!isMainRaceSession && sessionResultsEditMode) {
+    if (!isEditableResultsSession && sessionResultsEditMode) {
         sessionResultsEditMode = false;
         manageSaveButton(false);
     }
-    if (editToggle) editToggle.classList.toggle("d-none", !isMainRaceSession);
+    if (editToggle) editToggle.classList.toggle("d-none", !isEditableResultsSession);
     if (editToggle) {
         const label = editToggle.querySelector("span");
         if (label) label.textContent = sessionResultsEditMode && isMainRaceSession ? "Cancel" : "Edit";
@@ -3397,6 +3399,12 @@ export function onSessionResultsFetched(data) {
         surnameSpan.textContent = String(surnameSpan.textContent || "").toUpperCase();
         driverDiv.appendChild(nameSpan);
         driverDiv.appendChild(surnameSpan);
+        if (isMainRaceSession && dotdDriverId > 0 && Number(row?.driverId) === dotdDriverId) {
+            const dotdSpan = document.createElement("span");
+            dotdSpan.className = "session-results-dotd";
+            dotdSpan.textContent = "DotD";
+            driverDiv.appendChild(dotdSpan);
+        }
 
         sessionResultRow.appendChild(driverDiv);
 
@@ -3581,7 +3589,11 @@ export function onSessionResultsFetched(data) {
     }
     if (isEditRace && rowsContainer) {
         reindexRaceEditPositions(rowsContainer);
-        ensureSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
+        const meta = sessionResultsLastFetched?.meta || {};
+        const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+        if (sessionKeyLower === "race") {
+            ensureSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
+        }
         updateRaceEditPoints();
         manageSaveButton(true, "custom", saveSessionResultsRaceEdits);
     }
@@ -3737,6 +3749,7 @@ function parseSessionResultsTimeToSeconds(txt) {
 async function saveSessionResultsRaceEdits() {
     if (!sessionResultsEditMode || !sessionResultsLastFetched) return;
     const meta = sessionResultsLastFetched?.meta || {};
+    const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
     const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
     const year = String(sessionResultsLastFetched?.year ?? "").trim();
 
@@ -3769,11 +3782,12 @@ async function saveSessionResultsRaceEdits() {
     }
 
     try {
-        const resp = await new Command("editRaceResults", { raceId, edits }).promiseExecute();
+        const isSprint = sessionKeyLower === "sprintrace";
+        const resp = await new Command("editRaceResults", { raceId, edits, isSprint, sessionKey: sessionKeyLower }).promiseExecute();
         await updateFront(resp);
         sessionResultsEditMode = false;
         manageSaveButton(false);
-        new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey: "race" }).execute();
+        new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey: sessionKeyLower }).execute();
     } catch (e) {
         new_update_notifications("Failed to save race results", "error");
         console.error(e);
@@ -3802,30 +3816,44 @@ function updateRaceEditPoints() {
     if (!sessionResultsEditMode || !sessionResultsLastFetched) return;
     const meta = sessionResultsLastFetched?.meta || {};
     const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
-    if (sessionKeyLower !== "race") return;
+    if (sessionKeyLower !== "race" && sessionKeyLower !== "sprintrace") return;
 
     const container = document.querySelector(".session-results-table .session-results-rows");
     if (!container) return;
 
-    const pointsInfo = sessionResultsPointsInfo;
-    if (!pointsInfo || !Array.isArray(pointsInfo.positionAndPoints)) return;
-
-    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
-    const yearKey = String(sessionResultsLastFetched?.year ?? "").trim();
-    const events = sessionResultsEventsCache.get(yearKey);
-    const lastRaceId = Array.isArray(events) && events.length
-        ? Math.max(...events.map(e => Number(e?.[0])))
-        : null;
-
-    const doublePoints = Number(pointsInfo?.isLastraceDouble) === 1 && lastRaceId != null && Number(raceId) === Number(lastRaceId);
-    const flBonusEnabled = Number(pointsInfo?.fastestLapBonusPoint) === 1;
-
-    const posToPts = new Map(pointsInfo.positionAndPoints
-        .map(r => [Number(r?.[0]), Number(r?.[1])])
-    );
+    let posToPts = new Map();
+    let doublePoints = false;
+    let flBonusEnabled = false;
 
     const original = Array.isArray(sessionResultsLastFetched?.results) ? sessionResultsLastFetched.results : [];
     const flByDriver = new Map(original.map(r => [Number(r?.driverId), Number(r?.fastestLap)]));
+
+    if (sessionKeyLower === "race") {
+        const pointsInfo = sessionResultsPointsInfo;
+        if (!pointsInfo || !Array.isArray(pointsInfo.positionAndPoints)) return;
+
+        const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+        const yearKey = String(sessionResultsLastFetched?.year ?? "").trim();
+        const events = sessionResultsEventsCache.get(yearKey);
+        const lastRaceId = Array.isArray(events) && events.length
+            ? Math.max(...events.map(e => Number(e?.[0])))
+            : null;
+
+        doublePoints = Number(pointsInfo?.isLastraceDouble) === 1 && lastRaceId != null && Number(raceId) === Number(lastRaceId);
+        flBonusEnabled = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+
+        posToPts = new Map(pointsInfo.positionAndPoints
+            .map(r => [Number(r?.[0]), Number(r?.[1])])
+        );
+    } else {
+        // Sprint: keep the same points distribution as the original sprint results (pos -> points)
+        original.forEach((r) => {
+            const pos = Number(r?.pos);
+            const pts = Number(r?.points);
+            const dnf = Number(r?.dnf) === 1;
+            if (!dnf && pos > 0 && pos !== 99) posToPts.set(pos, Math.max(0, pts));
+        });
+    }
 
     let fastestDriverId = null;
     let fastestLap = null;
@@ -3844,7 +3872,7 @@ function updateRaceEditPoints() {
         let pts = 0;
         if (!dnf) {
             pts = Number(posToPts.get(pos) ?? 0);
-            if (flBonusEnabled && fastestDriverId != null && driverId === fastestDriverId && pos <= 10 && pts > 0) {
+            if (sessionKeyLower === "race" && flBonusEnabled && fastestDriverId != null && driverId === fastestDriverId && pos <= 10 && pts > 0) {
                 pts += 1;
             }
             if (doublePoints) pts *= 2;
@@ -3869,7 +3897,7 @@ function setupSessionResultsEditToggle() {
         if (!sessionResultsLastFetched) return;
         const meta = sessionResultsLastFetched?.meta || {};
         const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
-        if (sessionKeyLower !== "race") return;
+        if (sessionKeyLower !== "race" && sessionKeyLower !== "sprintrace") return;
         sessionResultsEditMode = !sessionResultsEditMode;
         if (!sessionResultsEditMode) {
             manageSaveButton(false);

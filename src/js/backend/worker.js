@@ -802,7 +802,9 @@ const workerCommands = {
   editRaceResults: (data, postMessage) => {
     const raceId = data.raceId;
     const edits = data.edits;
-    const res = editRaceResults(raceId, edits);
+    const sessionKey = data?.sessionKey;
+    const isSprint = data?.isSprint;
+    const res = editRaceResults(raceId, edits, { sessionKey, isSprint });
     postMessage({
       responseMessage: res.ok ? "Race results updated" : "Error",
       noti_msg: res.ok ? "Race results updated" : (res.error || "Failed to update race results"),

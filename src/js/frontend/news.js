@@ -2645,7 +2645,7 @@ async function contextualizeRaceResults(newData) {
     const second = top3[1];
     const third = top3[2];
     const driverOfTheDayPhrase = `
-      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}).\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}),` : ''}${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}).` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
     `;
     prompt += driverOfTheDayPhrase;
   }
@@ -2750,7 +2750,7 @@ async function contextualizeRaceReaction(newData) {
     const third = top3[2];
 
     const driverOfTheDayPhrase = `
-      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}).\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}),` : ''}${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}).` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
     `;
 
     prompt += driverOfTheDayPhrase;

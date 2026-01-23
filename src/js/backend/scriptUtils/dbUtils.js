@@ -1436,6 +1436,7 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
   const gridSize = validRows.length;
 
   const teamBonus = (teamRank, finishingPos) => {
+    if (!Number.isFinite(teamRank)) return 0;
     const factor = gridSize > 0 ? (gridSize / 20) : 1;
     const expectedPos = (2 * teamRank - 0.5) * factor;
     const delta = expectedPos - finishingPos;
@@ -1449,7 +1450,6 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
 
   const rand = seededRandom(raceId);
   const RANDOM_INTENSITY = 0.8;
-  const MAX_WINNER_SHARE = 45; // (%). Evita resultados tipo "99%"
 
   const rowsScored = [];
   for (const row of rows) {
@@ -1484,25 +1484,9 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
     });
   }
 
-  // Softmax -> porcentajes que suman 100, con tope para evitar picos (p.ej. 99%)
-  const maxShareCap = (rowsScored.length * MAX_WINNER_SHARE >= 100)
-    ? MAX_WINNER_SHARE
-    : (100 / Math.max(1, rowsScored.length));
-
-  const shares = softmaxToPercentBounded(rowsScored.map(r => r.scoreRaw), {
-    maxSharePct: maxShareCap,
-    initialTemperature: 1.0
-  });
-  const sharesRounded = roundPercentsToTargetSum(shares, {
-    decimals: 1,
-    targetSum: 100,
-    maxPerItem: maxShareCap
-  });
-  for (let i = 0; i < rowsScored.length; i++) rowsScored[i].share = sharesRounded[i];
-
-  // Orden: mayor share (equivale a mayor scoreRaw)
+  // Orden: mayor scoreRaw
   rowsScored.sort((a, b) =>
-    (b.share - a.share) || (a.finishPos - b.finishPos)
+    (b.scoreRaw - a.scoreRaw) || (a.finishPos - b.finishPos)
   );
 
   return rowsScored;
@@ -1611,14 +1595,17 @@ function roundPercentsToTargetSum(values, opts = {}) {
 export function upsertDoDRanking(season, raceId, leaderboard, topN = 3) {
   const top = leaderboard.slice(0, topN);
   for (let i = 0; i < top.length; i++) {
-    const { driverId, share, name, teamId } = top[i]; // usamos share (%)
+    const { driverId, scoreRaw, name, teamId } = top[i];
     const rank = i + 1;
     queryDB(`
       INSERT INTO Custom_DriverOfTheDay_Ranking (Season, RaceID, Rank, DriverID, Name, TeamID, Score)
       VALUES (?, ?, ?, ?, ?, ?, ?)
       ON CONFLICT(Season, RaceID, Rank) DO UPDATE
-      SET DriverID = excluded.DriverID, Score = excluded.Score
-    `, [season, raceId, rank, driverId, name, teamId, Number(share)], 'run');
+      SET DriverID = excluded.DriverID,
+          Name = excluded.Name,
+          TeamID = excluded.TeamID,
+          Score = excluded.Score
+    `, [season, raceId, rank, driverId, name, teamId, Number(scoreRaw) || 0], 'run');
   }
 }
 
@@ -1631,11 +1618,11 @@ export function getDoDTopNForRace(season, raceId, topN = 3) {
     LIMIT ?
   `, [season, raceId, topN], 'allRows') || [];
 
-  return rows.map(([driverId, rank, name, share, teamId]) => ({
+  return rows.map(([driverId, rank, name, score, teamId]) => ({
     driverId: Number(driverId),
     rank: Number(rank),
     name,
-    share: Number(share),
+    score: Number(score),
     teamId: Number(teamId)
   }));
 }
@@ -2073,14 +2060,16 @@ function fetchQualifyingResultsRows(raceId, sprintShootout = 0) {
       ON bas.StaffID = res.DriverID
     WHERE res.RaceID = ?
       AND res.RaceFormula = 1
+      AND res.SprintShootout = ?
       AND res.QualifyingStage =
         (SELECT MAX(res2.QualifyingStage)
          FROM Races_QualifyingResults res2
          WHERE res2.RaceID = ?
-           AND res2.DriverID = res.DriverID)
-      AND SprintShootout = ?
+           AND res2.DriverID = res.DriverID
+           AND res2.RaceFormula = 1
+           AND res2.SprintShootout = ?)
     ORDER BY res.FinishingPos;
-  `, [sprintShootout, sprintShootout, sprintShootout, raceId, raceId, sprintShootout], 'allRows') || [];
+  `, [sprintShootout, sprintShootout, sprintShootout, raceId, sprintShootout, raceId, sprintShootout], 'allRows') || [];
 }
 
 export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
@@ -2100,6 +2089,60 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
   };
 
   if (key === "race") {
+    try {
+      const seasonId = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceIdNum], 'singleValue');
+      if (seasonId != null) {
+        ensureCustomDoDRankingTable();
+        let dotdDriverId = queryDB(
+          `SELECT DriverID
+           FROM Custom_DriverOfTheDay_Ranking
+           WHERE Season = ? AND RaceID = ? AND Rank = 1`,
+          [seasonId, raceIdNum],
+          'singleValue'
+        );
+
+        if (dotdDriverId == null) {
+          const teamRows = queryDB(
+            `SELECT TeamID, Position
+             FROM Races_TeamStandings
+             WHERE SeasonID = ? AND RaceFormula = 1`,
+            [seasonId],
+            'allRows'
+          ) || [];
+
+          const teamRankByTeamId = new Map();
+          for (const r of teamRows) teamRankByTeamId.set(Number(r?.[0]), Number(r?.[1]));
+
+          const rawRaceRows = queryDB(
+            `SELECT DriverID, TeamID, StartingPos, FinishingPos, DNF, Time, Laps
+             FROM Races_Results
+             WHERE RaceID = ?`,
+            [raceIdNum],
+            'allRows'
+          ) || [];
+
+          const raceRows = rawRaceRows.map((r) => ([
+            null, null,
+            Number(r?.[0]), Number(r?.[1]),
+            Number(r?.[3]), Number(r?.[2]),
+            null, Number(r?.[4]),
+            null, null,
+            Number(r?.[5]), Number(r?.[6])
+          ])).sort((a, b) => Number(a[4]) - Number(b[4]));
+
+          const leaderboard = computeDriverOfTheDayLeaderboardFromRows(raceRows, raceIdNum, { teamRankByTeamId });
+          if (leaderboard?.length) {
+            upsertDoDRanking(Number(seasonId), raceIdNum, leaderboard, 3);
+            dotdDriverId = Number(leaderboard[0].driverId);
+          }
+        }
+
+        if (dotdDriverId != null) meta.dotdDriverId = Number(dotdDriverId);
+      }
+    } catch (e) {
+      // ignore DoD lookup failures
+    }
+
     const rows = fetchRaceResultsRows(raceIdNum);
     const results = rows.map((row) => {
       const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
