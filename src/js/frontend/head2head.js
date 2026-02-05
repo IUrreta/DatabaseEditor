@@ -1213,7 +1213,7 @@ function get_one_driver_points_format(driver, data) {
                 d1_points.push(d1_points[d1_points.length - 1])
             }
             else {
-                d1_points.push(NaN)
+                    d1_points.push(null)
             }
 
         }
@@ -1320,8 +1320,8 @@ function load_graphs_data(drivers) {
                 if (idx !== -1) {
                     // resultado carrera
                     if (d1_provisonal[idx] === -1) {
-                        d1_res.push(NaN);
-                        d1_gapWinner.push(NaN);
+                        d1_res.push(null);
+                        d1_gapWinner.push(null);
                         d1_backgroundColors.push(d1_color + "50");
                     } else {
                         d1_res.push(d1_provisonal[idx]);
@@ -1329,12 +1329,12 @@ function load_graphs_data(drivers) {
                         // gap winner
                         const gwRaw = d1_provisional_gapW[idx];
                         if (typeof gwRaw === "string" && gwRaw.slice(-1) === "L") {
-                            d1_gapWinner.push(NaN);
+                            d1_gapWinner.push(null);
                             d1_backgroundColors.push(d1_color + "76");
                         } else {
                             const gw = parseFloat(gwRaw);
                             d1_gapWinner.push(gw);
-                            if (!isNaN(gw) && gw > max_gapWinner) max_gapWinner = gw;
+                            if (gw > max_gapWinner) max_gapWinner = gw;
                             d1_backgroundColors.push(d1_color);
                         }
                     }
@@ -1348,22 +1348,22 @@ function load_graphs_data(drivers) {
                     // gap pole
                     const gpRaw = d1_provisional_gapP[idx];
                     if (gpRaw === "NR") {
-                        d1_gapPole.push(NaN);
+                        d1_gapPole.push(null);
                         d1_backgroundColorsPole.push(d1_color + "60");
                     } else {
                         const gp = parseFloat(gpRaw);
                         d1_gapPole.push(gp);
-                        if (!isNaN(gp) && gp > max_gapPole) max_gapPole = gp;
+                        if (gp > max_gapPole) max_gapPole = gp;
                         d1_backgroundColorsPole.push(d1_color);
                     }
                 } else {
                     // no corrió / no hay datos para este rid
-                    d1_res.push(NaN);
-                    d1_qualis.push(NaN);
+                    d1_res.push(null);
+                    d1_qualis.push(null);
                     if (races_done.includes(rid)) {
                         d1_points.push(d1_points[d1_points.length - 1]);
                     } else {
-                        d1_points.push(NaN);
+                        d1_points.push(null);
                     }
                 }
             });
@@ -1373,11 +1373,11 @@ function load_graphs_data(drivers) {
 
             // reemplace NaNs de gaps por la mitad del máximo (tu lógica)
             d1_gapWinner = d1_gapWinner.map(function (elem) {
-                return isNaN(elem) ? max_gapWinner / 2 : elem;
+                return elem == null ? max_gapWinner / 2 : elem;
             });
 
             d1_gapPole = d1_gapPole.map(function (elem) {
-                return isNaN(elem) ? max_gapPole / 2 : elem;
+                return elem == null ? max_gapPole / 2 : elem;
             });
 
             // ---- push datasets a los gráficos (Chart.js) ----
@@ -1465,7 +1465,7 @@ function load_graphs_data(drivers) {
  */
 function findLastNonNaNIndex(arr) {
     for (let i = arr.length - 1; i >= 0; i--) {
-        if (!isNaN(arr[i])) {
+        if (arr[i] != null) {
             return i;
         }
     }

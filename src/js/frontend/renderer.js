@@ -2878,7 +2878,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         let idx = values.findIndex(v => String(v) === raw);
         if (idx === -1) {
             const numMatch = raw.replace(/,/g, '').match(/-?\d+(\.\d+)?/); // Ajuste aquí también por si acaso
-            if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+            if (numMatch) {
                 const num = parseFloat(numMatch[0]);
                 idx = values.findIndex(v => Number(v) === num);
             }
@@ -2917,7 +2917,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
-        if (isFinite(min) && isFinite(max) && max > min) {
+        if (max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
             return Math.round(Math.max(0, Math.min(100, p)));

@@ -766,11 +766,9 @@ function fetchRacePointsSnapshot(raceIdNum) {
         const driverId = Number(r?.[0]);
         const teamId = Number(r?.[1]);
         const pts = Number(r?.[2] ?? 0);
-        if (!Number.isNaN(driverId)) pointsByDriver.set(driverId, pts);
-        if (!Number.isNaN(teamId)) {
-            const prev = Number(pointsByTeam.get(teamId) ?? 0);
-            pointsByTeam.set(teamId, prev + pts);
-        }
+        pointsByDriver.set(driverId, pts);
+        const prev = Number(pointsByTeam.get(teamId) ?? 0);
+        pointsByTeam.set(teamId, prev + pts);
     }
 
     return { pointsByDriver, pointsByTeam };
@@ -793,11 +791,9 @@ function fetchSprintPointsSnapshot(raceIdNum) {
         const driverId = Number(r?.[0]);
         const teamId = Number(r?.[1]);
         const pts = Number(r?.[2] ?? 0);
-        if (!Number.isNaN(driverId)) pointsByDriver.set(driverId, pts);
-        if (!Number.isNaN(teamId)) {
-            const prev = Number(pointsByTeam.get(teamId) ?? 0);
-            pointsByTeam.set(teamId, prev + pts);
-        }
+        pointsByDriver.set(driverId, pts);
+        const prev = Number(pointsByTeam.get(teamId) ?? 0);
+        pointsByTeam.set(teamId, prev + pts);
     }
 
     return { pointsByDriver, pointsByTeam };
@@ -836,7 +832,6 @@ function fetchRaceDriverRecordsSnapshot(raceIdNum) {
 
     for (const r of rows) {
         const driverId = Number(r?.[0]);
-        if (Number.isNaN(driverId)) continue;
 
         const pos = Number(r?.[1]);
         const dnf = Number(r?.[2]) === 1;
