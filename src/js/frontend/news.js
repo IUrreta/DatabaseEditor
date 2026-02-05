@@ -3425,11 +3425,6 @@ function manage_overlay(imageContainer, overlay, data, image) {
 }
 
 function getOrdinalSuffix(n) {
-  if (typeof n !== 'number' || isNaN(n) || !isFinite
-    (n)) {
-    console.error("Invalid input for getOrdinalSuffix:", n);
-    return n; // Return the original value if it's not a valid number
-  }
   let j = n % 10, k = n % 100;
   if (j == 1 && k != 11) {
     return n + "st";

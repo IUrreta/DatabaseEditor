@@ -1436,7 +1436,6 @@ export function computeDriverOfTheDayLeaderboardFromRows(rows, raceId, opts = {}
   const gridSize = validRows.length;
 
   const teamBonus = (teamRank, finishingPos) => {
-    if (!Number.isFinite(teamRank)) return 0;
     const factor = gridSize > 0 ? (gridSize / 20) : 1;
     const expectedPos = (2 * teamRank - 0.5) * factor;
     const delta = expectedPos - finishingPos;
@@ -2395,15 +2394,19 @@ export function formatSeasonResults(
     if (typeof t === "number") return t;
     const s = String(t).trim();
     if (s === "" || s.toUpperCase() === "NR") return null;
+    const numberRe = /^[+-]?\d+(\.\d+)?$/;
     const clean = s.startsWith("(") && s.endsWith(")") ? s.slice(1, -1) : s;
     if (clean.includes(":")) {
       const [mm, rest] = clean.split(":");
-      const secs = parseFloat(rest);
-      if (isNaN(secs)) return null;
-      return parseInt(mm, 10) * 60 + secs;
+      const mmStr = String(mm).trim();
+      const secsStr = String(rest).trim();
+      if (!/^\d+$/.test(mmStr)) return null;
+      if (!numberRe.test(secsStr)) return null;
+      return parseInt(mmStr, 10) * 60 + parseFloat(secsStr);
     }
-    const n = parseFloat(clean);
-    return isNaN(n) ? null : n;
+    const nStr = String(clean).trim();
+    if (!numberRe.test(nStr)) return null;
+    return parseFloat(nStr);
   };
   const formatGap = (delta) => {
     if (delta == null) return null;

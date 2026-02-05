@@ -3967,8 +3967,9 @@ function getLatestYearFromMenu() {
     const yearMenu = document.getElementById("yearMenu");
     const years = yearMenu
         ? Array.from(yearMenu.querySelectorAll("a"))
-            .map(a => Number(a.dataset.year))
-            .filter(y => Number.isFinite(y))
+            .map(a => a.dataset.year)
+            .filter(year => /^\d+$/.test(year))
+            .map(Number)
         : [];
     return years.length ? Math.max(...years) : null;
 }
