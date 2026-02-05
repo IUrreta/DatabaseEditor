@@ -551,7 +551,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
     randomButton = document.createElement('div');
     randomButton.classList.add('random-tp', 'tp-button');
     const randomIcon = document.createElement('i');
-    randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
+    randomIcon.classList.add('bi', 'bi-shuffle', 'tp-icon');
     randomButton.appendChild(randomIcon);
     tpDiv.appendChild(randomButton);
 

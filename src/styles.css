@@ -5030,6 +5030,18 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   border: none;
 }
 
+.race-calendar.completed {
+  cursor: default !important;
+}
+
+.race-calendar.drop-before {
+  box-shadow: 0 -3px 0 var(--positive-general) inset, var(--shadow-s);
+}
+
+.race-calendar.drop-after {
+  box-shadow: 0 3px 0 var(--positive-general) inset, var(--shadow-s);
+}
+
 .race-series-badges {
   position: absolute;
   top: 6px;
@@ -5089,6 +5101,17 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   width: 20%;
   justify-content: center;
   padding-right: 12px;
+}
+
+.race-calendar-number-completed {
+  color: var(--positive-general);
+  font-size: 34px;
+}
+
+.race-calendar-number-delete {
+  color: var(--delete-div);
+  cursor: pointer;
+  font-size: 28px;
 }
 
 .upper-text-and-flag {
