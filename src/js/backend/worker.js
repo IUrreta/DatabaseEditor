@@ -26,6 +26,7 @@ import {
   updateNewsFields,
   upsertTurningPoints,
   loadTPFromDB,
+  getCurrentAndNextSeasonGridLineups,
   computeStableKey,
   migrateLegacyData,
   loadNewsMapFromDB,
@@ -603,6 +604,10 @@ const workerCommands = {
     const currentSeason = getGlobals().currentDate[1];
     newsAndTp.isCurrentSeason = (season == currentSeason);
     postMessage({ responseMessage: "News from season fetched", content: newsAndTp });
+  },
+  lineupsRequest: (data, postMessage) => {
+    const lineups = getCurrentAndNextSeasonGridLineups();
+    postMessage({ responseMessage: "Lineups fetched", content: lineups });
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;

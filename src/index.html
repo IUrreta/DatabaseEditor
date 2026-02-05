@@ -2212,12 +2212,34 @@
             <i class="info-titles bold-font" id="contractsinfo" data-bs-toggle="modal"
               data-bs-target="#contractsModal">?</i>
           </div>
-          <div class="form-check form-switch auto-contract">
-            <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
-            <label class="form-check-label" for="flexSwitchCheckDefault">Auto contract</label>
+          <div class="title-buttons-right transfer-right-actions">
+            <div class="lineups-season-pills-top d-none" id="lineupsSeasonPillsTop">
+              <ul class="nav nav-pills">
+                <li class="nav-item">
+                  <a class="nav-link bold-font generalPills active" id="lineupsCurrentPill" data-season-type="current">
+                    <div class="basic-label bold-font lineups-pill-label">Current</div>
+                    <div class="pill-line"></div>
+                  </a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link bold-font generalPills" id="lineupsNextPill" data-season-type="next">
+                    <div class="basic-label bold-font lineups-pill-label">Next</div>
+                    <div class="pill-line"></div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div class="button-with-icon" id="lineupsViewButton">
+              <i class="bi bi-diagram-3"></i>
+              <span>Line ups</span>
+            </div>
+            <div class="form-check form-switch auto-contract">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="autoContractToggle">
+              <label class="form-check-label" for="flexSwitchCheckDefault">Auto contract</label>
+            </div>
           </div>
         </div>
-        <div class="d-flex">
+        <div class="d-flex" id="transfersMainLayout">
           <div class="col-2">
             <div class="main-columns-drag-section main-resizable" id="allDrivers">
               <div class="search-and-order">
@@ -2503,6 +2525,12 @@
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+        <div class="lineups-view d-none" id="lineupsView">
+          <div class="lineups-status d-none" id="lineupsStatus">Loading line ups...</div>
+          <div class="lineups-circle-wrap">
+            <div class="lineups-circle" id="lineupsCircle"></div>
           </div>
         </div>
       </div>

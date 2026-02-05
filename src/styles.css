@@ -689,6 +689,321 @@ i.bi-file-text:hover {
   right: 0;
 }
 
+.transfer-right-actions {
+  right: 14px;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.transfer-right-actions .auto-contract {
+  position: static;
+  right: auto;
+  padding-right: 0;
+}
+
+.lineups-season-pills-top {
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+}
+
+.lineups-season-pills-top .generalPills {
+  padding: 4px 10px !important;
+  min-width: 70px;
+}
+
+#lineupsViewButton.active {
+  background-color: var(--new-primary);
+  color: var(--negative-text);
+}
+
+#lineupsViewButton.active i {
+  color: var(--negative-text);
+}
+
+.lineups-view {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-right: 14px;
+  margin-top: 4px;
+  background-color: transparent;
+  border-radius: 10px;
+  box-shadow: none;
+  padding: 0;
+  min-height: 670px;
+  height: 100%;
+}
+
+.lineups-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lineups-season-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--elements);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: var(--shadow-s);
+}
+
+.lineups-pill {
+  border: none;
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--text-general);
+  font-size: 14px;
+  padding: 5px 14px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.lineups-pill:hover {
+  background-color: var(--table-hover);
+  color: var(--white-general);
+}
+
+.lineups-pill.active {
+  background-color: var(--text-general);
+  color: var(--negative-text);
+}
+
+.lineups-status {
+  color: var(--text-general);
+  font-size: 13px;
+  padding-left: 4px;
+}
+
+.lineups-circle-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  padding: 0 6px 10px;
+}
+
+.lineups-circle {
+  position: relative;
+  width: 90%;
+  min-width: 0;
+  min-height: 760px;
+}
+
+.lineups-team-card {
+  --lineup-accent: var(--new-primary);
+  position: absolute;
+  width: 272px;
+  min-height: 110px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(165deg,
+      color-mix(in srgb, var(--lineup-accent) 18%, var(--elements)) 0%,
+      color-mix(in srgb, var(--lineup-accent) 10%, var(--elements)) 34%,
+      color-mix(in srgb, var(--elements) 95%, black 5%) 100%);
+  border-radius: 10px;
+  box-shadow:
+    0 11px 24px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 8px 10px 9px;
+  color: var(--text-general);
+  transition: none;
+  cursor: default;
+  overflow: hidden;
+}
+
+.lineups-team-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 85% at -10% -18%, color-mix(in srgb, var(--lineup-accent) 30%, transparent), transparent 55%);
+  pointer-events: none;
+}
+
+.lineups-team-card::after {
+  content: none;
+}
+
+.lineups-team-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.lineups-team-logo {
+  width: 64px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 1px;
+}
+
+.lineups-team-logo img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.lineups-team-logo > *:not(img) {
+  transform: scale(0.75);
+  transform-origin: center;
+}
+
+.lineups-team-name {
+  width: 100%;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 12px;
+  line-height: 1.1;
+  color: var(--white-general);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lineups-team-drivers {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--separator) 72%, transparent);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.lineups-team-driver {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--text-general) 95%, white 5%);
+  text-align: center;
+  background-color: color-mix(in srgb, var(--background) 28%, transparent);
+  border-radius: 4px;
+  padding: 4px 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.05;
+  min-height: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lineups-driver-first {
+  display: block;
+  font-size: 10px;
+  opacity: 0.92;
+}
+
+.lineups-driver-last {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.lineups-team-driver.next-contract {
+  color: var(--new-primary);
+}
+
+.lineups-team-card.lineups-custom-team {
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.lineups-center-title {
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Formula1Dark';
+  color: color-mix(in srgb, var(--white-general) 95%, var(--new-primary) 5%);
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  line-height: 0.9;
+  pointer-events: none;
+  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  z-index: 0;
+  opacity: 0.96;
+}
+
+.lineups-center-year {
+  font-size: clamp(66px, 8vw, 130px);
+  line-height: 0.78;
+}
+
+.lineups-center-label {
+  font-size: clamp(24px, 3vw, 52px);
+  line-height: 0.88;
+}
+
+@media (max-width: 1200px) {
+  .lineups-circle {
+    min-height: 700px;
+  }
+
+  .lineups-team-card {
+    width: 242px;
+    min-height: 104px;
+    padding: 7px 9px;
+  }
+}
+
+@media (max-width: 900px) {
+  .lineups-view {
+    min-height: 560px;
+  }
+
+  .lineups-circle {
+    min-height: 620px;
+  }
+
+  .lineups-team-card {
+    width: 196px;
+    min-height: 98px;
+  }
+
+  .lineups-team-name,
+  .lineups-team-driver {
+    font-size: 11px;
+  }
+
+  .lineups-driver-last {
+    font-size: 12px;
+  }
+
+  .lineups-center-title {
+    letter-spacing: 0.8px;
+  }
+
+  .lineups-center-year {
+    font-size: clamp(46px, 8vw, 82px);
+  }
+
+  .lineups-center-label {
+    font-size: clamp(18px, 3.9vw, 34px);
+  }
+}
+
 .freeze-mentality {
   color: var(--text-general);
   font-size: 20px;
@@ -2379,6 +2694,7 @@ body.vaporwave-theme .background {
   top: 0;
   left: 0;
   opacity: 1;
+  height: 91vh;
   /* overflow-x: hidden; */
 }
 
@@ -5261,7 +5577,7 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 .flag {
   width: 95px;
   height: 45px;
-  border-radius: 10px;
+  border-radius: 6px;
   opacity: 0.45;
 }
 
