@@ -39,6 +39,9 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     polesH2H: [0, 0],
     winsH2H: [0, 0],
     sprintWinsH2H: [0, 0],
+    top10H2H: [0, 0],
+    q3H2H: [0, 0],
+    frontRowH2H: [0, 0],
 
     pointsH2H: null,
     bestRace: null,
@@ -56,7 +59,9 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       avgPace: [],
       avgQPace: [],
       RPositions: [],
-      QPositions: []
+      QPositions: [],
+      startPositions: [],
+      posGains: []
     },
     driver2: {
       bestRace: 21,
@@ -64,7 +69,9 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
       avgPace: [],
       avgQPace: [],
       RPositions: [],
-      QPositions: []
+      QPositions: [],
+      startPositions: [],
+      posGains: []
     }
   };
 
@@ -168,6 +175,18 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     if (d2_QRes === 1 && (!isCurrentYear || d2_QStage === 3)) {
       stats.polesH2H[1] += 1;
     }
+    if (d1_QStage === 3) {
+      stats.q3H2H[0] += 1;
+    }
+    if (d2_QStage === 3) {
+      stats.q3H2H[1] += 1;
+    }
+    if (d1_QRes <= 2) {
+      stats.frontRowH2H[0] += 1;
+    }
+    if (d2_QRes <= 2) {
+      stats.frontRowH2H[1] += 1;
+    }
 
     // Mejor qualifying
     if (d1_QRes < stats.driver1.bestQuali) {
@@ -188,6 +207,20 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
 
     const d2_RRes = queryDB(`
         SELECT FinishingPos
+        FROM Races_Results
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID = ?
+      `, [raceID, year, driver2ID], 'singleValue') || 99;
+    const d1_StartPos = queryDB(`
+        SELECT StartingPos
+        FROM Races_Results
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID = ?
+      `, [raceID, year, driver1ID], 'singleValue') || 99;
+    const d2_StartPos = queryDB(`
+        SELECT StartingPos
         FROM Races_Results
         WHERE RaceID = ?
           AND Season = ?
@@ -220,6 +253,8 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     // Guardamos posición de carrera
     stats.driver1.RPositions.push(d1_RRes);
     stats.driver2.RPositions.push(d2_RRes);
+    stats.driver1.startPositions.push(d1_StartPos);
+    stats.driver2.startPositions.push(d2_StartPos);
 
     // --- 3.7) DNFs
     const d1_RDNF = queryDB(`
@@ -240,6 +275,14 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
 
     if (d1_RDNF === 1) stats.dnfH2H[0] += 1;
     if (d2_RDNF === 1) stats.dnfH2H[1] += 1;
+    if (d1_RDNF !== 1 && d1_RRes <= 10) stats.top10H2H[0] += 1;
+    if (d2_RDNF !== 1 && d2_RRes <= 10) stats.top10H2H[1] += 1;
+    if (d1_RDNF !== 1) {
+      stats.driver1.posGains.push(Number((d1_StartPos - d1_RRes).toFixed(1)));
+    }
+    if (d2_RDNF !== 1) {
+      stats.driver2.posGains.push(Number((d2_StartPos - d2_RRes).toFixed(1)));
+    }
 
     // --- 3.8) Ritmo en carrera (avg pace) si ninguno hizo DNF
     if (d1_RDNF !== 1 && d2_RDNF !== 1) {
@@ -331,6 +374,10 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
   const meanQd2 = Number(mean(stats.driver2.QPositions).toFixed(1));
   const medianQd1 = median(stats.driver1.QPositions);
   const medianQd2 = median(stats.driver2.QPositions);
+  const meanGrid1 = Number(mean(stats.driver1.startPositions).toFixed(1));
+  const meanGrid2 = Number(mean(stats.driver2.startPositions).toFixed(1));
+  const meanGain1 = Number(mean(stats.driver1.posGains).toFixed(1));
+  const meanGain2 = Number(mean(stats.driver2.posGains).toFixed(1));
 
   const rDifferences = stats.driver1.avgPace.map((val, i) => (stats.driver2.avgPace[i] ?? 0) - val);
   const avg_racediff = Number(mean(rDifferences).toFixed(3));
@@ -355,7 +402,12 @@ export function fetchHead2Head(driver1ID, driver2ID, year, isCurrentYear = true)
     [meanRd1, meanRd2],                      // 12) (meanRd1, meanRd2)
     [medianRd1, medianRd2],                  // 13) (medianRd1, medianRd2)
     [meanQd1, meanQd2],                      // 14) (meanQd1, meanQd2)
-    [medianQd1, medianQd2]                   // 15) (medianQd1, medianQd2)
+    [medianQd1, medianQd2],                  // 15) (medianQd1, medianQd2)
+    [meanGrid1, meanGrid2],                  // 16) (meanGrid1, meanGrid2)
+    [meanGain1, meanGain2],                  // 17) (meanGain1, meanGain2)
+    stats.top10H2H,                          // 18) (top10H2H)
+    stats.q3H2H,                             // 19) (q3H2H)
+    stats.frontRowH2H                        // 20) (frontRowH2H)
   ];
 
   // 4) Retornamos este array en vez de 'stats'
@@ -390,6 +442,9 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const polesH2H = [0, 0];
   const winsH2H = [0, 0];
   const sprintWinsH2H = [0, 0];
+  const top10H2H = [0, 0];
+  const q3H2H = [0, 0];
+  const frontRowH2H = [0, 0];
 
   let d1_BestRace = 21;
   let d2_BestRace = 21;
@@ -400,6 +455,14 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
   const d2_avgPace = [];
   const d1_avgQPace = [];
   const d2_avgQPace = [];
+  const d1_RPositions = [];
+  const d2_RPositions = [];
+  const d1_QPositions = [];
+  const d2_QPositions = [];
+  const d1_startPositions = [];
+  const d2_startPositions = [];
+  const d1_posGains = [];
+  const d2_posGains = [];
 
   // 3) Iteramos por cada carrera encontrada
   for (const raceID of raceIDs) {
@@ -536,6 +599,18 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     if (d2_QRes === 1 && (!isCurrentYear || d2_QStage === 3)) {
       polesH2H[1] += 1;
     }
+    if (d1_QStage === 3) {
+      q3H2H[0] += 1;
+    }
+    if (d2_QStage === 3) {
+      q3H2H[1] += 1;
+    }
+    if (d1_QRes <= 2) {
+      frontRowH2H[0] += 1;
+    }
+    if (d2_QRes <= 2) {
+      frontRowH2H[1] += 1;
+    }
 
     // Best Quali
     if (d1_QRes < d1_BestQauli) {
@@ -561,6 +636,20 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
           AND Season = ?
           AND DriverID IN (${d2Placeholders})
       `, [raceID, season, ...drivers2IDs], 'singleValue') || 99;
+    const d1_StartPos = queryDB(`
+        SELECT MIN(StartingPos)
+        FROM Races_Results
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d1Placeholders})
+      `, [raceID, season, ...drivers1IDs], 'singleValue') || 99;
+    const d2_StartPos = queryDB(`
+        SELECT MIN(StartingPos)
+        FROM Races_Results
+        WHERE RaceID = ?
+          AND Season = ?
+          AND DriverID IN (${d2Placeholders})
+      `, [raceID, season, ...drivers2IDs], 'singleValue') || 99;
 
     // Wins
     if (d1_RRes === 1) winsH2H[0] += 1;
@@ -572,10 +661,16 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     } else if (d1_RRes > d2_RRes) {
       raceH2H[1] += 1;
     }
+    d1_RPositions.push(d1_RRes);
+    d2_RPositions.push(d2_RRes);
+    d1_startPositions.push(d1_StartPos);
+    d2_startPositions.push(d2_StartPos);
 
     // Podios
     if (d1_RRes <= 3) podiumsH2H[0] += 1;
     if (d2_RRes <= 3) podiumsH2H[1] += 1;
+    if (d1_RRes <= 10) top10H2H[0] += 1;
+    if (d2_RRes <= 10) top10H2H[1] += 1;
 
     // Best Race
     if (d1_RRes < d1_BestRace) {
@@ -604,6 +699,12 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
 
     dnfH2H[0] += d1_RDNF;
     dnfH2H[1] += d2_RDNF;
+    if (d1_RDNF === 0) {
+      d1_posGains.push(Number((d1_StartPos - d1_RRes).toFixed(1)));
+    }
+    if (d2_RDNF === 0) {
+      d2_posGains.push(Number((d2_StartPos - d2_RRes).toFixed(1)));
+    }
 
 
     // 3.8) Ritmo de carrera (si al menos un piloto del equipo no hizo DNF)
@@ -666,6 +767,8 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     if (d2_SRes === 1) {
       sprintWinsH2H[1] += 1;
     }
+    d1_QPositions.push(d1_QRes);
+    d2_QPositions.push(d2_QRes);
   }
 
   // 4) Puntos de cada equipo en el campeonato (TeamStandings)
@@ -714,6 +817,18 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
 
   const avg_racediff = Number(mean(rDifferences).toFixed(3));
   const avg_qualidiff = Number(mean(qDifferences).toFixed(3));
+  const meanRd1 = Number(mean(d1_RPositions).toFixed(1));
+  const meanRd2 = Number(mean(d2_RPositions).toFixed(1));
+  const medianRd1 = median(d1_RPositions);
+  const medianRd2 = median(d2_RPositions);
+  const meanQd1 = Number(mean(d1_QPositions).toFixed(1));
+  const meanQd2 = Number(mean(d2_QPositions).toFixed(1));
+  const medianQd1 = median(d1_QPositions);
+  const medianQd2 = median(d2_QPositions);
+  const meanGrid1 = Number(mean(d1_startPositions).toFixed(1));
+  const meanGrid2 = Number(mean(d2_startPositions).toFixed(1));
+  const meanGain1 = Number(mean(d1_posGains).toFixed(1));
+  const meanGain2 = Number(mean(d2_posGains).toFixed(1));
 
 
   const resultList = [
@@ -728,7 +843,16 @@ export function fetchHead2HeadTeam(teamID1, teamID2, year, isCurrentYear = true)
     polesH2H,
     sprintWinsH2H,
     [-avg_racediff, avg_racediff],
-    [-avg_qualidiff, avg_qualidiff]
+    [-avg_qualidiff, avg_qualidiff],
+    [meanRd1, meanRd2],
+    [medianRd1, medianRd2],
+    [meanQd1, meanQd2],
+    [medianQd1, medianQd2],
+    [meanGrid1, meanGrid2],
+    [meanGain1, meanGain2],
+    top10H2H,
+    q3H2H,
+    frontRowH2H
   ];
 
   // 7) Retornamos el array final
