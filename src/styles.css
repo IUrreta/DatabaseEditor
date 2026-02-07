@@ -11544,6 +11544,11 @@ input[type='number'] {
   transition: color 0.15s;
 }
 
+.team-h2h-logo {
+  width: 40px;
+  height: 40px;
+}
+
 
 #redbull,
 .rbborder-down:hover {

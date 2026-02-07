@@ -1,4 +1,4 @@
-import { races_names, team_dict, combined_dict, lightColors, theme_colors } from "./config";
+import { races_names, team_dict, combined_dict, lightColors, theme_colors, logos_disc } from "./config";
 import { game_version, custom_team, selectedTheme } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import Chart from 'chart.js/auto';
@@ -19,7 +19,8 @@ let poles = false;
 let sprints = false;
 let race = 0;
 let quali = 0;
-let menuLength = 4;
+const raceMenuLength = 7;
+const qualiMenuLength = 6;
 let driverGraph;
 let pointsGraph;
 let qualiGraph;
@@ -40,6 +41,30 @@ let queuedAutoCompareDrivers = null;
 export let mid_grid = 10;
 export let max_races = 23;
 export let relative_grid = 5;
+
+function formatSignedValue(value) {
+    if (value > 0) {
+        return `+${value}`;
+    }
+    return `${value}`;
+}
+
+function renderTeamLogo(container, teamId) {
+    if (!container) return;
+    const logoSrc = logos_disc[teamId];
+    const teamName = combined_dict[teamId] || "";
+    container.innerHTML = "";
+    container.title = teamName;
+    if (!logoSrc) {
+        container.textContent = teamName;
+        return;
+    }
+    const logoImg = document.createElement("img");
+    logoImg.className = "drivers-table-logo team-h2h-logo";
+    logoImg.src = logoSrc;
+    logoImg.alt = teamName;
+    container.appendChild(logoImg);
+}
 
 export function setMidGrid(value) {
     mid_grid = value
@@ -213,6 +238,26 @@ export function manage_h2h_bars(data) {
                         elem.querySelector(".driver1-number").textContent = data[15][0]
                         elem.querySelector(".driver2-number").textContent = data[15][1]
                     }
+                    else if (quali === 4) {
+                        relValue = (100 / (data[19][0] + data[19][1])).toFixed(2)
+                        if (relValue == Infinity) {
+                            relValue = 0
+                        }
+                        d1_width = data[19][0] * relValue
+                        d2_width = data[19][1] * relValue
+                        elem.querySelector(".driver1-number").textContent = data[19][0]
+                        elem.querySelector(".driver2-number").textContent = data[19][1]
+                    }
+                    else if (quali === 5) {
+                        relValue = (100 / (data[20][0] + data[20][1])).toFixed(2)
+                        if (relValue == Infinity) {
+                            relValue = 0
+                        }
+                        d1_width = data[20][0] * relValue
+                        d2_width = data[20][1] * relValue
+                        elem.querySelector(".driver1-number").textContent = data[20][0]
+                        elem.querySelector(".driver2-number").textContent = data[20][1]
+                    }
                 }
 
                 if (elem.id === "raceh2h") {
@@ -236,6 +281,32 @@ export function manage_h2h_bars(data) {
                         d2_width = 100 - (data[13][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[13][0]
                         elem.querySelector(".driver2-number").textContent = data[13][1]
+                    }
+                    else if (race === 4) {
+                        d1_width = 100 - (data[16][0] - 1) * relative_grid
+                        d2_width = 100 - (data[16][1] - 1) * relative_grid
+                        elem.querySelector(".driver1-number").textContent = data[16][0]
+                        elem.querySelector(".driver2-number").textContent = data[16][1]
+                    }
+                    else if (race === 5) {
+                        let maxGain = Math.max(Math.abs(data[17][0]), Math.abs(data[17][1]))
+                        if (maxGain === 0) {
+                            maxGain = 1
+                        }
+                        d1_width = (Math.abs(data[17][0]) / maxGain) * 100
+                        d2_width = (Math.abs(data[17][1]) / maxGain) * 100
+                        elem.querySelector(".driver1-number").textContent = formatSignedValue(data[17][0])
+                        elem.querySelector(".driver2-number").textContent = formatSignedValue(data[17][1])
+                    }
+                    else if (race === 6) {
+                        relValue = (100 / (data[18][0] + data[18][1])).toFixed(2)
+                        if (relValue == Infinity) {
+                            relValue = 0
+                        }
+                        d1_width = data[18][0] * relValue
+                        d2_width = data[18][1] * relValue
+                        elem.querySelector(".driver1-number").textContent = data[18][0]
+                        elem.querySelector(".driver2-number").textContent = data[18][1]
                     }
                 }
 
@@ -396,6 +467,35 @@ function toggle_racePace() {
             elem.querySelector(".driver1-number").textContent = compData[13][0]
             elem.querySelector(".driver2-number").textContent = compData[13][1]
         }
+        else if (race === 4) {
+            elem.querySelector(".only-name").textContent = "AVG GRID"
+            d1_width = 100 - (compData[16][0] - 1) * 5
+            d2_width = 100 - (compData[16][1] - 1) * 5
+            elem.querySelector(".driver1-number").textContent = compData[16][0]
+            elem.querySelector(".driver2-number").textContent = compData[16][1]
+        }
+        else if (race === 5) {
+            elem.querySelector(".only-name").textContent = "AVG POS GAIN"
+            let maxGain = Math.max(Math.abs(compData[17][0]), Math.abs(compData[17][1]))
+            if (maxGain === 0) {
+                maxGain = 1
+            }
+            d1_width = (Math.abs(compData[17][0]) / maxGain) * 100
+            d2_width = (Math.abs(compData[17][1]) / maxGain) * 100
+            elem.querySelector(".driver1-number").textContent = formatSignedValue(compData[17][0])
+            elem.querySelector(".driver2-number").textContent = formatSignedValue(compData[17][1])
+        }
+        else if (race === 6) {
+            elem.querySelector(".only-name").textContent = "TOP 10s"
+            relValue = (100 / (compData[18][0] + compData[18][1])).toFixed(2)
+            if (relValue == Infinity) {
+                relValue = 0
+            }
+            d1_width = compData[18][0] * relValue
+            d2_width = compData[18][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[18][0]
+            elem.querySelector(".driver2-number").textContent = compData[18][1]
+        }
         fill_bars(elem, d1_width, d2_width)
     }
 
@@ -456,6 +556,28 @@ function toggle_qualiPace() {
             elem.querySelector(".driver1-number").textContent = compData[15][0]
             elem.querySelector(".driver2-number").textContent = compData[15][1]
         }
+        else if (quali === 4) {
+            elem.querySelector(".only-name").textContent = "Q3 APPEARANCES"
+            relValue = (100 / (compData[19][0] + compData[19][1])).toFixed(2)
+            if (relValue == Infinity) {
+                relValue = 0
+            }
+            d1_width = compData[19][0] * relValue
+            d2_width = compData[19][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[19][0]
+            elem.querySelector(".driver2-number").textContent = compData[19][1]
+        }
+        else if (quali === 5) {
+            elem.querySelector(".only-name").textContent = "FRONT ROWS"
+            relValue = (100 / (compData[20][0] + compData[20][1])).toFixed(2)
+            if (relValue == Infinity) {
+                relValue = 0
+            }
+            d1_width = compData[20][0] * relValue
+            d2_width = compData[20][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[20][0]
+            elem.querySelector(".driver2-number").textContent = compData[20][1]
+        }
         fill_bars(elem, d1_width, d2_width)
     }
 }
@@ -504,7 +626,7 @@ export function qualiPaceListener() {
  */
 function increase_racePaceView() {
     race += 1
-    race = race % menuLength
+    race = race % raceMenuLength
     toggle_racePace()
 }
 
@@ -513,7 +635,7 @@ function increase_racePaceView() {
  */
 function decrease_racePaceView() {
     race -= 1
-    race = (race + menuLength) % menuLength
+    race = (race + raceMenuLength) % raceMenuLength
     toggle_racePace()
 }
 
@@ -522,7 +644,7 @@ function decrease_racePaceView() {
  */
 function increase_qualiPaceView() {
     quali += 1
-    quali = quali % menuLength
+    quali = quali % qualiMenuLength
     toggle_qualiPace()
 }
 
@@ -531,7 +653,7 @@ function increase_qualiPaceView() {
  */
 function decrease_qualiPaceView() {
     quali -= 1
-    quali = (quali + menuLength) % menuLength
+    quali = (quali + qualiMenuLength) % qualiMenuLength
     toggle_qualiPace()
 }
 
@@ -830,7 +952,6 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         document.querySelector("#raceForm").click()
         race = 0
         quali = 0
-        menuLength = 4
         document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
         document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
         document.getElementById("raceh2h").querySelector(".bar-space").classList.remove("d-none")
@@ -844,7 +965,6 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         document.querySelector("#gapToWinner").classList.add("d-none")
         document.querySelector("#gapToPole").classList.add("d-none")
         document.querySelector("#pointsProgression").click()
-        menuLength = 2
         race = 0
         quali = 0
         document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
@@ -968,8 +1088,9 @@ function nameTitleD1(aDriver1) {
         document.querySelector(".driver1-first").classList.add("d-none")
         document.querySelector(".driver1-second").classList.add("d-none")
         document.querySelector(".team1").classList.remove("d-none")
-        document.querySelector(".team1").textContent = driver1Sel.children[0].children[1].innerText
-        document.querySelector(".team1").dataset.teamid = driver1Sel.dataset.teamid
+        const teamId = Number(driver1Sel.dataset.teamid)
+        document.querySelector(".team1").dataset.teamid = teamId
+        renderTeamLogo(document.querySelector(".team1"), teamId)
     }
 
 }
@@ -996,8 +1117,9 @@ function nameTitleD2(aDriver2) {
         document.querySelector(".driver2-first").classList.add("d-none")
         document.querySelector(".driver2-second").classList.add("d-none")
         document.querySelector(".team2").classList.remove("d-none")
-        document.querySelector(".team2").textContent = driver2Sel.children[0].children[1].innerText
-        document.querySelector(".team2").dataset.teamid = driver2Sel.dataset.teamid
+        const teamId = Number(driver2Sel.dataset.teamid)
+        document.querySelector(".team2").dataset.teamid = teamId
+        renderTeamLogo(document.querySelector(".team2"), teamId)
     }
 }
 
@@ -1472,6 +1594,20 @@ function findLastNonNaNIndex(arr) {
     return -1; // Devuelve -1 si todos los valores son NaN
 }
 
+function getLineChartAnimation() {
+    const delayBetweenPoints = 50;
+    return {
+        duration: 700,
+        easing: 'linear',
+        delay(context) {
+            if (context.type !== 'data') {
+                return 0;
+            }
+            return context.dataIndex * delayBetweenPoints;
+        }
+    };
+}
+
 function updateMaxYAxis(newMax) {
     driverGraph.options.scales.y.max = newMax;
     qualiGraph.options.scales.y.max = newMax;
@@ -1495,6 +1631,7 @@ function createRaceChart(labelsArray, max) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: getLineChartAnimation(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1620,6 +1757,7 @@ function createQualiChart(labelsArray, max, q2_line) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: getLineChartAnimation(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1751,6 +1889,7 @@ function createPointsChart(labelsArray) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: getLineChartAnimation(),
                 interaction: {
                     mode: 'index'
                 },
