@@ -293,17 +293,17 @@ function updateNumberDisplay(race, index) {
     if (!numberDiv) return;
     numberDiv.innerHTML = "";
     numberDiv.classList.remove("race-calendar-number-completed", "race-calendar-number-delete");
-    if (deleting) {
-        const icon = document.createElement("i");
-        icon.className = "bi bi-trash-fill";
-        numberDiv.classList.add("race-calendar-number-delete");
-        numberDiv.appendChild(icon);
-        return;
-    }
     if (race.classList.contains("completed")) {
         const icon = document.createElement("i");
         icon.className = "bi bi-check-lg";
         numberDiv.classList.add("race-calendar-number-completed");
+        numberDiv.appendChild(icon);
+        return;
+    }
+    if (deleting) {
+        const icon = document.createElement("i");
+        icon.className = "bi bi-trash-fill";
+        numberDiv.classList.add("race-calendar-number-delete");
         numberDiv.appendChild(icon);
         return;
     }
@@ -508,3 +508,4 @@ interact('.race-calendar').draggable({
         }
     }
 })
+

@@ -5365,11 +5365,11 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 }
 
 .race-calendar.drop-before {
-  box-shadow: 0 -3px 0 var(--positive-general) inset, var(--shadow-s);
+  box-shadow: var(--shadow-s);
 }
 
 .race-calendar.drop-after {
-  box-shadow: 0 3px 0 var(--positive-general) inset, var(--shadow-s);
+  box-shadow: var(--shadow-s);
 }
 
 .race-series-badges {
@@ -5444,6 +5444,16 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   font-size: 28px;
 }
 
+.race-calendar-number-delete i {
+  border-radius: 8px;
+  transition: background-color 0.15s;
+  padding: 0 4px;
+}
+
+.race-calendar-number-delete i:hover {
+  background-color: color-mix(in srgb, var(--delete-div) 30%, transparent);
+}
+
 .upper-text-and-flag {
   display: flex;
   flex-direction: row;
@@ -5503,9 +5513,23 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 }
 
 
-.race-calendar:hover {
+.race-calendar:not(.completed):hover {
   color: var(--white-general);
   background-color: var(--elements-hover);
+}
+
+.race-calendar.completed,
+.race-calendar.completed:hover {
+  color: var(--text-general);
+  background-color: var(--elements);
+  border: none;
+  box-shadow: var(--shadow-s);
+}
+
+.race-calendar.completed .left-race,
+.race-calendar.completed .right-race,
+.race-calendar.completed .race-series-badges {
+  pointer-events: none;
 }
 
 .pit-crew-button {
@@ -5548,7 +5572,7 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   backdrop-filter: blur(5px);
 }
 
-.completed:hover {
+.race-calendar.completed:hover {
   border-color: transparent;
 }
 
