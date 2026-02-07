@@ -2986,6 +2986,27 @@ function buildGridLineupsData(season) {
     const teamIds = globals.isCreateATeam
         ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
         : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const currentTeamFilterSql = globals.isCreateATeam
+        ? `(TeamID BETWEEN 1 AND 10 OR TeamID = 32)`
+        : `(TeamID BETWEEN 1 AND 10)`;
+    const currentContractsRows = queryDB(
+        `SELECT StaffID, TeamID
+            FROM Staff_Contracts
+            WHERE ContractType = 0
+              AND PosInTeam <= 2
+              AND EndSeason >= ?
+              AND ${currentTeamFilterSql}`,
+        [season],
+        'allRows'
+    ) || [];
+    const currentTeamByDriver = new Map();
+    currentContractsRows.forEach((row) => {
+        const driverId = Number(row[0]);
+        const teamId = Number(row[1]);
+        if (Number.isFinite(driverId) && Number.isFinite(teamId)) {
+            currentTeamByDriver.set(driverId, teamId);
+        }
+    });
 
     const teamsDict = {};
 
@@ -3056,13 +3077,15 @@ function buildGridLineupsData(season) {
             if (seenNextSeason.has(driverId)) return;
             seenNextSeason.add(driverId);
             const driverNumber = Number(d[6]);
+            const currentTeamId = Number(currentTeamByDriver.get(driverId));
+            const isTeamChangeForNextSeason = contractType === 3 && currentTeamId !== teamId;
             teamInfo.driversNextSeason.push({
                 name: news_insert_space(name[0]),
                 driverId,
                 posInTeam: Number(d[5]) || null,
                 contractType,
                 driverNumber: Number.isFinite(driverNumber) && driverNumber > 0 ? driverNumber : null,
-                isForNextSeason: contractType === 3
+                isForNextSeason: isTeamChangeForNextSeason
             });
         });
 

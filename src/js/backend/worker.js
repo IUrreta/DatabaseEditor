@@ -145,13 +145,9 @@ const workerCommands = {
     postMessage({ responseMessage: "Year fetched", content: year });
 
     const previousYear = Number(year) - 1;
-    if (previousYear > 0) {
-      const standings = fetchTeamsStandings(previousYear, 1);
-      postMessage({
-        responseMessage: "Previous year teams standings fetched",
-        content: { year: previousYear, standings }
-      });
-    }
+    const standings = fetchTeamsStandings(previousYear, 1);
+    postMessage({responseMessage: "Previous year teams standings fetched", content: { year: previousYear, standings }});
+  
 
     const numbers = fetchDriverNumbers();
     postMessage({ responseMessage: "Numbers fetched", content: numbers });
@@ -607,7 +603,19 @@ const workerCommands = {
   },
   lineupsRequest: (data, postMessage) => {
     const lineups = getCurrentAndNextSeasonGridLineups();
-    postMessage({ responseMessage: "Lineups fetched", content: lineups });
+    const season = Number(lineups?.season) || 0;
+    const previousSeason = season > 0 ? (season - 1) : 0;
+    const previousSeasonStandings = previousSeason > 0
+      ? fetchTeamsStandings(previousSeason, 1)
+      : [];
+    postMessage({
+      responseMessage: "Lineups fetched",
+      content: {
+        ...lineups,
+        previousSeason,
+        previousSeasonStandings
+      }
+    });
   },
   updateCombinedDict: (data, postMessage) => {
     const teamId = data.teamID;

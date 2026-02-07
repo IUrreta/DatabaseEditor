@@ -1641,7 +1641,19 @@ function getLineupsTeamIds(payload) {
         ? payload.teamIds.map(id => Number(id))
         : Object.keys(payload?.teams || {}).map(id => Number(id));
     const standardOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32];
-    return standardOrder.filter(id => availableIds.includes(id));
+
+    const standingsRows = Array.isArray(payload?.previousSeasonStandings)
+        ? payload.previousSeasonStandings
+        : [];
+
+    const standingsOrder = standingsRows
+        .map((row) => Number(Array.isArray(row) ? row[0] : (row?.teamId ?? row?.TeamID)))
+        .filter((teamId) => Number.isFinite(teamId) && availableIds.includes(teamId));
+
+    const uniqueStandingsOrder = [...new Set(standingsOrder)];
+    const fallbackOrder = standardOrder.filter((id) => availableIds.includes(id) && !uniqueStandingsOrder.includes(id));
+
+    return [...uniqueStandingsOrder, ...fallbackOrder];
 }
 
 function buildFallbackLogo(teamId) {
@@ -1750,7 +1762,7 @@ function createLineupDriverRows(teamInfo, seasonType) {
         const rawName = (driver?.name || "TBD").trim();
         if (rawName === "TBD") {
             const last = document.createElement("span");
-            last.classList.add("lineups-driver-last", "bold-font");
+            last.classList.add("lineups-driver-last", "bold-font", "to-be-decided");
             last.textContent = "TBD";
             line.appendChild(last);
             rows.appendChild(line);
@@ -1819,12 +1831,14 @@ function buildLineupCard(teamId, teamInfo, seasonType) {
 
 function computeLineupPositions(teamIds, width, height) {
     const positions = new Map();
-    const hasCustomTeam = teamIds.includes(32);
-    const regularTeams = hasCustomTeam ? teamIds.filter(id => id !== 32) : teamIds.slice();
-    const leftTeams = regularTeams.slice(0, Math.ceil(regularTeams.length / 2));
-    const rightTeams = regularTeams.slice(Math.ceil(regularTeams.length / 2));
+    const hasCenterBottomTeam = teamIds.length % 2 === 1;
+    const centerBottomTeamId = hasCenterBottomTeam ? teamIds[teamIds.length - 1] : null;
+    const pairedTeams = hasCenterBottomTeam ? teamIds.slice(0, -1) : teamIds.slice();
+    // Alternate by standings rank: 1st left, 2nd right, 3rd left, 4th right, ...
+    const leftTeams = pairedTeams.filter((_, idx) => idx % 2 === 0);
+    const rightTeams = pairedTeams.filter((_, idx) => idx % 2 === 1);
     const topY = height * 0.06;
-    const bottomY = hasCustomTeam ? (height * 0.80) : (height * 0.90);
+    const bottomY = hasCenterBottomTeam ? (height * 0.80) : (height * 0.90);
 
     const buildYPositions = (count) => {
         if (count <= 0) return [];
@@ -1842,9 +1856,9 @@ function computeLineupPositions(teamIds, width, height) {
 
         const getArcStrength = (idx) => {
             // Hand-tuned 5-row profile: tighter top pair, strong middle opening,
-            // and configurable bottom pair spacing for custom-team saves.
+            // and configurable bottom pair spacing when there is a bottom-center team.
             if (teamsInColumn.length === 5) {
-                if (hasCustomTeam) {
+                if (hasCenterBottomTeam) {
                     // Wider bottom spread to leave cleaner space for team 11 in the center.
                     return [-0.7, -0.1, 0.3, 0.1, -0.3][idx];
                 }
@@ -1877,8 +1891,8 @@ function computeLineupPositions(teamIds, width, height) {
     placeColumn(leftTeams, "left");
     placeColumn(rightTeams, "right");
 
-    if (hasCustomTeam) {
-        positions.set(32, {
+    if (centerBottomTeamId != null) {
+        positions.set(centerBottomTeamId, {
             x: width * 0.5,
             y: height * 0.91
         });

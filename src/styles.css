@@ -963,6 +963,10 @@ i.bi-file-text:hover {
   letter-spacing: 0.2px;
 }
 
+.to-be-decided{
+  color: var(--text-tertiary);
+}
+
 .lineups-team-driver.next-contract {
   color: var(--new-primary);
 }
@@ -5888,6 +5892,12 @@ body.light-theme .flag-header img {
   position: relative;
 }
 
+.driver1-name[class*="-back-normal"]::after,
+.driver2-name[class*="-back-normal"]::after {
+  opacity: 0.45;
+  filter: saturate(0.75);
+}
+
 .driver1-first,
 .driver1-second,
 .driver2-first,
@@ -8298,13 +8308,14 @@ body.og-theme .records-list {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
+  margin: 0 -10px;
 }
 
 .record-logo-div img, .record-logo-div div {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 }
 
 .record-team-drivers{
@@ -11536,6 +11547,13 @@ input[type='number'] {
 .team2 {
   max-width: 150px;
   text-align: center;
+  position: relative;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 4px;
 }
 
 .driver1-name .team1,
@@ -11544,9 +11562,28 @@ input[type='number'] {
   transition: color 0.15s;
 }
 
+.team-h2h-name-bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: color-mix(in srgb, var(--text-general) 75%, transparent);
+  opacity: 0.5;
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 1.2px;
+  font-size: 26px;
+  text-transform: uppercase;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .team-h2h-logo {
   width: 40px;
   height: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 

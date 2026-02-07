@@ -49,16 +49,29 @@ function formatSignedValue(value) {
     return `${value}`;
 }
 
+function getCompletedRaceIdsSet(data) {
+    const completedRaceIds = data?.[data.length - 1];
+    if (!Array.isArray(completedRaceIds)) {
+        return new Set();
+    }
+    return new Set(completedRaceIds.map((raceId) => Number(raceId)));
+}
+
 function renderTeamLogo(container, teamId) {
     if (!container) return;
     const logoSrc = logos_disc[teamId];
     const teamName = combined_dict[teamId] || "";
     container.innerHTML = "";
+    container.parentNode.querySelector(".team-h2h-name-bg")?.remove();
     container.title = teamName;
     if (!logoSrc) {
         container.textContent = teamName;
         return;
     }
+    const watermark = document.createElement("span");
+    watermark.className = "team-h2h-name-bg bold-font";
+    watermark.textContent = teamName.toUpperCase();
+    container.parentNode.appendChild(watermark);
     const logoImg = document.createElement("img");
     logoImg.className = "drivers-table-logo team-h2h-logo";
     logoImg.src = logoSrc;
@@ -1263,7 +1276,14 @@ function load_teams_points_graph(data) {
                 if (teamPoints.length === 0) {
                     teamPoints = [...points];
                 } else {
-                    teamPoints = teamPoints.map((point, index) => point + points[index]);
+                    teamPoints = teamPoints.map((point, index) => {
+                        const pointA = point;
+                        const pointB = points[index];
+                        if (pointA == null && pointB == null) {
+                            return null;
+                        }
+                        return (pointA ?? 0) + (pointB ?? 0);
+                    });
                 }
 
             })
@@ -1276,7 +1296,9 @@ function load_teams_points_graph(data) {
                 pointBackgroundColor: team_color,
                 borderWidth: 2,
                 pointRadius: 0,
+                pointHoverRadius: 4,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7,
                 datalabels: {
                     color: function () {
@@ -1309,35 +1331,34 @@ function load_teams_points_graph(data) {
 }
 
 function get_one_driver_points_format(driver, data) {
-    let d1_races = [];
-    let d1_points_provisional = []
+    const completedRaceIds = getCompletedRaceIdsSet(data);
+    const pointsByRaceId = new Map();
     let d1_points = [0]
 
     driver["races"].forEach(function (elem) {
-        d1_races.push(elem["raceId"]);
+        const raceId = Number(elem["raceId"]);
         let ptsThatRace = Number(elem["points"]);
-        if (ptsThatRace === -1) {
+        if (!Number.isFinite(ptsThatRace) || ptsThatRace < 0) {
             ptsThatRace = 0;
         }
         const qualiPts = Number(elem["qualifyingPoints"]);
-        const qPts = (qualiPts > 0) ? qualiPts : 0;
+        const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
         const sprintPts = Number(elem["sprintPoints"]);
-        const sPts = (elem["sprintPoints"] != null && sprintPts !== -1) ? sprintPts : 0;
-        d1_points_provisional.push(ptsThatRace + qPts + sPts);
+        const sPts = (elem["sprintPoints"] != null && Number.isFinite(sprintPts) && sprintPts >= 0) ? sprintPts : 0;
+        pointsByRaceId.set(raceId, ptsThatRace + qPts + sPts);
     })
     data[0].forEach(function (elem) {
-        let index1 = d1_races.indexOf(elem[0])
-        if (index1 !== -1) {
-            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
+        const raceId = Number(elem[0]);
+        const raceCompleted = completedRaceIds.has(raceId);
+        if (!raceCompleted) {
+            d1_points.push(null);
+            return;
+        }
+        if (pointsByRaceId.has(raceId)) {
+            d1_points.push(pointsByRaceId.get(raceId) + d1_points[d1_points.length - 1])
         }
         else {
-            if (data[data.length - 1].indexOf(elem[0]) !== -1) {
-                d1_points.push(d1_points[d1_points.length - 1])
-            }
-            else {
-                    d1_points.push(null)
-            }
-
+            d1_points.push(d1_points[d1_points.length - 1])
         }
 
     })
@@ -1352,6 +1373,7 @@ function load_graphs_data(drivers) {
     let max_gapWinner = 0;
     const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
     const races_done = drivers[drivers.length - 1]; // array de raceId ya corridas
+    const racesDoneSet = new Set(Array.isArray(races_done) ? races_done.map((raceId) => Number(raceId)) : []);
 
     // drivers: array de objetos de piloto (NO metas pairTeamPos/pointsInfo aquí)
     drivers.forEach(function (driv, index) {
@@ -1436,10 +1458,12 @@ function load_graphs_data(drivers) {
                 d1_color = colors_dict[driv.latestTeamId + "1"];
             }
 
-            races_ids.forEach(function (rid) {
-                const idx = d1_races.indexOf(Number(rid));
+            races_ids.forEach(function (ridRaw) {
+                const rid = Number(ridRaw);
+                const idx = d1_races.indexOf(rid);
+                const raceCompleted = racesDoneSet.has(rid);
 
-                if (idx !== -1) {
+                if (idx !== -1 && raceCompleted) {
                     // resultado carrera
                     if (d1_provisonal[idx] === -1) {
                         d1_res.push(null);
@@ -1482,7 +1506,7 @@ function load_graphs_data(drivers) {
                     // no corrió / no hay datos para este rid
                     d1_res.push(null);
                     d1_qualis.push(null);
-                    if (races_done.includes(rid)) {
+                    if (raceCompleted) {
                         d1_points.push(d1_points[d1_points.length - 1]);
                     } else {
                         d1_points.push(null);
@@ -1510,6 +1534,7 @@ function load_graphs_data(drivers) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7
             });
 
@@ -1520,6 +1545,7 @@ function load_graphs_data(drivers) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7
             });
 
@@ -1529,7 +1555,9 @@ function load_graphs_data(drivers) {
                 borderColor: d1_color,
                 pointBackgroundColor: d1_color,
                 pointRadius: 0,
+                pointHoverRadius: 4,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7,
                 datalabels: {
                     color: function () {
@@ -1594,25 +1622,27 @@ function findLastNonNaNIndex(arr) {
     return -1; // Devuelve -1 si todos los valores son NaN
 }
 
-function getLineChartAnimation() {
-    const delayBetweenPoints = 50;
-    return {
-        duration: 700,
-        easing: 'linear',
-        delay(context) {
-            if (context.type !== 'data') {
-                return 0;
-            }
-            return context.dataIndex * delayBetweenPoints;
-        }
-    };
-}
-
 function updateMaxYAxis(newMax) {
     driverGraph.options.scales.y.max = newMax;
     qualiGraph.options.scales.y.max = newMax;
     driverGraph.update();
     qualiGraph.update();
+}
+
+function getNoEntryAnimationWithHoverTransition() {
+    return {
+        animation: {
+            duration: 0
+        },
+        transitions: {
+            active: {
+                animation: {
+                    duration: 180,
+                    easing: 'easeOutQuad'
+                }
+            }
+        }
+    };
 }
 
 /**
@@ -1631,7 +1661,7 @@ function createRaceChart(labelsArray, max) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: getLineChartAnimation(),
+                ...getNoEntryAnimationWithHoverTransition(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1757,7 +1787,7 @@ function createQualiChart(labelsArray, max, q2_line) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: getLineChartAnimation(),
+                ...getNoEntryAnimationWithHoverTransition(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1889,7 +1919,7 @@ function createPointsChart(labelsArray) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                animation: getLineChartAnimation(),
+                ...getNoEntryAnimationWithHoverTransition(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1967,6 +1997,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
     let commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        ...getNoEntryAnimationWithHoverTransition(),
         interaction: {
             mode: 'index'
         },
