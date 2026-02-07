@@ -28,7 +28,6 @@ const lineupsViewButton = document.getElementById("lineupsViewButton");
 const transfersMainLayout = document.getElementById("transfersMainLayout");
 const lineupsView = document.getElementById("lineupsView");
 const lineupsCircle = document.getElementById("lineupsCircle");
-const lineupsStatus = document.getElementById("lineupsStatus");
 const lineupsSeasonPillsTop = document.getElementById("lineupsSeasonPillsTop");
 const lineupsCurrentPill = document.getElementById("lineupsCurrentPill");
 const lineupsNextPill = document.getElementById("lineupsNextPill");
@@ -1606,19 +1605,12 @@ document.querySelector("#freefilterTransfers").addEventListener("click", functio
     }
 })
 
-function setLineupsLoading(isLoading, text = "Loading line ups...") {
-    if (!lineupsStatus) return;
-    lineupsStatus.textContent = text;
-    lineupsStatus.classList.toggle("d-none", !isLoading);
-}
-
 function setLineupsButtonState(isOpen) {
     if (!lineupsViewButton) return;
 
     const label = lineupsViewButton.querySelector("span");
     const icon = lineupsViewButton.querySelector("i");
 
-    lineupsViewButton.classList.toggle("active", isOpen);
     if (label) {
         label.textContent = isOpen ? "Transfers" : "Line ups";
     }
@@ -1626,6 +1618,7 @@ function setLineupsButtonState(isOpen) {
         icon.className = isOpen ? "bi bi-arrow-return-left" : "bi bi-diagram-3";
     }
 }
+
 
 function getLineupsDisplaySeason() {
     const baseSeason = Number(lineupsData?.season) || Number(currentSeason) || 0;
@@ -1687,24 +1680,71 @@ function getTeamNameForLineup(teamId, teamInfo) {
     return combined_dict[teamId] || "Unknown Team";
 }
 
-function createLineupDriverRows(teamInfo, seasonType) {
-    const rows = document.createElement("div");
-    rows.classList.add("lineups-team-drivers");
+function normalizeDriverNumber(value) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed > 0 ? Math.trunc(parsed) : null;
+}
 
+function getDriverSeatPriority(driver, seasonType) {
+    let priority = 0;
+    const contractType = Number(driver?.contractType);
+    if (seasonType === "next" && contractType === 3) priority += 100;
+    if (contractType === 0) priority += 50;
+    if (driver?.isForNextSeason) priority += 20;
+    if (normalizeDriverNumber(driver?.driverNumber) != null) priority += 1;
+    return priority;
+}
+
+function getLineupDriversBySeat(teamInfo, seasonType) {
     const sourceDrivers = seasonType === "next"
         ? (teamInfo?.driversNextSeason || [])
         : (teamInfo?.driversThisSeason || []);
 
-    const drivers = sourceDrivers.slice(0, 2);
-    while (drivers.length < 2) {
-        drivers.push({ name: "TBD" });
+    const slots = [null, null];
+    const priorities = [-Infinity, -Infinity];
+    const overflow = [];
+
+    sourceDrivers.forEach((driver) => {
+        const seat = Number(driver?.posInTeam);
+        if (seat === 1 || seat === 2) {
+            const idx = seat - 1;
+            const nextPriority = getDriverSeatPriority(driver, seasonType);
+            if (slots[idx] == null || nextPriority > priorities[idx]) {
+                slots[idx] = driver;
+                priorities[idx] = nextPriority;
+            }
+            return;
+        }
+        overflow.push(driver);
+    });
+
+    for (let idx = 0; idx < 2; idx++) {
+        if (!slots[idx] && overflow.length > 0) {
+            slots[idx] = overflow.shift();
+        }
     }
+
+    return slots.map((driver, idx) => driver || { name: "TBD", posInTeam: idx + 1 });
+}
+
+function createLineupDriverRows(teamInfo, seasonType) {
+    const rows = document.createElement("div");
+    rows.classList.add("lineups-team-drivers");
+    const drivers = getLineupDriversBySeat(teamInfo, seasonType);
 
     drivers.forEach((driver) => {
         const line = document.createElement("div");
         line.classList.add("lineups-team-driver");
         if (seasonType === "next" && driver?.isForNextSeason) {
             line.classList.add("next-contract");
+        }
+
+        const driverNumber = normalizeDriverNumber(driver?.driverNumber);
+        if (driverNumber != null) {
+            const numberMark = document.createElement("span");
+            numberMark.classList.add("lineups-driver-number");
+            numberMark.textContent = String(driverNumber);
+            line.appendChild(numberMark);
         }
 
         const rawName = (driver?.name || "TBD").trim();
@@ -1765,10 +1805,11 @@ function buildLineupCard(teamId, teamInfo, seasonType) {
 
     const teamName = document.createElement("div");
     teamName.classList.add("lineups-team-name", "bold-font");
-    teamName.textContent = getTeamNameForLineup(teamId, teamInfo);
+    const lineupTeamName = getTeamNameForLineup(teamId, teamInfo);
+    teamName.textContent = lineupTeamName;
 
-    header.appendChild(createTeamLogoNode(teamId));
     header.appendChild(teamName);
+    header.appendChild(createTeamLogoNode(teamId));
 
     card.appendChild(header);
     card.appendChild(createLineupDriverRows(teamInfo, seasonType));
@@ -1799,10 +1840,25 @@ function computeLineupPositions(teamIds, width, height) {
         const cardHalfWidth = width <= 900 ? 98 : (width <= 1200 ? 121 : 132);
         const denom = Math.max(1, teamsInColumn.length - 1);
 
-        teamsInColumn.forEach((teamId, idx) => {
+        const getArcStrength = (idx) => {
+            // Hand-tuned 5-row profile: tighter top pair, strong middle opening,
+            // and configurable bottom pair spacing for custom-team saves.
+            if (teamsInColumn.length === 5) {
+                if (hasCustomTeam) {
+                    // Wider bottom spread to leave cleaner space for team 11 in the center.
+                    return [-0.7, -0.1, 0.3, 0.1, -0.3][idx];
+                }
+                // Standard saves: bottom pair spacing mirrors top pair spacing.
+                return [0.10, 0.18, 0.86, 0.26, 0.18][idx];
+            }
+
             const t = idx / denom;
-            const arcBase = 1 - (Math.abs(t - 0.5) * 2); // 0 at ends, 1 at middle
-            const arcStrength = Math.max(0, arcBase);
+            const arcBase = 1 - (Math.abs(t - 0.5) * 2);
+            return Math.max(0, arcBase);
+        };
+
+        teamsInColumn.forEach((teamId, idx) => {
+            const arcStrength = getArcStrength(idx);
             const x = side === "left"
                 ? (baseX - outwardShift * arcStrength)
                 : (baseX + outwardShift * arcStrength);
@@ -1849,7 +1905,6 @@ function renderLineupsCircle() {
     const teamIds = getLineupsTeamIds(lineupsData);
 
     if (teamIds.length === 0) {
-        setLineupsLoading(true, "No line ups available.");
         return;
     }
 
@@ -1865,7 +1920,7 @@ function renderLineupsCircle() {
     centerTitle.innerHTML = `
         <span class="lineups-center-year">${yearText}</span>
         <span class="lineups-center-label">DRIVER</span>
-        <span class="lineups-center-label">LINE UPS</span>
+        <span class="lineups-center-label lineups">LINE UPS</span>
     `;
     lineupsCircle.appendChild(centerTitle);
 
@@ -1879,7 +1934,6 @@ function renderLineupsCircle() {
         lineupsCircle.appendChild(card);
     });
 
-    setLineupsLoading(false);
 }
 
 function renderLineupsAfterLayout() {
@@ -1910,7 +1964,6 @@ async function openLineupsView() {
     transfersMainLayout.classList.add("d-none");
     lineupsView.classList.remove("d-none");
     lineupsSeasonPillsTop?.classList.remove("d-none");
-    setLineupsLoading(true, "Loading line ups...");
 
     try {
         const payload = await fetchLineupsData();
@@ -1922,7 +1975,6 @@ async function openLineupsView() {
         renderLineupsAfterLayout();
     } catch (err) {
         console.error("Error fetching line ups:", err);
-        setLineupsLoading(true, "Could not load line ups.");
     }
 }
 

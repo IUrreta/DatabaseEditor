@@ -460,7 +460,7 @@ export function createTeamReplacers(deps) {
                 }
                 else {
                     if (elem.classList.contains("complete") && info === "redbull") {
-                        name = "RED BULL RACING";
+                        name = "RED BULL";
                     }
                     elem.textContent = name;
                 }

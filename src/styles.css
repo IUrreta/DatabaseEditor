@@ -713,25 +713,8 @@ i.bi-file-text:hover {
   min-width: 70px;
 }
 
-#lineupsViewButton.active {
-  background-color: var(--new-primary);
-  color: var(--negative-text);
-}
-
-#lineupsViewButton.active i {
-  color: var(--negative-text);
-}
-
 .lineups-view {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-right: 14px;
-  margin-top: 4px;
   background-color: transparent;
-  border-radius: 10px;
-  box-shadow: none;
-  padding: 0;
   min-height: 670px;
   height: 100%;
 }
@@ -774,20 +757,13 @@ i.bi-file-text:hover {
   color: var(--negative-text);
 }
 
-.lineups-status {
-  color: var(--text-general);
-  font-size: 13px;
-  padding-left: 4px;
-}
-
 .lineups-circle-wrap {
-  flex: 1;
   min-height: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: auto;
-  padding: 0 6px 10px;
+  overflow: hidden;
+  height: 100%;
 }
 
 .lineups-circle {
@@ -797,11 +773,46 @@ i.bi-file-text:hover {
   min-height: 760px;
 }
 
+
+
+.lineups-team-logo {
+  width: 104px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.lineups-team-logo img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.lineups-team-logo > *:not(img) {
+  transform: scale(1.16);
+  transform-origin: center;
+}
+
+.lineups-team-drivers {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--separator) 72%, transparent);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
 .lineups-team-card {
   --lineup-accent: var(--new-primary);
   position: absolute;
   width: 272px;
-  min-height: 110px;
   transform: translate(-50%, -50%);
   background:
     linear-gradient(165deg,
@@ -834,57 +845,71 @@ i.bi-file-text:hover {
 
 .lineups-team-header {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  position: relative;
-  z-index: 1;
-}
-
-.lineups-team-logo {
-  width: 64px;
-  height: 40px;
-  display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  min-height: 46px;
+  padding-top: 1px;
+  z-index: 1;
   overflow: hidden;
-  margin-bottom: 1px;
 }
 
-.lineups-team-logo img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
+@media (max-height: 940px) {
+
+  .lineups-team-card{
+    padding: 5px 10px 9px;
+  }
+
+  .lineups-team-drivers{
+    margin-top: 4px;
+    padding-top: 3px;
+  }
+
+  .lineups-team-logo {
+    height: 42px;
+  }
+
+  .lineups-team-header {
+    min-height: 42px;
+  }
+
+  .lineups-team-logo img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .lineups-team-logo > *:not(img) {
+    transform: scale(1.06);
+    transform-origin: center;
+  }
 }
 
-.lineups-team-logo > *:not(img) {
-  transform: scale(0.75);
-  transform-origin: center;
-}
+
 
 .lineups-team-name {
-  width: 100%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -48%) scaleX(1);
+  transform-origin: center center;
+  width: 124%;
   text-align: center;
   text-transform: uppercase;
-  font-size: 12px;
-  line-height: 1.1;
-  color: var(--white-general);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: 0.9px;
+  color: color-mix(in srgb, var(--white-general) 72%, var(--lineup-accent) 28%);
+  opacity: 0.13;
+  text-shadow: none;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-.lineups-team-drivers {
-  margin-top: 6px;
-  padding-top: 6px;
-  border-top: 1px solid color-mix(in srgb, var(--separator) 72%, transparent);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  position: relative;
+  pointer-events: none;
   z-index: 1;
 }
+
+
 
 .lineups-team-driver {
   font-size: 11px;
@@ -893,6 +918,8 @@ i.bi-file-text:hover {
   background-color: color-mix(in srgb, var(--background) 28%, transparent);
   border-radius: 4px;
   padding: 4px 4px;
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -902,6 +929,26 @@ i.bi-file-text:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.lineups-team-driver > *:not(.lineups-driver-number) {
+  position: relative;
+  z-index: 1;
+}
+
+.lineups-driver-number {
+  position: absolute;
+  right: 4px;
+  top: 1px;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.4px;
+  color: color-mix(in srgb, var(--white-general) 70%, var(--lineup-accent) 30%);
+  opacity: 0.16;
+  pointer-events: none;
+  z-index: 0;
+  font-family: 'NumbersFont';
+  letter-spacing: -4px;
 }
 
 .lineups-driver-first {
@@ -947,62 +994,29 @@ i.bi-file-text:hover {
 }
 
 .lineups-center-year {
+  display: block;
+  text-align: center;
+  white-space: nowrap;
   font-size: clamp(66px, 8vw, 130px);
   line-height: 0.78;
 }
 
 .lineups-center-label {
-  font-size: clamp(24px, 3vw, 52px);
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+  font-size: clamp(24px, 5vw, 88px);
   line-height: 0.88;
 }
 
-@media (max-width: 1200px) {
-  .lineups-circle {
-    min-height: 700px;
-  }
-
-  .lineups-team-card {
-    width: 242px;
-    min-height: 104px;
-    padding: 7px 9px;
-  }
+.lineups-center-label.lineups{
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+  font-size: clamp(18px, 3.6vw, 94px);
+  line-height: 0.88;
 }
 
-@media (max-width: 900px) {
-  .lineups-view {
-    min-height: 560px;
-  }
-
-  .lineups-circle {
-    min-height: 620px;
-  }
-
-  .lineups-team-card {
-    width: 196px;
-    min-height: 98px;
-  }
-
-  .lineups-team-name,
-  .lineups-team-driver {
-    font-size: 11px;
-  }
-
-  .lineups-driver-last {
-    font-size: 12px;
-  }
-
-  .lineups-center-title {
-    letter-spacing: 0.8px;
-  }
-
-  .lineups-center-year {
-    font-size: clamp(46px, 8vw, 82px);
-  }
-
-  .lineups-center-label {
-    font-size: clamp(18px, 3.9vw, 34px);
-  }
-}
 
 .freeze-mentality {
   color: var(--text-general);
