@@ -1648,7 +1648,7 @@ function getLineupsTeamIds(payload) {
 
     const standingsOrder = standingsRows
         .map((row) => Number(Array.isArray(row) ? row[0] : (row?.teamId ?? row?.TeamID)))
-        .filter((teamId) => Number.isFinite(teamId) && availableIds.includes(teamId));
+        .filter((teamId) => !Number.isNaN(teamId) && availableIds.includes(teamId));
 
     const uniqueStandingsOrder = [...new Set(standingsOrder)];
     const fallbackOrder = standardOrder.filter((id) => availableIds.includes(id) && !uniqueStandingsOrder.includes(id));
@@ -1694,7 +1694,7 @@ function getTeamNameForLineup(teamId, teamInfo) {
 
 function normalizeDriverNumber(value) {
     const parsed = Number(value);
-    return Number.isFinite(parsed) && parsed > 0 ? Math.trunc(parsed) : null;
+    return !Number.isNaN(parsed) && parsed > 0 ? Math.trunc(parsed) : null;
 }
 
 function getDriverSeatPriority(driver, seasonType) {
@@ -1863,7 +1863,7 @@ function computeLineupPositions(teamIds, width, height) {
                     return [-0.7, -0.1, 0.3, 0.1, -0.3][idx];
                 }
                 // Standard saves: bottom pair spacing mirrors top pair spacing.
-                return [0.10, 0.18, 0.86, 0.26, 0.18][idx];
+                return [-0.6, -0.1, 0.2, -0.1, -0.6][idx];
             }
 
             const t = idx / denom;

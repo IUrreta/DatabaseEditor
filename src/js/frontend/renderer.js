@@ -2294,6 +2294,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Modify car performance to your liking",
         "Fix game-breaking issues with ease",
         "No installation required, works in your browser",
+        "Honda, for the love of god, give Alonso a good engine for once"
     ];
 
     //reorder them randomly

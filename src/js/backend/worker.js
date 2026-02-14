@@ -18,7 +18,7 @@ import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, ge
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
-import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver } from "./scriptUtils/transferUtils";
+import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
@@ -122,6 +122,8 @@ const workerCommands = {
 
     const date = getDate();
     setGlobals({ date: date });
+
+    CONTRACT_PLACEHOLDERS_24.endSeason = Number(yearData[0]) + 1;
 
     const drivers = fetchDrivers(yearData[0]);
     postMessage({ responseMessage: "Save loaded succesfully", content: drivers, noti_msg: "Save loaded succesfully" });

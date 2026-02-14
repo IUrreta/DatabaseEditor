@@ -3003,7 +3003,7 @@ function buildGridLineupsData(season) {
     currentContractsRows.forEach((row) => {
         const driverId = Number(row[0]);
         const teamId = Number(row[1]);
-        if (Number.isFinite(driverId) && Number.isFinite(teamId)) {
+        if (!Number.isNaN(driverId) && !Number.isNaN(teamId)) {
             currentTeamByDriver.set(driverId, teamId);
         }
     });
@@ -3065,7 +3065,7 @@ function buildGridLineupsData(season) {
                 driverId,
                 posInTeam: Number(d[5]) || null,
                 contractType: Number(d[4]) || 0,
-                driverNumber: Number.isFinite(driverNumber) && driverNumber > 0 ? driverNumber : null
+                driverNumber: !Number.isNaN(driverNumber) && driverNumber > 0 ? driverNumber : null
             });
         });
 
@@ -3084,7 +3084,7 @@ function buildGridLineupsData(season) {
                 driverId,
                 posInTeam: Number(d[5]) || null,
                 contractType,
-                driverNumber: Number.isFinite(driverNumber) && driverNumber > 0 ? driverNumber : null,
+                driverNumber: !Number.isNaN(driverNumber) && driverNumber > 0 ? driverNumber : null,
                 isForNextSeason: isTeamChangeForNextSeason
             });
         });

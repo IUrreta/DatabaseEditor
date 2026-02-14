@@ -17058,6 +17058,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-driver-logo-div .drivers-table-logo{
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }
 
 .season-review-driver-name{
@@ -17070,8 +17071,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  padding-top: 1px;
+  height: 22px;
 }
 
 .season-review-driver-points{
@@ -17079,8 +17080,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  padding-top: 1px;
+  height: 22px;
 }
 
 .season-review-driver-points.diff{
@@ -17134,6 +17135,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-team-logo-div .drivers-table-logo{
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }
 
 .season-review-team-name{
@@ -17147,8 +17149,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  height: 22px;
 }
 
 .season-review-team-points{
@@ -17156,8 +17157,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  height: 22px;
 }
 
 .season-review-team-points.diff{
@@ -17355,6 +17355,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   font-size: 14px;
   padding-top: 3px;
+  height: 22px;
 }
 
 .season-review-qualifying-name{
@@ -17374,6 +17375,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   padding-top: 3px;
   font-size: 14px;
+  height: 22px;
 }
 
 .wins-drivers-list{
@@ -17397,6 +17399,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   font-size: 14px;
   padding-top: 3px;
+  height: 22px;
 }
 
 .season-review-wins-name{
@@ -17423,6 +17426,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   padding-top: 3px;
   font-size: 14px;
+  height: 22px;
 }
 
 .podiums-teams-list .season-review-wins-position,
@@ -17921,4 +17925,5 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .session-results-driver-logo-div img, .session-results-driver-logo-div div {
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }

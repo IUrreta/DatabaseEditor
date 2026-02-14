@@ -629,6 +629,7 @@ export function fetchQualifyingStageCounts(year, formula = 1, isCurrentYear = tr
         ON q.DriverID = ds.DriverID
        AND q.SeasonID = ds.SeasonID
        AND q.RaceFormula = ds.RaceFormula
+       AND COALESCE(q.SprintShootout, 0) = 0
        AND q.QualifyingStage IN (2, 3)
       WHERE ds.SeasonID = ?
         AND ds.RaceFormula = ?

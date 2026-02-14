@@ -1338,13 +1338,13 @@ function get_one_driver_points_format(driver, data) {
     driver["races"].forEach(function (elem) {
         const raceId = Number(elem["raceId"]);
         let ptsThatRace = Number(elem["points"]);
-        if (!Number.isFinite(ptsThatRace) || ptsThatRace < 0) {
+        if (Number.isNaN(ptsThatRace) || ptsThatRace < 0) {
             ptsThatRace = 0;
         }
         const qualiPts = Number(elem["qualifyingPoints"]);
-        const qPts = (Number.isFinite(qualiPts) && qualiPts > 0) ? qualiPts : 0;
+        const qPts = (!Number.isNaN(qualiPts) && qualiPts > 0) ? qualiPts : 0;
         const sprintPts = Number(elem["sprintPoints"]);
-        const sPts = (elem["sprintPoints"] != null && Number.isFinite(sprintPts) && sprintPts >= 0) ? sprintPts : 0;
+        const sPts = (elem["sprintPoints"] != null && !Number.isNaN(sprintPts) && sprintPts >= 0) ? sprintPts : 0;
         pointsByRaceId.set(raceId, ptsThatRace + qPts + sPts);
     })
     data[0].forEach(function (elem) {
