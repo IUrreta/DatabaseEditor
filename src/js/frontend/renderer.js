@@ -165,6 +165,8 @@ let viewerLoaded = false;
 let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
+let isNightlyHost = false;
+let hasPatreonThemeAccess = false;
 
 let newsAvailable = {
     "normal": false,
@@ -181,6 +183,10 @@ let isShowingNotification = false;
 
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
+const themeToolbarLogos = {
+    "ferrari-theme": "../assets/images/logos/ferrari.png",
+    "redbull-theme": "../assets/images/logos/redbull.png"
+};
 
 
 
@@ -438,6 +444,7 @@ function maybeReloadForNightlyAccess(tierInfo) {
 }
 
 function updatePatreonUI(tier) {
+    hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
@@ -450,6 +457,10 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
         document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+        selectedTheme = "default-theme";
+        document.querySelector("body").className = "font default-theme";
+        init_colors_dict(selectedTheme);
+        updateToolbarThemeLogo();
     }
 
     if (tier.isLoggedIn) {
@@ -2209,14 +2220,12 @@ init_colors_dict()
 document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
+    isNightlyHost = isNightly;
     versionNow = APP_VERSION;
 
     if (isNightly) {
         const favicon = document.querySelector('link[rel="icon"]'); //testing
         if (favicon) favicon.href = "../assets/images/logoNightly.png";
-
-        const logoImg = document.querySelector(".toolbar-logo");
-        if (logoImg) logoImg.src = "../assets/images/logoNightly.svg";
         document.querySelector(".toolbar-title").classList.add("nightly");
 
         const moonIcon = document.createElement("i");
@@ -2265,6 +2274,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         versionPanel.classList.add("nightly");
     }
+
+    updateToolbarThemeLogo();
 
     updateRateLimitsDisplay();
 
@@ -2498,11 +2509,42 @@ function createMarqueeItem(name, tier) {
     return span;
 }
 
+function updateToolbarThemeLogo() {
+    const logoImg = document.querySelector(".toolbar-logo");
+    if (!logoImg) return;
+
+    if (!hasPatreonThemeAccess) {
+        logoImg.src = isNightlyHost
+            ? "../assets/images/logoNightly.svg"
+            : "../assets/images/logoVector.svg";
+        return;
+    }
+
+    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
+    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
+
+    if (appliedTheme.includes("ferrari")) {
+        logoImg.src = themeToolbarLogos["ferrari-theme"];
+        return;
+    }
+
+    if (appliedTheme.includes("redbull")) {
+        logoImg.src = themeToolbarLogos["redbull-theme"];
+        return;
+    }
+
+    logoImg.src = isNightlyHost
+        ? "../assets/images/logoNightly.svg"
+        : "../assets/images/logoVector.svg";
+}
+
 document.querySelectorAll(".one-theme").forEach(function (elem) {
     elem.addEventListener("click", function () {
+        if (!hasPatreonThemeAccess) return;
         selectedTheme = elem.dataset.theme
         document.querySelector(".one-theme.active").classList.remove("active")
         elem.classList.add("active")
+        changeTheme()
     })
 });
 
@@ -2510,18 +2552,32 @@ function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
     init_colors_dict(selectedTheme)
+    updateToolbarThemeLogo()
 
 }
 
 function loadTheme() {
     let theme = localStorage.getItem("theme")
-    selectedTheme = theme || "default-theme"
-    if (theme) {
-        document.querySelector("body").className = `font ${selectedTheme}`
-        document.querySelector(".one-theme.active").classList.remove("active")
-        document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
+    const savedThemeButton = theme ? document.querySelector(`.one-theme[data-theme="${theme}"]`) : null;
+
+    selectedTheme = savedThemeButton ? theme : "default-theme"
+    document.querySelector("body").className = `font ${selectedTheme}`
+
+    const activeTheme = document.querySelector(".one-theme.active")
+    if (activeTheme) {
+        activeTheme.classList.remove("active")
+    }
+
+    const currentThemeButton = document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`)
+    if (currentThemeButton) {
+        currentThemeButton.classList.add("active")
+    }
+
+    if (theme && !savedThemeButton) {
+        localStorage.removeItem("theme")
     }
     init_colors_dict(selectedTheme)
+    updateToolbarThemeLogo()
     reload_performance_graph()
     reload_h2h_graphs()
 }

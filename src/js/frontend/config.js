@@ -126,6 +126,16 @@ export const theme_colors = {
         "labels": "#dedde6",
         "grid": "#5329b5",
         "general_secondary": "#f1f1f1",
+    },
+    "ferrari-theme": {
+        "labels": "#f0e6e8",
+        "grid": "#5a3a42",
+        "general_secondary": "#f1f1f1",
+    },
+    "redbull-theme": {
+        "labels": "#d8e5ff",
+        "grid": "#39578f",
+        "general_secondary": "#f1f1f1",
     }
 }
 

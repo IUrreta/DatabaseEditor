@@ -389,6 +389,8 @@ body.light-theme {
     --table-header: #d1d1d1;
     --table-dnf: #8b8b8b;
 
+    --sessions-results-hover: #d1d1d1;
+
     --positive-general: #2a9b63;
 
     --rate-ok-color: #24a45a;
@@ -499,6 +501,7 @@ body.og-theme {
     --augment-buttons-hover: #64617d;
 
     --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+    --session-results-hover: #4a4a4a;
 
     --table-default: #494561;
     --table-default-odd: #3c3952;
@@ -608,6 +611,7 @@ body.vaporwave-theme {
     --primary-gradient: linear-gradient(to right, var(--new-primary), var(--new-secondary));
 
     --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+    --session-results-hover: #3a1488;
 
     --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
@@ -666,4 +670,102 @@ body.vaporwave-theme {
     --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
     --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
     --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
+
+body.ferrari-theme {
+    --background: #130c0d;
+    --generals: #1a1012;
+    --superficials: #211417;
+    --dropdown-back: #3b252a;
+    --elements: #2e1c20;
+    --augment-buttons-bg: #4a2c33;
+    --augment-buttons-hover: #5d3740;
+    --dropdown-hover: #4b2f36;
+    --table-default: #191012;
+    --table-default-odd: #1f1316;
+    --table-header: #342026;
+    --dark-text: #b7afb1;
+    --disabled-text: #7f7478;
+    --modal-text: #8f8388;
+    --negative-text: #292929;
+    --new-primary: #ff3d3d;
+    --new-primary-dark: #d12a2a;
+    --new-secondary: #ffb74d;
+    --new-secondary-dark: #d49034;
+    --text-selected: #ffd3d3;
+    --text-selected-secondary: #ffe0ba;
+    --table-hover: #59343c;
+    --elements-hover: #3b252b;
+    --box-shadow: #0000003a;
+    --separator: #5a3a42;
+    --separator-light: #69444d;
+    --background-general: #140d10;
+    --tools-general: #181012;
+    --component-general: #4f2f37;
+    --component-general-hover: #5d3740;
+    --component-general-hover-extra: #6b404a;
+    --overall-holder: #28181d;
+    --dropdown-back-general: #96606d;
+    --active-general: #1f1115;
+    --row-cell: #160d10;
+    --row-odd-cell: #1b1115;
+    --special-columns: #5f3943;
+    --h2h-back: #2a1720;
+    --h2h-back-hover: #3a202b;
+    --active-buttons-back: #6b404a;
+    --prob-viewer-hover: #6a3f4a;
+    --custom-modal-back: #3f2c33;
+    --background--buttons-hover: #7b4855;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #ff8f6b 100%);
+    --session-results-hover: #4a2c33;
+    --table-dnf: #7f7478;
+}
+
+body.redbull-theme {
+    --background: #090f1e;
+    --generals: #10172b;
+    --superficials: #132142;
+    --dropdown-back: #263963;
+    --elements: #1e2f52;
+    --augment-buttons-bg: #324874;
+    --augment-buttons-hover: #3e5b8e;
+    --dropdown-hover: #2c426b;
+    --table-default: #101a33;
+    --table-default-odd: #12203d;
+    --table-header: #22365d;
+    --dark-text: #afbdd8;
+    --disabled-text: #7887a8;
+    --modal-text: #8797bb;
+    --negative-text: #292929;
+    --new-primary: #4b7bff;
+    --new-primary-dark: #345fd4;
+    --new-secondary: #ffd24a;
+    --new-secondary-dark: #cfa41f;
+    --text-selected: #d8e5ff;
+    --text-selected-secondary: #ffe593;
+    --table-hover: #344d7f;
+    --elements-hover: #2a406b;
+    --box-shadow: #00000045;
+    --separator: #39578f;
+    --separator-light: #4668a4;
+    --background-general: #0c1429;
+    --tools-general: #11182d;
+    --component-general: #355181;
+    --component-general-hover: #406093;
+    --component-general-hover-extra: #4b6fa7;
+    --overall-holder: #192642;
+    --dropdown-back-general: #6188c0;
+    --active-general: #10192f;
+    --row-cell: #0e162b;
+    --row-odd-cell: #111c34;
+    --special-columns: #3b588b;
+    --h2h-back: #142446;
+    --h2h-back-hover: #1c3260;
+    --active-buttons-back: #4b6fa7;
+    --prob-viewer-hover: #44679e;
+    --custom-modal-back: #253656;
+    --background--buttons-hover: #567ab3;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #8aa7ff 100%);
+    --session-results-hover: #2a406b;
+    --table-dnf: #7887a8;
 }
