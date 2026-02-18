@@ -1745,8 +1745,8 @@ input.comparing-tag {
 
 .driver-info-team-logo-masked {
   height: 24px;
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--mclaren-primary);
@@ -3994,8 +3994,8 @@ DRIVERS TABLE
 }
 
 .teams-table-logo-inner.mclaren-team-table-logo:not(img) {
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 90%;
   mask-size: 90%;
   background-color: #f0f0f0;
@@ -4042,8 +4042,8 @@ DRIVERS TABLE
 }
 
 .teams-table-logo-inner.toyota-team-table-logo:not(img) {
-  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
-  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
+  mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--white-general);
@@ -4417,8 +4417,8 @@ phm
 .logo-visarb-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/visarb.svg') no-repeat center;
-  mask: url('/assets/images/visarb.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/visarb.svg') no-repeat center;
+  mask: url('/assets/images/logos/visarb.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4427,8 +4427,8 @@ phm
 .logo-hugo-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/hugoboss.svg') no-repeat center;
-  mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
+  mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4438,8 +4438,8 @@ phm
 .logo-alphatauri-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/alphatauri.svg') no-repeat center;
-  mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
+  mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4448,8 +4448,8 @@ phm
 .logo-brawn-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/brawn.svg') no-repeat center;
-  mask: url('/assets/images/brawn.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/brawn.svg') no-repeat center;
+  mask: url('/assets/images/logos/brawn.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4458,16 +4458,16 @@ phm
 .logo-alpine-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/alpine.svg') no-repeat center;
-  mask: url('/assets/images/alpine.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alpine.svg') no-repeat center;
+  mask: url('/assets/images/logos/alpine.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
 }
 
 .logo-mclaren-table {
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 75%;
   mask-size: 75%;
   background-color: var(--mclaren-primary);
@@ -4476,24 +4476,24 @@ phm
 .logo-williams-2026-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;  
-  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;  
+  mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--williams-primary);
 }
 
 .logo-toyota-table {
-  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
-  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
+  mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--toyota-primary);
 }
 
 .logo-sauber-table {
-  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
-  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  mask: url('/assets/images/logos/sauber.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--sauber-primary);
@@ -4521,8 +4521,8 @@ phm
 .logo-andretti-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/andretti.svg') no-repeat center;
-  mask: url('/assets/images/andretti.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/andretti.svg') no-repeat center;
+  mask: url('/assets/images/logos/andretti.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4531,8 +4531,8 @@ phm
 .logo-renault-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/renault.svg') no-repeat center;
-  mask: url('/assets/images/renault.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/renault.svg') no-repeat center;
+  mask: url('/assets/images/logos/renault.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4541,8 +4541,8 @@ phm
 .logo-lotus-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/lotus.svg') no-repeat center;
-  mask: url('/assets/images/lotus.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/lotus.svg') no-repeat center;
+  mask: url('/assets/images/logos/lotus.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -9662,8 +9662,8 @@ body.og-theme .records-list {
   padding-left: 7px;
   padding-top: 10px;
   padding-right: 4px;
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
-  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -9757,8 +9757,8 @@ body.og-theme .records-list {
   padding-bottom: 4px;
   padding-top: 7px;
   padding-left: 6px;
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 90%;
   mask-size: 90%;
   background-color: var(--mclaren-primary);
@@ -11314,32 +11314,32 @@ input[type='number'] {
 }
 
 .alpinelogo {
-  -webkit-mask: url('/assets/images/alpine.svg') no-repeat center;
-  mask: url('/assets/images/alpine.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alpine.svg') no-repeat center;
+  mask: url('/assets/images/logos/alpine.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
 }
 
 .renaultlogo {
-  -webkit-mask: url('/assets/images/renault.svg') no-repeat center;
-  mask: url('/assets/images/renault.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/renault.svg') no-repeat center;
+  mask: url('/assets/images/logos/renault.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
 }
 
 .andrettilogo {
-  -webkit-mask: url('/assets/images/andretti.svg') no-repeat center;
-  mask: url('/assets/images/andretti.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/andretti.svg') no-repeat center;
+  mask: url('/assets/images/logos/andretti.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
 }
 
 .lotuslogo {
-  -webkit-mask: url('/assets/images/lotus.svg') no-repeat center;
-  mask: url('/assets/images/lotus.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/lotus.svg') no-repeat center;
+  mask: url('/assets/images/logos/lotus.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
@@ -11350,8 +11350,8 @@ input[type='number'] {
   width: 40px;
   height: 40px;
   padding: 2px;
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 90%;
   background-color: var(--mclaren-primary);
   transition: opacity 0.15s;
@@ -11400,8 +11400,8 @@ input[type='number'] {
 }
 
 .brawnlogo {
-  -webkit-mask: url('/assets/images/brawn.svg') no-repeat center;
-  mask: url('/assets/images/brawn.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/brawn.svg') no-repeat center;
+  mask: url('/assets/images/logos/brawn.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -11424,8 +11424,8 @@ input[type='number'] {
 }
 
 .sauberlogo {
-  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
-  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  mask: url('/assets/images/logos/sauber.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--sauber-primary);
@@ -11438,8 +11438,8 @@ input[type='number'] {
 }
 
 .hugologo {
-  -webkit-mask: url('/assets/images/hugoboss.svg') no-repeat center;
-  mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
+  mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -11452,8 +11452,8 @@ input[type='number'] {
 }
 
 .visarblogo {
-  -webkit-mask: url('/assets/images/visarb.svg') no-repeat center;
-  mask: url('/assets/images/visarb.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/visarb.svg') no-repeat center;
+  mask: url('/assets/images/logos/visarb.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -11470,8 +11470,8 @@ input[type='number'] {
 }
 
 .toyotalogo {
-  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
-  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
+  mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: #EB0A1B; /* toyota primary color, different from their background gray color */
@@ -11506,8 +11506,8 @@ input[type='number'] {
 }
 
 .alphataurilogo {
-  -webkit-mask: url('/assets/images/alphatauri.svg') no-repeat center;
-  mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
+  mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
@@ -11532,8 +11532,8 @@ input[type='number'] {
 }
 
 .williamslogo {
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
-  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);

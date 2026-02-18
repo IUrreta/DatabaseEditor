@@ -18,13 +18,13 @@ export const abreviations_for_replacements = {
     "stake": "STK", "williams": "WIL", "bmw": "BMW", "haas": "HA", "redbull": "RBR", "ford": "FOR", "aston": "AM", "racingpoint": "RP", "jordan": "JOR"
 };
 export const logos_configs = {
-    "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.svg", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
-    "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
-    "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
-    "cadillac": "../assets/images/cadillac.png", "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.svg",
-    "stake": "../assets/images/kick.png", "williams": "../assets/images/Williams_2026_logo.svg", "bmw": "../assets/images/bmw.png", "haas": "../assets/images/haas.png",
-    "redbull": "../assets/images/redbull.png", "ford": "../assets/images/ford.png", "aston": "../assets/images/astonMartin.png", "racingpoint": "../assets/images/racingpoint.png",
-    "jordan": "../assets/images/jordan.png"
+    "visarb": "../assets/images/logos/visarb.png", "toyota": "../assets/images/logos/toyota.svg", "hugo": "../assets/images/logos/hugoboss.png", "alphatauri": "../assets/images/logos/alphatauri.png",
+    "brawn": "../assets/images/logos/brawn.png", "porsche": "../assets/images/logos/porsche.png",
+    "alpine": "../assets/images/logos/alpine.png", "renault": "../assets/images/logos/renault.png", "andretti": "../assets/images/logos/andretti.png", "lotus": "../assets/images/logos/lotus.png",
+    "cadillac": "../assets/images/logos/cadillac.png", "alfa": "../assets/images/logos/alfaromeo.png", "audi": "../assets/images/logos/audi.png", "sauber": "../assets/images/logos/sauber.svg",
+    "stake": "../assets/images/logos/kick.png", "williams": "../assets/images/logos/Williams_2026_logo.svg", "bmw": "../assets/images/logos/bmw.png", "haas": "../assets/images/logos/haas.png",
+    "redbull": "../assets/images/logos/redbull.png", "ford": "../assets/images/logos/ford.png", "aston": "../assets/images/logos/astonMartin.png", "racingpoint": "../assets/images/logos/racingpoint.png",
+    "jordan": "../assets/images/logos/jordan.png"
 };
 export const logos_classes_configs = {
     "visarb": "visarblogo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",

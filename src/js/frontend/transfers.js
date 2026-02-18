@@ -1658,7 +1658,7 @@ function getLineupsTeamIds(payload) {
 
 function buildFallbackLogo(teamId) {
     const logo = document.createElement("img");
-    logo.src = logos_disc[teamId] || "../assets/images/placeholder.png";
+    logo.src = logos_disc[teamId] || "../assets/images/logos/placeholder.png";
     logo.className = "standardlogo";
     return logo;
 }
