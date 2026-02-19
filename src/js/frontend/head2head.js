@@ -1,4 +1,4 @@
-import { races_names, team_dict, combined_dict, lightColors, theme_colors } from "./config";
+import { races_names, team_dict, combined_dict, lightColors, theme_colors, logos_disc } from "./config";
 import { game_version, custom_team, selectedTheme } from "./renderer";
 import { insert_space, manageColor, format_name } from "./transfers";
 import Chart from 'chart.js/auto';
@@ -19,7 +19,8 @@ let poles = false;
 let sprints = false;
 let race = 0;
 let quali = 0;
-let menuLength = 4;
+const raceMenuLength = 7;
+const qualiMenuLength = 6;
 let driverGraph;
 let pointsGraph;
 let qualiGraph;
@@ -40,6 +41,43 @@ let queuedAutoCompareDrivers = null;
 export let mid_grid = 10;
 export let max_races = 23;
 export let relative_grid = 5;
+
+function formatSignedValue(value) {
+    if (value > 0) {
+        return `+${value}`;
+    }
+    return `${value}`;
+}
+
+function getCompletedRaceIdsSet(data) {
+    const completedRaceIds = data?.[data.length - 1];
+    if (!Array.isArray(completedRaceIds)) {
+        return new Set();
+    }
+    return new Set(completedRaceIds.map((raceId) => Number(raceId)));
+}
+
+function renderTeamLogo(container, teamId) {
+    if (!container) return;
+    const logoSrc = logos_disc[teamId];
+    const teamName = combined_dict[teamId] || "";
+    container.innerHTML = "";
+    container.parentNode.querySelector(".team-h2h-name-bg")?.remove();
+    container.title = teamName;
+    if (!logoSrc) {
+        container.textContent = teamName;
+        return;
+    }
+    const watermark = document.createElement("span");
+    watermark.className = "team-h2h-name-bg bold-font";
+    watermark.textContent = teamName.toUpperCase();
+    container.parentNode.appendChild(watermark);
+    const logoImg = document.createElement("img");
+    logoImg.className = "drivers-table-logo team-h2h-logo";
+    logoImg.src = logoSrc;
+    logoImg.alt = teamName;
+    container.appendChild(logoImg);
+}
 
 export function setMidGrid(value) {
     mid_grid = value
@@ -213,6 +251,26 @@ export function manage_h2h_bars(data) {
                         elem.querySelector(".driver1-number").textContent = data[15][0]
                         elem.querySelector(".driver2-number").textContent = data[15][1]
                     }
+                    else if (quali === 4) {
+                        relValue = (100 / (data[19][0] + data[19][1])).toFixed(2)
+                        if (relValue == Infinity) {
+                            relValue = 0
+                        }
+                        d1_width = data[19][0] * relValue
+                        d2_width = data[19][1] * relValue
+                        elem.querySelector(".driver1-number").textContent = data[19][0]
+                        elem.querySelector(".driver2-number").textContent = data[19][1]
+                    }
+                    else if (quali === 5) {
+                        relValue = (100 / (data[20][0] + data[20][1])).toFixed(2)
+                        if (relValue == Infinity) {
+                            relValue = 0
+                        }
+                        d1_width = data[20][0] * relValue
+                        d2_width = data[20][1] * relValue
+                        elem.querySelector(".driver1-number").textContent = data[20][0]
+                        elem.querySelector(".driver2-number").textContent = data[20][1]
+                    }
                 }
 
                 if (elem.id === "raceh2h") {
@@ -236,6 +294,32 @@ export function manage_h2h_bars(data) {
                         d2_width = 100 - (data[13][1] - 1) * relative_grid
                         elem.querySelector(".driver1-number").textContent = data[13][0]
                         elem.querySelector(".driver2-number").textContent = data[13][1]
+                    }
+                    else if (race === 4) {
+                        d1_width = 100 - (data[16][0] - 1) * relative_grid
+                        d2_width = 100 - (data[16][1] - 1) * relative_grid
+                        elem.querySelector(".driver1-number").textContent = data[16][0]
+                        elem.querySelector(".driver2-number").textContent = data[16][1]
+                    }
+                    else if (race === 5) {
+                        let maxGain = Math.max(Math.abs(data[17][0]), Math.abs(data[17][1]))
+                        if (maxGain === 0) {
+                            maxGain = 1
+                        }
+                        d1_width = (Math.abs(data[17][0]) / maxGain) * 100
+                        d2_width = (Math.abs(data[17][1]) / maxGain) * 100
+                        elem.querySelector(".driver1-number").textContent = formatSignedValue(data[17][0])
+                        elem.querySelector(".driver2-number").textContent = formatSignedValue(data[17][1])
+                    }
+                    else if (race === 6) {
+                        relValue = (100 / (data[18][0] + data[18][1])).toFixed(2)
+                        if (relValue == Infinity) {
+                            relValue = 0
+                        }
+                        d1_width = data[18][0] * relValue
+                        d2_width = data[18][1] * relValue
+                        elem.querySelector(".driver1-number").textContent = data[18][0]
+                        elem.querySelector(".driver2-number").textContent = data[18][1]
                     }
                 }
 
@@ -396,6 +480,35 @@ function toggle_racePace() {
             elem.querySelector(".driver1-number").textContent = compData[13][0]
             elem.querySelector(".driver2-number").textContent = compData[13][1]
         }
+        else if (race === 4) {
+            elem.querySelector(".only-name").textContent = "AVG GRID"
+            d1_width = 100 - (compData[16][0] - 1) * 5
+            d2_width = 100 - (compData[16][1] - 1) * 5
+            elem.querySelector(".driver1-number").textContent = compData[16][0]
+            elem.querySelector(".driver2-number").textContent = compData[16][1]
+        }
+        else if (race === 5) {
+            elem.querySelector(".only-name").textContent = "AVG POS GAIN"
+            let maxGain = Math.max(Math.abs(compData[17][0]), Math.abs(compData[17][1]))
+            if (maxGain === 0) {
+                maxGain = 1
+            }
+            d1_width = (Math.abs(compData[17][0]) / maxGain) * 100
+            d2_width = (Math.abs(compData[17][1]) / maxGain) * 100
+            elem.querySelector(".driver1-number").textContent = formatSignedValue(compData[17][0])
+            elem.querySelector(".driver2-number").textContent = formatSignedValue(compData[17][1])
+        }
+        else if (race === 6) {
+            elem.querySelector(".only-name").textContent = "TOP 10s"
+            relValue = (100 / (compData[18][0] + compData[18][1])).toFixed(2)
+            if (relValue == Infinity) {
+                relValue = 0
+            }
+            d1_width = compData[18][0] * relValue
+            d2_width = compData[18][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[18][0]
+            elem.querySelector(".driver2-number").textContent = compData[18][1]
+        }
         fill_bars(elem, d1_width, d2_width)
     }
 
@@ -456,6 +569,28 @@ function toggle_qualiPace() {
             elem.querySelector(".driver1-number").textContent = compData[15][0]
             elem.querySelector(".driver2-number").textContent = compData[15][1]
         }
+        else if (quali === 4) {
+            elem.querySelector(".only-name").textContent = "Q3 APPEARANCES"
+            relValue = (100 / (compData[19][0] + compData[19][1])).toFixed(2)
+            if (relValue == Infinity) {
+                relValue = 0
+            }
+            d1_width = compData[19][0] * relValue
+            d2_width = compData[19][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[19][0]
+            elem.querySelector(".driver2-number").textContent = compData[19][1]
+        }
+        else if (quali === 5) {
+            elem.querySelector(".only-name").textContent = "FRONT ROWS"
+            relValue = (100 / (compData[20][0] + compData[20][1])).toFixed(2)
+            if (relValue == Infinity) {
+                relValue = 0
+            }
+            d1_width = compData[20][0] * relValue
+            d2_width = compData[20][1] * relValue
+            elem.querySelector(".driver1-number").textContent = compData[20][0]
+            elem.querySelector(".driver2-number").textContent = compData[20][1]
+        }
         fill_bars(elem, d1_width, d2_width)
     }
 }
@@ -504,7 +639,7 @@ export function qualiPaceListener() {
  */
 function increase_racePaceView() {
     race += 1
-    race = race % menuLength
+    race = race % raceMenuLength
     toggle_racePace()
 }
 
@@ -513,7 +648,7 @@ function increase_racePaceView() {
  */
 function decrease_racePaceView() {
     race -= 1
-    race = (race + menuLength) % menuLength
+    race = (race + raceMenuLength) % raceMenuLength
     toggle_racePace()
 }
 
@@ -522,7 +657,7 @@ function decrease_racePaceView() {
  */
 function increase_qualiPaceView() {
     quali += 1
-    quali = quali % menuLength
+    quali = quali % qualiMenuLength
     toggle_qualiPace()
 }
 
@@ -531,7 +666,7 @@ function increase_qualiPaceView() {
  */
 function decrease_qualiPaceView() {
     quali -= 1
-    quali = (quali + menuLength) % menuLength
+    quali = (quali + qualiMenuLength) % qualiMenuLength
     toggle_qualiPace()
 }
 
@@ -830,7 +965,6 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         document.querySelector("#raceForm").click()
         race = 0
         quali = 0
-        menuLength = 4
         document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
         document.getElementById("raceh2h").querySelector(".only-name").innerText = "RACE"
         document.getElementById("raceh2h").querySelector(".bar-space").classList.remove("d-none")
@@ -844,7 +978,6 @@ document.querySelector("#confirmComparison").addEventListener("click", function 
         document.querySelector("#gapToWinner").classList.add("d-none")
         document.querySelector("#gapToPole").classList.add("d-none")
         document.querySelector("#pointsProgression").click()
-        menuLength = 2
         race = 0
         quali = 0
         document.getElementById("qualih2h").querySelector(".only-name").innerText = "QUALIFYING"
@@ -968,8 +1101,9 @@ function nameTitleD1(aDriver1) {
         document.querySelector(".driver1-first").classList.add("d-none")
         document.querySelector(".driver1-second").classList.add("d-none")
         document.querySelector(".team1").classList.remove("d-none")
-        document.querySelector(".team1").textContent = driver1Sel.children[0].children[1].innerText
-        document.querySelector(".team1").dataset.teamid = driver1Sel.dataset.teamid
+        const teamId = Number(driver1Sel.dataset.teamid)
+        document.querySelector(".team1").dataset.teamid = teamId
+        renderTeamLogo(document.querySelector(".team1"), teamId)
     }
 
 }
@@ -996,8 +1130,9 @@ function nameTitleD2(aDriver2) {
         document.querySelector(".driver2-first").classList.add("d-none")
         document.querySelector(".driver2-second").classList.add("d-none")
         document.querySelector(".team2").classList.remove("d-none")
-        document.querySelector(".team2").textContent = driver2Sel.children[0].children[1].innerText
-        document.querySelector(".team2").dataset.teamid = driver2Sel.dataset.teamid
+        const teamId = Number(driver2Sel.dataset.teamid)
+        document.querySelector(".team2").dataset.teamid = teamId
+        renderTeamLogo(document.querySelector(".team2"), teamId)
     }
 }
 
@@ -1141,7 +1276,14 @@ function load_teams_points_graph(data) {
                 if (teamPoints.length === 0) {
                     teamPoints = [...points];
                 } else {
-                    teamPoints = teamPoints.map((point, index) => point + points[index]);
+                    teamPoints = teamPoints.map((point, index) => {
+                        const pointA = point;
+                        const pointB = points[index];
+                        if (pointA == null && pointB == null) {
+                            return null;
+                        }
+                        return (pointA ?? 0) + (pointB ?? 0);
+                    });
                 }
 
             })
@@ -1154,7 +1296,9 @@ function load_teams_points_graph(data) {
                 pointBackgroundColor: team_color,
                 borderWidth: 2,
                 pointRadius: 0,
+                pointHoverRadius: 4,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7,
                 datalabels: {
                     color: function () {
@@ -1187,35 +1331,34 @@ function load_teams_points_graph(data) {
 }
 
 function get_one_driver_points_format(driver, data) {
-    let d1_races = [];
-    let d1_points_provisional = []
+    const completedRaceIds = getCompletedRaceIdsSet(data);
+    const pointsByRaceId = new Map();
     let d1_points = [0]
 
     driver["races"].forEach(function (elem) {
-        d1_races.push(elem["raceId"]);
+        const raceId = Number(elem["raceId"]);
         let ptsThatRace = Number(elem["points"]);
-        if (ptsThatRace === -1) {
+        if (Number.isNaN(ptsThatRace) || ptsThatRace < 0) {
             ptsThatRace = 0;
         }
         const qualiPts = Number(elem["qualifyingPoints"]);
-        const qPts = (qualiPts > 0) ? qualiPts : 0;
+        const qPts = (!Number.isNaN(qualiPts) && qualiPts > 0) ? qualiPts : 0;
         const sprintPts = Number(elem["sprintPoints"]);
-        const sPts = (elem["sprintPoints"] != null && sprintPts !== -1) ? sprintPts : 0;
-        d1_points_provisional.push(ptsThatRace + qPts + sPts);
+        const sPts = (elem["sprintPoints"] != null && !Number.isNaN(sprintPts) && sprintPts >= 0) ? sprintPts : 0;
+        pointsByRaceId.set(raceId, ptsThatRace + qPts + sPts);
     })
     data[0].forEach(function (elem) {
-        let index1 = d1_races.indexOf(elem[0])
-        if (index1 !== -1) {
-            d1_points.push(d1_points_provisional[index1] + d1_points[d1_points.length - 1])
+        const raceId = Number(elem[0]);
+        const raceCompleted = completedRaceIds.has(raceId);
+        if (!raceCompleted) {
+            d1_points.push(null);
+            return;
+        }
+        if (pointsByRaceId.has(raceId)) {
+            d1_points.push(pointsByRaceId.get(raceId) + d1_points[d1_points.length - 1])
         }
         else {
-            if (data[data.length - 1].indexOf(elem[0]) !== -1) {
-                d1_points.push(d1_points[d1_points.length - 1])
-            }
-            else {
-                d1_points.push(NaN)
-            }
-
+            d1_points.push(d1_points[d1_points.length - 1])
         }
 
     })
@@ -1230,6 +1373,7 @@ function load_graphs_data(drivers) {
     let max_gapWinner = 0;
     const races_ids = drivers[0].map(r => r[0]); // array de raceId en orden
     const races_done = drivers[drivers.length - 1]; // array de raceId ya corridas
+    const racesDoneSet = new Set(Array.isArray(races_done) ? races_done.map((raceId) => Number(raceId)) : []);
 
     // drivers: array de objetos de piloto (NO metas pairTeamPos/pointsInfo aquí)
     drivers.forEach(function (driv, index) {
@@ -1314,14 +1458,16 @@ function load_graphs_data(drivers) {
                 d1_color = colors_dict[driv.latestTeamId + "1"];
             }
 
-            races_ids.forEach(function (rid) {
-                const idx = d1_races.indexOf(Number(rid));
+            races_ids.forEach(function (ridRaw) {
+                const rid = Number(ridRaw);
+                const idx = d1_races.indexOf(rid);
+                const raceCompleted = racesDoneSet.has(rid);
 
-                if (idx !== -1) {
+                if (idx !== -1 && raceCompleted) {
                     // resultado carrera
                     if (d1_provisonal[idx] === -1) {
-                        d1_res.push(NaN);
-                        d1_gapWinner.push(NaN);
+                        d1_res.push(null);
+                        d1_gapWinner.push(null);
                         d1_backgroundColors.push(d1_color + "50");
                     } else {
                         d1_res.push(d1_provisonal[idx]);
@@ -1329,12 +1475,12 @@ function load_graphs_data(drivers) {
                         // gap winner
                         const gwRaw = d1_provisional_gapW[idx];
                         if (typeof gwRaw === "string" && gwRaw.slice(-1) === "L") {
-                            d1_gapWinner.push(NaN);
+                            d1_gapWinner.push(null);
                             d1_backgroundColors.push(d1_color + "76");
                         } else {
                             const gw = parseFloat(gwRaw);
                             d1_gapWinner.push(gw);
-                            if (!isNaN(gw) && gw > max_gapWinner) max_gapWinner = gw;
+                            if (gw > max_gapWinner) max_gapWinner = gw;
                             d1_backgroundColors.push(d1_color);
                         }
                     }
@@ -1348,22 +1494,22 @@ function load_graphs_data(drivers) {
                     // gap pole
                     const gpRaw = d1_provisional_gapP[idx];
                     if (gpRaw === "NR") {
-                        d1_gapPole.push(NaN);
+                        d1_gapPole.push(null);
                         d1_backgroundColorsPole.push(d1_color + "60");
                     } else {
                         const gp = parseFloat(gpRaw);
                         d1_gapPole.push(gp);
-                        if (!isNaN(gp) && gp > max_gapPole) max_gapPole = gp;
+                        if (gp > max_gapPole) max_gapPole = gp;
                         d1_backgroundColorsPole.push(d1_color);
                     }
                 } else {
                     // no corrió / no hay datos para este rid
-                    d1_res.push(NaN);
-                    d1_qualis.push(NaN);
-                    if (races_done.includes(rid)) {
+                    d1_res.push(null);
+                    d1_qualis.push(null);
+                    if (raceCompleted) {
                         d1_points.push(d1_points[d1_points.length - 1]);
                     } else {
-                        d1_points.push(NaN);
+                        d1_points.push(null);
                     }
                 }
             });
@@ -1373,11 +1519,11 @@ function load_graphs_data(drivers) {
 
             // reemplace NaNs de gaps por la mitad del máximo (tu lógica)
             d1_gapWinner = d1_gapWinner.map(function (elem) {
-                return isNaN(elem) ? max_gapWinner / 2 : elem;
+                return elem == null ? max_gapWinner / 2 : elem;
             });
 
             d1_gapPole = d1_gapPole.map(function (elem) {
-                return isNaN(elem) ? max_gapPole / 2 : elem;
+                return elem == null ? max_gapPole / 2 : elem;
             });
 
             // ---- push datasets a los gráficos (Chart.js) ----
@@ -1388,6 +1534,7 @@ function load_graphs_data(drivers) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7
             });
 
@@ -1398,6 +1545,7 @@ function load_graphs_data(drivers) {
                 pointBackgroundColor: d1_color,
                 borderWidth: 2,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7
             });
 
@@ -1407,7 +1555,9 @@ function load_graphs_data(drivers) {
                 borderColor: d1_color,
                 pointBackgroundColor: d1_color,
                 pointRadius: 0,
+                pointHoverRadius: 4,
                 fill: false,
+                spanGaps: false,
                 pointHitRadius: 7,
                 datalabels: {
                     color: function () {
@@ -1465,7 +1615,7 @@ function load_graphs_data(drivers) {
  */
 function findLastNonNaNIndex(arr) {
     for (let i = arr.length - 1; i >= 0; i--) {
-        if (!isNaN(arr[i])) {
+        if (arr[i] != null) {
             return i;
         }
     }
@@ -1477,6 +1627,22 @@ function updateMaxYAxis(newMax) {
     qualiGraph.options.scales.y.max = newMax;
     driverGraph.update();
     qualiGraph.update();
+}
+
+function getNoEntryAnimationWithHoverTransition() {
+    return {
+        animation: {
+            duration: 0
+        },
+        transitions: {
+            active: {
+                animation: {
+                    duration: 180,
+                    easing: 'easeOutQuad'
+                }
+            }
+        }
+    };
 }
 
 /**
@@ -1495,6 +1661,7 @@ function createRaceChart(labelsArray, max) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                ...getNoEntryAnimationWithHoverTransition(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1620,6 +1787,7 @@ function createQualiChart(labelsArray, max, q2_line) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                ...getNoEntryAnimationWithHoverTransition(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1751,6 +1919,7 @@ function createPointsChart(labelsArray) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                ...getNoEntryAnimationWithHoverTransition(),
                 interaction: {
                     mode: 'index'
                 },
@@ -1828,6 +1997,7 @@ function createGapCharts(labelsArray, maxGapWinner, maxGapPole) {
     let commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
+        ...getNoEntryAnimationWithHoverTransition(),
         interaction: {
             mode: 'index'
         },

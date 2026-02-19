@@ -5,6 +5,8 @@ import interact from 'interactjs';
 
 let deleting = false;
 let deleted = false;
+let previewTarget = null;
+let previewPosition = null;
 
 /**
  * Positions both the div the user's moving and the one he has moved it into
@@ -62,15 +64,7 @@ function addRace(race) {
     div.dataset.isf2 = isF2Race
     div.dataset.isf3 = isF3Race
     if(state === 2){
-        div.classList.add("completed")
-        let compDiv = document.createElement('div');
-        compDiv.classList.add('complete-div');
-        let divText = document.createElement('div');
-        divText.innerHTML = "Completed";
-        divText.className = "bold-font"
-        divText.style.fontSize = "18px"
-        compDiv.appendChild(divText)
-        div.appendChild(compDiv)
+        div.classList.add("completed");
     }
 
     const seriesBadges = document.createElement('div');
@@ -164,6 +158,17 @@ function addRace(race) {
     else if(type === 2){
         lowerDiv.children[1].firstChild.click()
     }
+    numberDiv.addEventListener("click", function () {
+        if (!deleting) return;
+        const raceDiv = numberDiv.closest(".race-calendar");
+        if (!raceDiv) return;
+        raceDiv.parentNode.removeChild(raceDiv);
+        deleted = true;
+        if (raceDiv.dataset.trackid === "6"){
+            update_notifications("Why'd you do that?", "monaco");
+        }
+        update_numbers();
+    });
     div.appendChild(numberDiv)
     div.appendChild(leftDiv)
     let qWeather = document.createElement('div');
@@ -278,9 +283,39 @@ export function load_calendar(races){
 }
 
 function update_numbers(){
-    document.querySelectorAll(".race-calendar-number").forEach(function(elem, index){
-        elem.textContent = index + 1
+    document.querySelectorAll(".race-calendar").forEach(function(elem, index){
+        updateNumberDisplay(elem, index);
     })
+}
+
+function updateNumberDisplay(race, index) {
+    const numberDiv = race.querySelector(".race-calendar-number");
+    if (!numberDiv) return;
+    numberDiv.innerHTML = "";
+    numberDiv.classList.remove("race-calendar-number-completed", "race-calendar-number-delete");
+    if (race.classList.contains("completed")) {
+        const icon = document.createElement("i");
+        icon.className = "bi bi-check-lg";
+        numberDiv.classList.add("race-calendar-number-completed");
+        numberDiv.appendChild(icon);
+        return;
+    }
+    if (deleting) {
+        const icon = document.createElement("i");
+        icon.className = "bi bi-trash-fill";
+        numberDiv.classList.add("race-calendar-number-delete");
+        numberDiv.appendChild(icon);
+        return;
+    }
+    numberDiv.textContent = index + 1;
+}
+
+function clearDropPreview() {
+    if (previewTarget) {
+        previewTarget.classList.remove("drop-before", "drop-after");
+    }
+    previewTarget = null;
+    previewPosition = null;
 }
 
 
@@ -383,54 +418,23 @@ function listenerRaces() {
  */
 document.getElementById("deleteTracks").addEventListener("click",function (btn) {
     if (deleting) {
-        document.querySelectorAll(".delete-div").forEach(function (elem) {
-            elem.parentNode.removeChild(elem)
-            update_numbers()
-        })
         this.className = "close-modal"
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
-            if(elem.firstChild.className !== "complete-div"){
-                elem.classList = "race-calendar";
-            }
-            
+            elem.classList.remove("deleting");
 
         })
 
     }
     else {
         document.querySelectorAll(".race-calendar").forEach(function (elem) {
-            if(elem.firstChild.className !== "complete-div"){
-                elem.classList = "race-calendar deleting";
-                let div = document.createElement('div');
-                let trashicon = document.createElement('i');
-                let trashandtext = document.createElement('div');
-                let text = document.createElement('span');
-                text.classList = "bold-font"
-                text.innerText = "Delete";
-                trashandtext.classList.add('trash-and-text')
-                trashicon.className = "bi bi-trash-fill";
-                div.classList.add('delete-div');
-                trashandtext.appendChild(trashicon);
-                trashandtext.appendChild(text);
-                div.appendChild(trashandtext);
-                elem.insertBefore(div,elem.firstChild);
-                trashandtext.addEventListener("click",function () {
-                    let race = trashandtext.parentNode.parentNode;
-                    trashandtext.parentNode.parentNode.parentNode.removeChild(race);
-                    deleted = true;
-                    if (race.dataset.trackid === "6"){
-                        update_notifications("Why'd you do that?", "monaco")
-                    }
-                })
-            }
-
-
+            elem.classList.add("deleting");
         })
         this.className = "close-modal delete-mode"
 
     }
 
     deleting = !deleting
+    update_numbers();
 })
 
 
@@ -442,12 +446,17 @@ interact('.race-calendar').draggable({
     listeners: {
         start(event) {
             let target = event.target;
+            if (target.classList.contains("completed")) {
+                event.interaction.stop();
+                return;
+            }
             let position = target.getBoundingClientRect();
             let width = target.getBoundingClientRect().width
 
         },
         move(event) {
             const target = event.target;
+            if (target.classList.contains("completed")) return;
             const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
             const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
@@ -457,32 +466,37 @@ interact('.race-calendar').draggable({
 
             target.setAttribute('data-x',x);
             target.setAttribute('data-y',y);
+
+            const racesEvents = document.querySelectorAll('.race-calendar');
+            let nextTarget = null;
+            let nextPosition = null;
+            racesEvents.forEach(function (element) {
+                if (target === element) return;
+                let eventRect = element.getBoundingClientRect();
+                let centerHorizontal = (eventRect.left + eventRect.right) / 2;
+                if (event.clientX >= eventRect.left && event.clientX <= eventRect.right && event.clientY >= eventRect.top && event.clientY <= eventRect.bottom) {
+                    nextTarget = element;
+                    nextPosition = event.clientX >= centerHorizontal ? "after" : "before";
+                }
+            });
+            if (previewTarget !== nextTarget || previewPosition !== nextPosition) {
+                clearDropPreview();
+                if (nextTarget && nextPosition) {
+                    previewTarget = nextTarget;
+                    previewPosition = nextPosition;
+                    previewTarget.classList.add(nextPosition === "after" ? "drop-after" : "drop-before");
+                }
+            }
         },
         end(event) {
             let target = event.target;
+            if (target.classList.contains("completed")) return;
 
-            const racesEvents = document.querySelectorAll('.race-calendar');
-            racesEvents.forEach(function (element) {
-                let eventRect = element.getBoundingClientRect();
-                let centerHorizontal = (eventRect.left + eventRect.right) / 2;
-
-                if (target !== element) {
-
-                    if (event.clientX >= eventRect.left && event.clientX <= eventRect.right && event.clientY >= eventRect.top && event.clientY <= eventRect.bottom) {
-                        if (event.clientX >= centerHorizontal) {
-                            reubicate(target,element,"after")
-                        } else {
-                            reubicate(target,element,"before")
-                        }
-                        update_numbers()
-
-                    }
-                }
-
-
-
-
-            });
+            if (previewTarget && previewPosition) {
+                reubicate(target, previewTarget, previewPosition);
+                update_numbers();
+            }
+            clearDropPreview();
 
             target.style.transform = 'none';
             target.setAttribute('data-x',0);
@@ -494,3 +508,4 @@ interact('.race-calendar').draggable({
         }
     }
 })
+

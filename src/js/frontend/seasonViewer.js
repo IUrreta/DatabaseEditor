@@ -676,18 +676,18 @@ function manage_teams_table_logos() {
             }
             else if (alpineReplace === "andretti") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
-                logo.src = "../assets/images/andretti2.png"
+                logo.src = "../assets/images/logos/andretti2.png"
             }
             else if (alpineReplace === "renault") {
                 logo.className = "teams-table-logo-inner ferrari-team-table-logo"
-                logo.src = "../assets/images/renault2.png"
+                logo.src = "../assets/images/logos/renault2.png"
             }
             else if (alpineReplace === "cadillac") {
                 logo.className = "teams-table-logo-inner cadillac-team-table-logo"
                 logo.src = logos_disc[5]
             }
             else if (alpineReplace === "lotus") {
-                logo.src = "../assets/images/lotus2.png"
+                logo.src = "../assets/images/logos/lotus2.png"
             }
         }
         else if (logo.dataset.teamid === "6") {
@@ -754,7 +754,7 @@ function manage_teams_table_logos() {
             }
             else if (alphaReplace === "brawn") {
                 logo.className = "teams-table-logo-inner brawn-team-table-logo"
-                logo.src = "../assets/images/brawn2.png"
+                logo.src = "../assets/images/logos/brawn2.png"
             }
 
             if (alphaReplace !== "toyota" && logo.tagName !== "IMG") {
@@ -3967,8 +3967,9 @@ function getLatestYearFromMenu() {
     const yearMenu = document.getElementById("yearMenu");
     const years = yearMenu
         ? Array.from(yearMenu.querySelectorAll("a"))
-            .map(a => Number(a.dataset.year))
-            .filter(y => Number.isFinite(y))
+            .map(a => a.dataset.year)
+            .filter(year => /^\d+$/.test(year))
+            .map(Number)
         : [];
     return years.length ? Math.max(...years) : null;
 }

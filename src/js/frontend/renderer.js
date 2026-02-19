@@ -8,7 +8,7 @@ import {
     populateSeasonReview,
     onSessionResultsFetched
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -165,6 +165,8 @@ let viewerLoaded = false;
 let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
+let isNightlyHost = false;
+let hasPatreonThemeAccess = false;
 
 let newsAvailable = {
     "normal": false,
@@ -438,6 +440,7 @@ function maybeReloadForNightlyAccess(tierInfo) {
 }
 
 function updatePatreonUI(tier) {
+    hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
@@ -450,7 +453,13 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
         document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+        selectedTheme = "default-theme";
+        document.querySelector("body").className = "font default-theme";
+        init_colors_dict(selectedTheme);
+        updateToolbarThemeLogo();
+        syncNightlyIndicator();
     }
+    syncNightlyThemeVisibility();
 
     if (tier.isLoggedIn) {
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
@@ -2209,19 +2218,14 @@ init_colors_dict()
 document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
+    isNightlyHost = isNightly;
     versionNow = APP_VERSION;
+
+    syncNightlyIndicator();
 
     if (isNightly) {
         const favicon = document.querySelector('link[rel="icon"]'); //testing
         if (favicon) favicon.href = "../assets/images/logoNightly.png";
-
-        const logoImg = document.querySelector(".toolbar-logo");
-        if (logoImg) logoImg.src = "../assets/images/logoNightly.svg";
-        document.querySelector(".toolbar-title").classList.add("nightly");
-
-        const moonIcon = document.createElement("i");
-        moonIcon.className = "bi bi-moon-fill nightly-icon";
-        document.querySelector(".toolbar-title").appendChild(moonIcon);
 
         const tierInfo = await getUserTier();
         let restrictionMessage = null;
@@ -2266,6 +2270,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         versionPanel.classList.add("nightly");
     }
 
+    updateToolbarThemeLogo();
+    syncNightlyThemeVisibility();
+
     updateRateLimitsDisplay();
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
@@ -2294,6 +2301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Modify car performance to your liking",
         "Fix game-breaking issues with ease",
         "No installation required, works in your browser",
+        "Honda, for the love of god, give Alonso a good engine for once"
     ];
 
     //reorder them randomly
@@ -2497,11 +2505,77 @@ function createMarqueeItem(name, tier) {
     return span;
 }
 
+function updateToolbarThemeLogo() {
+    const logoImg = document.querySelector(".toolbar-logo");
+    if (!logoImg) return;
+
+    Object.values(themeToolbarLogos).forEach((meta) => {
+        if (meta?.className) logoImg.classList.remove(meta.className);
+    });
+
+    if (!hasPatreonThemeAccess) {
+        logoImg.src = "../assets/images/logoVector.svg";
+        return;
+    }
+
+    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
+    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
+
+    const themeKey = Object.keys(themeToolbarLogos).find((key) => appliedTheme.includes(key.replace("-theme", "")));
+    if (themeKey) {
+        const meta = themeToolbarLogos[themeKey];
+        logoImg.src = meta.src;
+        if (meta.className) logoImg.classList.add(meta.className);
+        return;
+    }
+
+    logoImg.src = "../assets/images/logoVector.svg";
+}
+
+function syncNightlyIndicator() {
+    const titleEl = document.querySelector(".toolbar-title");
+    if (!titleEl) return;
+
+    const shouldShow = isNightlyHost;
+    titleEl.classList.toggle("nightly", shouldShow);
+
+    const existingIcon = titleEl.querySelector(".nightly-icon");
+    if (shouldShow) {
+        if (!existingIcon) {
+            const moonIcon = document.createElement("i");
+            moonIcon.className = "bi bi-moon-fill nightly-icon";
+            titleEl.appendChild(moonIcon);
+        }
+    } else {
+        if (existingIcon) existingIcon.remove();
+    }
+}
+
+function syncNightlyThemeVisibility() {
+    const nightlyCard = document.querySelector('.one-theme[data-theme="nightly-theme"]');
+    if (!nightlyCard) return;
+
+    const showNightlyTheme = isNightlyHost && hasPatreonThemeAccess;
+    nightlyCard.classList.toggle("d-none", !showNightlyTheme);
+
+    if (!showNightlyTheme && selectedTheme === "nightly-theme") {
+        selectedTheme = "default-theme";
+        localStorage.removeItem("theme");
+        document.body.className = "font default-theme";
+        init_colors_dict(selectedTheme);
+        updateToolbarThemeLogo();
+    }
+}
+
+
 document.querySelectorAll(".one-theme").forEach(function (elem) {
     elem.addEventListener("click", function () {
+        if (!hasPatreonThemeAccess) return;
+        if (elem.dataset.theme === "nightly-theme" && !isNightlyHost) return;
         selectedTheme = elem.dataset.theme
         document.querySelector(".one-theme.active").classList.remove("active")
         elem.classList.add("active")
+        changeTheme()
     })
 });
 
@@ -2509,18 +2583,44 @@ function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
     init_colors_dict(selectedTheme)
+    updateToolbarThemeLogo()
+    syncNightlyIndicator()
 
 }
 
 function loadTheme() {
     let theme = localStorage.getItem("theme")
-    selectedTheme = theme || "default-theme"
-    if (theme) {
-        document.querySelector("body").className = `font ${selectedTheme}`
-        document.querySelector(".one-theme.active").classList.remove("active")
-        document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
+    const savedThemeButton = theme ? document.querySelector(`.one-theme[data-theme="${theme}"]`) : null;
+
+    if (!theme && isNightlyHost && hasPatreonThemeAccess) {
+        theme = "nightly-theme"
+    }
+
+    if (theme === "nightly-theme" && !isNightlyHost) {
+        theme = null;
+        localStorage.removeItem("theme");
+    }
+
+    selectedTheme = savedThemeButton ? theme : (theme === "nightly-theme" ? "nightly-theme" : "default-theme")
+    document.querySelector("body").className = `font ${selectedTheme}`
+
+    const activeTheme = document.querySelector(".one-theme.active")
+    if (activeTheme) {
+        activeTheme.classList.remove("active")
+    }
+
+    const currentThemeButton = document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`)
+    if (currentThemeButton) {
+        currentThemeButton.classList.add("active")
+    }
+
+    if (theme && !savedThemeButton) {
+        localStorage.removeItem("theme")
     }
     init_colors_dict(selectedTheme)
+    updateToolbarThemeLogo()
+    syncNightlyIndicator()
+    syncNightlyThemeVisibility()
     reload_performance_graph()
     reload_h2h_graphs()
 }
@@ -2878,7 +2978,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         let idx = values.findIndex(v => String(v) === raw);
         if (idx === -1) {
             const numMatch = raw.replace(/,/g, '').match(/-?\d+(\.\d+)?/); // Ajuste aquí también por si acaso
-            if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+            if (numMatch) {
                 const num = parseFloat(numMatch[0]);
                 idx = values.findIndex(v => Number(v) === num);
             }
@@ -2917,7 +3017,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
-        if (isFinite(min) && isFinite(max) && max > min) {
+        if (max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
             return Math.round(Math.max(0, Math.min(100, p)));

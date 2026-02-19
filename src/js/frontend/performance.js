@@ -636,20 +636,22 @@ function buildHoldOptions(input, extra = {}) {
     const min = parseFloat(input.min);
     const max = parseFloat(input.max);
     const isEngineStat = !!input.closest(".engine-performance-stat");
+    const hasMin = input.min !== "";
+    const hasMax = input.max !== "";
     const format = extra.format ?? ((val) => (
         val.toFixed(2)
     ));
     const opts = { ...extra, format };
-    if (!Number.isNaN(min)) {
+    if (hasMin) {
         opts.min = min;
     }
-    if (!Number.isNaN(max)) {
+    if (hasMax) {
         opts.max = max;
     }
-    if (isEngineStat && Number.isNaN(min)) {
+    if (isEngineStat && !hasMin) {
         opts.min = 0;
     }
-    if (isEngineStat && Number.isNaN(max)) {
+    if (isEngineStat && !hasMax) {
         opts.max = 100;
     }
     return opts;
