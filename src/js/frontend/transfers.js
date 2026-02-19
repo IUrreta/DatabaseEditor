@@ -333,6 +333,7 @@ function manage_staff_drivers(value) {
 }
 
 function add_future_team_noti(driverDiv, teamInfo) {
+    console.log("ADDING NOTI FOR FUTURE TEAM ", teamInfo)
     let notiDiv = document.createElement("div")
     notiDiv.className = `future-contract-noti noti-${team_dict[teamInfo.teamId]}${teamInfo.posInTeam > 2 ? "-affiliate" : ""}`
     driverDiv.appendChild(notiDiv)
@@ -1348,9 +1349,16 @@ function editContract() {
     const command = new Command("editContract", data);
     command.execute();
 
+    console.log("FUTURE TEAM: ", future_team)
+
+    let teamInfo = {
+        teamId: future_team,
+        posInTeam: futureValues[5]
+    }
+
     if (future_team !== "-1") {
         let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
-        add_future_team_noti(driverDiv, future_team)
+        add_future_team_noti(driverDiv, teamInfo)
         driverDiv.dataset.futureteam = future_team
     }
     else {

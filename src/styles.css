@@ -11261,11 +11261,11 @@ input[type='number'] {
 }
 
 #teamContractMenu .alpine-logo-container {
-  width: auto;
+  width: 50px;
 }
 
 #teamContractMenu .alphatauri-logo-container {
-  width: auto;
+  width: 50px;
   padding: 4px;
 }
 
