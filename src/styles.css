@@ -4293,6 +4293,10 @@ phm
   width: 74px;
 }
 
+.driver-space:not(.affiliates-space) .junior-formula-logo{
+  display: none;
+}
+
 .junior-formula-logo {
   width: 26px;
   height: 22px;
