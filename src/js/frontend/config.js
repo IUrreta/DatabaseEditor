@@ -127,6 +127,11 @@ export const theme_colors = {
         "grid": "#5329b5",
         "general_secondary": "#f1f1f1",
     },
+    "nightly-theme": {
+        "labels": "#dedde6",
+        "grid": "#292929",
+        "general_secondary": "#f1f1f1",
+    },
     "ferrari-theme": {
         "labels": "#f0e6e8",
         "grid": "#5a3a42",
@@ -136,8 +141,32 @@ export const theme_colors = {
         "labels": "#d8e5ff",
         "grid": "#39578f",
         "general_secondary": "#f1f1f1",
+    },
+    "mercedes-theme": {
+        "labels": "#c8f9f2",
+        "grid": "#2a515c",
+        "general_secondary": "#f1f1f1",
+    },
+    "astonmartin-theme": {
+        "labels": "#e8f3ee",
+        "grid": "#2a5a4a",
+        "general_secondary": "#f1f1f1",
+    },
+    "mclaren-theme": {
+        "labels": "#f7e6dc",
+        "grid": "#5a4033",
+        "general_secondary": "#f1f1f1",
     }
 }
+
+export const themeToolbarLogos = {
+    "nightly-theme": { src: "../assets/images/logoNightly.svg", className: "toolbar-logo--nightly" },
+    "ferrari-theme": { src: "../assets/images/logos/ferrari.png", className: "toolbar-logo--ferrari" },
+    "redbull-theme": { src: "../assets/images/logos/redbull.png", className: "toolbar-logo--redbull" },
+    "mercedes-theme": { src: "../assets/images/logos/mercedes.png", className: "toolbar-logo--mercedes" },
+    "astonmartin-theme": { src: "../assets/images/logos/astonMartin.png", className: "toolbar-logo--astonmartin" },
+    "mclaren-theme": { src: "../assets/images/logos/mclaren.png", className: "toolbar-logo--mclaren" },
+};
 
 //predictions
 export const names_full = {

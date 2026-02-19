@@ -8,7 +8,7 @@ import {
     populateSeasonReview,
     onSessionResultsFetched
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -183,10 +183,6 @@ let isShowingNotification = false;
 
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
-const themeToolbarLogos = {
-    "ferrari-theme": "../assets/images/logos/ferrari.png",
-    "redbull-theme": "../assets/images/logos/redbull.png"
-};
 
 
 
@@ -461,7 +457,9 @@ function updatePatreonUI(tier) {
         document.querySelector("body").className = "font default-theme";
         init_colors_dict(selectedTheme);
         updateToolbarThemeLogo();
+        syncNightlyIndicator();
     }
+    syncNightlyThemeVisibility();
 
     if (tier.isLoggedIn) {
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
@@ -2223,14 +2221,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     isNightlyHost = isNightly;
     versionNow = APP_VERSION;
 
+    syncNightlyIndicator();
+
     if (isNightly) {
         const favicon = document.querySelector('link[rel="icon"]'); //testing
         if (favicon) favicon.href = "../assets/images/logoNightly.png";
-        document.querySelector(".toolbar-title").classList.add("nightly");
-
-        const moonIcon = document.createElement("i");
-        moonIcon.className = "bi bi-moon-fill nightly-icon";
-        document.querySelector(".toolbar-title").appendChild(moonIcon);
 
         const tierInfo = await getUserTier();
         let restrictionMessage = null;
@@ -2276,6 +2271,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     updateToolbarThemeLogo();
+    syncNightlyThemeVisibility();
 
     updateRateLimitsDisplay();
 
@@ -2513,34 +2509,69 @@ function updateToolbarThemeLogo() {
     const logoImg = document.querySelector(".toolbar-logo");
     if (!logoImg) return;
 
+    Object.values(themeToolbarLogos).forEach((meta) => {
+        if (meta?.className) logoImg.classList.remove(meta.className);
+    });
+
     if (!hasPatreonThemeAccess) {
-        logoImg.src = isNightlyHost
-            ? "../assets/images/logoNightly.svg"
-            : "../assets/images/logoVector.svg";
+        logoImg.src = "../assets/images/logoVector.svg";
         return;
     }
 
     const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
     const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
 
-    if (appliedTheme.includes("ferrari")) {
-        logoImg.src = themeToolbarLogos["ferrari-theme"];
+    const themeKey = Object.keys(themeToolbarLogos).find((key) => appliedTheme.includes(key.replace("-theme", "")));
+    if (themeKey) {
+        const meta = themeToolbarLogos[themeKey];
+        logoImg.src = meta.src;
+        if (meta.className) logoImg.classList.add(meta.className);
         return;
     }
 
-    if (appliedTheme.includes("redbull")) {
-        logoImg.src = themeToolbarLogos["redbull-theme"];
-        return;
-    }
-
-    logoImg.src = isNightlyHost
-        ? "../assets/images/logoNightly.svg"
-        : "../assets/images/logoVector.svg";
+    logoImg.src = "../assets/images/logoVector.svg";
 }
+
+function syncNightlyIndicator() {
+    const titleEl = document.querySelector(".toolbar-title");
+    if (!titleEl) return;
+
+    const shouldShow = isNightlyHost;
+    titleEl.classList.toggle("nightly", shouldShow);
+
+    const existingIcon = titleEl.querySelector(".nightly-icon");
+    if (shouldShow) {
+        if (!existingIcon) {
+            const moonIcon = document.createElement("i");
+            moonIcon.className = "bi bi-moon-fill nightly-icon";
+            titleEl.appendChild(moonIcon);
+        }
+    } else {
+        if (existingIcon) existingIcon.remove();
+    }
+}
+
+function syncNightlyThemeVisibility() {
+    const nightlyCard = document.querySelector('.one-theme[data-theme="nightly-theme"]');
+    if (!nightlyCard) return;
+
+    const showNightlyTheme = isNightlyHost && hasPatreonThemeAccess;
+    nightlyCard.classList.toggle("d-none", !showNightlyTheme);
+
+    if (!showNightlyTheme && selectedTheme === "nightly-theme") {
+        selectedTheme = "default-theme";
+        localStorage.removeItem("theme");
+        document.body.className = "font default-theme";
+        init_colors_dict(selectedTheme);
+        updateToolbarThemeLogo();
+    }
+}
+
 
 document.querySelectorAll(".one-theme").forEach(function (elem) {
     elem.addEventListener("click", function () {
         if (!hasPatreonThemeAccess) return;
+        if (elem.dataset.theme === "nightly-theme" && !isNightlyHost) return;
         selectedTheme = elem.dataset.theme
         document.querySelector(".one-theme.active").classList.remove("active")
         elem.classList.add("active")
@@ -2553,6 +2584,7 @@ function changeTheme() {
     localStorage.setItem("theme", selectedTheme)
     init_colors_dict(selectedTheme)
     updateToolbarThemeLogo()
+    syncNightlyIndicator()
 
 }
 
@@ -2560,7 +2592,16 @@ function loadTheme() {
     let theme = localStorage.getItem("theme")
     const savedThemeButton = theme ? document.querySelector(`.one-theme[data-theme="${theme}"]`) : null;
 
-    selectedTheme = savedThemeButton ? theme : "default-theme"
+    if (!theme && isNightlyHost && hasPatreonThemeAccess) {
+        theme = "nightly-theme"
+    }
+
+    if (theme === "nightly-theme" && !isNightlyHost) {
+        theme = null;
+        localStorage.removeItem("theme");
+    }
+
+    selectedTheme = savedThemeButton ? theme : (theme === "nightly-theme" ? "nightly-theme" : "default-theme")
     document.querySelector("body").className = `font ${selectedTheme}`
 
     const activeTheme = document.querySelector(".one-theme.active")
@@ -2578,6 +2619,8 @@ function loadTheme() {
     }
     init_colors_dict(selectedTheme)
     updateToolbarThemeLogo()
+    syncNightlyIndicator()
+    syncNightlyThemeVisibility()
     reload_performance_graph()
     reload_h2h_graphs()
 }
