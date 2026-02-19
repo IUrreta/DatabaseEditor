@@ -22,10 +22,10 @@
 - Driver of the day now doesn't have % of votes details
 
 ## 19th february
-- Updated calendar UI (drag/delete interactions, hover states, and news icon)
+- Updated calendar UI (drag/delete interactions, hover states, completed icons)
 - Added driver line ups viewer
 - Added support for 11 team lineups and team ordering in line ups
 - Head-to-head headers now use team logos
 - Added new team themes (Ferrari, Red Bull, Aston Martin, Mercedes, McLaren) plus nightly theme
 - Team logos resized for improved performance
-- Stronger contract sanitization
+- Stronger contract protection logic (F2/F3 contract bug fixed)
