@@ -377,6 +377,8 @@ body.light-theme {
     --elements-hover: #bbbbbb;
     --box-shadow: #00000022;
 
+    --tech-grid-highlight-color: var(--new-primary);
+
     --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
 
@@ -388,6 +390,8 @@ body.light-theme {
     --table-third-light: #f2cda6;
     --table-header: #d1d1d1;
     --table-dnf: #8b8b8b;
+
+    --sessions-results-hover: #d1d1d1;
 
     --positive-general: #2a9b63;
 
@@ -499,10 +503,13 @@ body.og-theme {
     --augment-buttons-hover: #64617d;
 
     --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+    --session-results-hover: #4a4a4a;
 
     --table-default: #494561;
     --table-default-odd: #3c3952;
     --table-header: #252335;
+
+    --tech-grid-highlight-color: var(--new-primary);
 
     --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
@@ -608,6 +615,9 @@ body.vaporwave-theme {
     --primary-gradient: linear-gradient(to right, var(--new-primary), var(--new-secondary));
 
     --scrollbar-hover: color-mix(in srgb, var(--white-general) 70%, var(--elements));
+    --session-results-hover: #3a1488;
+
+    --tech-grid-highlight-color: var(--new-primary);
 
     --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
     --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
@@ -666,4 +676,299 @@ body.vaporwave-theme {
     --andretti-secondary-transparent: color-mix(in srgb, var(--andretti-secondary) 18%, var(--elements));
     --custom-team-primary-transparent: color-mix(in srgb, var(--custom-team-primary) 18%, var(--elements));
     --custom-team-secondary-transparent: color-mix(in srgb, var(--custom-team-secondary) 18%, var(--elements));
+}
+
+/* Same as default, but swap primary and secondary accent colors. */
+body.nightly-theme {
+    --new-primary: #9AD2CB;
+    --new-primary-dark: #74aaa4;
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+
+    --new-secondary: #c89efc;
+    --new-secondary-dark: #ba82ff;
+    --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, var(--elements));
+
+    --text-selected: #b1dbd6;
+    --text-selected-secondary: #e7d3ff;
+
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #ffb38c 100%);
+
+    --tech-grid-highlight-color: var(--new-primary);
+}
+
+body.ferrari-theme {
+    --background: #130c0d;
+    --generals: #1a1012;
+    --superficials: #211417;
+    --dropdown-back: #3b252a;
+    --elements: #2e1c20;
+    --augment-buttons-bg: #4a2c33;
+    --augment-buttons-hover: #5d3740;
+    --dropdown-hover: #4b2f36;
+    --table-default: #191012;
+    --table-default-odd: #1f1316;
+    --table-header: #342026;
+    --dark-text: #b7afb1;
+    --disabled-text: #7f7478;
+    --modal-text: #8f8388;
+    --negative-text: #292929;
+    --new-primary: #ff3d3d;
+    --new-primary-dark: #d12a2a;
+    --new-secondary: #ffb74d;
+    --new-secondary-dark: #d49034;
+    --text-selected: #ffd3d3;
+    --text-selected-secondary: #ffe0ba;
+    --table-hover: #59343c;
+    --elements-hover: #3b252b;
+    --box-shadow: #0000003a;
+    --separator: #5a3a42;
+    --separator-light: #69444d;
+    --background-general: #140d10;
+    --tools-general: #181012;
+    --component-general: #4f2f37;
+    --component-general-hover: #5d3740;
+    --component-general-hover-extra: #6b404a;
+    --overall-holder: #28181d;
+    --dropdown-back-general: #96606d;
+    --active-general: #1f1115;
+    --row-cell: #160d10;
+    --row-odd-cell: #1b1115;
+    --special-columns: #5f3943;
+    --h2h-back: #2a1720;
+    --h2h-back-hover: #3a202b;
+    --active-buttons-back: #6b404a;
+    --prob-viewer-hover: #6a3f4a;
+    --custom-modal-back: #3f2c33;
+    --background--buttons-hover: #7b4855;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #ff8f6b 100%);
+    --session-results-hover: #4a2c33;
+    --table-dnf: #7f7478;
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --tech-grid-highlight-color: var(--new-primary);
+    --text-secondary: #cbbdc1;
+    --text-tertiary: #a89299;
+}
+
+body.redbull-theme {
+    --background: #090f1e;
+    --generals: #10172b;
+    --superficials: #132142;
+    --dropdown-back: #263963;
+    --elements: #1e2f52;
+    --augment-buttons-bg: #324874;
+    --augment-buttons-hover: #3e5b8e;
+    --dropdown-hover: #2c426b;
+    --table-default: #101a33;
+    --table-default-odd: #12203d;
+    --table-header: #22365d;
+    --dark-text: #afbdd8;
+    --disabled-text: #7887a8;
+    --modal-text: #8797bb;
+    --negative-text: #292929;
+    --new-primary: #4b7bff;
+    --new-primary-dark: #345fd4;
+    --new-secondary: #ffd24a;
+    --new-secondary-dark: #cfa41f;
+    --text-selected: #d8e5ff;
+    --text-selected-secondary: #ffe593;
+    --table-hover: #344d7f;
+    --elements-hover: #2a406b;
+    --box-shadow: #00000045;
+    --separator: #39578f;
+    --separator-light: #4668a4;
+    --background-general: #0c1429;
+    --tools-general: #11182d;
+    --component-general: #355181;
+    --component-general-hover: #406093;
+    --component-general-hover-extra: #4b6fa7;
+    --overall-holder: #192642;
+    --dropdown-back-general: #6188c0;
+    --active-general: #10192f;
+    --row-cell: #0e162b;
+    --row-odd-cell: #111c34;
+    --special-columns: #3b588b;
+    --h2h-back: #142446;
+    --h2h-back-hover: #1c3260;
+    --active-buttons-back: #4b6fa7;
+    --prob-viewer-hover: #44679e;
+    --custom-modal-back: #253656;
+    --background--buttons-hover: #567ab3;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #8aa7ff 100%);
+    --session-results-hover: #2a406b;
+    --table-dnf: #7887a8;
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --tech-grid-highlight-color: var(--new-primary);
+    --text-secondary: #c1cce6;
+    --text-tertiary: #92a2c8;
+}
+
+body.mercedes-theme {
+    --background: #071316;
+    --generals: #0b1b1f;
+    --superficials: #0e2328;
+    --dropdown-back: #1e3a40;
+    --elements: #153038;
+    --augment-buttons-bg: #234751;
+    --augment-buttons-hover: #2c5b67;
+    --dropdown-hover: #21424a;
+    --table-default: #0b1c20;
+    --table-default-odd: #0d2025;
+    --table-header: #15343b;
+    --dark-text: #a9b9bd;
+    --disabled-text: #6d8086;
+    --modal-text: #7f949a;
+    --negative-text: #292929;
+    --new-primary: #00f5d3;
+    --new-primary-dark: #00cdb1;
+    --new-secondary: #c8f9f2;
+    --new-secondary-dark: #93eadd;
+    --text-selected: #b9fff5;
+    --text-selected-secondary: #e6fffb;
+    --table-hover: #244a54;
+    --elements-hover: #1b3f48;
+    --box-shadow: #00000045;
+    --separator: #2a515c;
+    --separator-light: #336472;
+    --background-general: #09171a;
+    --tools-general: #0d1b1f;
+    --component-general: #2b5560;
+    --component-general-hover: #346574;
+    --component-general-hover-extra: #3d7688;
+    --overall-holder: #10272d;
+    --dropdown-back-general: #5aa6b4;
+    --active-general: #0c1d22;
+    --row-cell: #081417;
+    --row-odd-cell: #0a191d;
+    --special-columns: #2f5b68;
+    --h2h-back: #0e2328;
+    --h2h-back-hover: #14323a;
+    --active-buttons-back: #3d7688;
+    --prob-viewer-hover: #356675;
+    --custom-modal-back: #1a2f34;
+    --background--buttons-hover: #457f92;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #7ff6e4 100%);
+    --session-results-hover: #1b3f48;
+    --table-dnf: #6d8086;
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --tech-grid-highlight-color: var(--new-primary);
+    --text-secondary: #b8d6d3;
+    --text-tertiary: #85aba6;
+}
+
+body.astonmartin-theme {
+    --background: #06110e;
+    --generals: #0a1915;
+    --superficials: #0d211b;
+    --dropdown-back: #1c3b31;
+    --elements: #123128;
+    --augment-buttons-bg: #215042;
+    --augment-buttons-hover: #2a6654;
+    --dropdown-hover: #20463a;
+    --table-default: #0a1a15;
+    --table-default-odd: #0b1f18;
+    --table-header: #15362c;
+    --dark-text: #a7bdb4;
+    --disabled-text: #6a867b;
+    --modal-text: #7f9e92;
+    --negative-text: #292929;
+    --new-primary: #07977b;
+    --new-primary-dark: #057a63;
+    --new-secondary: #c3dc00;
+    --new-secondary-dark: #9db300;
+    --text-selected: #a9ffe9;
+    --text-selected-secondary: #f2ffb0;
+    --table-hover: #234c3e;
+    --elements-hover: #1a4034;
+    --box-shadow: #00000045;
+    --separator: #2a5a4a;
+    --separator-light: #33705b;
+    --background-general: #081612;
+    --tools-general: #0b1a15;
+    --component-general: #2a6253;
+    --component-general-hover: #327564;
+    --component-general-hover-extra: #3b8974;
+    --overall-holder: #10281f;
+    --dropdown-back-general: #6bb5a1;
+    --active-general: #0b1c16;
+    --row-cell: #071411;
+    --row-odd-cell: #081813;
+    --special-columns: #2f6b59;
+    --h2h-back: #0d211b;
+    --h2h-back-hover: #143026;
+    --active-buttons-back: #3b8974;
+    --prob-viewer-hover: #357c66;
+    --custom-modal-back: #173126;
+    --background--buttons-hover: #409e82;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #b4d400 100%);
+    --session-results-hover: #1a4034;
+    --table-dnf: #6a867b;
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --tech-grid-highlight-color: var(--new-primary);
+    --text-secondary: #b9d0c8;
+    --text-tertiary: #89a9a0;
+}
+
+body.mclaren-theme {
+    --background: #120b08;
+    --generals: #1a100c;
+    --superficials: #22160f;
+    --dropdown-back: #3b2a1f;
+    --elements: #2a1b13;
+    --augment-buttons-bg: #4a3124;
+    --augment-buttons-hover: #5a3a2b;
+    --dropdown-hover: #4b3326;
+    --table-default: #19100c;
+    --table-default-odd: #1f140f;
+    --table-header: #342218;
+    --dark-text: #b7ada8;
+    --disabled-text: #7f746e;
+    --modal-text: #8f847d;
+    --negative-text: #292929;
+    --new-primary: #ff8000;
+    --new-primary-dark: #d86a00;
+    --new-secondary: #47c7fc;
+    --new-secondary-dark: #2da6d6;
+    --text-selected: #ffd9b5;
+    --text-selected-secondary: #cdefff;
+    --table-hover: #5a3a2b;
+    --elements-hover: #3b281e;
+    --box-shadow: #0000003a;
+    --separator: #5a4033;
+    --separator-light: #6a4b3c;
+    --background-general: #140d0a;
+    --tools-general: #18100c;
+    --component-general: #5b3a2c;
+    --component-general-hover: #6a4534;
+    --component-general-hover-extra: #7a5140;
+    --overall-holder: #281a13;
+    --dropdown-back-general: #b77c5d;
+    --active-general: #1f120d;
+    --row-cell: #160d09;
+    --row-odd-cell: #1b110c;
+    --special-columns: #5f3f33;
+    --h2h-back: #22160f;
+    --h2h-back-hover: #2f1f16;
+    --active-buttons-back: #7a5140;
+    --prob-viewer-hover: #6a4534;
+    --custom-modal-back: #2a1b13;
+    --background--buttons-hover: #8a5a44;
+    --primary-gradient: linear-gradient(to right, var(--new-primary) 0%, #ffb46b 100%);
+    --session-results-hover: #3b281e;
+    --table-dnf: #7f746e;
+    --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --new-primary-background-dropdown-items: color-mix(in srgb, var(--new-primary) 45%, var(--elements));
+    --new-primary-transparent: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
+    --tech-grid-highlight-color: var(--new-primary);
+    --text-secondary: #d2c1b7;
+    --text-tertiary: #b0978a;
 }

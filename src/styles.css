@@ -689,6 +689,339 @@ i.bi-file-text:hover {
   right: 0;
 }
 
+.transfer-right-actions {
+  right: 14px;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.transfer-right-actions .auto-contract {
+  position: static;
+  right: auto;
+  padding-right: 0;
+}
+
+.lineups-season-pills-top {
+  display: flex;
+  align-items: center;
+  margin-right: 2px;
+}
+
+.lineups-season-pills-top .generalPills {
+  padding: 4px 10px !important;
+  min-width: 70px;
+}
+
+.lineups-view {
+  background-color: transparent;
+  min-height: 670px;
+  height: 100%;
+}
+
+.lineups-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lineups-season-pills {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--elements);
+  border-radius: 999px;
+  padding: 4px;
+  box-shadow: var(--shadow-s);
+}
+
+.lineups-pill {
+  border: none;
+  border-radius: 999px;
+  background-color: transparent;
+  color: var(--text-general);
+  font-size: 14px;
+  padding: 5px 14px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.lineups-pill:hover {
+  background-color: var(--table-hover);
+  color: var(--white-general);
+}
+
+.lineups-pill.active {
+  background-color: var(--text-general);
+  color: var(--negative-text);
+}
+
+.lineups-circle-wrap {
+  min-height: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 100%;
+}
+
+.lineups-circle {
+  position: relative;
+  width: 90%;
+  min-width: 0;
+  min-height: 760px;
+}
+
+
+
+.lineups-team-logo {
+  width: 104px;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.lineups-team-logo img {
+  width: 46px;
+  height: 46px;
+  object-fit: contain;
+}
+
+.lineups-team-logo > *:not(img) {
+  transform: scale(1.16);
+  transform-origin: center;
+}
+
+.lineups-team-drivers {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid color-mix(in srgb, var(--separator) 72%, transparent);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.lineups-team-card {
+  --lineup-accent: var(--new-primary);
+  position: absolute;
+  width: 272px;
+  transform: translate(-50%, -50%);
+  background:
+    linear-gradient(165deg,
+      color-mix(in srgb, var(--lineup-accent) 18%, var(--elements)) 0%,
+      color-mix(in srgb, var(--lineup-accent) 10%, var(--elements)) 34%,
+      color-mix(in srgb, var(--elements) 95%, black 5%) 100%);
+  border-radius: 10px;
+  box-shadow:
+    0 11px 24px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  padding: 8px 10px 9px;
+  color: var(--text-general);
+  transition: none;
+  cursor: default;
+  overflow: hidden;
+}
+
+.lineups-team-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 85% at -10% -18%, color-mix(in srgb, var(--lineup-accent) 30%, transparent), transparent 55%);
+  pointer-events: none;
+}
+
+.lineups-team-card::after {
+  content: none;
+}
+
+.lineups-team-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  min-height: 46px;
+  padding-top: 1px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+@media (max-height: 940px) {
+
+  .lineups-team-card{
+    padding: 5px 10px 9px;
+  }
+
+  .lineups-team-drivers{
+    margin-top: 4px;
+    padding-top: 3px;
+  }
+
+  .lineups-team-logo {
+    height: 42px;
+  }
+
+  .lineups-team-header {
+    min-height: 42px;
+  }
+
+  .lineups-team-logo img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .lineups-team-logo > *:not(img) {
+    transform: scale(1.06);
+    transform-origin: center;
+  }
+}
+
+
+
+.lineups-team-name {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -48%) scaleX(1);
+  transform-origin: center center;
+  width: 124%;
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: 0.9px;
+  color: color-mix(in srgb, var(--white-general) 72%, var(--lineup-accent) 28%);
+  opacity: 0.13;
+  text-shadow: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+
+.lineups-team-driver {
+  font-size: 11px;
+  color: color-mix(in srgb, var(--text-general) 95%, white 5%);
+  text-align: center;
+  background-color: color-mix(in srgb, var(--background) 28%, transparent);
+  border-radius: 4px;
+  padding: 4px 4px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.05;
+  min-height: 34px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.lineups-team-driver > *:not(.lineups-driver-number) {
+  position: relative;
+  z-index: 1;
+}
+
+.lineups-driver-number {
+  position: absolute;
+  right: 4px;
+  top: 1px;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0.4px;
+  color: color-mix(in srgb, var(--white-general) 70%, var(--lineup-accent) 30%);
+  opacity: 0.16;
+  pointer-events: none;
+  z-index: 0;
+  font-family: 'NumbersFont';
+  letter-spacing: -4px;
+}
+
+.lineups-driver-first {
+  display: block;
+  font-size: 10px;
+  opacity: 0.92;
+}
+
+.lineups-driver-last {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+}
+
+.to-be-decided{
+  color: var(--text-tertiary);
+}
+
+.lineups-team-driver.next-contract {
+  color: var(--new-primary);
+}
+
+.lineups-team-card.lineups-custom-team {
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.lineups-center-title {
+  position: absolute;
+  top: 47%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Formula1Dark';
+  color: color-mix(in srgb, var(--white-general) 95%, var(--new-primary) 5%);
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  line-height: 0.9;
+  pointer-events: none;
+  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+  z-index: 0;
+  opacity: 0.96;
+}
+
+.lineups-center-year {
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+  font-size: clamp(66px, 8vw, 130px);
+  line-height: 0.78;
+}
+
+.lineups-center-label {
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+  font-size: clamp(24px, 5vw, 88px);
+  line-height: 0.88;
+}
+
+.lineups-center-label.lineups{
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+  font-size: clamp(18px, 3.6vw, 94px);
+  line-height: 0.88;
+}
+
+
 .freeze-mentality {
   color: var(--text-general);
   font-size: 20px;
@@ -1412,8 +1745,8 @@ input.comparing-tag {
 
 .driver-info-team-logo-masked {
   height: 24px;
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--mclaren-primary);
@@ -2364,6 +2697,31 @@ body.vaporwave-theme .background {
   background-image: url('../assets/images/background2vaporwave.svg');
 }
 
+body.ferrari-theme .background {
+  background-image: url('../assets/images/background2.svg');
+  filter: hue-rotate(-28deg) saturate(1.4) brightness(0.8);
+}
+
+body.redbull-theme .background {
+  background-image: url('../assets/images/background2.svg');
+  filter: hue-rotate(145deg) saturate(1.3) brightness(0.8);
+}
+
+body.mercedes-theme .background {
+  background-image: url('../assets/images/background2.svg');
+  filter: hue-rotate(175deg) saturate(1.25) brightness(0.8);
+}
+
+body.astonmartin-theme .background {
+  background-image: url('../assets/images/background2.svg');
+  filter: hue-rotate(120deg) saturate(1.25) brightness(0.78);
+}
+
+body.mclaren-theme .background {
+  background-image: url('../assets/images/background2.svg');
+  filter: hue-rotate(20deg) saturate(1.35) brightness(0.8);
+}
+
 .main-panel {
   display: flex;
   position: relative;
@@ -2379,6 +2737,7 @@ body.vaporwave-theme .background {
   top: 0;
   left: 0;
   opacity: 1;
+  height: 91vh;
   /* overflow-x: hidden; */
 }
 
@@ -3660,8 +4019,8 @@ DRIVERS TABLE
 }
 
 .teams-table-logo-inner.mclaren-team-table-logo:not(img) {
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 90%;
   mask-size: 90%;
   background-color: #f0f0f0;
@@ -3708,8 +4067,8 @@ DRIVERS TABLE
 }
 
 .teams-table-logo-inner.toyota-team-table-logo:not(img) {
-  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
-  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
+  mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--white-general);
@@ -3934,6 +4293,10 @@ phm
   width: 74px;
 }
 
+.driver-space:not(.affiliates-space) .junior-formula-logo{
+  display: none;
+}
+
 .junior-formula-logo {
   width: 26px;
   height: 22px;
@@ -4083,8 +4446,8 @@ phm
 .logo-visarb-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/visarb.svg') no-repeat center;
-  mask: url('/assets/images/visarb.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/visarb.svg') no-repeat center;
+  mask: url('/assets/images/logos/visarb.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4093,8 +4456,8 @@ phm
 .logo-hugo-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/hugoboss.svg') no-repeat center;
-  mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
+  mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4104,8 +4467,8 @@ phm
 .logo-alphatauri-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/alphatauri.svg') no-repeat center;
-  mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
+  mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4114,8 +4477,8 @@ phm
 .logo-brawn-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/brawn.svg') no-repeat center;
-  mask: url('/assets/images/brawn.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/brawn.svg') no-repeat center;
+  mask: url('/assets/images/logos/brawn.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4124,16 +4487,16 @@ phm
 .logo-alpine-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/alpine.svg') no-repeat center;
-  mask: url('/assets/images/alpine.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alpine.svg') no-repeat center;
+  mask: url('/assets/images/logos/alpine.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
 }
 
 .logo-mclaren-table {
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 75%;
   mask-size: 75%;
   background-color: var(--mclaren-primary);
@@ -4142,24 +4505,24 @@ phm
 .logo-williams-2026-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;  
-  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;  
+  mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--williams-primary);
 }
 
 .logo-toyota-table {
-  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
-  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
+  mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--toyota-primary);
 }
 
 .logo-sauber-table {
-  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
-  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  mask: url('/assets/images/logos/sauber.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--sauber-primary);
@@ -4187,8 +4550,8 @@ phm
 .logo-andretti-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/andretti.svg') no-repeat center;
-  mask: url('/assets/images/andretti.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/andretti.svg') no-repeat center;
+  mask: url('/assets/images/logos/andretti.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4197,8 +4560,8 @@ phm
 .logo-renault-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/renault.svg') no-repeat center;
-  mask: url('/assets/images/renault.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/renault.svg') no-repeat center;
+  mask: url('/assets/images/logos/renault.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -4207,8 +4570,8 @@ phm
 .logo-lotus-table {
   width: 100%;
   height: 100%;
-  -webkit-mask: url('/assets/images/lotus.svg') no-repeat center;
-  mask: url('/assets/images/lotus.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/lotus.svg') no-repeat center;
+  mask: url('/assets/images/logos/lotus.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -5030,6 +5393,18 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   border: none;
 }
 
+.race-calendar.completed {
+  cursor: default !important;
+}
+
+.race-calendar.drop-before {
+  box-shadow: var(--shadow-s);
+}
+
+.race-calendar.drop-after {
+  box-shadow: var(--shadow-s);
+}
+
 .race-series-badges {
   position: absolute;
   top: 6px;
@@ -5091,6 +5466,27 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   padding-right: 12px;
 }
 
+.race-calendar-number-completed {
+  color: var(--positive-general);
+  font-size: 34px;
+}
+
+.race-calendar-number-delete {
+  color: var(--delete-div);
+  cursor: pointer;
+  font-size: 28px;
+}
+
+.race-calendar-number-delete i {
+  border-radius: 8px;
+  transition: background-color 0.15s;
+  padding: 0 4px;
+}
+
+.race-calendar-number-delete i:hover {
+  background-color: color-mix(in srgb, var(--delete-div) 30%, transparent);
+}
+
 .upper-text-and-flag {
   display: flex;
   flex-direction: row;
@@ -5150,9 +5546,23 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 }
 
 
-.race-calendar:hover {
+.race-calendar:not(.completed):hover {
   color: var(--white-general);
   background-color: var(--elements-hover);
+}
+
+.race-calendar.completed,
+.race-calendar.completed:hover {
+  color: var(--text-general);
+  background-color: var(--elements);
+  border: none;
+  box-shadow: var(--shadow-s);
+}
+
+.race-calendar.completed .left-race,
+.race-calendar.completed .right-race,
+.race-calendar.completed .race-series-badges {
+  pointer-events: none;
 }
 
 .pit-crew-button {
@@ -5195,7 +5605,7 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   backdrop-filter: blur(5px);
 }
 
-.completed:hover {
+.race-calendar.completed:hover {
   border-color: transparent;
 }
 
@@ -5238,7 +5648,7 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 .flag {
   width: 95px;
   height: 45px;
-  border-radius: 10px;
+  border-radius: 6px;
   opacity: 0.45;
 }
 
@@ -5509,6 +5919,12 @@ body.light-theme .flag-header img {
   transition: background-color 0.15s, color 0.15s;
   box-shadow: var(--shadow-s);
   position: relative;
+}
+
+.driver1-name[class*="-back-normal"]::after,
+.driver2-name[class*="-back-normal"]::after {
+  opacity: 0.45;
+  filter: saturate(0.75);
 }
 
 .driver1-first,
@@ -7151,10 +7567,42 @@ body.og-theme .records-list {
   flex-direction: row;
   gap: 8px;
   padding: 10px;
+  align-items: center;
   cursor: pointer;
 }
 
 .toolbar-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.toolbar-logo--ferrari {
+  width: 34px;
+  height: 26px;
+}
+
+.toolbar-logo--redbull {
+  width: 34px;
+  height: 34px;
+}
+
+.toolbar-logo--nightly {
+  width: 34px;
+  height: 30px;
+}
+
+.toolbar-logo--mclaren {
+  width: 34px;
+  height: 30px;
+}
+
+.toolbar-logo--mercedes {
+  width: 34px;
+  height: 24px;
+}
+
+.toolbar-logo--astonmartin {
   width: 34px;
   height: 34px;
 }
@@ -7186,7 +7634,7 @@ body.og-theme .records-list {
 .toolbar-title.nightly span {
   display: inline-block;
   line-height: 1;
-  background: linear-gradient(to right, var(--new-secondary), var(--text-general), var(--new-secondary));
+  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
   background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
@@ -7211,7 +7659,7 @@ body.og-theme .records-list {
   width: 14px;
   height: 14px;
   font-size: 8px;
-  background-color: var(--new-secondary);
+  background-color: var(--new-primary);
   border-radius: 50%;
   color: var(--elements);
   display: flex;
@@ -7921,13 +8369,14 @@ body.og-theme .records-list {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
+  margin: 0 -10px;
 }
 
 .record-logo-div img, .record-logo-div div {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 }
 
 .record-team-drivers{
@@ -9274,8 +9723,8 @@ body.og-theme .records-list {
   padding-left: 7px;
   padding-top: 10px;
   padding-right: 4px;
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
-  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -9369,8 +9818,8 @@ body.og-theme .records-list {
   padding-bottom: 4px;
   padding-top: 7px;
   padding-left: 6px;
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 90%;
   mask-size: 90%;
   background-color: var(--mclaren-primary);
@@ -10816,11 +11265,11 @@ input[type='number'] {
 }
 
 #teamContractMenu .alpine-logo-container {
-  width: auto;
+  width: 50px;
 }
 
 #teamContractMenu .alphatauri-logo-container {
-  width: auto;
+  width: 50px;
   padding: 4px;
 }
 
@@ -10926,32 +11375,32 @@ input[type='number'] {
 }
 
 .alpinelogo {
-  -webkit-mask: url('/assets/images/alpine.svg') no-repeat center;
-  mask: url('/assets/images/alpine.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alpine.svg') no-repeat center;
+  mask: url('/assets/images/logos/alpine.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
 }
 
 .renaultlogo {
-  -webkit-mask: url('/assets/images/renault.svg') no-repeat center;
-  mask: url('/assets/images/renault.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/renault.svg') no-repeat center;
+  mask: url('/assets/images/logos/renault.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
 }
 
 .andrettilogo {
-  -webkit-mask: url('/assets/images/andretti.svg') no-repeat center;
-  mask: url('/assets/images/andretti.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/andretti.svg') no-repeat center;
+  mask: url('/assets/images/logos/andretti.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
 }
 
 .lotuslogo {
-  -webkit-mask: url('/assets/images/lotus.svg') no-repeat center;
-  mask: url('/assets/images/lotus.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/lotus.svg') no-repeat center;
+  mask: url('/assets/images/logos/lotus.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
@@ -10962,8 +11411,8 @@ input[type='number'] {
   width: 40px;
   height: 40px;
   padding: 2px;
-  -webkit-mask: url('/assets/images/mclaren.svg') no-repeat center;
-  mask: url('/assets/images/mclaren.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center;
   -webkit-mask-size: 90%;
   background-color: var(--mclaren-primary);
   transition: opacity 0.15s;
@@ -11012,8 +11461,8 @@ input[type='number'] {
 }
 
 .brawnlogo {
-  -webkit-mask: url('/assets/images/brawn.svg') no-repeat center;
-  mask: url('/assets/images/brawn.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/brawn.svg') no-repeat center;
+  mask: url('/assets/images/logos/brawn.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -11036,8 +11485,8 @@ input[type='number'] {
 }
 
 .sauberlogo {
-  -webkit-mask: url('/assets/images/sauber.svg') no-repeat center;
-  mask: url('/assets/images/sauber.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  mask: url('/assets/images/logos/sauber.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--sauber-primary);
@@ -11050,8 +11499,8 @@ input[type='number'] {
 }
 
 .hugologo {
-  -webkit-mask: url('/assets/images/hugoboss.svg') no-repeat center;
-  mask: url('/assets/images/hugoboss.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
+  mask: url('/assets/images/logos/hugoboss.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -11064,8 +11513,8 @@ input[type='number'] {
 }
 
 .visarblogo {
-  -webkit-mask: url('/assets/images/visarb.svg') no-repeat center;
-  mask: url('/assets/images/visarb.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/visarb.svg') no-repeat center;
+  mask: url('/assets/images/logos/visarb.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--text-general);
@@ -11082,8 +11531,8 @@ input[type='number'] {
 }
 
 .toyotalogo {
-  -webkit-mask: url('/assets/images/toyota.svg') no-repeat center;
-  mask: url('/assets/images/toyota.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
+  mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: #EB0A1B; /* toyota primary color, different from their background gray color */
@@ -11118,8 +11567,8 @@ input[type='number'] {
 }
 
 .alphataurilogo {
-  -webkit-mask: url('/assets/images/alphatauri.svg') no-repeat center;
-  mask: url('/assets/images/alphatauri.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
+  mask: url('/assets/images/logos/alphatauri.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
@@ -11144,8 +11593,8 @@ input[type='number'] {
 }
 
 .williamslogo {
-  -webkit-mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
-  mask: url('/assets/images/Williams_2026_logo.svg') no-repeat center;
+  -webkit-mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
+  mask: url('/assets/images/logos/Williams_2026_logo.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
   background-color: var(--logos-general);
@@ -11159,12 +11608,43 @@ input[type='number'] {
 .team2 {
   max-width: 150px;
   text-align: center;
+  position: relative;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 0 4px;
 }
 
 .driver1-name .team1,
 .driver2-name .team2 {
   color: var(--text-general) !important;
   transition: color 0.15s;
+}
+
+.team-h2h-name-bg {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: color-mix(in srgb, var(--text-general) 75%, transparent);
+  opacity: 0.5;
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: 1.2px;
+  font-size: 26px;
+  text-transform: uppercase;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.team-h2h-logo {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 1;
 }
 
 
@@ -13506,6 +13986,102 @@ a.bi-custom-patreon.close-slide-up {
   border-bottom-right-radius: 4px;
 }
 
+#nightlyTheme .background-color {
+  background-color: #202020;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#nightlyTheme .primary-color {
+  background-color: #9AD2CB;
+}
+
+#nightlyTheme .secondary-color {
+  background-color: #c89efc;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#ferrariTheme .background-color {
+  background-color: #211417;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#ferrariTheme .primary-color {
+  background-color: #ff3d3d;
+}
+
+#ferrariTheme .secondary-color {
+  background-color: #ffb74d;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#redbullTheme .background-color {
+  background-color: #132142;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#redbullTheme .primary-color {
+  background-color: #4b7bff;
+}
+
+#redbullTheme .secondary-color {
+  background-color: #ffd24a;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#mercedesTheme .background-color {
+  background-color: #0e2328;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#mercedesTheme .primary-color {
+  background-color: #00f5d3;
+}
+
+#mercedesTheme .secondary-color {
+  background-color: #c8f9f2;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#astonMartinTheme .background-color {
+  background-color: #0d211b;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#astonMartinTheme .primary-color {
+  background-color: #07977b;
+}
+
+#astonMartinTheme .secondary-color {
+  background-color: #c3dc00;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#mclarenTheme .background-color {
+  background-color: #22160f;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#mclarenTheme .primary-color {
+  background-color: #ff8000;
+}
+
+#mclarenTheme .secondary-color {
+  background-color: #47c7fc;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
 .big-subtitle p {
   padding-top: 5px;
   color: var(--new-primary)
@@ -15420,14 +15996,6 @@ p.news-error-api-key {
   cursor: pointer;
 }
 
-body:has(.toolbar-title.nightly) .upload-desc input {
-  color: var(--new-secondary);
-}
-
-body:has(.toolbar-title.nightly) .upload-desc input:hover {
-  background-color: var(--new-secondary-transparent);
-  color: var(--new-secondary);
-}
 
 
 .font-mono {
@@ -15522,12 +16090,6 @@ body:has(.toolbar-title.nightly) .upload-desc input:hover {
   transform: scale(0.96);
 }
 
-body:has(.toolbar-title.nightly) .badge-version {
-  background-color: var(--new-secondary-transparent);
-  border: 1px solid var(--new-secondary);
-  color: var(--new-secondary);
-}
-
 
 .hero-title {
   font-size: 3rem;
@@ -15543,25 +16105,13 @@ body:has(.toolbar-title.nightly) .badge-version {
   font-family: 'Formula1Dark';
 }
 
+
 @media (min-width: 768px) {
   .hero-title {
     font-size: 5.5rem;
   }
 }
 
-body:has(.toolbar-title.nightly) .gradient-text {
-  background: linear-gradient(135deg, var(--hero-title) 30%, var(--new-secondary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-body:has(.toolbar-title.nightly) .glow-spot {
-  background-color: var(--new-secondary);
-}
-
-body:has(.toolbar-title.nightly) .icon-circle {
-  background-color: color-mix(in srgb, var(--new-secondary) 25%, var(--background));
-}
 
 #statusTitle {
   color: var(--text-general) !important;
@@ -15821,11 +16371,6 @@ body:has(.toolbar-title.nightly) .icon-circle {
   transition: opacity 0.15s ease-in-out;
 }
 
-body:has(.toolbar-title.nightly) .loading-spinner {
-  border: 5px solid var(--new-secondary-transparent);
-  border-top-color: var(--new-secondary);
-}
-
 .loading-spinner.show {
   animation: spin 1s ease-in-out infinite;
   opacity: 1;
@@ -15892,15 +16437,6 @@ body:has(.toolbar-title.nightly) .loading-spinner {
   border-radius: 5px;
   transition: background-color 0.15s, color 0.15s;
   text-decoration: underline;
-}
-
-body:has(.toolbar-title.nightly) .file-name {
-  color: var(--new-secondary);
-}
-
-body:has(.toolbar-title.nightly) .file-name:hover {
-  background-color: var(--new-secondary-transparent);
-  color: var(--new-secondary);
 }
 
 .last-opened-time {
@@ -16639,6 +17175,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-driver-logo-div .drivers-table-logo{
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }
 
 .season-review-driver-name{
@@ -16651,8 +17188,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  padding-top: 1px;
+  height: 22px;
 }
 
 .season-review-driver-points{
@@ -16660,8 +17197,8 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  padding-top: 1px;
+  height: 22px;
 }
 
 .season-review-driver-points.diff{
@@ -16715,6 +17252,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .season-review-team-logo-div .drivers-table-logo{
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }
 
 .season-review-team-name{
@@ -16728,8 +17266,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 25px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  height: 22px;
 }
 
 .season-review-team-points{
@@ -16737,8 +17274,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   letter-spacing: -2.2px;
   width: 52px;
   text-align: center;
-  padding-top: 3px;
-  height: 24px;
+  height: 22px;
 }
 
 .season-review-team-points.diff{
@@ -16936,6 +17472,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   font-size: 14px;
   padding-top: 3px;
+  height: 22px;
 }
 
 .season-review-qualifying-name{
@@ -16955,6 +17492,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   padding-top: 3px;
   font-size: 14px;
+  height: 22px;
 }
 
 .wins-drivers-list{
@@ -16978,6 +17516,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   font-size: 14px;
   padding-top: 3px;
+  height: 22px;
 }
 
 .season-review-wins-name{
@@ -17004,6 +17543,7 @@ body:has(.toolbar-title.nightly) .file-name:hover {
   text-align: center;
   padding-top: 3px;
   font-size: 14px;
+  height: 22px;
 }
 
 .podiums-teams-list .season-review-wins-position,
@@ -17502,4 +18042,5 @@ body:has(.toolbar-title.nightly) .file-name:hover {
 .session-results-driver-logo-div img, .session-results-driver-logo-div div {
   width: 24px;
   height: 24px;
+  object-fit: contain;
 }

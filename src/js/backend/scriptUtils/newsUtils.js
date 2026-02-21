@@ -2981,6 +2981,127 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
     return newsList;
 }
 
+function buildGridLineupsData(season) {
+    const globals = getGlobals();
+    const teamIds = globals.isCreateATeam
+        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
+        : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const currentTeamFilterSql = globals.isCreateATeam
+        ? `(TeamID BETWEEN 1 AND 10 OR TeamID = 32)`
+        : `(TeamID BETWEEN 1 AND 10)`;
+    const currentContractsRows = queryDB(
+        `SELECT StaffID, TeamID
+            FROM Staff_Contracts
+            WHERE ContractType = 0
+              AND PosInTeam <= 2
+              AND EndSeason >= ?
+              AND ${currentTeamFilterSql}`,
+        [season],
+        'allRows'
+    ) || [];
+    const currentTeamByDriver = new Map();
+    currentContractsRows.forEach((row) => {
+        const driverId = Number(row[0]);
+        const teamId = Number(row[1]);
+        if (!Number.isNaN(driverId) && !Number.isNaN(teamId)) {
+            currentTeamByDriver.set(driverId, teamId);
+        }
+    });
+
+    const teamsDict = {};
+
+    teamIds.forEach(teamId => {
+        const teamName = combined_dict[teamId] || "Unknown Team";
+        const teamInfo = {
+            name: teamName,
+            teamId,
+            driversNextSeason: [],
+            driversThisSeason: []
+        };
+
+        const driversThisSeason = queryDB(
+            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType, con.PosInTeam, num.Number
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                  ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                    ON bas.StaffID = con.StaffID
+                LEFT JOIN Staff_DriverNumbers num
+                    ON num.CurrentHolder = bas.StaffID
+                WHERE con.TeamID = ?
+                  AND con.PosInTeam <= 2
+                  AND con.ContractType = 0
+                  AND con.EndSeason >= ?
+                ORDER BY con.PosInTeam, con.ContractType, dri.StaffID`, [teamId, season],
+            'allRows'
+        ) || [];
+
+        const driversNextSeason = queryDB(
+            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType, con.PosInTeam, num.Number
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                  ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                    ON bas.StaffID = con.StaffID
+                LEFT JOIN Staff_DriverNumbers num
+                    ON num.CurrentHolder = bas.StaffID
+                WHERE con.TeamID = ?
+                  AND con.PosInTeam <= 2
+                  AND con.ContractType IN (0,3)
+                  AND con.EndSeason > ?
+                ORDER BY con.PosInTeam, con.ContractType, dri.StaffID`, [teamId, season],
+            'allRows'
+        ) || [];
+
+        const seenThisSeason = new Set();
+        driversThisSeason.forEach(d => {
+            const name = formatNamesSimple(d);
+            const driverId = Number(name[1]);
+            if (seenThisSeason.has(driverId)) return;
+            seenThisSeason.add(driverId);
+            const driverNumber = Number(d[6]);
+            teamInfo.driversThisSeason.push({
+                name: news_insert_space(name[0]),
+                driverId,
+                posInTeam: Number(d[5]) || null,
+                contractType: Number(d[4]) || 0,
+                driverNumber: !Number.isNaN(driverNumber) && driverNumber > 0 ? driverNumber : null
+            });
+        });
+
+        const seenNextSeason = new Set();
+        driversNextSeason.forEach(d => {
+            const name = formatNamesSimple(d);
+            const contractType = Number(d[4]) || 0;
+            const driverId = Number(name[1]);
+            if (seenNextSeason.has(driverId)) return;
+            seenNextSeason.add(driverId);
+            const driverNumber = Number(d[6]);
+            const currentTeamId = Number(currentTeamByDriver.get(driverId));
+            const isTeamChangeForNextSeason = contractType === 3 && currentTeamId !== teamId;
+            teamInfo.driversNextSeason.push({
+                name: news_insert_space(name[0]),
+                driverId,
+                posInTeam: Number(d[5]) || null,
+                contractType,
+                driverNumber: !Number.isNaN(driverNumber) && driverNumber > 0 ? driverNumber : null,
+                isForNextSeason: isTeamChangeForNextSeason
+            });
+        });
+
+        teamsDict[teamId] = teamInfo;
+    });
+
+    return { teamIds, teamsDict };
+}
+
+export function getCurrentAndNextSeasonGridLineups() {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const season = daySeason[1];
+    const { teamIds, teamsDict } = buildGridLineupsData(season);
+    return { season, teamIds, teams: teamsDict };
+}
+
 function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason[1];
@@ -3003,66 +3124,7 @@ function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
         return [{ id: entryId, ...savedNews[entryId] }];
     }
 
-    const globals = getGlobals();
-    let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    if (globals.isCreateATeam) {
-        teamIds.push(32);
-    }
-    let teamsDict = {};
-    teamIds.forEach(teamId => {
-        const teamName = combined_dict[teamId] || "Unknown Team";
-        let teamInfo = {
-            "name": teamName,
-            "teamId": teamId,
-            "driversNextSeason": [],
-            "driversThisSeason": []
-        }
-        const driversThisSeason = queryDB(
-            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
-                FROM Staff_BasicData bas
-                JOIN Staff_DriverData dri
-                  ON bas.StaffID = dri.StaffID
-                JOIN Staff_Contracts con
-                    ON bas.StaffID = con.StaffID
-                WHERE con.TeamID = ?
-                  AND con.PosInTeam <= 2
-                  AND con.ContractType = 0
-                  AND EndSeason >= ?`, [teamId, season],
-            'allRows'
-        );
-        const driversNextSeason = queryDB(
-            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
-                FROM Staff_BasicData bas
-                JOIN Staff_DriverData dri
-                  ON bas.StaffID = dri.StaffID
-                JOIN Staff_Contracts con
-                    ON bas.StaffID = con.StaffID
-                WHERE con.TeamID = ?
-                  AND con.PosInTeam <= 2
-                  AND con.ContractType IN (0,3)
-                  AND EndSeason > ?`, [teamId, season],
-            'allRows'
-        );
-        driversNextSeason.forEach(d => {
-            const name = formatNamesSimple(d);
-            const contractType = d[4];
-            let driverInfo = {
-                "name": news_insert_space(name[0]),
-                "driverId": name[1],
-                "isForNextSeason": contractType === 3
-            }
-            teamInfo.driversNextSeason.push(driverInfo);
-        });
-        driversThisSeason.forEach(d => {
-            const name = formatNamesSimple(d);
-            let driverInfo = {
-                "name": news_insert_space(name[0]),
-                "driverId": name[1]
-            }
-            teamInfo.driversThisSeason.push(driverInfo);
-        });
-        teamsDict[teamId] = teamInfo;
-    });
+    const { teamsDict } = buildGridLineupsData(season);
 
     const title = generateTitle({ season_year: season + 1 }, 19);
     const image = getImagePath(null, null, "grid");

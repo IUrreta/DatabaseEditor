@@ -126,8 +126,47 @@ export const theme_colors = {
         "labels": "#dedde6",
         "grid": "#5329b5",
         "general_secondary": "#f1f1f1",
+    },
+    "nightly-theme": {
+        "labels": "#dedde6",
+        "grid": "#292929",
+        "general_secondary": "#f1f1f1",
+    },
+    "ferrari-theme": {
+        "labels": "#f0e6e8",
+        "grid": "#5a3a42",
+        "general_secondary": "#f1f1f1",
+    },
+    "redbull-theme": {
+        "labels": "#d8e5ff",
+        "grid": "#39578f",
+        "general_secondary": "#f1f1f1",
+    },
+    "mercedes-theme": {
+        "labels": "#c8f9f2",
+        "grid": "#2a515c",
+        "general_secondary": "#f1f1f1",
+    },
+    "astonmartin-theme": {
+        "labels": "#e8f3ee",
+        "grid": "#2a5a4a",
+        "general_secondary": "#f1f1f1",
+    },
+    "mclaren-theme": {
+        "labels": "#f7e6dc",
+        "grid": "#5a4033",
+        "general_secondary": "#f1f1f1",
     }
 }
+
+export const themeToolbarLogos = {
+    "nightly-theme": { src: "../assets/images/logoNightly.svg", className: "toolbar-logo--nightly" },
+    "ferrari-theme": { src: "../assets/images/logos/ferrari.png", className: "toolbar-logo--ferrari" },
+    "redbull-theme": { src: "../assets/images/logos/redbull.png", className: "toolbar-logo--redbull" },
+    "mercedes-theme": { src: "../assets/images/logos/mercedes.png", className: "toolbar-logo--mercedes" },
+    "astonmartin-theme": { src: "../assets/images/logos/astonMartin.png", className: "toolbar-logo--astonmartin" },
+    "mclaren-theme": { src: "../assets/images/logos/mclaren.png", className: "toolbar-logo--mclaren" },
+};
 
 //predictions
 export const names_full = {
@@ -183,38 +222,38 @@ export const continentDict = {
 }
 export const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
 export let logos_disc = {
-    1: '../assets/images/ferrari.png',
-    2: '../assets/images/mclaren.png',
-    3: '../assets/images/redbull.png',
-    4: '../assets/images/mercedes.png',
-    5: '../assets/images/alpine.png',
-    6: '../assets/images/Williams_2026_logo.svg',
-    7: '../assets/images/haas.png',
-    8: '../assets/images/alphatauri.png',
-    9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonMartin.png',
-    11: '../assets/images/prema.png',
-    12: '../assets/images/invicta.png',
-    13: '../assets/images/carlin.png',
-    14: '../assets/images/hitech.png',
-    15: '../assets/images/art.png',
-    16: '../assets/images/mp.png',
-    17: '../assets/images/phm.png',
-    18: '../assets/images/dams.png',
-    19: '../assets/images/campos.png',
-    20: '../assets/images/var.png',
-    21: '../assets/images/trident.png',
-    22: '../assets/images/prema.png',
-    23: '../assets/images/trident.png',
-    24: '../assets/images/art.png',
-    25: '../assets/images/hitech.png',
-    26: '../assets/images/var.png',
-    27: '../assets/images/mp.png',
-    28: '../assets/images/campos.png',
-    29: '../assets/images/carlin.png',
-    30: '../assets/images/jenzer.png',
-    31: '../assets/images/phm.png',
-    32: '../assets/images/placeholder.png'
+    1: '../assets/images/logos/ferrari.png',
+    2: '../assets/images/logos/mclaren.png',
+    3: '../assets/images/logos/redbull.png',
+    4: '../assets/images/logos/mercedes.png',
+    5: '../assets/images/logos/alpine.png',
+    6: '../assets/images/logos/Williams_2026_logo.svg',
+    7: '../assets/images/logos/haas.png',
+    8: '../assets/images/logos/alphatauri.png',
+    9: '../assets/images/logos/alfaromeo.png',
+    10: '../assets/images/logos/astonMartin.png',
+    11: '../assets/images/logos/prema.png',
+    12: '../assets/images/logos/invicta.png',
+    13: '../assets/images/logos/carlin.png',
+    14: '../assets/images/logos/hitech.png',
+    15: '../assets/images/logos/art.png',
+    16: '../assets/images/logos/mp.png',
+    17: '../assets/images/logos/phm.png',
+    18: '../assets/images/logos/dams.png',
+    19: '../assets/images/logos/campos.png',
+    20: '../assets/images/logos/var.png',
+    21: '../assets/images/logos/trident.png',
+    22: '../assets/images/logos/prema.png',
+    23: '../assets/images/logos/trident.png',
+    24: '../assets/images/logos/art.png',
+    25: '../assets/images/logos/hitech.png',
+    26: '../assets/images/logos/var.png',
+    27: '../assets/images/logos/mp.png',
+    28: '../assets/images/logos/campos.png',
+    29: '../assets/images/logos/carlin.png',
+    30: '../assets/images/logos/jenzer.png',
+    31: '../assets/images/logos/phm.png',
+    32: '../assets/images/logos/placeholder.png'
 };
 
 
