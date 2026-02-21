@@ -202,6 +202,10 @@
     /*soft shadow */
 
 
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
+
+
     /*
   TEAMS COLORS
   */
@@ -377,6 +381,9 @@ body.light-theme {
     --elements-hover: #bbbbbb;
     --box-shadow: #00000022;
 
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
+
     --tech-grid-highlight-color: var(--new-primary);
 
     --new-primary-background-dropdown: color-mix(in srgb, var(--new-primary) 25%, var(--elements));
@@ -496,6 +503,9 @@ body.og-theme {
     --text-secondary: #797599;
     --text-tertiary: #5f5c77;
 
+    --switch-border-on: var(--new-secondary);
+    --switch-border-off: var(--text-general);
+
     --tech-grid-color: transparent;
     --tech-grid-line: transparent;
 
@@ -594,6 +604,9 @@ body.vaporwave-theme {
     --text-selected: #ff9fff;
     --text-selected-secondary: #6ef9ff;
 
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
+
     --table-default: #250d58;;
     --table-default-odd: #2a0f61;
     --table-header: #3a1488;
@@ -690,6 +703,9 @@ body.nightly-theme {
     --new-secondary-dark: #ba82ff;
     --new-secondary-transparent: color-mix(in srgb, var(--new-secondary) 25%, var(--elements));
 
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
+
     --text-selected: #b1dbd6;
     --text-selected-secondary: #e7d3ff;
 
@@ -751,6 +767,8 @@ body.ferrari-theme {
     --tech-grid-highlight-color: var(--new-primary);
     --text-secondary: #cbbdc1;
     --text-tertiary: #a89299;
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
 }
 
 body.redbull-theme {
@@ -806,6 +824,8 @@ body.redbull-theme {
     --tech-grid-highlight-color: var(--new-primary);
     --text-secondary: #c1cce6;
     --text-tertiary: #92a2c8;
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
 }
 
 body.mercedes-theme {
@@ -861,6 +881,8 @@ body.mercedes-theme {
     --tech-grid-highlight-color: var(--new-primary);
     --text-secondary: #b8d6d3;
     --text-tertiary: #85aba6;
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
 }
 
 body.astonmartin-theme {
@@ -916,6 +938,8 @@ body.astonmartin-theme {
     --tech-grid-highlight-color: var(--new-primary);
     --text-secondary: #b9d0c8;
     --text-tertiary: #89a9a0;
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
 }
 
 body.mclaren-theme {
@@ -971,4 +995,6 @@ body.mclaren-theme {
     --tech-grid-highlight-color: var(--new-primary);
     --text-secondary: #d2c1b7;
     --text-tertiary: #b0978a;
+    --switch-border-on: var(--new-primary);
+    --switch-border-off: var(--text-general);
 }

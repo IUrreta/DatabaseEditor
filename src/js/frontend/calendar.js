@@ -128,7 +128,7 @@ function addRace(race) {
     let ATAInput;
     let lowerDiv = document.createElement('div');
     lowerDiv.classList.add('lower-race');
-    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch''><label class='form-check-label'>Sprint</label></div>";
+    lowerDiv.innerHTML = "<div class='form-check form-switch'><input class='form-check-input custom-toggle sprint-input' type='checkbox' role='switch'><label class='form-check-label'>Sprint</label></div>";
     if (game_version === 2023){
         lowerDiv.innerHTML += "<div class='form-check form-switch'><input class='form-check-input custom-toggle ata-input' type='checkbox' role='switch'><label class='form-check-label' for='flexSwitchCheckDefault'>ATA Quali</label></div>";
         ATAInput = lowerDiv.querySelector(".ata-input")

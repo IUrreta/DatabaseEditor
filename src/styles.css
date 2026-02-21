@@ -1027,43 +1027,79 @@ i.bi-file-text:hover {
   font-size: 20px;
   padding-right: 2rem;
 }
-
+/* Base */
 input[role="switch"] {
-  border: none;
   cursor: pointer;
+  box-shadow: none;
+  background-color: transparent !important;
+  transition: border-color 0.15s, background-color 0.15s;
+  border: 2px solid var(--switch-border-off) !important;
+
+  /* clave: necesitamos posicionar el pseudo-thumb */
+  position: relative;
+
+  /* clave: desactivamos el “ball” de bootstrap (background-image) */
+  --bs-form-switch-bg: none !important;
 }
 
+/* Si no quieres glow de focus */
 input[role="switch"]:focus {
   box-shadow: none;
 }
 
-body.light-theme input[role="switch"]:not(:checked) {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
+/* THUMB: un solo SVG (thumb-general.svg) coloreable */
+input[role="switch"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  /* tamaño del thumb: ajusta si tu switch es más grande/pequeño */
+  width: 0.85rem;
+  height: 0.85rem;
+
+  /* posición OFF */
+  left: 0.01rem;
+
+  /* el SVG solo define la forma */
+  -webkit-mask: url('../assets/images/thumb-general.svg') no-repeat center / contain;
+  mask: url('../assets/images/thumb-general.svg') no-repeat center / contain;
+
+  /* color del thumb (OFF por defecto) */
+  background-color: var(--switch-border-off);
+
+  transition: left 0.15s, background-color 0.15s;
 }
 
-body.light-theme input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
-}
-
+/* OFF */
 input[role="switch"]:not(:checked) {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
+  border-color: var(--switch-border-off) !important;
 }
 
-
-input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
-}
-
+/* ON */
 input[role="switch"]:checked {
-  --bs-form-switch-bg: url('../assets/images/thumb.svg') !important;
-  border: 2px solid var(--new-primary) !important;
+  border-color: var(--switch-border-on) !important;
   background-color: transparent !important;
 }
 
-input[role="switch"] {
-  background-color: transparent !important;
-  transition: border-color 0.15s;
-  border: 2px solid var(--text-general) !important;
+/* mover thumb a la derecha cuando está ON */
+input[role="switch"]:checked::after {
+  /* calc: 100% - thumbWidth - margenIzq */
+  left: calc(100% - 0.85rem - 0.01rem);
+  background-color: var(--switch-border-on);
+}
+
+/* Variables por tema */
+body.light-theme {
+  --switch-thumb-color-off: #b0b0b0;          /* gris off */
+  --switch-thumb-color-on: var(--new-primary);/* on */
+  --switch-thumb-color-focus: var(--new-primary);
+}
+
+body:not(.light-theme) {
+  --switch-thumb-color-off: #555;             /* gris oscuro off */
+  --switch-thumb-color-on: var(--new-primary);
+  --switch-thumb-color-focus: var(--new-primary);
 }
 
 
