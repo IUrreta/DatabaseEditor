@@ -3362,7 +3362,10 @@ export function updateCustomConfig(data) {
 
   manageDifficultyTriggers(data.triggerList)
   manageRefurbishTrigger(data.refurbish)
-  editFreezeDevelopment(data.freezeDevelopment)
+  const freezeDevelopment = (data.freezeDevelopment !== undefined && data.freezeDevelopment !== null)
+    ? data.freezeDevelopment
+    : (queryDB("SELECT name FROM sqlite_master WHERE type='trigger' AND name='freeze_development';", [], "singleValue") ? 1 : 0);
+  editFreezeDevelopment(freezeDevelopment)
   const globals = getGlobals()
   if (globals.yearIteration === "24") {
     editFreezeMentality(data.frozenMentality)
@@ -3424,6 +3427,7 @@ export function fetchCustomConfig() {
   config.triggerList = triggers.triggerList
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
+  config.freezeDevelopment = triggers.freezeDevelopment
 
   if (!config.teams.williams) {
     config.teams.williams = 'williams';

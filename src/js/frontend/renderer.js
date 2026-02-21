@@ -1493,11 +1493,18 @@ function manage_config_content(info, year_config = false) {
         else {
             document.getElementById("refurbishingToggle").checked = false
         }
+        if (info["freezeDevelopment"] === 1) {
+            document.getElementById("freezeDevelopmentToggle").checked = true
+        }
+        else {
+            document.getElementById("freezeDevelopmentToggle").checked = false
+        }
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+        update_development_span(info["freezeDevelopment"])
         if (forceEditorMinimapColorsToggle) {
             forceEditorMinimapColorsToggle.checked = parseInt(info["forceEditorMinimapColors"] || 0, 10) === 1;
         }
@@ -1610,6 +1617,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     if (document.getElementById("refurbishingToggle").checked) {
         refurbish = 1;
     }
+    let freezeDevelopment = 0;
+    if (document.getElementById("freezeDevelopmentToggle").checked) {
+        freezeDevelopment = 1;
+    }
     let forceEditorMinimapColors = 0;
     if (forceEditorMinimapColorsToggle && forceEditorMinimapColorsToggle.checked) {
         forceEditorMinimapColors = 1;
@@ -1632,6 +1643,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         aston: aston,
         frozenMentality: mentalityFrozen,
         refurbish: refurbish,
+        freezeDevelopment: freezeDevelopment,
         forceEditorMinimapColors: forceEditorMinimapColors,
         disabled: disabledList,
         triggerList: triggerList,
@@ -1987,6 +1999,22 @@ function update_refurbish_span(value) {
     } else {
         span.className = "option-state default"
         span.textContent = "Default"
+    }
+}
+
+document.getElementById("freezeDevelopmentToggle").addEventListener("change", function () {
+    let value = this.checked;
+    update_development_span(value)
+});
+
+function update_development_span(value) {
+    let span = document.querySelector("#developmentSpan")
+    if (value) {
+        span.className = "option-state frozen"
+        span.textContent = "Frozen"
+    } else {
+        span.className = "option-state default"
+        span.textContent = "Active"
     }
 }
 
