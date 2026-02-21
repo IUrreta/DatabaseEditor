@@ -1,6 +1,6 @@
 import { countries_abreviations } from "./countries.js";
 import { engine_unitValueToValue } from "./carConstants.js";
-import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
+import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers, editFreezeDevelopment } from "./triggerUtils.js";
 import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
 import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
@@ -3362,6 +3362,7 @@ export function updateCustomConfig(data) {
 
   manageDifficultyTriggers(data.triggerList)
   manageRefurbishTrigger(data.refurbish)
+  editFreezeDevelopment(data.freezeDevelopment)
   const globals = getGlobals()
   if (globals.yearIteration === "24") {
     editFreezeMentality(data.frozenMentality)

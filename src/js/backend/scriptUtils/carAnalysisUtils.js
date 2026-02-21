@@ -1043,6 +1043,17 @@ export function addNewDesign(part, teamId, day, season, latestDesignPartFromTeam
             AND PartType = ?
         `, [newMaxDesign, teamId, part], 'run');
 
+    //check if newDesignId already exists (it shouldn't, but just in case)
+    const existingDesign = queryDB(`
+        SELECT DesignID
+        FROM Parts_Designs
+        WHERE DesignID = ?
+        `, [newDesignId], 'singleValue')
+
+    if (existingDesign) {
+        return;
+    }
+
     queryDB(`
         INSERT INTO Parts_Designs
         VALUES (
@@ -1155,7 +1166,6 @@ export function addPartToLoadout(designId, part, teamId, loadoutId, itemId) {
         `, [loadoutId, loadoutId, itemId], 'run');
 }
 
-// overwrite_performance_team(...)
 export function overwritePerformanceTeam(teamId, performance, customTeam = null, yearIteration = null, loadoutDict = null) {
     const row = queryDB(`
       SELECT Day, CurrentSeason
@@ -1178,6 +1188,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
             const partName = carConstants.parts[part];         // "Suspension", "Wing", etc.
             const newDesign = performance[partName]["designEditing"];
             delete performance[partName]["designEditing"];
+            let latestDesignPartFromTeam = null;
 
             let finalDesign = design;
             if (Number(newDesign) === -1) {
@@ -1187,14 +1198,14 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                         FROM Parts_Designs
                     `, [], 'singleValue');
 
-                const latestDesignPartFromTeam = queryDB(`
+                latestDesignPartFromTeam = queryDB(`
                         SELECT MAX(DesignID)
                         FROM Parts_Designs
                         WHERE PartType = ?
                         AND TeamID = ?
                     `, [part, teamId], 'singleValue');
 
-                const newDesignId = loadoutDict[String(part)][0];
+                const newDesignId = maxDesign + 1;
                 addNewDesign(part, Number(teamId), day, season, latestDesignPartFromTeam, newDesignId);
                 finalDesign = newDesignId;
             } else {
@@ -1215,49 +1226,49 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                     // update
                     changeExpertiseBased(part, statKey, value, Number(teamId));
                     queryDB(`
-              UPDATE Parts_Designs_StatValues
-              SET UnitValue = ?
-              WHERE DesignID = ?
-                AND PartStat = ?
-            `, [statsObj[statKey], finalDesign, statKey], 'run');
+                    UPDATE Parts_Designs_StatValues
+                    SET UnitValue = ?
+                    WHERE DesignID = ?
+                        AND PartStat = ?
+                    `, [statsObj[statKey], finalDesign, statKey], 'run');
 
                     queryDB(`
-              UPDATE Parts_Designs_StatValues
-              SET Value = ?
-              WHERE DesignID = ?
-                AND PartStat = ?
-            `, [value, finalDesign, statKey], 'run');
+                    UPDATE Parts_Designs_StatValues
+                    SET Value = ?
+                    WHERE DesignID = ?
+                        AND PartStat = ?
+                    `, [value, finalDesign, statKey], 'run');
                 } else {
                     // insert
                     queryDB(`
-              INSERT INTO Parts_Designs_StatValues
-              VALUES (
-                ?,
-                ?,
-                ?,
-                ?,
-                0.5, 
-                1, 
-                0.1
-              )
-            `, [finalDesign, statKey, value, statsObj[statKey]], 'run');
+                    INSERT INTO Parts_Designs_StatValues
+                    VALUES (
+                        ?,
+                        ?,
+                        ?,
+                        ?,
+                        0.5, 
+                        1, 
+                        0.1
+                    )
+                    `, [finalDesign, statKey, value, statsObj[statKey]], 'run');
                 }
             }
 
             // si newDesign == -1 => insertamos el peso standard
             if (Number(newDesign) === -1) {
                 queryDB(`
-            INSERT INTO Parts_Designs_StatValues
-            VALUES (
-              ?,
-              15,
-              500,
-              ?,
-              0.5,
-              0,
-              0
-            )
-          `, [finalDesign, carConstants.standardWeightPerPart[part]], 'run');
+                    INSERT INTO Parts_Designs_StatValues
+                    VALUES (
+                    ?,
+                    15,
+                    500,
+                    ?,
+                    0.5,
+                    0,
+                    0
+                    )
+                `, [finalDesign, carConstants.standardWeightPerPart[part]], 'run');
 
                 // Tras insertar stats, cambiamos expertise
                 for (const statKey of Object.keys(statsObj)) {
