@@ -19,7 +19,9 @@ import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
-import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod } from "./scriptUtils/modUtils";
+import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
+  insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod,
+  change2025Standings } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -481,7 +483,14 @@ const workerCommands = {
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changeCfd: (data, postMessage) => {
-    change2024Standings();
+    if (data.mod === "2025"){
+      change2024Standings();
+    }
+    else if (data.mod === "2026"){
+      change2024Standings();
+      change2025Standings();
+    }
+    
     postMessage({
       responseMessage: "CFD times changed",
       isEditCommand: true,

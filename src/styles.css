@@ -3385,7 +3385,7 @@ body.og-theme .main-calendar-section {
 #season_viewer,
 #head2head_viewer,
 #car_performance,
-#mod_25,
+#season_mods,
 #news {
   flex-direction: column;
 }
@@ -10120,6 +10120,13 @@ body.og-theme .records-list {
   width: 171px;
 }
 
+#modpill:hover,
+#modpill:hover .pill-line,
+#modpill.active .pill-line,
+#modpill.active {
+  width: 78px;
+}
+
 #specialCarIcon {
   width: 20px;
   height: 20px;
@@ -10197,37 +10204,11 @@ body.og-theme .records-list {
   width: max-content;
   margin-top: 5px;
 }
-
-.active #mod25logo,
-#mod25logo:hover {
-  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
-  background-size: 200% 200%;
-  animation: gradient-move-title 5s linear infinite;
-}
-
 #amoLogo:hover {
   background: linear-gradient(to right, var(--amo-1), var(--amo-2), var(--amo-1));
   background-size: 200% 200%;
   animation: gradient-move-title 5s linear infinite;
   transform: scale(1.1);
-}
-
-
-#mod25logo {
-  height: 40px;
-  width: 200px;
-  transition: transform 0.15s ease;
-  /* Solo transiciona transform */
-  cursor: pointer;
-
-  background: var(--text-general);
-
-  -webkit-mask: url('../assets/images/logoMod.svg') no-repeat center;
-  -webkit-mask-size: contain;
-  mask: url('../assets/images/logoMod.svg') no-repeat center;
-  mask-size: contain;
-
-  will-change: transform;
 }
 
 #amoPill {
@@ -10259,11 +10240,6 @@ body.og-theme .records-list {
 
   will-change: transform;
 }
-
-#mod25logo:hover {
-  transform: scale(1.1);
-}
-
 
 .pill-icon {
   opacity: 1;
@@ -13070,7 +13046,7 @@ body:has(#blockDiv:not(.disappear)){
   }
 }
 
-body:has(.active #mod25logo) .background {
+body:has(#modpill.active) .background {
   background-color: transparent;
   background-image: url('../assets/images/modback.png');
 }
@@ -13097,7 +13073,7 @@ body:has(.active #mod25logo) .background {
   opacity: 0;
 }
 
-body:has(.active #mod25logo) .mod-name img {
+body:has(#modpill.active) .mod-name img {
   animation: logo-appear 0.6s forwards;
 }
 
@@ -13205,10 +13181,10 @@ body:has(.active #mod25logo) .mod-name img {
   background-color: #bb0e0f;
 }
 
-body:has(.active #mod25logo) .small-rectangle,
-body:has(.active #mod25logo) .high-rectangle,
-body:has(.active #mod25logo) .small-rectangle img,
-body:has(.active #mod25logo) .high-rectangle img {
+body:has(#modpill.active) .small-rectangle,
+body:has(#modpill.active) .high-rectangle,
+body:has(#modpill.active) .small-rectangle img,
+body:has(#modpill.active) .high-rectangle img {
   animation: rectangle-appear 0.5s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
@@ -13225,9 +13201,9 @@ body:has(.active #mod25logo) .high-rectangle img {
   }
 }
 
-body:has(.active #mod25logo) .mod-drivers .mv-gradient,
-body:has(.active #mod25logo) .mod-drivers .lh-gradient,
-body:has(.active #mod25logo) .mod-drivers .ka-gradient {
+body:has(#modpill.active) .mod-drivers .mv-gradient,
+body:has(#modpill.active) .mod-drivers .lh-gradient,
+body:has(#modpill.active) .mod-drivers .ka-gradient {
   animation: gradient-appear 0.6s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
@@ -13373,19 +13349,57 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   text-shadow: 0 0 5px white;
 }
 
-body:has(.active #mod25logo) .mod-creators a {
+body:has(#modpill.active) .mod-creators a {
   animation: creator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
 
 }
 
-body:has(.active #mod25logo) .mod-creators a::before {
+body:has(#modpill.active) .mod-creators a::before {
   animation: before-appear 0.9s;
   animation-delay: calc((var(--order) * 0.07s));
 }
 
-#mod_25 {
+#season_mods {
   align-items: center;
+}
+
+.mods-season-pills-top {
+  align-self: flex-start;
+  margin: 10px 0 12px 12px;
+  z-index: 2;
+}
+
+.mods-year-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mods-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+  opacity: 0.9;
+}
+
+.mods-2026-banner .mods-placeholder {
+  margin-top: 0;
+}
+
+.mods-placeholder-title {
+  color: #dedde6;
+  font-size: 44px;
+  font-family: 'NumbersFont';
+}
+
+.mods-placeholder-subtitle {
+  color: var(--text-general);
+  font-size: 16px;
 }
 
 .coming-soon {
@@ -13402,7 +13416,7 @@ body:has(.active #mod25logo) .mod-creators a::before {
   font-family: 'NumbersFont';
 }
 
-body:has(.active #mod25logo) .coming-soon {
+body:has(#modpill.active) .coming-soon {
   animation: creator-appear 0.7s forwards;
   animation-delay: 1.1s;
 }
@@ -13457,7 +13471,7 @@ body:has(.active #mod25logo) .coming-soon {
   opacity: 0;
 }
 
-body:has(.active #mod25logo) .creator-separator {
+body:has(#modpill.active) .creator-separator {
   animation: separator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
 }
@@ -14475,7 +14489,7 @@ button.one-change-button.completed span {
   }
 }
 
-body:has(.active #mod25logo) .one-change {
+body:has(#modpill.active) .one-change {
   animation: change-appear 0.6s ease-out forwards;
   animation-delay: calc(0.8s + var(--order) * 0.1s);
 }
@@ -14630,15 +14644,45 @@ body:has(.active #mod25logo) .one-change {
   color: var(--dark-text);
 }
 
-#dateMonth {
+#dateDay2026::before{
+  content: '29th';
+  position: absolute;
+  font-family: 'Formula1Bold';
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+#dateMonth, #dateMonth2026 {
   min-width: 100px;
 }
 
-#dateDay {
+#dateDay, #dateDay2026 {
   min-width: 50px;
 }
 
 #dateMonth::before {
+  content: 'December';
+  font-family: 'Formula1Bold';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.2s;
+  color: var(--dark-text);
+}
+
+#dateMonth2026::before {
   content: 'December';
   font-family: 'Formula1Bold';
   position: absolute;
@@ -14668,21 +14712,39 @@ body:has(.active #mod25logo) .one-change {
   color: var(--dark-text);
 }
 
-.one-change:has(.completed) #dateDay::before {
+#dateYear2026::before {
+  content: '2025';
+  position: absolute;
+  font-family: 'Formula1Bold';
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.3s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) #dateDay::before, .one-change:has(.completed) #dateDay2026::before {
   animation: slide-down 0.3s forwards 0s;
 }
 
-.one-change:has(.completed) #dateMonth::before {
+.one-change:has(.completed) #dateMonth::before, .one-change:has(.completed) #dateMonth2026::before {
   animation: slide-down 0.3s forwards 0.05s;
 }
 
-.one-change:has(.completed) #dateYear::before {
+.one-change:has(.completed) #dateYear::before, .one-change:has(.completed) #dateYear2026::before {
   animation: slide-down 0.3s forwards 0.1s;
 }
 
 .one-change:has(.completed) #dateDay,
 .one-change:has(.completed) #dateMonth,
-.one-change:has(.completed) #dateYear {
+.one-change:has(.completed) #dateYear,
+.one-change:has(.completed) #dateDay2026,
+.one-change:has(.completed) #dateMonth2026,
+.one-change:has(.completed) #dateYear2026 {
   transition: color 0.15s;
   color: transparent;
 }
@@ -14960,6 +15022,66 @@ body:has(.active #mod25logo) .one-change {
   color: var(--dark-text);
 }
 
+.sprint-change-2026.change-1::before{
+  content: 'Canada,';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change-2026.change-2::before{
+  content: 'Silverstone,';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change-2026.change-3::before{
+  content: 'Zandvoort,';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 55px;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change-2026.change-4::before{
+  content: 'Singapore';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 100px;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
 .one-change:has(.completed) .season-change::before {
   animation: slide-down 0.3s forwards 0s;
 }
@@ -14972,15 +15094,15 @@ body:has(.active #mod25logo) .one-change {
   position: relative;
 }
 
-.one-change:has(.completed) .sprint-change::before {
+.one-change:has(.completed) .sprint-change::before,  .one-change:has(.completed) .sprint-change-2026::before{
   animation: slide-down 0.3s forwards 0.05s;
 }
 
-.one-change:has(.completed) .sprint-change {
+.one-change:has(.completed) .sprint-change, .one-change:has(.completed) .sprint-change-2026 {
   color: transparent;
 }
 
-.sprint-change {
+.sprint-change, .sprint-change-2026 {
   position: relative;
 }
 

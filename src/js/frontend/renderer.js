@@ -42,6 +42,7 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
+import { initSeasonMods, updateModBlocking } from './seasonMods.js';
 
 
 
@@ -68,7 +69,7 @@ const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
 const teamsDiv = document.getElementById("edit_teams");
-const mod25Div = document.getElementById("mod_25")
+const seasonModsDiv = document.getElementById("season_mods")
 const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
@@ -79,7 +80,8 @@ const patreonToolLoginButton = document.getElementById('patreonToolLoginButton')
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
 
-const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
+initSeasonMods();
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -161,8 +163,6 @@ let saveName;
 let tempImageData = null;
 let lastVisibleIndex = 0;
 let viewerLoaded = false;
-
-let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
 let isNightlyHost = false;
@@ -2744,103 +2744,6 @@ function shouldShowPatchModal(storedVersion, versionNow) {
 
     return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
 }
-
-function updateModBlocking(data) {
-    if (data === "AlreadyEdited") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-    }
-    else if (data === "Start2024") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-
-        document.querySelector(".time-travel").classList.remove("disabled")
-        document.querySelector(".time-travel span").textContent = "Apply"
-    }
-    else if (data === "Direct2025" || data === "End2024") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-
-        document.querySelector(".time-travel").classList.add("disabled")
-        document.querySelector(".time-travel span").textContent = "Disabled"
-        calendarEditMode = data;
-    }
-    else {
-        document.querySelector(".mod-blocking").classList.remove("d-none")
-        document.querySelector(".changes-grid").classList.add("d-none")
-    }
-}
-
-document.querySelector(".time-travel").addEventListener("click", function () {
-    const command = new Command("timeTravel", { dayNumber: 45657 });
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-line-ups").addEventListener("click", function () {
-    const command = new Command("changeLineUps", {});
-    command.execute();
-    document.querySelector(".ham-transfer").classList.remove("mefont")
-    document.querySelector(".sai-transfer").classList.remove("fefont")
-    document.querySelector(".ham-transfer").classList.add("fefont")
-    document.querySelector(".sai-transfer").classList.add("wifont")
-    document.querySelector(".ant-transfer").classList.add("mefont")
-    document.querySelector(".ant-ovr").classList.add("mefont")
-    document.querySelector(".bor-ovr").classList.remove("mcfont")
-    document.querySelector(".bor-ovr").classList.add("affont")
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-stats").addEventListener("click", function () {
-    const command = new Command("changeStats", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-cfd").addEventListener("click", function () {
-    const command = new Command("changeCfd", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-regulations").addEventListener("click", function () {
-    const command = new Command("changeRegulations", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".extra-drivers").addEventListener("click", function () {
-    const command = new Command("extraDrivers", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-
-    document.querySelector(".change-line-ups").classList.remove("disabled")
-    document.querySelector(".change-line-ups span").textContent = "Apply"
-})
-
-document.querySelector(".change-calendar").addEventListener("click", function () {
-    const command = new Command("changeCalendar", { type: calendarEditMode });
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-
-document.querySelector(".change-performance").addEventListener("click", function () {
-    const command = new Command("changePerformance", {});
-    command.execute();
-    document.querySelector(".mclaren-performance").innerText = "63.7%"
-    document.querySelector(".redbull-performance").innerText = "59.4%"
-    document.querySelector(".williams-performance").innerText = "56.8%"
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
 
 document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     elem.addEventListener("click", function () {

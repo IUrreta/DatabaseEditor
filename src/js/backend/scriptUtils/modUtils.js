@@ -6,6 +6,7 @@ import { editSuperlicense } from "./eidtStatsUtils.js";
 import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts.json"
 import changes from "../../../data/2025_changes.json"
+import changes2026 from "../../../data/2026_changes.json"
 
 export function timeTravelWithData(dayNumber, extend = false) {
     let metadata, version;
@@ -468,6 +469,35 @@ export function change2024Standings() {
         }
     }
     update2025SeasonModTable("change-cfd", 1);
+}
+
+export function change2025Standings() {
+  if (!changes2026.DriverStandings || !Array.isArray(changes2026.DriverStandings)) {
+    console.error("No driver standings found");
+  } else {
+    for (const entry of changes2026.DriverStandings) {
+      const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
+
+      queryDB(`
+            UPDATE Races_DriverStandings SET LastPointsChange = ?, LastPositionChange = ?, Points = ?, Position = ?
+            WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?
+            `, [LastPointsChange, LastPositionChange, Points, Position, DriverID, RaceFormula, SeasonID], 'run');
+    }
+  }
+
+  if (!changes2026.TeamStandings || !Array.isArray(changes2026.TeamStandings)) {
+    console.error("No team standings found");
+  } else {
+    queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2025`, [], 'run');
+    for (const entry of changes2026.TeamStandings) {
+      const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
+
+      queryDB(`
+            INSERT INTO Races_TeamStandings (TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
+    }
+  }
 }
 
 export function manageFeederSeries() {

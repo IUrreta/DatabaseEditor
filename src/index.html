@@ -1672,8 +1672,10 @@
             </a>
           </li>
           <li class="nav-item">
-            <a class="" data-bs-toggle="pill" id="modpill">
-              <div id="mod25logo"></div>
+            <a class="nav-link bold-font scriptPills" data-bs-toggle="pill" id="modpill">
+              <i class="bi bi-layers-half pill-icon"></i>
+              <label class="bold-font pill-label">MODS</label>
+              <div class="pill-line"></div>
             </a>
           </li>
           <li class="download-save-controls">
@@ -5793,55 +5795,73 @@
         </div>
 
       </div>
-      <div class="script-view hide unloaded" id="mod_25">
-        <div class="mod-banner">
-          <div class="mod-name">
-            <img src="../assets/images/logoMod2Colors.svg" alt="">
-            <div class="mod-creators">
-              <a class="creator w1echuz" style="--order: 1" href="https://linktr.ee/w1echuz" target="_blank">w1echuz</a>
-              <div class="creator-separator" style="--order: 2"></div>
-              <a class="creator littleonion" style="--order: 3" href="https://linktr.ee/Little0nion"
-                target="_blank">littleonion</a>
-              <div class="creator-separator " style="--order: 4"></div>
-              <a class="creator bonnex" style="--order: 5" href="https://x.com/bonnexf1?s=21" target="_blank">bonnex</a>
-              <div class="creator-separator " style="--order: 6"></div>
-              <a class="creator grzelu" style="--order: 7" href="https://youtube.com/c/GrzeluF1"
-                target="_blank">grzelu</a>
-              <div class="creator-separator " style="--order: 8"></div>
-              <a class="creator thatgingerdude" style="--order: 9"
-                href="https://www.overtake.gg/members/thatgingerdude15.3294857/" target="_blank">thatgingerdude</a>
-              <div class="creator-separator " style="--order: 10"></div>
-              <a class="creator n4x" style="--order: 11" href="https://www.patreon.com/f1dbeditor"
-                target="_blank">n4x</a>
-              <div class="creator-separator " style="--order: 12"></div>
-              <a class="creator nexus" style="--order: 13" href="https://www.overtake.gg/members/thefir3nexus.1772538/"
-                target="_blank">thefir3nexus</a>
+      <div class="script-view hide unloaded" id="season_mods">
+        <div class="mods-season-pills-top" id="modsSeasonPillsTop">
+          <ul class="nav nav-pills">
+            <li class="nav-item">
+              <a class="nav-link bold-font generalPills active" id="mods2025Pill" data-mod-season="2025">
+                <div class="basic-label bold-font lineups-pill-label">2025</div>
+                <div class="pill-line"></div>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link bold-font generalPills" id="mods2026Pill" data-mod-season="2026">
+                <div class="basic-label bold-font lineups-pill-label">2026</div>
+                <div class="pill-line"></div>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="mods-year-view" id="mods2025View">
+          <div class="mod-banner">
+            <div class="mod-name">
+              <img src="../assets/images/logoMod2Colors.svg" alt="">
+              <div class="mod-creators">
+                <a class="creator w1echuz" style="--order: 1" href="https://linktr.ee/w1echuz" target="_blank">w1echuz</a>
+                <div class="creator-separator" style="--order: 2"></div>
+                <a class="creator littleonion" style="--order: 3" href="https://linktr.ee/Little0nion"
+                  target="_blank">littleonion</a>
+                <div class="creator-separator " style="--order: 4"></div>
+                <a class="creator bonnex" style="--order: 5" href="https://x.com/bonnexf1?s=21" target="_blank">bonnex</a>
+                <div class="creator-separator " style="--order: 6"></div>
+                <a class="creator grzelu" style="--order: 7" href="https://youtube.com/c/GrzeluF1"
+                  target="_blank">grzelu</a>
+                <div class="creator-separator " style="--order: 8"></div>
+                <a class="creator thatgingerdude" style="--order: 9"
+                  href="https://www.overtake.gg/members/thatgingerdude15.3294857/" target="_blank">thatgingerdude</a>
+                <div class="creator-separator " style="--order: 10"></div>
+                <a class="creator n4x" style="--order: 11" href="https://www.patreon.com/f1dbeditor"
+                  target="_blank">n4x</a>
+                <div class="creator-separator " style="--order: 12"></div>
+                <a class="creator nexus" style="--order: 13" href="https://www.overtake.gg/members/thefir3nexus.1772538/"
+                  target="_blank">thefir3nexus</a>
+              </div>
+            </div>
+            <div class="mod-drivers">
+              <div class="small-rectangle lh-rectangle" style="--order: 1">
+                <img src="../assets/images/Hamilton4.png" alt="" style="--order: 4">
+                <div class="ham-lines"></div>
+              </div>
+              <div class="lh-gradient" style="--order: 7"></div>
+              <div class="high-rectangle mv-rectangle" style="--order: 3">
+                <img src="../assets/images/Verstappen4.png" alt="" style="--order: 6">
+                <div class="ver-lines"></div>
+              </div>
+              <div class="mv-gradient" style="--order: 8"></div>
+              <div class="small-rectangle ka-rectangle" style="--order: 2">
+                <img src="../assets/images/Antonelli4.png" alt="" style="--order: 5">
+                <div class="ant-lines"></div>
+              </div>
+              <div class="ka-gradient" style="--order: 9"></div>
             </div>
           </div>
-          <div class="mod-drivers">
-            <div class="small-rectangle lh-rectangle" style="--order: 1">
-              <img src="../assets/images/Hamilton4.png" alt="" style="--order: 4">
-              <div class="ham-lines"></div>
-            </div>
-            <div class="lh-gradient" style="--order: 7"></div>
-            <div class="high-rectangle mv-rectangle" style="--order: 3">
-              <img src="../assets/images/Verstappen4.png" alt="" style="--order: 6">
-              <div class="ver-lines"></div>
-            </div>
-            <div class="mv-gradient" style="--order: 8"></div>
-            <div class="small-rectangle ka-rectangle" style="--order: 2">
-              <img src="../assets/images/Antonelli4.png" alt="" style="--order: 5">
-              <div class="ant-lines"></div>
-            </div>
-            <div class="ka-gradient" style="--order: 9"></div>
+          <div class="mod-blocking">
+            <div class="mod-blocking-title">Save not compatible with 2025 Season DLC mod</div>
+            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24, and its date must be before the first
+              race of the 2024 season!</div>
           </div>
-        </div>
-        <div class="mod-blocking">
-          <div class="mod-blocking-title">Save not compatible with 2025 Season DLC mod</div>
-          <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24, and its date must be before the first
-            race of the 2024 season!</div>
-        </div>
-        <div class="changes-grid d-none">
+          <div class="changes-grid d-none">
           <div class="one-change" style="--order: 1">
             <div class="one-change-title bold-font">Time travel to end of 2024</div>
             <div class="one-change-description date-holder">
@@ -5967,6 +5987,111 @@
             </button>
           </div>
 
+        </div>
+        </div>
+
+        <div class="mods-year-view d-none" id="mods2026View">
+          <div class="mod-banner mods-2026-banner">
+            <div class="mods-placeholder">
+              <div class="mods-placeholder-title bold-font">2026 Season Mods</div>
+              <div class="mods-placeholder-subtitle">Placeholder banner (WIP).</div>
+            </div>
+          </div>
+          <div class="changes-grid mods-2026-changes">
+            <div class="one-change" style="--order: 1">
+              <div class="one-change-title bold-font">Time travel to end of 2025</div>
+              <div class="one-change-description date-holder">
+                <span class="date-part" id="dateDay2026">05</span>
+                <span class="date-part" id="dateMonth2026">February</span>
+                <span class="date-part" id="dateYear2026">2026</span>
+              </div>
+              <button class="one-change-button time-travel-2026">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Apply</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 2">
+              <div class="one-change-title bold-font">Extra drivers</div>
+              <div class="one-change-description-group">
+                <div class="one-change-description">New/updated staff</div>
+                <div class="one-change-description">New F2/F3 drivers</div>
+                <div class="one-change-description">New academy drivers</div>
+              </div>
+              <button class="one-change-button disabled">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Coming soon</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 3">
+              <div class="one-change-title bold-font">Driver Line-ups</div>
+              <div class="one-change-description-group">
+                <div class="one-change-description">Placeholder transfer 1</div>
+                <div class="one-change-description">Placeholder transfer 2</div>
+                <div class="one-change-description">Placeholder transfer 3</div>
+              </div>
+              <button class="one-change-button disabled">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Coming soon</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 4">
+              <div class="one-change-title bold-font">Driver/staff stats</div>
+              <div class="one-change-description-group">
+                <div class="one-change-description">Placeholder stat change 1</div>
+                <div class="one-change-description">Placeholder stat change 2</div>
+                <div class="one-change-description">Placeholder stat change 3</div>
+              </div>
+              <button class="one-change-button disabled">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Coming soon</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 5">
+              <div class="one-change-title bold-font">Calendar</div>
+              <div class="one-change-description-group">
+                <div class="one-change-description">Season opener: <span class="season-change">Bahrain</span></div>
+                <div class="one-change-description">Sprints: China, Miami, <span class="sprint-change-2026 change-1">Austria,</span>
+                </div>
+                <div class="one-change-description"><span class="sprint-change-2026 change-2">COTA,</span> <span class="sprint-change-2026 change-3">Brazil,</span> <span class="sprint-change-2026 change-4">Qatar</span></div>
+              </div>
+              <button class="one-change-button change-calendar-2026">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Apply</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 6">
+              <div class="one-change-title bold-font">Regulations</div>
+              <div class="one-change-description">Placeholder regulation changes</div>
+              <button class="one-change-button disabled">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Coming soon</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 7">
+              <div class="one-change-title bold-font">Add 2025 Results</div>
+              <div class="one-change-description-group">
+                <div class="one-change-description">Placeholder ATR period changes</div>
+                <div class="one-change-description">Placeholder team values</div>
+                <div class="one-change-description">Placeholder team values</div>
+              </div>
+              <button class="one-change-button add-results-2026">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Apply</span>
+              </button>
+            </div>
+            <div class="one-change" style="--order: 8">
+              <div class="one-change-title bold-font">Performance</div>
+              <div class="one-change-description-group">
+                <div class="one-change-description">Placeholder performance changes</div>
+                <div class="one-change-description">Placeholder team order</div>
+                <div class="one-change-description">Placeholder car balance</div>
+              </div>
+              <button class="one-change-button disabled">
+                <i class="bi bi-check-lg icon-hidden"></i>
+                <span>Coming soon</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
