@@ -3398,7 +3398,8 @@ export function fetchCustomConfig() {
     primaryColor: null,
     secondaryColor: null,
     turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset,
-    forceEditorMinimapColors: 0
+    forceEditorMinimapColors: 0,
+    renaultEngine: 'renault'
   };
 
   rows.forEach(row => {
@@ -3415,11 +3416,19 @@ export function fetchCustomConfig() {
       config.difficulty = value;
     } else if (key === 'turningPointsFrequencyPreset') {
       config.turningPointsFrequencyPreset = parseInt(value, 10);
-
+    } else if (key === 'Renault_engine') {
+      if (String(value).toLowerCase() === 'honda') {
+        config.renaultEngine = 'honda';
+      } else {
+        config.renaultEngine = 'renault';
+      }
     } else if (key === 'forceEditorMinimapColors') {
       config.forceEditorMinimapColors = parseInt(value, 10) === 1 ? 1 : 0;
     }
   });
+
+  const engine10Name = config.renaultEngine === 'honda' ? 'Honda' : 'Renault';
+  queryDB(`UPDATE Custom_Engines_List SET name = ? WHERE engineId = 10`, [engine10Name], 'run');
 
   const triggers = fetchExistingTriggers()
   const playerTeam = fetchPlayerTeam()

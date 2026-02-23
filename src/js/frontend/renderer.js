@@ -1472,6 +1472,12 @@ function replace_all_teams(info) {
 }
 
 function manage_config_content(info, year_config = false) {
+    if (info["renaultEngine"] === "honda") {
+        setRenaultEnginePresentation("honda");
+    }
+    else {
+        setRenaultEnginePresentation("renault");
+    }
     replace_all_teams(info)
     if (!year_config) {
         let image = localStorage.getItem(`${saveName}_image`);
@@ -1517,6 +1523,47 @@ function manage_config_content(info, year_config = false) {
             turningPointsFrequencySlider.value = String(presetIndex);
             updateTurningPointsFrequencyUI();
         }
+    }
+}
+
+function setRenaultEnginePresentation(engineMode) {
+    const engineMenuItem = document.querySelector(".renault-engine-menu-item");
+    const engineTitleText = document.querySelector(".renault-engine-title-text");
+    const renaultLogo = document.querySelector(".renault-engine-logo");
+
+    if (engineMode === "honda") {
+        if (engineMenuItem) {
+            engineMenuItem.textContent = "Honda";
+        }
+        if (engineTitleText) {
+            engineTitleText.textContent = "HONDA";
+        }
+        if (renaultLogo) {
+            renaultLogo.src = "../assets/images/logos/honda.jpg";
+            renaultLogo.alt = "Honda logo";
+        }
+    }
+    else {
+        if (engineMenuItem) {
+            engineMenuItem.textContent = "Renault";
+        }
+        if (engineTitleText) {
+            engineTitleText.textContent = "RENAULT";
+        }
+        if (renaultLogo) {
+            renaultLogo.src = "../assets/images/logos/renault.png";
+            renaultLogo.alt = "Renault logo";
+        }
+    }
+
+    const renaultEngineTitle = document.querySelector(".renault-engine-title");
+    if (renaultEngineTitle) {
+        renaultEngineTitle.classList.remove("engine-re", "engine-ho");
+        renaultEngineTitle.classList.add(engineMode === "honda" ? "engine-ho" : "engine-re");
+    }
+
+    if (renaultLogo) {
+        renaultLogo.style.display = "inline-block";
     }
 }
 
