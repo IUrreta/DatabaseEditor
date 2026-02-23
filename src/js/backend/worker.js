@@ -8,7 +8,8 @@ import {
   fetch2025ModData, check2025ModCompatibility,
   fetchPointsRegulations,
   fetchSessionResults,
-  getDate
+  getDate,
+  setCustomSaveConfig,
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -20,7 +21,7 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
-  insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod,
+  insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod, addAudiCustomEngine, updateRenaultToHonda,
   change2025Standings } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
@@ -48,6 +49,7 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
+import { manage_engine_change } from "./scriptUtils/editTeamUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -839,6 +841,38 @@ const workerCommands = {
   pointsRegulationsRequest: (data, postMessage) => {
     const pointsInfo = fetchPointsRegulations();
     postMessage({ responseMessage: "Points regulations fetched", content: pointsInfo });
+  },
+  add2026Engines: (data, postMessage) => {
+    updateRenaultToHonda(true);
+
+    let audiEngineId = null;
+    try {
+      audiEngineId = addAudiCustomEngine(80);
+    }
+    catch (e) {
+      console.warn("Failed to add custom Audi engine:", e);
+    }
+
+    try {
+      manage_engine_change(10, 10);
+      if (audiEngineId != null) {
+        manage_engine_change(9, audiEngineId);
+      }
+      manage_engine_change(5, 7);
+    }
+    catch (e) {
+      console.warn("Failed to update engine allocations:", e);
+    }
+
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
+
+    postMessage({
+      responseMessage: "2026 engines added",
+      noti_msg: "2026 engines added successfully",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   }
 
 

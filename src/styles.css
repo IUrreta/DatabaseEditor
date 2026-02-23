@@ -6067,7 +6067,7 @@ body.light-theme .flag-header img {
 
 .part-performance,
 .engine-performance {
-  background-color: var(--elements);
+  background-color: var(--superficials);
   border-radius: 10px;
   box-shadow: var(--shadow-s);
   padding: 5px 10px;
@@ -6105,7 +6105,7 @@ body.light-theme .flag-header img {
 }
 
 .engine-ho {
-  border-bottom: 2px solid var(--renault-primary);
+  border-bottom: 2px solid var(--honda-primary);
 }
 
 .engine-me {
@@ -6546,12 +6546,18 @@ input.engine-performance-title:focus {
 
 .teams-show,
 .engines-show {
+  background-color: transparent !important;
+  box-shadow: none !important;
   display: grid;
   grid-template-columns: repeat(3, 0.333fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 8px;
-  padding: 8px;
   flex: 1;
+}
+
+.main-columns-drag-section:has(.teams-show:not(.d-none)){
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
 
 .engines-show {
@@ -9979,9 +9985,15 @@ body.og-theme .records-list {
 #teamsDiv {
   display: flex;
   flex-direction: column;
+  background-color: var(--superficials);
   gap: 0px;
   padding: 10px;
   justify-content: space-between;
+}
+
+
+#carsDiv{
+  background-color: var(--superficials);
 }
 
 
@@ -14426,6 +14438,27 @@ body.light-theme .one-change .one-change-description {
   color: var(--modal-text);
 }
 
+.one-change-description.engine-renamed.engine-renamed-honda,
+.one-change-description.engine-appear {
+  color: var(--text-general);
+}
+
+.one-change-description.engine-appear {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.15s ease, transform 0.15s ease, max-height 0.15s ease;
+}
+
+.one-change-description.engine-appear.engine-appear-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.engine-renamed{
+  min-height: 24px;
+}
+
+
 button.one-change-button {
   background-color: var(--text-general);
   color: var(--negative-text);
@@ -14433,7 +14466,7 @@ button.one-change-button {
   padding: 7px 13px;
   border-radius: 7px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, box-shadow 0.15s;
   margin-top: 5px;
   width: 100%;
 }
@@ -14450,7 +14483,7 @@ button.one-change-button:hover {
 }
 
 button.one-change-button:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
   /* Ajusta esto a tu gusto */
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
 }

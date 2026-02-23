@@ -3416,7 +3416,7 @@ export function fetchCustomConfig() {
       config.difficulty = value;
     } else if (key === 'turningPointsFrequencyPreset') {
       config.turningPointsFrequencyPreset = parseInt(value, 10);
-    } else if (key === 'Renault_engine') {
+    } else if (key === 'renaultEngine') {
       if (String(value).toLowerCase() === 'honda') {
         config.renaultEngine = 'honda';
       } else {
@@ -3455,6 +3455,13 @@ export function fetchCustomConfig() {
   }
 
   return config;
+}
+
+export function setCustomSaveConfig(key, value) {
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES (?, ?)
+  `, [key, value], 'run');
 }
 
 function fetchPlayerTeam() {

@@ -7,6 +7,43 @@ import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats
 import contracts from "../../../data/contracts_2025.json"
 import changes from "../../../data/2025_changes.json"
 import changes2026 from "../../../data/2026_changes.json"
+import { fetchEngines, setCustomSaveConfig, updateCustomEngines } from "./dbUtils.js";
+
+export function addAudiCustomEngine(unitValue = 80) {
+    const [customEngines] = fetchEngines();
+    const normalizedName = (val) => String(val || "").trim().toLowerCase();
+
+    let audiEngineId = null;
+    const existingAudi = customEngines.find((engine) => normalizedName(engine?.[2]) === "audi");
+    if (existingAudi) {
+        audiEngineId = existingAudi[0];
+    }
+    else {
+        const maxEngineId = customEngines.reduce((max, engine) => {
+            const id = Number(engine?.[0]);
+            if (!Number.isFinite(id)) return max;
+            return Math.max(max, id);
+        }, 0);
+        audiEngineId = maxEngineId ? (maxEngineId + 3) : 14;
+    }
+
+    updateCustomEngines({
+        [audiEngineId]: {
+            name: "audi",
+            stats: {
+                6: unitValue,
+                10: unitValue,
+                11: unitValue,
+                12: unitValue,
+                14: unitValue,
+                18: unitValue,
+                19: unitValue
+            }
+        }
+    });
+
+    return audiEngineId;
+}
 
 export function timeTravelWithData(dayNumber, extend = false) {
     let metadata, version;
@@ -912,4 +949,10 @@ export function updateEditsWithModData(data) {
             document.querySelector(`.${key} span`).textContent = "Applied"
         }
     }
+}
+
+export function updateRenaultToHonda(isHonda) {
+  const newName = isHonda ? 'Honda' : 'Renault';
+  queryDB(`UPDATE Custom_Engines_List SET name = ? WHERE engineId = 10`, [newName], 'run');
+  setCustomSaveConfig('renaultEngine', isHonda ? 'honda' : 'renault');
 }

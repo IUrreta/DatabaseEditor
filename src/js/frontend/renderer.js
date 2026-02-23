@@ -1233,11 +1233,14 @@ function update_engine_allocations(message) {
     }
 
     message[0].forEach(function (engine) {
-        if (engine[0] > 10) {
-            addEngineName(engine[0], engine[2])
+        const engineId = Number(engine?.[0]);
+        if (!Number.isFinite(engineId)) return;
+        if (engineId > 10 || engineId === 10) {
+            addEngineName(engineId, engine[2])
         }
     })
 
+    reloadTables()
 }
 
 
@@ -1526,7 +1529,7 @@ function manage_config_content(info, year_config = false) {
     }
 }
 
-function setRenaultEnginePresentation(engineMode) {
+export function setRenaultEnginePresentation(engineMode) {
     const engineMenuItem = document.querySelector(".renault-engine-menu-item");
     const engineTitleText = document.querySelector(".renault-engine-title-text");
     const renaultLogo = document.querySelector(".renault-engine-logo");
@@ -1539,7 +1542,7 @@ function setRenaultEnginePresentation(engineMode) {
             engineTitleText.textContent = "HONDA";
         }
         if (renaultLogo) {
-            renaultLogo.src = "../assets/images/logos/honda.jpg";
+            renaultLogo.src = "../assets/images/logos/honda.png";
             renaultLogo.alt = "Honda logo";
         }
     }
@@ -1565,6 +1568,8 @@ function setRenaultEnginePresentation(engineMode) {
     if (renaultLogo) {
         renaultLogo.style.display = "inline-block";
     }
+
+    console.log("ENGINE ALL", engine_allocations);
 }
 
 document.querySelectorAll(".color-picker").forEach(function (elem) {

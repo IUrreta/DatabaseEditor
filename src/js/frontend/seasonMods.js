@@ -1,6 +1,28 @@
 import { Command } from "../backend/command.js";
+import { setRenaultEnginePresentation } from "./renderer.js";
 
 let calendarEditMode = null;
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function replaceTextLetterByLetter(elem, nextText, { deleteDelay = 30, typeDelay = 42 } = {}) {
+  if (!elem) return;
+
+  const currentText = (elem.textContent || "").trim();
+  if (currentText === nextText) return;
+
+  for (let i = currentText.length; i >= 0; i--) {
+    elem.textContent = currentText.slice(0, i);
+    await sleep(deleteDelay);
+  }
+
+  for (let i = 0; i < nextText.length; i++) {
+    elem.textContent = nextText.slice(0, i + 1);
+    await sleep(typeDelay);
+  }
+}
 
 function setModsSeason(seasonYear) {
   const mods2025Pill = document.getElementById("mods2025Pill");
@@ -72,6 +94,43 @@ function initMods2026Actions(){
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
+    });
+  }
+
+  const changeRegulationsButton = mods2026View.querySelector(".change-regulations-2026");
+  if (changeRegulationsButton) {
+    changeRegulationsButton.addEventListener("click", async function () {
+      if (this.classList.contains("completed") || this.dataset.running === "1") return;
+      this.dataset.running = "1";
+      this.classList.add("disabled");
+
+      const command = new Command("changeRegulations", {});
+      try {
+        command.execute();
+        const command2 = new Command("add2026Engines", {mod: "2026"});
+        command2.execute();
+        setRenaultEnginePresentation("honda");
+
+        const engineRenamed = mods2026View.querySelector(".engine-renamed");
+        if (engineRenamed) {
+          await replaceTextLetterByLetter(engineRenamed, "Honda");
+          engineRenamed.classList.add("bold-font", "engine-renamed-honda");
+        }
+
+        const engineAppear = mods2026View.querySelector(".engine-appear");
+        if (engineAppear) {
+          // Force a layout pass so the transition reliably runs even if the view just became visible.
+          void engineAppear.offsetHeight;
+          engineAppear.classList.add("engine-appear-visible");
+        }
+
+        this.classList.add("completed");
+        this.querySelector("span").textContent = "Applied";
+      }
+      finally {
+        this.dataset.running = "0";
+        this.classList.remove("disabled");
+      }
     });
   }
 
