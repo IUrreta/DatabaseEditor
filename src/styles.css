@@ -6104,6 +6104,10 @@ body.light-theme .flag-header img {
   border-bottom: 2px solid var(--renault-primary);
 }
 
+.engine-ho {
+  border-bottom: 2px solid var(--renault-primary);
+}
+
 .engine-me {
   border-bottom: 2px solid var(--mercedes-primary);
 }
@@ -6170,7 +6174,16 @@ input.engine-performance-title:focus {
 }
 
 .engine-performance-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   max-width: max-content;
+}
+
+.engine-performance-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .engine-modal-body {
