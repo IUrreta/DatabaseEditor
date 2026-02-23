@@ -18,8 +18,8 @@ import {
 import { load_calendar } from './calendar';
 import {
     load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-    teamSelected, gather_engines_data, reload_performance_graph
+    order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
+    teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph
 } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
@@ -690,13 +690,24 @@ function performanceModeHandler() {
         command.execute();
     }
     else if (teamsEngine === "engines") {
-        let engineData = gather_engines_data()
-        data = {
-            engines: engineData,
+        const engineData = gather_engines_data()
+        const officialEngines = {}
+        for (let engineId in engineData) {
+            if (Number(engineId) <= 10) {
+                officialEngines[engineId] = engineData[engineId]
+            }
         }
 
-        const command = new Command("editEngine", data);
-        command.execute();
+        if (Object.keys(officialEngines).length) {
+            const command = new Command("editEngine", { engines: officialEngines })
+            command.execute()
+        }
+
+        const customEnginesData = gather_custom_engines_data()
+        if (Object.keys(customEnginesData).length) {
+            const command = new Command("customEngines", { enginesData: customEnginesData })
+            command.execute()
+        }
     }
 
 }
@@ -1572,7 +1583,6 @@ export function setRenaultEnginePresentation(engineMode) {
         renaultLogo.style.display = "inline-block";
     }
 
-    console.log("ENGINE ALL", engine_allocations);
 }
 
 document.querySelectorAll(".color-picker").forEach(function (elem) {

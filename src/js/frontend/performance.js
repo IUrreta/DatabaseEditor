@@ -888,69 +888,225 @@ function add_custom_engine(name, stats) {
     document.querySelector(".custom-engines-div").appendChild(generalEngineDiv)
 }
 
-document.querySelector("#addCustomEngineButton").addEventListener("click", function () {
-    add_custom_engine("", "")
-})
+function getCustomEngineLogoSrc(name) {
+    const normalized = String(name || "").toLowerCase()
+    if (normalized.includes("honda")) {
+        return "../assets/images/logos/honda.png"
+    }
+    if (normalized.includes("audi")) {
+        return "../assets/images/logos/audi.png"
+    }
+    return "../assets/images/logos/placeholder.png"
+}
 
-document.querySelector("#confirmCustomEnginesButton").addEventListener("click", function () {
-    let engines = document.querySelectorAll(".custom-engines-div .engine-performance")
-    let enginesData = {}
-    let unique_id = 1
+function wireEngineStatButtons(container) {
+    container.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
+        const input = stat.querySelector(".custom-input-number")
+        const bar = stat.querySelector(".engine-performance-progress")
+        if (!input) return
+
+        const holdOptions = buildHoldOptions(input, {
+            onChange: (val) => {
+                if (bar) {
+                    bar.style.width = val + "%"
+                }
+            }
+        })
+
+        const plus = stat.querySelector(".bi-plus.new-augment-button")
+        const less = stat.querySelector(".bi-dash.new-augment-button")
+        if (plus) {
+            attachHold(plus, input, 0.5, holdOptions)
+        }
+        if (less) {
+            attachHold(less, input, -0.5, holdOptions)
+        }
+    })
+}
+
+function createCustomEngineCard(engineId, name, stats) {
+    const engineDiv = document.createElement("div")
+    engineDiv.classList.add("engine-performance", "custom-engine-card")
+    engineDiv.dataset.engineid = engineId
+    engineDiv.dataset.customEngine = "true"
+
+    const title = document.createElement("div")
+    title.classList.add("engine-performance-title", "engine-ct", "custom-engine-title")
+
+    const logo = document.createElement("img")
+    logo.classList.add("engine-performance-logo")
+    logo.src = getCustomEngineLogoSrc(name)
+    logo.alt = `${name || "Custom engine"} logo`
+
+    const nameInput = document.createElement("input")
+    nameInput.type = "text"
+    nameInput.classList.add("custom-engine-name")
+    nameInput.value = name || "New Engine"
+    nameInput.addEventListener("input", function () {
+        logo.src = getCustomEngineLogoSrc(nameInput.value)
+        const engineDropdownItem = document.querySelector(`#engineMenu a.custom-engine[data-engine="${engineId}"]`)
+        if (engineDropdownItem) {
+            engineDropdownItem.innerText = nameInput.value
+        }
+    })
+
+    title.appendChild(logo)
+    title.appendChild(nameInput)
+    engineDiv.appendChild(title)
+
+    const customFlag = document.createElement("i")
+    customFlag.classList.add("bi", "bi-sliders2", "custom-engine-flag")
+    engineDiv.appendChild(customFlag)
+
+    const engineStats = document.createElement("div")
+    engineStats.classList.add("engine-performance-stats")
+
+    for (let [key, value] of engine_stats_dict) {
+        const stat = document.createElement("div")
+        stat.classList.add("engine-performance-stat")
+        if (key === 11 || key === 12) {
+            stat.classList.add("engine24")
+        }
+        stat.dataset.attribute = key
+
+        const statTitle = document.createElement("div")
+        statTitle.classList.add("part-performance-stat-title")
+        statTitle.innerText = value + " "
+        const unit = document.createElement("span")
+        unit.classList.add("unit-measure", "bold-font")
+        unit.innerText = "%"
+        statTitle.appendChild(unit)
+
+        const statNumber = document.createElement("div")
+        statNumber.classList.add("stat-number")
+
+        const less = document.createElement("i")
+        less.classList.add("bi", "bi-dash", "new-augment-button", "transparent")
+
+        const input = document.createElement("input")
+        input.type = "text"
+        input.classList.add("custom-input-number")
+
+        const plus = document.createElement("i")
+        plus.classList.add("bi", "bi-plus", "new-augment-button", "transparent")
+
+        statNumber.appendChild(less)
+        statNumber.appendChild(input)
+        statNumber.appendChild(plus)
+
+        const bar = document.createElement("div")
+        bar.classList.add("engine-performance-bar")
+        const barProgress = document.createElement("div")
+        barProgress.classList.add("engine-performance-progress")
+        bar.appendChild(barProgress)
+
+        const rawValue = stats?.[String(key)] ?? stats?.[key]
+        const numericValue = rawValue !== undefined ? Number(rawValue) : 50
+        input.value = Number.isFinite(numericValue) ? numericValue.toFixed(1) : "50.0"
+        barProgress.style.width = Number.isFinite(numericValue) ? numericValue + "%" : "50%"
+
+        stat.appendChild(statTitle)
+        stat.appendChild(statNumber)
+        stat.appendChild(bar)
+        engineStats.appendChild(stat)
+    }
+
+    engineDiv.appendChild(engineStats)
+    wireEngineStatButtons(engineDiv)
+    return engineDiv
+}
+
+function renderCustomEnginesInList(engines) {
+    const enginesContainer = document.getElementById("enginesPerformance")
+    if (!enginesContainer) return
+
+    enginesContainer.querySelectorAll(".engine-performance.custom-engine-card").forEach(function (elem) {
+        elem.remove()
+    })
+
     engines.forEach(function (engine) {
-        //id is title in lowercase
-        let engineID = 13 + unique_id
-        let engineName = engine.querySelector(".engine-performance-title").value.toLowerCase()
+        const engineId = engine[0]
+        const engineStats = engine[1] || {}
+        const engineName = engine[2] || ""
+        enginesContainer.appendChild(createCustomEngineCard(engineId, engineName, engineStats))
+    })
+}
+
+function getNextCustomEngineId() {
+    const ids = Array.from(document.querySelectorAll("#enginesPerformance .engine-performance[data-custom-engine=\"true\"]"))
+        .map((elem) => Number(elem.dataset.engineid))
+        .filter((id) => Number.isFinite(id))
+
+    if (!ids.length) return 14
+
+    let nextId = Math.max(...ids) + 3
+    const used = new Set(ids)
+    while (used.has(nextId)) {
+        nextId += 3
+    }
+    return nextId
+}
+
+const addCustomEngineButton = document.getElementById("customEngines")
+if (addCustomEngineButton) {
+    addCustomEngineButton.addEventListener("click", function () {
+        const enginesContainer = document.getElementById("enginesPerformance")
+        if (!enginesContainer) return
+
+        enginesContainer.appendChild(createCustomEngineCard(getNextCustomEngineId(), "", {}))
+        enginesContainer.scrollTop = enginesContainer.scrollHeight
+    })
+}
+
+export function gather_custom_engines_data() {
+    const engines = document.querySelectorAll("#enginesPerformance .engine-performance[data-custom-engine=\"true\"]")
+    let enginesData = {}
+    engines.forEach(function (engine) {
+        const engineID = engine.dataset.engineid
+        const nameInput = engine.querySelector(".custom-engine-name")
+        const engineName = String(nameInput?.value || "").trim().toLowerCase()
         let engineStats = {}
         engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
             let attribute = stat.dataset.attribute
             let value = stat.querySelector(".custom-input-number").value.split(" ")[0]
             engineStats[attribute] = value
         })
-        enginesData[engineID] = {}
-        enginesData[engineID]["stats"] = engineStats
-        enginesData[engineID]["name"] = engineName
-        unique_id += 3
+        enginesData[engineID] = {
+            stats: engineStats,
+            name: engineName || "new engine"
+        }
     })
-    let data = {
-        enginesData: enginesData
-    }
-    const command = new Command("customEngines",  data);
-    command.execute();
-    
-})
-
-
-export function load_custom_engines(data) {
-    let engines = data
-    customEnginesCopy = data
-    let engineDropdown = document.querySelector("#engineMenu")
-    engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
-        elem.remove()
-    })
-    document.querySelector(".custom-engines-div").innerHTML = ""
-
-    engines.forEach(function (engine) {
-        add_custom_engine(engine[2], engine[1])
-        let engineOption = document.createElement("a")
-        engineOption.classList.add("redesigned-dropdown-item", "custom-engine")
-        engineOption.innerText = engine[2].charAt(0).toUpperCase() + engine[2].slice(1)
-        engineOption.dataset.engine = engine[0]
-        engineOption.href = "#"
-        engineDropdown.appendChild(engineOption)
-        engineOption.addEventListener("click", function () {
-            let engineid = engineOption.dataset.engine;
-            let engine = engineOption.innerText;
-            document.querySelector("#engineLabel").innerText = engine;
-            document.querySelector("#engineButton").dataset.value = engineid;
-        })
-
-    })
-
+    return enginesData
 }
 
-document.querySelector("#cancelCustomEnginesButton").addEventListener("click", function () {
-    load_custom_engines(customEnginesCopy)
-})
+export function load_custom_engines(data) {
+    const engines = data || []
+    customEnginesCopy = data
+
+    const engineDropdown = document.querySelector("#engineMenu")
+    if (engineDropdown) {
+        engineDropdown.querySelectorAll("a.custom-engine").forEach(function (elem) {
+            elem.remove()
+        })
+
+        engines.forEach(function (engine) {
+            let engineOption = document.createElement("a")
+            engineOption.classList.add("redesigned-dropdown-item", "custom-engine")
+            engineOption.innerText = engine[2]
+            engineOption.dataset.engine = engine[0]
+            engineOption.href = "#"
+            engineDropdown.appendChild(engineOption)
+            engineOption.addEventListener("click", function () {
+                let engineid = engineOption.dataset.engine
+                let engineName = engineOption.innerText
+                document.querySelector("#engineLabel").innerText = engineName
+                document.querySelector("#engineButton").dataset.value = engineid
+            })
+        })
+    }
+
+    renderCustomEnginesInList(engines)
+}
 
 
 

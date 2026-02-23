@@ -6065,6 +6065,32 @@ body.light-theme .flag-header img {
   color: var(--text-selected);
 }
 
+.engine-performance .custom-engine-flag {
+  position: absolute;
+  right: 14px;
+  top: 7px;
+  font-size: 20px;
+  color: var(--text-general);
+  pointer-events: none;
+}
+
+.custom-engine-title {
+  max-width: 100%;
+  width: 100%;
+}
+
+.custom-engine-name {
+  background-color: transparent;
+  border: 0;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  text-transform: inherit;
+  field-sizing: content;
+}
+
 .part-performance,
 .engine-performance {
   background-color: var(--superficials);
@@ -6561,8 +6587,11 @@ input.engine-performance-title:focus {
 }
 
 .engines-show {
-  grid-template-columns: repeat(2, 0.5fr);
-  grid-template-rows: repeat(2, 1fr);
+  /* Keep the grid layout but allow any number of rows (custom engines are appended). */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: unset;
+  grid-auto-rows: max-content;
+  align-content: start;
 }
 
 
