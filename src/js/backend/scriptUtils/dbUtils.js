@@ -3159,6 +3159,8 @@ export function editEngines(engineData) {
 }
 
 export function check2025ModCompatibility(year_version) {
+  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
+
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
   const currentDay = daySeason[0];
   const currentSeason = daySeason[1];
@@ -3197,6 +3199,95 @@ export function check2025ModCompatibility(year_version) {
   }
 
   return "NotCompatible";
+}
+
+export function check2026ModCompatibility(year_version) {
+  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
+
+  const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+  const currentDay = daySeason[0];
+  const currentSeason = daySeason[1];
+
+  const minDay2024 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2024`, [], 'singleValue');
+  const firstRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2024`, [minDay2024], 'singleValue');
+
+  const maxDay2024 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2024`, [], 'singleValue');
+  const lastRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2024`, [maxDay2024], 'singleValue');
+
+  const minDay2025 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2025`, [], 'singleValue');
+  const firstRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2025`, [minDay2025], 'singleValue');
+
+  const maxDay2025 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2025`, [], 'singleValue');
+  const lastRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2025`, [maxDay2025], 'singleValue');
+
+  const minDay2026 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2026`, [], 'singleValue');
+  const firstRaceState2026 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2026`, [minDay2026], 'singleValue');
+
+  if (year_version !== "24") {
+    return "NotCompatible";
+  }
+
+  const edited = queryDB(`SELECT * FROM Custom_2026_SeasonMod WHERE value = 1`, [], 'allRows');
+  if (edited.length > 0) {
+    return "AlreadyEdited";
+  }
+
+  if (firstRaceState2024 === 0 && currentSeason === 2024) {
+    return "Start2024";
+  }
+  
+  if (lastRaceState2024 === 2 && currentSeason === 2024) {
+    return "End2024";
+  }
+
+  if (firstRaceState2025 === 0 && currentSeason === 2025) {
+    return "Start2025";
+  }
+  if (lastRaceState2025 === 2 && currentSeason === 2025) {
+    return "End2025";
+  }
+
+  if (currentSeason === 2026 && firstRaceState2026 === 0) {
+    return "Direct2026";
+  }
+
+  return "NotCompatible";
+}
+
+const defaultSeasonModKeys2025 = [
+  'time-travel',
+  'extra-drivers',
+  'change-line-ups',
+  'change-stats',
+  'change-calendar',
+  'change-regulations',
+  'change-cfd',
+  'change-performance'
+];
+
+const defaultSeasonModKeys2026 = [
+  'time-travel-2026',
+  'extra-drivers-2026',
+  'change-line-ups-2026',
+  'change-stats-2026',
+  'change-calendar-2026',
+  'change-regulations-2026',
+  'change-cfd-2026',
+  'change-performance-2026'
+];
+
+function ensureSeasonModTable(tableName, defaultKeys) {
+  const tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName], "singleRow");
+  if (!tableExists) {
+    // Table name cannot be parameterized
+    queryDB(`CREATE TABLE ${tableName} (key TEXT PRIMARY KEY, value TEXT)`, [], 'run');
+  }
+
+  if (Array.isArray(defaultKeys) && defaultKeys.length > 0) {
+    const valuesSql = defaultKeys.map((k) => `('${k}', '0')`).join(", ");
+    // Default keys are fixed constants; safe to inline.
+    queryDB(`INSERT OR IGNORE INTO ${tableName} (key, value) VALUES ${valuesSql}`, [], 'run');
+  }
 }
 
 
@@ -3474,13 +3565,7 @@ function fetchPlayerTeam() {
 }
 
 export function fetch2025ModData() {
-  let tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2025_SeasonMod'`, [], "singleRow");
-  if (!tableExists) {
-    queryDB(`CREATE TABLE Custom_2025_SeasonMod (key TEXT PRIMARY KEY, value TEXT)`, [], 'run');
-    //insert change-regulations with value 0
-    queryDB(`INSERT INTO Custom_2025_SeasonMod (key, value) VALUES ('time-travel', '0'), ('extra-drivers', '0'),
-        ('change-line-ups', '0'), ('change-stats', '0'), ('change-calendar', '0'), ('change-regulations', '0'), ('change-cfd', '0'), ('change-performance', '0')`, [], 'run');
-  }
+  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
 
   const rows = queryDB(`SELECT key, value FROM Custom_2025_SeasonMod`, [], 'allRows') || [];
   const config = {};
@@ -3493,6 +3578,21 @@ export function fetch2025ModData() {
 
   return config;
 
+}
+
+export function fetch2026ModData() {
+  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
+
+  const rows = queryDB(`SELECT key, value FROM Custom_2026_SeasonMod`, [], 'allRows') || [];
+  const config = {};
+
+  rows.forEach(row => {
+    const key = row[0];
+    const value = row[1];
+    config[key] = value;
+  });
+
+  return config;
 }
 
 function createEngineMigrationTrigger() {

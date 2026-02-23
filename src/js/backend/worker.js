@@ -5,11 +5,12 @@ import {
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
   fetchJuniorTeamDriverNames,
   editEngines, updateCustomConfig, fetchCustomConfig,
-  fetch2025ModData, check2025ModCompatibility,
+  fetch2025ModData, fetch2026ModData, check2025ModCompatibility,
   fetchPointsRegulations,
   fetchSessionResults,
   getDate,
   setCustomSaveConfig,
+  check2026ModCompatibility
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -22,7 +23,8 @@ import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
   insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod, addAudiCustomEngine, updateRenaultToHonda,
-  change2025Standings } from "./scriptUtils/modUtils";
+  change2025Standings, 
+  updateCalendar2026} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -168,11 +170,15 @@ const workerCommands = {
     const carAttributes = getAttributesAllCars(yearData[2]);
     postMessage({ responseMessage: "Cars fetched", content: [carPerformance, carAttributes] });
 
+    const mod2026Data = fetch2026ModData();
     const mod2025Data = fetch2025ModData();
-    postMessage({ responseMessage: "Mod data fetched", content: mod2025Data });
+    postMessage({ responseMessage: "Mod data fetched", content: { ...mod2025Data, ...mod2026Data } });
 
-    const modCompatibility = check2025ModCompatibility(yearData[0]);
-    postMessage({ responseMessage: "Mod compatibility", content: modCompatibility });
+    const mod25Compatibility = check2025ModCompatibility(yearData[0]);
+    postMessage({ responseMessage: "Mod compatibility", content: mod25Compatibility });
+
+    const mod2026Compatibility = check2026ModCompatibility(yearData[0]);
+    postMessage({ responseMessage: "Mod 2026 compatibility", content: mod2026Compatibility });
 
     const wasError = fixes_mod();
     if (wasError) {
@@ -434,7 +440,7 @@ const workerCommands = {
     });
   },
   timeTravel: (data, postMessage) => {
-    timeTravelWithData(data.dayNumber, true);
+    timeTravelWithData(data.dayNumber, true, data.mod);
     // manageStandings();
     postMessage({
       responseMessage: "Time travel",
@@ -486,11 +492,11 @@ const workerCommands = {
   },
   changeCfd: (data, postMessage) => {
     if (data.mod === "2025"){
-      change2024Standings();
+      change2024Standings(data.mod);
     }
     else if (data.mod === "2026"){
-      change2024Standings();
-      change2025Standings();
+      change2024Standings(data.mod);
+      change2025Standings(data.mod);
     }
     
     postMessage({
@@ -500,7 +506,7 @@ const workerCommands = {
     });
   },
   changeRegulations: (data, postMessage) => {
-    removeFastestLap();
+    removeFastestLap(data.mod);
     postMessage({
       responseMessage: "Regulations changed",
       isEditCommand: true,
@@ -508,7 +514,12 @@ const workerCommands = {
     });
   },
   changeCalendar: (data, postMessage) => {
-    changeRaces(data.type);
+    if (data.mod === "2025") {
+      changeRaces(data.type);
+    }
+    else if (data.mod === "2026") {
+      updateCalendar2026(data.type);
+    }
     postMessage({
       responseMessage: "Calendar changed",
       isEditCommand: true,

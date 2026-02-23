@@ -272,15 +272,19 @@ export function editCode(driverID, newCode) {
 
 // Helpers de fechas
 export function excelToDate(excelDate) {
-  const baseDate = new Date(1899, 11, 30);
-  const ms = excelDate * 86400000;
-  return new Date(baseDate.getTime() + ms);
+  const baseUTC = Date.UTC(1899, 11, 30); // 1899-12-30 UTC
+  return new Date(baseUTC + excelDate * 86400000);
 }
 
 export function dateToExcel(date) {
-  const baseDate = new Date(1899, 11, 30);
-  const diff = date.getTime() - baseDate.getTime();
-  return Math.floor(diff / 86400000);
+  const baseUTC = Date.UTC(1899, 11, 30);
+  const utcMidnight = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  return Math.floor((utcMidnight - baseUTC) / 86400000);
+}
+
+export function excelFromYMD(year, month, day) {
+  const d = new Date(Date.UTC(year, month - 1, day));
+  return dateToExcel(d);
 }
 
 export function changeYearsInExcelDate(excelDate, years) {

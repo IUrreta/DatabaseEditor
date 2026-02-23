@@ -1,7 +1,7 @@
 import { Command } from "../backend/command.js";
 import { setRenaultEnginePresentation } from "./renderer.js";
 
-let calendarEditMode = null;
+let calendarEditMode = null, calendarEditMode2026 = null;
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -70,7 +70,7 @@ function initMods2026Actions(){
   const timeTravelButton = mods2026View.querySelector(".time-travel-2026");
   if (timeTravelButton) {
     timeTravelButton.addEventListener("click", function () {
-      const command = new Command("timeTravel", { dayNumber: 46022 });
+      const command = new Command("timeTravel", { dayNumber: 46019, mod: "2026" });
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
@@ -80,8 +80,9 @@ function initMods2026Actions(){
   const changeCalendarButton = mods2026View.querySelector(".change-calendar-2026");
   if (changeCalendarButton) {
     changeCalendarButton.addEventListener("click", function () {
-      // const command = new Command("changeCalendar", { type: calendarEditMode, mod: 2026 });
-      // command.execute();
+      if (!calendarEditMode2026) return;
+      const command = new Command("changeCalendar", { type: calendarEditMode2026, mod: "2026" });
+      command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
     });
@@ -104,7 +105,7 @@ function initMods2026Actions(){
       this.dataset.running = "1";
       this.classList.add("disabled");
 
-      const command = new Command("changeRegulations", {});
+      const command = new Command("changeRegulations", {mod: "2026"});
       try {
         command.execute();
         const command2 = new Command("add2026Engines", {mod: "2026"});
@@ -145,7 +146,7 @@ function initMods2025Actions() {
   const timeTravelButton = mods2025View.querySelector(".time-travel");
   if (timeTravelButton) {
     timeTravelButton.addEventListener("click", function () {
-      const command = new Command("timeTravel", { dayNumber: 45657 });
+      const command = new Command("timeTravel", { dayNumber: 45657, mod: "2025" });
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
@@ -201,7 +202,7 @@ function initMods2025Actions() {
   const changeRegulationsButton = mods2025View.querySelector(".change-regulations");
   if (changeRegulationsButton) {
     changeRegulationsButton.addEventListener("click", function () {
-      const command = new Command("changeRegulations", {});
+      const command = new Command("changeRegulations", { mod: "2025" });
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
@@ -228,7 +229,8 @@ function initMods2025Actions() {
   const changeCalendarButton = mods2025View.querySelector(".change-calendar");
   if (changeCalendarButton) {
     changeCalendarButton.addEventListener("click", function () {
-      const command = new Command("changeCalendar", { type: calendarEditMode });
+      if (!calendarEditMode) return;
+      const command = new Command("changeCalendar", { type: calendarEditMode, mod: "2025" });
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
@@ -263,7 +265,35 @@ export function initSeasonMods() {
   initMods2026Actions();
 }
 
-export function updateModBlocking(data) {
+export function updateMod2026Blocking(data) {
+  const mods2026View = document.getElementById("mods2026View");
+  if (!mods2026View) return;
+
+  const timeTravelButton = mods2026View.querySelector(".time-travel-2026");
+  const timeTravelText = timeTravelButton ? timeTravelButton.querySelector("span") : null;
+  const changeCalendarButton = mods2026View.querySelector(".change-calendar-2026");
+  const changeCalendarText = changeCalendarButton ? changeCalendarButton.querySelector("span") : null;
+
+  calendarEditMode2026 = null;
+
+  const allowTimeTravel = data === "Start2024" || data === "Start2025";
+  if (timeTravelButton && !timeTravelButton.classList.contains("completed")) {
+    timeTravelButton.classList.toggle("disabled", !allowTimeTravel);
+    if (timeTravelText) timeTravelText.textContent = allowTimeTravel ? "Apply" : "Disabled";
+  }
+
+  const allowCalendarEdit = data === "Start2024" || data === "Start2025" || data === "End2025" || data === "Direct2026" || data === "AlreadyEdited";
+  if (allowCalendarEdit) {
+    calendarEditMode2026 = data;
+  }
+
+  if (changeCalendarButton && !changeCalendarButton.classList.contains("completed")) {
+    changeCalendarButton.classList.toggle("disabled", !allowCalendarEdit);
+    if (changeCalendarText) changeCalendarText.textContent = allowCalendarEdit ? "Apply" : "Disabled";
+  }
+}
+
+export function updateMod2025Blocking(data) {
   const mods2025View = document.getElementById("mods2025View");
   if (!mods2025View) return;
 
@@ -283,6 +313,7 @@ export function updateModBlocking(data) {
 
     if (timeTravelButton) timeTravelButton.classList.remove("disabled");
     if (timeTravelText) timeTravelText.textContent = "Apply";
+    calendarEditMode = data;
   } else if (data === "Direct2025" || data === "End2024") {
     modBlocking.classList.add("d-none");
     changesGrid.classList.remove("d-none");
