@@ -6,7 +6,7 @@ import turningPointsTemplates from "../../data/news/turning_points_prompts_templ
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
-import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay } from "./renderer";
+import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay, new_update_notifications } from "./renderer";
 import { marked } from 'marked';
 import TurndownService from "turndown";
 import DOMPurify from "dompurify";
@@ -626,6 +626,10 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         commandCalendar.execute();
       }
       else if (news.type === "turning_point_engine_regulation") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+      }
+      else if (news.type === "turning_point_aduo") {
         const commandEngines = new Command("enginesRefresh", {});
         commandEngines.execute();
       }

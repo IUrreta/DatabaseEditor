@@ -737,7 +737,7 @@ const workerCommands = {
       upsertNews([newResponse]);
     }
 
-    postMessage({ responseMessage: "Turning point positive", noti_msg: "Accepted turning point", content: newResponse, isEditCommand: true, unlocksDownload: true });
+    postMessage({ responseMessage: "Turning point positive", content: newResponse, isEditCommand: true, unlocksDownload: true });
   },
   cancelTurningPoint: (data, postMessage) => {
     const turningPointData = data.turningPointData;
@@ -819,7 +819,7 @@ const workerCommands = {
   },
   enginesRefresh: (data, postMessage) => {
     const engines = fetchEngines();
-    postMessage({ responseMessage: "Engines fetched", content: engines });
+    postMessage({ responseMessage: "Engines fetched", noti_msg: "Engines updated successfully", content: engines });
   },
   eventsFromRequest: (data, postMessage) => {
     const year = data.year;
@@ -880,7 +880,16 @@ const workerCommands = {
 
     postMessage({
       responseMessage: "2026 engines added",
-      noti_msg: "2026 engines added successfully",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
+  updateAduoTPEnabled: (data, postMessage) => {
+    const enabled = data.enabled;
+    setCustomSaveConfig("aduo_tp_enabled", enabled);
+    postMessage({
+      responseMessage: "ADUO TP enabled updated",
+      noti_msg: `ADUO TP enabled set to ${enabled}`,
       isEditCommand: true,
       unlocksDownload: true
     });

@@ -489,6 +489,10 @@ export function getParamMap(data) {
             driver1: data.driver1,
             driver2: data.driver2,
             driver3: data.driver3
+        },
+        109: {
+            manufacturers: data.manufacturers,
+            number_period: data.quarterString
         }
     };
 }

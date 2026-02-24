@@ -1,3 +1,4 @@
+import { set } from "idb-keyval";
 import { Command } from "../backend/command.js";
 import { setRenaultEnginePresentation } from "./renderer.js";
 
@@ -417,6 +418,15 @@ function initMods2026Actions(){
     });
   }
 
+  const aduoToggle = mods2026View.querySelector("#aduoTPSToggle");
+  if (aduoToggle) {
+    aduoToggle.addEventListener("change", function () {
+      const enabled = this.checked;
+      const command = new Command("updateAduoTPEnabled", { enabled });
+      command.execute();
+    });
+  }
+
   const applyAllButton = mods2026View.querySelector(".apply-all-2026");
 
   if (applyAllButton) {
@@ -436,6 +446,13 @@ function initMods2026Actions(){
           }
         }, index * 150);
       });
+      
+
+      if (aduoToggle && !aduoToggle.checked) {
+        setTimeout(() => {
+          aduoToggle.click();
+        }, buttons.length * 150 + 200);
+      }
 
       applyAllButton.style.display = "none";
     }, { once: true }); // evita listeners duplicados

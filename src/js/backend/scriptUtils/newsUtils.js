@@ -121,7 +121,11 @@ export function generate_news(savednews, turningPointState) {
     const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
-    generateAduoTurningPointsNews(savednews, turningPointState, tpConfig);
+    let aduoTPsEnabled = queryDB(`SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`, [], 'singleValue');
+    console.log("ADUO TPS ENABLED IN DB", aduoTPsEnabled);
+    aduoTPsEnabled = aduoTPsEnabled === "1" || aduoTPsEnabled === 1;
+
+    const aduoTurningPointNews = generateAduoTurningPointsNews(currentMonth, savednews, turningPointState, tpConfig, aduoTPsEnabled);
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -135,7 +139,7 @@ export function generate_news(savednews, turningPointState) {
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...juniorSeasonReviewNews || [], ...dsqTurningPointNews || [], 
     ...midSeasonTransfersTurningPointNews || [], ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
     ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
-    ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || []];
+    ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
 
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
@@ -296,10 +300,62 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             applyYoungDriversBoost(turningPointData);
         }
     }
+    else if(type === "turning_point_aduo") {
+        if (outcome === "positive") {
+            applyAduoEffect(turningPointData);
+        }
+
+    }
 
     return newEntry;
 }
 
+function applyAduoEffect(turningPointData) {
+    const engineImprovements = turningPointData?.engineImprovements || [];
+    if (!engineImprovements.length) {
+        return;
+    }
+
+    const [enginesData] = fetchEngines();
+    const enginesById = {};
+    for (const engineRow of enginesData || []) {
+        enginesById[String(engineRow[0])] = engineRow;
+    }
+
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const engineDataToEdit = {};
+
+    for (const engineChange of engineImprovements) {
+        const engineId = String(engineChange.engineId);
+        const engineRow = enginesById[engineId];
+        if (!engineRow) continue;
+
+        const baseStats = engineRow[1] || {};
+        const improvements = engineChange.improvements || {};
+        const newStats = {};
+
+        for (const statId of Object.keys(baseStats)) {
+            newStats[statId] = Number(baseStats[statId]) || 0;
+        }
+
+        for (const statId of Object.keys(improvements)) {
+            const pct = Number(improvements[statId]);
+            if (improvements[statId] === undefined || improvements[statId] === null) continue;
+            if (pct !== pct) continue;
+
+            const current = newStats[statId];
+            if (current === undefined || current === null) continue;
+
+            const next = (current * (100 + pct)) / 100;
+            newStats[statId] = clamp(next, 0, 100);
+        }
+
+        engineDataToEdit[engineId] = newStats;
+    }
+
+    console.log("[Aduo TP] Applying engine improvements:", engineImprovements);
+    editEngines(engineDataToEdit);
+}
 
 
 function applyRaceSubstitution(turningPointData) {
@@ -1219,7 +1275,8 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     return newsList;
 }
 
-function generateAduoTurningPointsNews(savednews = {}, turningPointState = {}, tpConfig = null) {
+function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null, aduoTPsEnabled = false) {
+    console.log("ADUO TPS ENABVLED?", aduoTPsEnabled);
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason?.[1];
     const newsList = [];
@@ -1243,17 +1300,24 @@ function generateAduoTurningPointsNews(savednews = {}, turningPointState = {}, t
     // Turning points are unlocked after each quarter of the season (25%, 50%, 75%),
     // excluding the final quarter (100%).
     const quarterThresholds = [
-        { quarter: 1, minRacesDone: Math.ceil(totalRaces * 0.25) },
-        { quarter: 2, minRacesDone: Math.ceil(totalRaces * 0.50) },
-        { quarter: 3, minRacesDone: Math.ceil(totalRaces * 0.75) }
+        { quarter: 1, minRacesDone: Math.ceil(totalRaces * 0.25), string: "1st" },
+        { quarter: 2, minRacesDone: Math.ceil(totalRaces * 0.50), string: "2nd" },
+        { quarter: 3, minRacesDone: Math.ceil(totalRaces * 0.75), string: "3rd" }
     ];
 
     let enginesData = null;
 
-    for (const { quarter, minRacesDone } of quarterThresholds) {
+
+    for (const { quarter, minRacesDone, string } of quarterThresholds) {
         if (racesDone < minRacesDone) continue;
 
         const entryId = `turning_point_aduo_q${quarter}_${season}`;
+
+        //get the month from that race
+        const raceInfo = queryDB(`SELECT Day FROM Races WHERE SeasonID = ? AND State = 2 ORDER BY Day ASC LIMIT ?, 1`, [season, minRacesDone - 1], 'singleRow');
+        const raceDay = raceInfo ? Number(raceInfo[0]) : null;
+        const raceDate = raceDay ? excelToDate(raceDay) : null;
+        const raceMonth = raceDate ? raceDate.getMonth() : null;
 
         // Already saved in DB -> just surface it again.
         if (savednews[entryId]) {
@@ -1264,6 +1328,10 @@ function generateAduoTurningPointsNews(savednews = {}, turningPointState = {}, t
         // Already generated this session (but not persisted yet) -> surface it again.
         if (turningPointState.aduoTurningPoints[entryId]) {
             newsList.push({ id: entryId, ...turningPointState.aduoTurningPoints[entryId] });
+            continue;
+        }
+
+        if (!aduoTPsEnabled) {
             continue;
         }
 
@@ -1323,7 +1391,7 @@ function generateAduoTurningPointsNews(savednews = {}, turningPointState = {}, t
             return { engineId, name, improvements };
         });
 
-        const newData = {
+        let titleData = {
             season,
             quarter,
             leader: { engineId: bestEngine?.[0], name: bestEngine?.[2], stat10: bestStat10 },
@@ -1331,13 +1399,38 @@ function generateAduoTurningPointsNews(savednews = {}, turningPointState = {}, t
             engineImprovements
         };
 
-        console.log("[Aduo TP] Stat 10 leader:", newData.leader);
-        console.log("[Aduo TP] Engine improvements:", newData);
-         
+        console.log("[Aduo TP] Stat 10 leader:", titleData.leader);
+        console.log("[Aduo TP] Engine improvements:", titleData.engineImprovements);
 
-        // --- Generation section (intentionally blank for now) ---
-        // TODO: Generate and push the aduo turning point for this quarter window.
-        //       When implemented, persist it in turningPointState.aduoTurningPoints[entryId].
+        let manufacutrersAffectedStriing = "";
+        if (titleData.engineImprovements.length > 0) {
+            manufacutrersAffectedStriing = titleData.engineImprovements.map(e => e.name).join(", ");
+            //the last one should have "and" if there are more than 1
+            if (titleData.engineImprovements.length > 1) {
+                const lastCommaIndex = manufacutrersAffectedStriing.lastIndexOf(", ");
+                manufacutrersAffectedStriing = manufacutrersAffectedStriing.substring(0, lastCommaIndex) + " and" + manufacutrersAffectedStriing.substring(lastCommaIndex + 1);
+            }
+        } else {
+            return newsList; // No underperformers, no turning point
+        }
+
+        titleData.quarterString = string;
+        titleData.manufacturers = manufacutrersAffectedStriing;
+
+        const title = generateTurningPointTitle(titleData, 109, "original");
+        const image = getImagePath(null, "engine", "engine");
+
+        const newsEntry = {
+            id: entryId,
+            title,
+            image,
+            date: dateToExcel(new Date(season, raceMonth, 8 + quarter)), // Mid-month date for the news
+            data: titleData,
+            turning_point_type: "original",
+            type: "turning_point_aduo"
+        };
+
+        newsList.push(newsEntry);
 
     }
 
@@ -4708,7 +4801,7 @@ function getImagePath(teamId, code, type) {
         return `./assets/images/news/${code}_pad.webp`;
     }
     else if (type === "engine"){
-        const randomNum = getRandomInt(1, 5);
+        const randomNum = getRandomInt(1, 10);
         return `./assets/images/news/engine_${randomNum}.webp`;
     }
     else if (type === "grid"){
