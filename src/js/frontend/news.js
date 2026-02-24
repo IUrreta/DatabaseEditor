@@ -512,6 +512,12 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
 
 function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
   let approveButton, randomButton, cancelButton;
+  const isAduoTurningPoint = news.type === "turning_point_aduo";
+  const isFreeTier = !newsAvailable.normal && !newsAvailable.turning;
+
+  if (isFreeTier && news.hiddenByAvailability && !isAduoTurningPoint) {
+    return;
+  }
 
 
   if (news.turning_point_type === "original") {
@@ -687,7 +693,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
   }
 
 
-  if (!newsAvailable.turning) {
+  if (!newsAvailable.turning && !isAduoTurningPoint) {
     const showInsiderModal = async () => {
       await confirmModal({
         title: "Insider News Unavailable",
@@ -716,6 +722,7 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
     news.turning_point_type === 'original' ||
     news.turning_point_type === 'approved' ||
     news.turning_point_type === 'cancelled';
+  const isAduoTurningPoint = news.type === "turning_point_aduo";
   const newsItem = document.createElement('div');
   newsItem.classList.add('news-item', 'fade-in');
   newsItem.setAttribute('style', '--order: ' + (index + 1));
@@ -824,13 +831,11 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   newsBody.appendChild(readbuttonContainer);
 
   if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
-    if (newsAvailable.normal === true && !isTurning) { //second check - if normal news are available
-      readActions.appendChild(contextButton);
-      readActions.appendChild(readButton);
-      readbuttonContainer.appendChild(readActions);
-    }
+    const canRead =
+      (newsAvailable.normal === true && !isTurning) ||
+      (isTurning && (newsAvailable.turning === true || isAduoTurningPoint));
 
-    if (newsAvailable.turning === true && isTurning) { //second check - if insider news are available
+    if (canRead) {
       readActions.appendChild(contextButton);
       readActions.appendChild(readButton);
       readbuttonContainer.appendChild(readActions);
@@ -894,17 +899,24 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       news.turning_point_type === 'approved' ||
       news.turning_point_type === 'cancelled'
     );
+    const isAduoTurningPoint = news.type === "turning_point_aduo";
 
     const h = hashStr(news.stableKey);
-    if (!newsAvailable.turning && isTurning) {
-      news.hiddenByAvailability = (h % BUCKET_TURNING) !== 0;
-      news.hiddenReason = news.hiddenByAvailability ? 'turning' : null;
-    } else if (!newsAvailable.normal && !isTurning) {
-      news.hiddenByAvailability = (h % BUCKET_NORMAL) !== 0;
-      news.hiddenReason = news.hiddenByAvailability ? 'normal' : null;
+    const isFreeTier = !newsAvailable.normal && !newsAvailable.turning;
+    if (isFreeTier) {
+      news.hiddenByAvailability = !isAduoTurningPoint;
+      news.hiddenReason = news.hiddenByAvailability ? (isTurning ? 'turning' : 'normal') : null;
     } else {
-      news.hiddenByAvailability = false;
-      news.hiddenReason = null;
+      if (!newsAvailable.turning && isTurning) {
+        news.hiddenByAvailability = (h % BUCKET_TURNING) !== 0;
+        news.hiddenReason = news.hiddenByAvailability ? 'turning' : null;
+      } else if (!newsAvailable.normal && !isTurning) {
+        news.hiddenByAvailability = (h % BUCKET_NORMAL) !== 0;
+        news.hiddenReason = news.hiddenByAvailability ? 'normal' : null;
+      } else {
+        news.hiddenByAvailability = false;
+        news.hiddenReason = null;
+      }
     }
 
 

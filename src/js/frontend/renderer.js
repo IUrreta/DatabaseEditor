@@ -1178,8 +1178,7 @@ if (glowSpot && blockDiv) {
 
 export async function generateNews() {
     const patreonTier = await getUserTier();
-    const canGenerate = checkGenerableNews(patreonTier);
-    if (canGenerate === "no") return;
+    checkGenerableNews(patreonTier);
 
     // lanzar sin payload, el worker lee de DB
     new Command("generateNews", {}).execute();
@@ -2253,6 +2252,8 @@ function manageNewsStatus(patreonTier) {
 
 function checkGenerableNews(patreonTier) {
     let canGenerate = "no";
+    newsAvailable.normal = false;
+    newsAvailable.turning = false;
     if (patreonTier.paidMember) {
         canGenerate = "yes";
         if (patreonTier.tier === "Insider" || patreonTier.tier === "Founder") {

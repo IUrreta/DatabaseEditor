@@ -10047,6 +10047,7 @@ body.og-theme .records-list {
 
 .basic-label {
   cursor: pointer;
+  z-index: 1;
   transition: color 0.15s, transform 0.15s;
   pointer-events: none;
 }
@@ -10063,7 +10064,7 @@ body.og-theme .records-list {
   transition: opacity 0.25s ease;
   transition-delay: 0.15s;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
 .generalPills:hover::before {
