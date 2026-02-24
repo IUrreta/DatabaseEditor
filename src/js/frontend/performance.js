@@ -2,7 +2,7 @@ import { races_names, part_codes_abreviations, codes_dict, combined_dict, races_
     theme_colors
   } from "./config";
 import { colors_dict, get_colors_dict } from "./head2head";
-import { manageSaveButton, game_version, attachHold, first_show_animation, selectedTheme } from "./renderer";
+import { manageSaveButton, game_version, attachHold, first_show_animation, selectedTheme, confirmModal } from "./renderer";
 import { Command } from "../backend/command.js";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -956,6 +956,33 @@ function createCustomEngineCard(engineId, name, stats) {
 
     const customFlag = document.createElement("i")
     customFlag.classList.add("bi", "bi-sliders2", "custom-engine-flag")
+    customFlag.setAttribute("title", "Delete custom engine")
+
+    customFlag.addEventListener("mouseenter", function () {
+        customFlag.classList.remove("bi-sliders2")
+        customFlag.classList.add("bi-trash")
+    })
+
+    customFlag.addEventListener("mouseleave", function () {
+        customFlag.classList.remove("bi-trash")
+        customFlag.classList.add("bi-sliders2")
+    })
+
+    customFlag.addEventListener("click", async function (e) {
+        e.preventDefault()
+        e.stopPropagation()
+
+        const ok = await confirmModal({
+            title: "Delete custom engine",
+            body: "Are you sure you want to delete this custom engine? Any team using it will be assigned a different engine.",
+            confirmText: "Delete",
+            cancelText: "Cancel"
+        })
+        if (!ok) return
+
+        const command = new Command("deleteCustomEngine", { engineId: engineId })
+        command.execute()
+    })
     engineDiv.appendChild(customFlag)
 
     const engineStats = document.createElement("div")

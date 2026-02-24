@@ -1,5 +1,6 @@
 import * as carConstants from './carConstants.js';
 import { queryDB } from '../dbManager.js';
+import { manage_engine_change } from './editTeamUtils.js';
 
 
 
@@ -1421,6 +1422,51 @@ export function getMaxDesign() {
         FROM Parts_Designs
         `, [], 'singleValue');
     return val;
+}
+
+export function deleteCustomEngineAndReassign(engineIdRaw, fallbackEngineIdRaw) {
+    const engineId = Number(engineIdRaw);
+    if (!engineId || engineId <= 10) {
+        return { ok: false, error: "Invalid custom engine id" };
+    }
+
+    let fallbackEngineId = Number(fallbackEngineIdRaw);
+    if (!fallbackEngineId || fallbackEngineId === engineId) {
+        fallbackEngineId = Number(queryDB(
+            `SELECT engineID FROM Custom_Engines_List WHERE engineID <= 10 ORDER BY engineID ASC LIMIT 1`,
+            [],
+            "singleValue"
+        ));
+    }
+    if (!fallbackEngineId || fallbackEngineId === engineId) {
+        fallbackEngineId = Number(queryDB(
+            `SELECT engineID FROM Custom_Engines_List WHERE engineID != ? ORDER BY engineID ASC LIMIT 1`,
+            [engineId],
+            "singleValue"
+        ));
+    }
+
+    if (!fallbackEngineId || fallbackEngineId === engineId) {
+        return { ok: false, error: "No fallback engine available" };
+    }
+
+    const teamsSupplied = queryDB(
+        `SELECT teamId FROM Custom_Engine_Allocations WHERE engineId = ?`,
+        [engineId],
+        "allRows"
+    ) || [];
+
+    teamsSupplied.forEach(team => {
+        const teamId = Number(team?.[0]);
+        if (!teamId) return;
+        manage_engine_change(teamId, fallbackEngineId);
+    });
+
+    queryDB(`DELETE FROM Custom_Engine_Allocations WHERE engineId = ?`, [engineId], "run");
+    queryDB(`DELETE FROM Custom_Engines_Stats WHERE engineId = ?`, [engineId], "run");
+    queryDB(`DELETE FROM Custom_Engines_List WHERE engineId = ?`, [engineId], "run");
+
+    return { ok: true, fallbackEngineId, reassignedTeams: teamsSupplied.length };
 }
 
 

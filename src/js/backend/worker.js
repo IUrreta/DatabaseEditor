@@ -16,7 +16,7 @@ import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllC
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
@@ -230,6 +230,23 @@ const workerCommands = {
       isEditCommand: true,
       unlocksDownload: true
     });
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
+  },
+  deleteCustomEngine: (data, postMessage) => {
+    const res = deleteCustomEngineAndReassign(data?.engineId, data?.fallbackEngineId);
+    if (!res.ok) {
+      postMessage({ responseMessage: "Error", error: res.error || "Failed to delete custom engine" });
+      return;
+    }
+
+    postMessage({
+      responseMessage: "Custom engine deleted",
+      noti_msg: "Custom engine deleted",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
   },
