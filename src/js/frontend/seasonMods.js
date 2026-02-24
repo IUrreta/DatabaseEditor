@@ -2,6 +2,267 @@ import { Command } from "../backend/command.js";
 import { setRenaultEnginePresentation } from "./renderer.js";
 
 let calendarEditMode = null, calendarEditMode2026 = null;
+let modsParticlesAnimator = null;
+let modsParticlesObserverInit = false;
+
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function hexToRgb(color) {
+  if (!color) return null;
+  const trimmed = String(color).trim();
+  if (!trimmed.startsWith("#")) return null;
+
+  let hex = trimmed.slice(1);
+  if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+  if (hex.length !== 6) return null;
+
+  const num = Number.parseInt(hex, 16);
+  if (Number.isNaN(num)) return null;
+
+  return {
+    r: (num >> 16) & 255,
+    g: (num >> 8) & 255,
+    b: num & 255
+  };
+}
+
+function readCssVar(varName, fallback = "") {
+  const root = getComputedStyle(document.documentElement);
+  const value = root.getPropertyValue(varName).trim();
+  return value || fallback;
+}
+
+function ensureModsParticlesCanvas() {
+  let canvas = document.getElementById("modsParticlesCanvas");
+  if (canvas) return canvas;
+
+  canvas = document.createElement("canvas");
+  canvas.id = "modsParticlesCanvas";
+  canvas.className = "mods-particles";
+  canvas.setAttribute("aria-hidden", "true");
+
+  document.body.insertBefore(canvas, document.body.firstChild);
+  return canvas;
+}
+
+function isMods2026ScreenActive() {
+  const modPill = document.getElementById("modpill");
+  const seasonModsDiv = document.getElementById("season_mods");
+  const mods2026View = document.getElementById("mods2026View");
+
+  if (!modPill || !seasonModsDiv || !mods2026View) return false;
+  if (!modPill.classList.contains("active")) return false;
+  if (seasonModsDiv.classList.contains("hide") || seasonModsDiv.classList.contains("unloaded")) return false;
+  if (mods2026View.classList.contains("d-none")) return false;
+
+  return true;
+}
+
+function rand(min, max) {
+  return min + Math.random() * (max - min);
+}
+
+class ModsParticlesAnimator {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+
+    this.running = false;
+    this.raf = 0;
+    this.lastTs = 0;
+    this.dpr = 1;
+    this.w = 0;
+    this.h = 0;
+
+    this.particles = [];
+    this.palette = [
+      { r: 7, g: 151, b: 123 },   // fallback aston-ish
+      { r: 245, g: 51, b: 17 },   // fallback ferrari-ish
+      { r: 49, g: 114, b: 191 }   // fallback redbull-ish
+    ];
+
+    this.onResize = this.onResize.bind(this);
+    this.tick = this.tick.bind(this);
+  }
+
+  refreshPaletteFromCss() {
+    const aston = hexToRgb(readCssVar("--aston-primary", "#07977b"));
+    const ferrari = hexToRgb(readCssVar("--ferrari-primary", "#f53311"));
+    const redbull = hexToRgb(readCssVar("--redbull-primary", "#3172bf"));
+    if (aston) this.palette[0] = aston;
+    if (ferrari) this.palette[1] = ferrari;
+    if (redbull) this.palette[2] = redbull;
+  }
+
+  start() {
+    if (this.running) return;
+    this.running = true;
+
+    this.refreshPaletteFromCss();
+    this.onResize();
+    this.seedParticles();
+
+    window.addEventListener("resize", this.onResize, { passive: true });
+    this.lastTs = performance.now();
+    this.raf = requestAnimationFrame(this.tick);
+  }
+
+  stop() {
+    if (!this.running) return;
+    this.running = false;
+
+    cancelAnimationFrame(this.raf);
+    this.raf = 0;
+    window.removeEventListener("resize", this.onResize);
+
+    this.particles = [];
+    if (this.ctx) this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  onResize() {
+    const dpr = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    this.dpr = dpr;
+
+    const w = Math.floor(window.innerWidth);
+    const h = Math.floor(window.innerHeight);
+    this.w = w;
+    this.h = h;
+
+    this.canvas.width = Math.floor(w * dpr);
+    this.canvas.height = Math.floor(h * dpr);
+    this.canvas.style.width = `${w}px`;
+    this.canvas.style.height = `${h}px`;
+
+    if (this.ctx) this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  seedParticles() {
+    const area = this.w * this.h;
+    const target = Math.max(60, Math.min(220, Math.floor(area / 12000)));
+    this.particles = [];
+
+    for (let i = 0; i < target; i++) {
+      this.particles.push(this.createParticle({ y: rand(0, this.h) }));
+    }
+  }
+
+  createParticle({ y = null } = {}) {
+    const band = Math.random() < 0.34 ? 0 : Math.random() < 0.67 ? 1 : 2;
+
+    const bandMin = (this.w / 3) * band;
+    const bandMax = (this.w / 3) * (band + 1);
+
+    const layerRoll = Math.random();
+    const layer = layerRoll < 0.62 ? 0 : layerRoll < 0.9 ? 1 : 2; // 0 = far, 2 = near
+
+    const size = layer === 0 ? rand(1.0, 2.0) : layer === 1 ? rand(1.6, 3.2) : rand(2.2, 4.5);
+    const alpha = layer === 0 ? rand(0.08, 0.14) : layer === 1 ? rand(0.12, 0.2) : rand(0.14, 0.24);
+
+    const baseVy = layer === 0 ? rand(18, 34) : layer === 1 ? rand(26, 48) : rand(34, 64);
+    const vy = -baseVy;
+    const vx = rand(6, 16) * (band === 0 ? 0.65 : band === 1 ? 1 : 1.25);
+
+    return {
+      band,
+      layer,
+      x: rand(bandMin - this.w * 0.05, bandMax + this.w * 0.05),
+      y: y === null ? this.h + rand(0, this.h * 0.25) : y,
+      vx,
+      vy,
+      r: size,
+      a: alpha,
+      phase: rand(0, Math.PI * 2),
+      twinkle: layer === 0 ? rand(0.35, 0.55) : layer === 1 ? rand(0.4, 0.65) : rand(0.45, 0.75)
+    };
+  }
+
+  tick(ts) {
+    if (!this.running) return;
+
+    const dt = Math.min(0.05, (ts - this.lastTs) / 1000);
+    this.lastTs = ts;
+
+    const ctx = this.ctx;
+    if (!ctx) return;
+
+    ctx.clearRect(0, 0, this.w, this.h);
+    ctx.globalCompositeOperation = "lighter";
+
+    for (let i = 0; i < this.particles.length; i++) {
+      const p = this.particles[i];
+
+      p.y += p.vy * dt;
+      p.x += p.vx * dt;
+      p.x += Math.sin(ts / 900 + p.phase) * (p.layer === 0 ? 0.25 : p.layer === 1 ? 0.45 : 0.7);
+
+      if (p.y < -20) {
+        this.particles[i] = this.createParticle();
+        continue;
+      }
+
+      const bandMin = (this.w / 3) * p.band;
+      const bandMax = (this.w / 3) * (p.band + 1);
+      const pad = this.w * 0.06;
+      if (p.x < bandMin - pad) p.x = bandMax + pad;
+      if (p.x > bandMax + pad) p.x = bandMin - pad;
+
+      const c = this.palette[p.band];
+      const tw = 0.65 + 0.35 * Math.sin(ts / (900 / p.twinkle) + p.phase);
+      const alpha = p.a * tw;
+
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})`;
+      ctx.shadowColor = `rgba(${c.r}, ${c.g}, ${c.b}, ${alpha})`;
+      ctx.shadowBlur = p.layer === 0 ? 0 : p.layer === 1 ? 2 : 5;
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    ctx.shadowBlur = 0;
+    ctx.globalCompositeOperation = "source-over";
+
+    this.raf = requestAnimationFrame(this.tick);
+  }
+}
+
+function updateModsParticlesState() {
+  if (prefersReducedMotion()) {
+    if (modsParticlesAnimator) modsParticlesAnimator.stop();
+    return;
+  }
+
+  const shouldRun = isMods2026ScreenActive();
+  if (shouldRun) {
+    if (!modsParticlesAnimator) {
+      modsParticlesAnimator = new ModsParticlesAnimator(ensureModsParticlesCanvas());
+    }
+    modsParticlesAnimator.start();
+  } else if (modsParticlesAnimator) {
+    modsParticlesAnimator.stop();
+  }
+}
+
+function initModsParticlesObserver() {
+  if (modsParticlesObserverInit) return;
+  modsParticlesObserverInit = true;
+
+  const modPill = document.getElementById("modpill");
+  const seasonModsDiv = document.getElementById("season_mods");
+  const mods2026View = document.getElementById("mods2026View");
+
+  const observerTargets = [modPill, seasonModsDiv, mods2026View].filter(Boolean);
+  if (!observerTargets.length) return;
+
+  const mo = new MutationObserver(() => updateModsParticlesState());
+  observerTargets.forEach((el) => {
+    mo.observe(el, { attributes: true, attributeFilter: ["class"] });
+  });
+
+  document.addEventListener("visibilitychange", () => updateModsParticlesState());
+  updateModsParticlesState();
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -38,6 +299,7 @@ function setModsSeason(seasonYear) {
 
   mods2025View.classList.toggle("d-none", is2026);
   mods2026View.classList.toggle("d-none", !is2026);
+  updateModsParticlesState();
 }
 
 function initModsSeasonPills() {
@@ -263,6 +525,7 @@ export function initSeasonMods() {
   initModsSeasonPills();
   initMods2025Actions();
   initMods2026Actions();
+  initModsParticlesObserver();
 }
 
 export function updateMod2026Blocking(data) {

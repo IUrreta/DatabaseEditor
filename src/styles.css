@@ -13100,9 +13100,61 @@ body:has(#blockDiv:not(.disappear)){
   }
 }
 
-body:has(#modpill.active) .background {
-  background-color: transparent;
-  background-image: url('../assets/images/modback.png');
+body:has(#modpill.active):has(#mods2025View:not(.d-none)) {
+  background-color: transparent !important;
+  background-image: url('../assets/images/modback.png') !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: none;
+}
+
+body:has(#modpill.active):has(#mods2025View:not(.d-none)) .version-panel{
+  background-color: #0F1D1D;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) .version-panel{
+  background-color: #121519;
+}
+
+body:has(#modpill.active) .tech-grid,
+body:has(#modpill.active) .glow-spot {
+  display: none;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
+  background-color: var(--background) !important;
+  background-image:
+    radial-gradient(circle at 18% 32%, color-mix(in srgb, var(--aston-primary) 6%, transparent) 0%, transparent 72%),
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--ferrari-primary) 4%, transparent) 0%, transparent 74%),
+    radial-gradient(circle at 82% 32%, color-mix(in srgb, var(--redbull-primary) 6%, transparent) 0%, transparent 72%),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--aston-primary) 7%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 6%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--redbull-primary) 7%, transparent) 0 1px, transparent 1px 20px) !important;
+  background-size: cover, cover, cover, 33.333% 100%, 33.333% 100%, 33.333% 100%;
+  background-position: center, center, center, left top, center top, right top;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  filter: none;
+}
+
+.mods-particles {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) .mods-particles {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mods-particles {
+    display: none !important;
+  }
 }
 
 .mod-banner {
@@ -13127,7 +13179,7 @@ body:has(#modpill.active) .background {
   opacity: 0;
 }
 
-body:has(#modpill.active) .mod-name img {
+body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img {
   animation: logo-appear 0.6s forwards;
 }
 
@@ -13336,6 +13388,45 @@ body:has(#modpill.active) .mod-drivers .ka-gradient {
   transform: translateY(-20px);
 }
 
+.mod-subtitle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  gap: 0.75em;
+  text-transform: uppercase;
+  color: #ffffff;
+  transform: translateY(-20px);
+  white-space: nowrap;
+  margin-top: -20px;
+}
+
+.mod-subtitle-letter {
+  display: inline-block;
+  opacity: 0;
+  text-shadow: none;
+  font-family: 'Formula1Dark';
+  will-change: opacity, text-shadow;
+}
+
+.mod-subtitle-letter.number{
+  font-family: 'NumbersFont';
+}
+
+.mod-subtitle-letter.number + .mod-subtitle-letter.number {
+  margin-left: -0.12em;
+}
+
+.mod-subtitle-space {
+  display: inline-block;
+  width: 0.6ch;
+}
+
+body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
+  animation: mod-subtitle-letter-appear 0.9s forwards;
+  animation-delay: calc(0.15s + (var(--order) * 0.06s));
+}
+
 .mod-creators {
   display: flex;
   flex-direction: row;
@@ -13395,7 +13486,13 @@ body:has(#modpill.active) .mod-drivers .ka-gradient {
   content: 'W1ECHUZ';
 }
 
+.mod-creators a.kevintaddo::before {
+  content: 'KEVINTADDO';
+}
 
+.mod-creators a.lucas::before {
+  content: 'LUCAS';
+}
 
 
 .mod-creators a:hover {
@@ -13497,6 +13594,30 @@ body:has(#modpill.active) .coming-soon {
 
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes mod-subtitle-letter-appear {
+  0% {
+    opacity: 0;
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  55% {
+    opacity: 1;
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  100% {
+    opacity: 1;
+    text-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mod-subtitle-letter {
+    opacity: 1;
+    animation: none !important;
   }
 }
 
