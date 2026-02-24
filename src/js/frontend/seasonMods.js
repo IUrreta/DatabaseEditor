@@ -9,6 +9,39 @@ function prefersReducedMotion() {
   return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function animatePointsValue(element, targetValue, durationMs = 1000) {
+  if (!element) return;
+
+  const startValueRaw = Number.parseInt(String(element.textContent).replace(/[^\d-]/g, ""), 10);
+  const startValue = Number.isFinite(startValueRaw) ? startValueRaw : 0;
+  const endValue = Number(targetValue);
+  if (!Number.isFinite(endValue)) return;
+
+  if (prefersReducedMotion() || durationMs <= 0) {
+    element.textContent = String(endValue);
+    return;
+  }
+
+  const token = String((Number(element.dataset.animToken || "0") || 0) + 1);
+  element.dataset.animToken = token;
+
+  const startTs = performance.now();
+  const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+  const tick = (now) => {
+    if (element.dataset.animToken !== token) return;
+
+    const t = Math.min(1, (now - startTs) / durationMs);
+    const eased = easeOutCubic(t);
+    const current = Math.round(startValue + (endValue - startValue) * eased);
+    element.textContent = String(current);
+
+    if (t < 1) requestAnimationFrame(tick);
+  };
+
+  requestAnimationFrame(tick);
+}
+
 function hexToRgb(color) {
   if (!color) return null;
   const trimmed = String(color).trim();
@@ -264,27 +297,6 @@ function initModsParticlesObserver() {
   updateModsParticlesState();
 }
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function replaceTextLetterByLetter(elem, nextText, { deleteDelay = 30, typeDelay = 42 } = {}) {
-  if (!elem) return;
-
-  const currentText = (elem.textContent || "").trim();
-  if (currentText === nextText) return;
-
-  for (let i = currentText.length; i >= 0; i--) {
-    elem.textContent = currentText.slice(0, i);
-    await sleep(deleteDelay);
-  }
-
-  for (let i = 0; i < nextText.length; i++) {
-    elem.textContent = nextText.slice(0, i + 1);
-    await sleep(typeDelay);
-  }
-}
-
 function setModsSeason(seasonYear) {
   const mods2025Pill = document.getElementById("mods2025Pill");
   const mods2026Pill = document.getElementById("mods2026Pill");
@@ -320,7 +332,7 @@ function initModsSeasonPills() {
     setModsSeason(2026);
   });
 
-  setModsSeason(2025);
+  setModsSeason(2026);
 }
 
 function initMods2026Actions(){
@@ -351,8 +363,31 @@ function initMods2026Actions(){
   }
 
   const add2025Results = mods2026View.querySelector(".add-results-2026");
+  const add2025ResultsPoints = Array.from(mods2026View.querySelectorAll(".add-results-points[data-target]"));
+
+  const setAdd2025ResultsPoints = (animate = false) => {
+    add2025ResultsPoints.forEach((el) => {
+      const target = Number(el.dataset.target);
+      if (!Number.isFinite(target)) return;
+      if (animate) animatePointsValue(el, target, 1000);
+      else el.textContent = String(target);
+    });
+  };
+
   if (add2025Results) {
+    if (add2025Results.classList.contains("completed")) {
+      setAdd2025ResultsPoints(false);
+    }
+
+    const mo = new MutationObserver(() => {
+      if (add2025Results.classList.contains("completed")) {
+        setAdd2025ResultsPoints(false);
+      }
+    });
+    mo.observe(add2025Results, { attributes: true, attributeFilter: ["class"] });
+
     add2025Results.addEventListener("click", function () {
+      setAdd2025ResultsPoints(true);
       const command = new Command("changeCfd", {mod: "2026"});
       command.execute();
       this.classList.add("completed");
@@ -362,7 +397,7 @@ function initMods2026Actions(){
 
   const changeRegulationsButton = mods2026View.querySelector(".change-regulations-2026");
   if (changeRegulationsButton) {
-    changeRegulationsButton.addEventListener("click", async function () {
+    changeRegulationsButton.addEventListener("click", function () {
       if (this.classList.contains("completed") || this.dataset.running === "1") return;
       this.dataset.running = "1";
       this.classList.add("disabled");
@@ -374,19 +409,6 @@ function initMods2026Actions(){
         command2.execute();
         setRenaultEnginePresentation("honda");
 
-        const engineRenamed = mods2026View.querySelector(".engine-renamed");
-        if (engineRenamed) {
-          await replaceTextLetterByLetter(engineRenamed, "Honda");
-          engineRenamed.classList.add("bold-font", "engine-renamed-honda");
-        }
-
-        const engineAppear = mods2026View.querySelector(".engine-appear");
-        if (engineAppear) {
-          // Force a layout pass so the transition reliably runs even if the view just became visible.
-          void engineAppear.offsetHeight;
-          engineAppear.classList.add("engine-appear-visible");
-        }
-
         this.classList.add("completed");
         this.querySelector("span").textContent = "Applied";
       }
@@ -395,6 +417,30 @@ function initMods2026Actions(){
         this.classList.remove("disabled");
       }
     });
+  }
+
+  const applyAllButton = mods2026View.querySelector(".apply-all-2026");
+
+  if (applyAllButton) {
+    applyAllButton.addEventListener("click", function () {
+      if (applyAllButton.dataset.running === "1") return; // anti-bucle
+      applyAllButton.dataset.running = "1";
+
+      const buttons = mods2026View.querySelectorAll(
+        ".one-change-button:not(.completed):not(.disabled)"
+      );
+
+      buttons.forEach((btn, index) => {
+        setTimeout(() => {
+          // re-check por si cambió el estado
+          if (!btn.classList.contains("completed") && !btn.classList.contains("disabled")) {
+            btn.click();
+          }
+        }, index * 150);
+      });
+
+      applyAllButton.style.display = "none";
+    }, { once: true }); // evita listeners duplicados
   }
 
 }

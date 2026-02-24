@@ -896,7 +896,7 @@ function getCustomEngineLogoSrc(name) {
     if (normalized.includes("audi")) {
         return "../assets/images/logos/audi.png"
     }
-    return "../assets/images/logos/placeholder.png"
+    return "../assets/images/engine.png"
 }
 
 function wireEngineStatButtons(container) {
@@ -931,7 +931,7 @@ function createCustomEngineCard(engineId, name, stats) {
     engineDiv.dataset.customEngine = "true"
 
     const title = document.createElement("div")
-    title.classList.add("engine-performance-title", "engine-ct", "custom-engine-title")
+    title.classList.add("engine-performance-title",  "custom-engine-title")
 
     const logo = document.createElement("img")
     logo.classList.add("engine-performance-logo")
@@ -965,7 +965,7 @@ function createCustomEngineCard(engineId, name, stats) {
         const stat = document.createElement("div")
         stat.classList.add("engine-performance-stat")
         if (key === 11 || key === 12) {
-            stat.classList.add("engine24")
+            stat.classList.add("engine24", "d-none")
         }
         stat.dataset.attribute = key
 

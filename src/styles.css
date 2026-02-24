@@ -22,6 +22,13 @@
   font-family: 'Formula1Bold' !important;
 }
 
+.numbersFont {
+  font-family: 'NumbersFont' !important;
+}
+
+html {
+  background-color: var(--background, #111111);
+}
 
 body {
   background-color: var(--background) !important;
@@ -6070,7 +6077,7 @@ body.light-theme .flag-header img {
   right: 14px;
   top: 7px;
   font-size: 20px;
-  color: var(--text-general);
+  color: var(--text-tertiary);
   pointer-events: none;
 }
 
@@ -6592,6 +6599,8 @@ input.engine-performance-title:focus {
   grid-template-rows: unset;
   grid-auto-rows: max-content;
   align-content: start;
+  padding-right: 7px;
+  max-height: 81vh;
 }
 
 
@@ -13137,6 +13146,41 @@ body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
   filter: none;
 }
 
+.aduo-tp-toggle{
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  top: -35px;
+  padding: 0;
+}
+
+.apply-all-button{
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  top: -55px;
+}
+
+.apply-all-button button{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.apply-all-button button i{
+  opacity: 1 !important;
+  transform: rotate(270deg);
+}
+
+.apply-all-button button span{
+  padding-right: 5px !important;
+}
+
+body:has(#modpill.active) .apply-all-button, body:has(#modpill.active) .aduo-tp-toggle {
+  animation: change-appear 0.6s ease-out forwards;
+  animation-delay: calc(0.8s + var(--order) * 0.1s);
+}
+
 .mods-particles {
   position: fixed;
   inset: 0;
@@ -13177,10 +13221,15 @@ body:has(#modpill.active):has(#mods2026View:not(.d-none)) .mods-particles {
   gap: 10px;
   transform: translateY(-40px);
   opacity: 0;
+  will-change: opacity, transform, filter;
 }
 
-body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img {
+body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img:not(.title-2026) {
   animation: logo-appear 0.6s forwards;
+}
+
+body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img.title-2026 {
+  animation: logo-appear-blur 0.75s forwards;
 }
 
 @keyframes logo-appear {
@@ -13192,6 +13241,29 @@ body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes logo-appear-blur {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img {
+    animation: none !important;
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
   }
 }
 
@@ -14552,6 +14624,7 @@ body.light-theme .founder {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 25px;
+  position: relative;
 }
 
 .one-change {
@@ -14564,6 +14637,7 @@ body.light-theme .founder {
   align-items: center;
   justify-content: space-between;
   backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-s);
   opacity: 0;
 
 }
@@ -14587,6 +14661,155 @@ body.light-theme .one-change .one-change-description {
 .one-change-description {
   font-size: 16px;
   color: var(--modal-text);
+}
+
+.one-change-description.add-results-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.one-change-description.add-results-team .add-results-team__left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.one-change-description.add-results-team .add-results-team__logo {
+  width: 26px;
+  height: 18px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.one-change-description.add-results-team .add-results-team__right {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.one-change-description.add-results-team .add-results-points {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.calendar-changes-2026{
+  transition: transform 0.15s ease;
+}
+
+.one-change:has(.completed) .calendar-changes-2026{
+  transform: translateX(-25px)
+}
+
+.one-change-description.regs-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.one-change-description.regs-team .regs-team__name {
+  white-space: nowrap;
+}
+
+.one-change-description.regs-team .regs-team__logo {
+  position: relative;
+  width: 26px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.one-change-description.regs-team .regs-team__logo::before,
+.one-change-description.regs-team .regs-team__logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.one-change-description.regs-team .regs-team__logo::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team .regs-team__logo::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team .regs-team__logo::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.regs-team--aston .regs-team__logo::before {
+  background-image: url('/assets/images/logos/mercedes.png');
+}
+
+.one-change-description.regs-team--aston .regs-team__logo::after {
+  background-image: url('/assets/images/logos/honda.png');
+}
+
+.one-change-description.regs-team--stake .regs-team__logo::before {
+  background-image: url('/assets/images/logos/ferrari.png');
+}
+
+.one-change-description.regs-team--stake .regs-team__logo::after {
+  background-image: url('/assets/images/logos/audi.png');
+}
+
+.one-change-description.regs-team--stake .regs-team__name {
+  position: relative;
+  display: inline-block;
+  min-height: 1em;
+  color: transparent;
+}
+
+.one-change-description.regs-team--stake .regs-team__name::before,
+.one-change-description.regs-team--stake .regs-team__name::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: var(--modal-text);
+}
+
+body.light-theme .one-change-description.regs-team--stake .regs-team__name::before,
+body.light-theme .one-change-description.regs-team--stake .regs-team__name::after {
+  color: #282828;
+}
+
+.one-change-description.regs-team--stake .regs-team__name::before {
+  content: 'Stake Sauber';
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.regs-team--stake .regs-team__name::after {
+  content: 'Audi';
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+}
+
+.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team--stake .regs-team__name::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team--stake .regs-team__name::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .one-change-description.engine-renamed.engine-renamed-honda,
