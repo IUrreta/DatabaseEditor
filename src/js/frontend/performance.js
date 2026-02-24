@@ -1002,8 +1002,8 @@ function createCustomEngineCard(engineId, name, stats) {
 
         const rawValue = stats?.[String(key)] ?? stats?.[key]
         const numericValue = rawValue !== undefined ? Number(rawValue) : 50
-        input.value = Number.isFinite(numericValue) ? numericValue.toFixed(1) : "50.0"
-        barProgress.style.width = Number.isFinite(numericValue) ? numericValue + "%" : "50%"
+        input.value = numericValue.toFixed(1)
+        barProgress.style.width = numericValue + "%"
 
         stat.appendChild(statTitle)
         stat.appendChild(statNumber)
@@ -1035,7 +1035,6 @@ function renderCustomEnginesInList(engines) {
 function getNextCustomEngineId() {
     const ids = Array.from(document.querySelectorAll("#enginesPerformance .engine-performance[data-custom-engine=\"true\"]"))
         .map((elem) => Number(elem.dataset.engineid))
-        .filter((id) => Number.isFinite(id))
 
     if (!ids.length) return 14
 

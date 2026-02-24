@@ -13,9 +13,8 @@ function animatePointsValue(element, targetValue, durationMs = 1000) {
   if (!element) return;
 
   const startValueRaw = Number.parseInt(String(element.textContent).replace(/[^\d-]/g, ""), 10);
-  const startValue = Number.isFinite(startValueRaw) ? startValueRaw : 0;
+  const startValue = startValueRaw
   const endValue = Number(targetValue);
-  if (!Number.isFinite(endValue)) return;
 
   if (prefersReducedMotion() || durationMs <= 0) {
     element.textContent = String(endValue);
@@ -368,7 +367,6 @@ function initMods2026Actions(){
   const setAdd2025ResultsPoints = (animate = false) => {
     add2025ResultsPoints.forEach((el) => {
       const target = Number(el.dataset.target);
-      if (!Number.isFinite(target)) return;
       if (animate) animatePointsValue(el, target, 1000);
       else el.textContent = String(target);
     });

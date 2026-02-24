@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, turningPointsTuningByType } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -120,6 +120,8 @@ export function generate_news(savednews, turningPointState) {
 
     const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
+
+    generateAduoTurningPointsNews(savednews, turningPointState, tpConfig);
 
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
@@ -1217,9 +1219,133 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     return newsList;
 }
 
+function generateAduoTurningPointsNews(savednews = {}, turningPointState = {}, tpConfig = null) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const season = daySeason?.[1];
+    const newsList = [];
+
+    if (!season) {
+        return newsList;
+    }
+
+    const nRacesThisSeasonRaw = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [season], 'singleValue');
+    const nRacesDoneRaw = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [season], 'singleValue');
+
+    const totalRaces = Number(nRacesThisSeasonRaw) || 0;
+    const racesDone = Number(nRacesDoneRaw) || 0;
+
+    if (totalRaces <= 0) {
+        return newsList;
+    }
+
+    turningPointState.aduoTurningPoints = turningPointState.aduoTurningPoints || {};
+
+    // Turning points are unlocked after each quarter of the season (25%, 50%, 75%),
+    // excluding the final quarter (100%).
+    const quarterThresholds = [
+        { quarter: 1, minRacesDone: Math.ceil(totalRaces * 0.25) },
+        { quarter: 2, minRacesDone: Math.ceil(totalRaces * 0.50) },
+        { quarter: 3, minRacesDone: Math.ceil(totalRaces * 0.75) }
+    ];
+
+    let enginesData = null;
+
+    for (const { quarter, minRacesDone } of quarterThresholds) {
+        if (racesDone < minRacesDone) continue;
+
+        const entryId = `turning_point_aduo_q${quarter}_${season}`;
+
+        // Already saved in DB -> just surface it again.
+        if (savednews[entryId]) {
+            newsList.push({ id: entryId, ...savednews[entryId] });
+            continue;
+        }
+
+        // Already generated this session (but not persisted yet) -> surface it again.
+        if (turningPointState.aduoTurningPoints[entryId]) {
+            newsList.push({ id: entryId, ...turningPointState.aduoTurningPoints[entryId] });
+            continue;
+        }
+
+        if (!enginesData) {
+            const engines = fetchEngines();
+            enginesData = engines?.[0] || [];
+        }
+
+        const getEngineStat10 = engineRow => {
+            const stats = engineRow?.[1] || {};
+            const raw = stats[10] !== undefined ? stats[10] : stats["10"];
+            if (raw === undefined || raw === null) return null;
+            return Number(raw);
+        };
+
+        let bestEngine = null;
+        let bestStat10 = -Infinity;
+        for (const engineRow of enginesData) {
+            const stat10 = getEngineStat10(engineRow);
+            if (stat10 === null) continue;
+            if (stat10 > bestStat10) {
+                bestStat10 = stat10;
+                bestEngine = engineRow;
+            }
+        }
+
+        const threshold = bestStat10 * 0.95; // >5% below leader
+        const underperformers = enginesData.filter(engineRow => {
+            const stat10 = getEngineStat10(engineRow);
+            return stat10 !== null && stat10 < threshold;
+        });
+
+        const randomImprovementPct = () => {
+            const r = Math.random();
+            if (r < 0.1) {
+                // Rare regression: -3% to 0%
+                return Math.round(((-3 + (Math.random() * 3)) * 100)) / 100;
+            }
+            if (r < 0.9) {
+                // Usual case: 0% to 4%
+                return Math.round(((Math.random() * 4) * 100)) / 100;
+            }
+            // Very rare breakout: 4% to 10%
+            return Math.round(((4 + (Math.random() * 6)) * 100)) / 100;
+        };
+
+        const engineImprovements = underperformers.map(engineRow => {
+            const engineId = engineRow[0];
+            const name = engineRow[2];
+            const stats = engineRow[1] || {};
+            const improvements = {};
+
+            for (const statId of Object.keys(stats)) {
+                improvements[statId] = randomImprovementPct();
+            }
+
+            return { engineId, name, improvements };
+        });
+
+        const newData = {
+            season,
+            quarter,
+            leader: { engineId: bestEngine?.[0], name: bestEngine?.[2], stat10: bestStat10 },
+            thresholdStat10: threshold,
+            engineImprovements
+        };
+
+        console.log("[Aduo TP] Stat 10 leader:", newData.leader);
+        console.log("[Aduo TP] Engine improvements:", newData);
+         
+
+        // --- Generation section (intentionally blank for now) ---
+        // TODO: Generate and push the aduo turning point for this quarter window.
+        //       When implemented, persist it in turningPointState.aduoTurningPoints[entryId].
+
+    }
+
+    return newsList;
+}
+
 
 function generateYoungDriversTurningPointNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null) {
-    console.log("TP CONFIG:", tpConfig);
     const FREE_AGENT_MAX_AGE = 19;
     const YOUNG_DRIVER_MAX_PER_SERIES = 3;
     const FREE_AGENT_MAX = 3;
@@ -4957,13 +5083,11 @@ export function checkDoublePointsBug(turningPointState){
             SELECT DriverID, Points FROM Races_Results
             WHERE RaceID = ? AND FinishingPos = 1
         `, [raceId], 'singleRow');
-        console.log("Winner row race " + raceId + ": ", winnerRow);
         
         let winnerRowPrevRace = queryDB(`
             SELECT DriverID, Points FROM Races_Results
             WHERE RaceID = ? AND FinishingPos = 1 AND Season = ?
         `, [raceId - 1, daySeason[1]], 'singleRow');
-        console.log("Winner row previous race " + (raceId - 1) + ": ", winnerRowPrevRace);
         //if it doesnt existe then take the next race
         if (!winnerRowPrevRace) {
             winnerRowPrevRace = queryDB(`

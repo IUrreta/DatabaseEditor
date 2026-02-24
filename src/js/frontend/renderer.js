@@ -1248,7 +1248,6 @@ function update_engine_allocations(message) {
 
     message[0].forEach(function (engine) {
         const engineId = Number(engine?.[0]);
-        if (!Number.isFinite(engineId)) return;
         if (engineId > 10 || engineId === 10) {
             addEngineName(engineId, engine[2])
         }
