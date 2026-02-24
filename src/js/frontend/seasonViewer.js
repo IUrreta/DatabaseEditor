@@ -179,6 +179,21 @@ export function setEngineAllocations(allocations) {
     engine_allocations = allocations
 }
 
+function getEngineLogoSrc(name) {
+    const normalized = String(name || "").toLowerCase()
+    if (normalized.includes("ferrari")) return "../assets/images/logos/ferrari.png"
+    if (normalized.includes("rbpt") || normalized.includes("red bull")) return "../assets/images/logos/redbull.png"
+    if (normalized.includes("mercedes")) return "../assets/images/logos/mercedes.png"
+    if (normalized.includes("renault")) return "../assets/images/logos/renault.png"
+    if (normalized.includes("honda")) return "../assets/images/logos/honda.png"
+    if (normalized.includes("audi")) return "../assets/images/logos/audi.png"
+    if (normalized.includes("ford")) return "../assets/images/logos/ford.png"
+    if (normalized.includes("bmw")) return "../assets/images/logos/bmw.png"
+    if (normalized.includes("porsche")) return "../assets/images/logos/porsche.png"
+    if (normalized.includes("toyota")) return "../assets/images/logos/toyota.png"
+    return "../assets/images/engine.png"
+}
+
 
 export function resetViewer() {
     if (seasonTable) {
@@ -1285,10 +1300,25 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
     teamName.innerText = name.toUpperCase();
     nameDiv.appendChild(teamName);
     if (currentFormula === 1) {
-        let engineName = document.createElement("span");
-        engineName.classList = "teams-table-engine-name bold-font";
-        engineName.textContent = engine_names[engine_allocations[id]];
-        nameDiv.appendChild(engineName);
+        const engineId = engine_allocations?.[id]
+        const engineNameText = engineId != null ? engine_names?.[engineId] : ""
+
+        const engineDiv = document.createElement("div")
+        engineDiv.className = "teams-table-engine"
+
+        const engineLogo = document.createElement("img")
+        engineLogo.className = "teams-table-engine-logo"
+        engineLogo.src = getEngineLogoSrc(engineNameText)
+        engineLogo.alt = ""
+        engineLogo.setAttribute("aria-hidden", "true")
+
+        const engineName = document.createElement("span")
+        engineName.classList = "teams-table-engine-name bold-font"
+        engineName.textContent = engineNameText
+
+        // engineDiv.appendChild(engineLogo) disabled for now
+        engineDiv.appendChild(engineName)
+        nameDiv.appendChild(engineDiv)
     }
     row.appendChild(nameDiv);
 

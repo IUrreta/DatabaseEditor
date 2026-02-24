@@ -741,16 +741,16 @@ const workerCommands = {
     const nonReadable = data.nonReadable || false;
 
     const newResponse = generateTurningResponse(turningPointData, type, maxDate, "positive");
+
+    if (originalStableKey) {
+      updateNewsFields(originalStableKey, {
+        turning_point_type: "approved",
+        ...(nonReadable ? { nonReadable: true } : {})
+      });
+    }
+
     if (newResponse) {
       newResponse.stableKey = newResponse.stableKey ?? computeStableKey(newResponse);
-
-      if (originalStableKey) {
-        updateNewsFields(originalStableKey, {
-          turning_point_type: "approved",
-          ...(nonReadable ? { nonReadable: true } : {})
-        });
-      }
-
       upsertNews([newResponse]);
     }
 

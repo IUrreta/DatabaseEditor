@@ -1442,6 +1442,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
     turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
     turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
+    turning_point_aduo: (nd) => contextualizeTurningPointAduo(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1923,6 +1924,93 @@ async function contextualizeTurningPointEngineRegulation(newData, turningPointTy
     .replace(/{{\s*change_area\s*}}/g, changeArea)
     .replace(/{{\s*winner_names\s*}}/g, winnerNames)
     .replace(/{{\s*loser_names\s*}}/g, loserNames);
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
+async function contextualizeTurningPointAduo(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 109);
+  let prompt = promptTemplateEntry?.prompt;
+  if (!prompt) {
+    console.warn("Missing turning point prompt template for ADUO (new_type 109).");
+    return;
+  }
+
+  const seasonYear = newData.data.season;
+  const manufacturers = newData.data.manufacturers || "several manufacturers";
+  const numberPeriod = newData.data.quarterString || "current";
+  const engineImprovements = Array.isArray(newData.data.engineImprovements) ? newData.data.engineImprovements : [];
+
+  const getBoostLabel = (pct) => {
+    if (pct >= 7) return "a huge boost";
+    if (pct >= 4) return "a big boost";
+    if (pct >= 2) return "a solid gain";
+    if (pct > 0) return "a small increase";
+    if (pct === 0) return "little to no change";
+    if (pct > -1) return "a slight step backwards";
+    return "a noticeable drop";
+  };
+
+  const getAvgChange = (improvements) => {
+    if (!improvements) return 0;
+    let sum = 0;
+    let count = 0;
+    for (const statId of Object.keys(improvements)) {
+      sum += Number(improvements[statId]) || 0;
+      count += 1;
+    }
+    return count ? (sum / count) : 0;
+  };
+
+  const getPowerChange = (improvements) => {
+    if (!improvements) return null;
+    if (improvements[10] !== undefined) return Number(improvements[10]) || 0;
+    if (improvements["10"] !== undefined) return Number(improvements["10"]) || 0;
+    return null;
+  };
+
+  const upgradesSummary = engineImprovements.length
+    ? engineImprovements.map(e => {
+      const name = e.name || "Unknown manufacturer";
+      const improvements = e.improvements || {};
+
+      const avg = getAvgChange(improvements);
+      const power = getPowerChange(improvements);
+
+      if (power === null) {
+        return `- ${name}: expected to make ${getBoostLabel(avg)} overall.`;
+      }
+
+      const powerLabel = getBoostLabel(power);
+      const avgLabel = getBoostLabel(avg);
+      if (powerLabel === avgLabel) {
+        return `- ${name}: expected to make ${powerLabel} overall, including in power.`;
+      }
+      return `- ${name}: expected to get ${powerLabel} in power, with ${avgLabel} across the rest of the package.`;
+    }).join("\n")
+    : "No manufacturers were clearly identified for upgrades in this ADUO window.";
+
+  prompt = prompt
+    .replace(/{{\s*manufacturers\s*}}/g, manufacturers)
+    .replace(/{{\s*number_period\s*}}/g, numberPeriod)
+    .replace(/{{\s*upgrade_summary\s*}}/g, upgradesSummary);
 
   const command = new Command("fullChampionshipDetailsRequest", {
     season: seasonYear,

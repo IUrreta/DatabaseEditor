@@ -339,9 +339,8 @@ function applyAduoEffect(turningPointData) {
         }
 
         for (const statId of Object.keys(improvements)) {
-            const pct = Number(improvements[statId]);
             if (improvements[statId] === undefined || improvements[statId] === null) continue;
-            if (pct !== pct) continue;
+            const pct = improvements[statId];
 
             const current = newStats[statId];
             if (current === undefined || current === null) continue;
@@ -1366,11 +1365,11 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
 
         const randomImprovementPct = () => {
             const r = Math.random();
-            if (r < 0.1) {
+            if (r < 0.05) {
                 // Rare regression: -3% to 0%
                 return Math.round(((-3 + (Math.random() * 3)) * 100)) / 100;
             }
-            if (r < 0.9) {
+            if (r < 0.95) {
                 // Usual case: 0% to 4%
                 return Math.round(((Math.random() * 4) * 100)) / 100;
             }

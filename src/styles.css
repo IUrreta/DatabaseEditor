@@ -3617,6 +3617,19 @@ DRIVERS TABLE
   font-size: 13px;
 }
 
+.teams-table-engine {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.teams-table-engine-logo {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
 .teams-table-row:hover .teams-table-engine-name {
   color: var(--engine-table-name-hover);
 }
@@ -6226,8 +6239,9 @@ input.engine-performance-title:focus {
   max-width: max-content;
 }
 
+
 .engine-performance-logo {
-  width: 20px;
+  width: 30px;
   height: 20px;
   object-fit: contain;
 }
