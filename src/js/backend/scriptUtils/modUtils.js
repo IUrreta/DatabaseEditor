@@ -1186,6 +1186,14 @@ export function insertStaff2026() {
                     // Table names cannot be parameterized, but values can
                     queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
                 }
+                else{
+                    //update existing entry with new data
+                    let setClause = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => `${key} = ?`).join(", ");
+                    let updateValues = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => entry[key]);
+                    updateValues.push(entry[primaryKeyColumn]);
+                    console.log(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?, Values: ${updateValues}`);
+                    queryDB(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?`, updateValues, 'run');
+                }
 
             });
         }
