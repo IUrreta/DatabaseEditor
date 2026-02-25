@@ -42,7 +42,7 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
-import { initSeasonMods, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
+import { initSeasonMods, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
 
 
 
@@ -1011,6 +1011,7 @@ const messageHandlers = {
     },
     "Mod data fetched": (message) => {
         updateEditsWithModData(message)
+        syncMods2026ApplyAllButtonState();
     },
     "Mod compatibility": (message) => {
         updateMod2025Blocking(message)

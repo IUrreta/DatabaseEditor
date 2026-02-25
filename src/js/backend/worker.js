@@ -22,9 +22,13 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
-  insertStaff, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod, addAudiCustomEngine, updateRenaultToHonda,
+  insertStaff2025, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod, addAudiCustomEngine, updateRenaultToHonda,
   change2025Standings, 
-  updateCalendar2026} from "./scriptUtils/modUtils";
+  updateCalendar2026,
+  changeStats2026,
+  insertStaff2026,
+  changeLineUps2026,
+  changeDriverNumbers2026} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -458,7 +462,9 @@ const workerCommands = {
   },
   timeTravel: (data, postMessage) => {
     timeTravelWithData(data.dayNumber, true, data.mod);
-    // manageStandings();
+    if (data.mod === "2026"){
+      changeDriverNumbers2026();
+    }
     postMessage({
       responseMessage: "Time travel",
       isEditCommand: true,
@@ -466,10 +472,15 @@ const workerCommands = {
     });
   },
   changeLineUps: (data, postMessage) => {
-    changeDriverLineUps();
-    manageAffiliates();
-    manageFeederSeries();
-    changeDriverEngineerPairs();
+    if (data.mod === "2025"){
+      changeDriverLineUps();
+      manageAffiliates();
+      manageFeederSeries();
+      changeDriverEngineerPairs();
+    }
+    else if (data.mod === "2026"){
+      changeLineUps2026();
+    }
     postMessage({
       responseMessage: "Line ups changed",
       isEditCommand: true,
@@ -477,6 +488,8 @@ const workerCommands = {
     });
 
     const yearData = checkYearSave();
+
+
 
     const drivers = fetchDrivers(yearData[0]);
     postMessage({ responseMessage: "Drivers fetched", content: drivers });
@@ -495,7 +508,12 @@ const workerCommands = {
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   changeStats: (data, postMessage) => {
-    changeStats();
+    if (data.mod === "2025"){
+      changeStats();
+    }
+    else if (data.mod === "2026"){
+      changeStats2026();
+    }
     postMessage({
       responseMessage: "Stats changed",
       isEditCommand: true,
@@ -503,6 +521,9 @@ const workerCommands = {
     });
 
     const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
@@ -547,12 +568,24 @@ const workerCommands = {
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   extraDrivers: (data, postMessage) => {
-    insertStaff();
+    if (data.mod === "2025") {
+      insertStaff2025();
+    } else if (data.mod === "2026") {
+      insertStaff2026();
+    }
     postMessage({
       responseMessage: "Extra drivers added",
       isEditCommand: true,
       unlocksDownload: true
     });
+
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
+
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changePerformance: (data, postMessage) => {
     updatePerofmrnace2025();

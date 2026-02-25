@@ -7,47 +7,10 @@ import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats
 import contracts from "../../../data/contracts_2025.json"
 import changes from "../../../data/2025_changes.json"
 import changes2026 from "../../../data/2026_changes.json"
-import { fetchEngines, setCustomSaveConfig, updateCustomEngines } from "./dbUtils.js";
+import tables2026 from "../../../data/tables_2026.json"
+import { fetchEngines, setCustomSaveConfig, updateCustomEngines, wipeTableAndRefill } from "./dbUtils.js";
 import { update } from "idb-keyval";
 
-export function addAudiCustomEngine(unitValue = 80) {
-    const [customEngines] = fetchEngines();
-    const normalizedName = (val) => String(val || "").trim().toLowerCase();
-
-    let audiEngineId = null;
-    const existingAudi = customEngines.find((engine) => normalizedName(engine?.[2]) === "audi");
-    if (existingAudi) {
-        audiEngineId = existingAudi[0];
-    }
-    else {
-        const maxEngineId = customEngines.reduce((max, engine) => {
-            const id = Number(engine?.[0]);
-            if (!Number.isFinite(id)) return max;
-            return Math.max(max, id);
-        }, 0);
-        audiEngineId = maxEngineId ? (maxEngineId + 3) : 14;
-    }
-
-    updateCustomEngines({
-        [audiEngineId]: {
-            name: "audi",
-            stats: {
-                6: unitValue,
-                10: unitValue,
-                11: unitValue,
-                12: unitValue,
-                14: unitValue,
-                18: unitValue,
-                19: unitValue
-            }
-        }
-    });
-
-    // Part of the 2026 regulations workflow (engines are changed here).
-    updateSeasonModTable("change-regulations-2026", 1, "2026");
-
-    return audiEngineId;
-}
 
 export function timeTravelWithData(dayNumber, extend = false, mod = "2025") {
     let metadata, version;
@@ -1046,7 +1009,7 @@ export function updateCalendar2026(type) {
     }
 }
 
-export function insertStaff() {
+export function insertStaff2025() {
     let tables = ["Staff_BasicData", "Staff_PerformanceStats", "Staff_State", "Staff_DriverData", "Staff_GameData"];
     tables.forEach((table) => {
         if (changes[table] && Array.isArray(changes[table])) {
@@ -1161,4 +1124,145 @@ export function updateRenaultToHonda(isHonda) {
     const newName = isHonda ? 'Honda' : 'Renault';
     queryDB(`UPDATE Custom_Engines_List SET name = ? WHERE engineId = 10`, [newName], 'run');
     setCustomSaveConfig('renaultEngine', isHonda ? 'honda' : 'renault');
+}
+
+export function addAudiCustomEngine(unitValue = 80) {
+    const [customEngines] = fetchEngines();
+    const normalizedName = (val) => String(val || "").trim().toLowerCase();
+
+    let audiEngineId = null;
+    const existingAudi = customEngines.find((engine) => normalizedName(engine?.[2]) === "audi");
+    if (existingAudi) {
+        audiEngineId = existingAudi[0];
+    }
+    else {
+        const maxEngineId = customEngines.reduce((max, engine) => {
+            const id = Number(engine?.[0]);
+            if (!Number.isFinite(id)) return max;
+            return Math.max(max, id);
+        }, 0);
+        audiEngineId = maxEngineId ? (maxEngineId + 3) : 14;
+    }
+
+    updateCustomEngines({
+        [audiEngineId]: {
+            name: "audi",
+            stats: {
+                6: unitValue,
+                10: unitValue,
+                11: unitValue,
+                12: unitValue,
+                14: unitValue,
+                18: unitValue,
+                19: unitValue
+            }
+        }
+    });
+
+    // Part of the 2026 regulations workflow (engines are changed here).
+    updateSeasonModTable("change-regulations-2026", 1, "2026");
+
+    return audiEngineId;
+}
+
+export function insertStaff2026() {
+    let tables = ["Staff_BasicData", "Staff_State", "Staff_DriverData", "Staff_GameData"];
+    tables.forEach((table) => {
+        if (tables2026[table] && Array.isArray(tables2026[table])) {
+            tables2026[table].forEach((entry) => {
+                let columns = Object.keys(entry).join(", ");
+                let values = Object.values(entry);
+
+                // Generate placeholders for values
+                let placeholders = values.map(() => "?").join(", ");
+
+                // Filter null values for SQL
+                let sqlValues = values.map(value => value === null ? null : value);
+                //check if the entry already exists in the table to avoid duplicates
+                let primaryKeyColumn = "StaffID";
+                const existingEntry = queryDB(`SELECT * FROM ${table} WHERE ${primaryKeyColumn} = ?`, [entry[primaryKeyColumn]], "singleRow");
+
+                if (!existingEntry) {
+                    // Table names cannot be parameterized, but values can
+                    queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
+                }
+
+            });
+        }
+    });
+    updateSeasonModTable("extra-drivers-2026", 1, "2026");
+}
+
+export function changeStats2026() {
+    if (!tables2026.Staff_PerformanceStats || !Array.isArray(tables2026.Staff_PerformanceStats)) {
+        console.log("No stats found");
+    }
+    else {
+        tables2026.Staff_PerformanceStats.forEach((entry) => {
+            //check if the driver already has performance stats
+            let existingStats = queryDB(`SELECT 1 FROM Staff_PerformanceStats WHERE StaffID = ? AND StatID = ?`, [entry.StaffID, entry.StatID], "singleRow");
+            if (existingStats) {
+                //update where staffid = entry.staffid and statid = entry.statid
+                let setClause = Object.keys(entry).filter(key => key !== "StaffID" && key !== "StatID").map(key => `${key} = ?`).join(", ");
+                let values = Object.keys(entry).filter(key => key !== "StaffID" && key !== "StatID").map(key => entry[key]);
+                //if all of the values[1] are 0, skip
+                if (values.slice(1).every(v => v === 0)) {
+                    // console.log("Skipping update for StaffID:", entry.StaffID, "StatID:", entry.StatID);
+                    return;
+                }
+                values.push(entry.StaffID); // Add StaffID at the end for the WHERE clause
+                values.push(entry.StatID); // Add StatID at the end for the WHERE clause
+                queryDB(`UPDATE Staff_PerformanceStats SET ${setClause} WHERE StaffID = ? AND StatID = ?`, values, 'run');
+            }
+            else{
+                let columns = Object.keys(entry).join(", ");
+                let values = Object.values(entry);
+                // Generate placeholders for values
+                let placeholders = values.map(() => "?").join(", ");
+                // Filter null values for SQL
+                let sqlValues = values.map(value => value === null ? null : value);
+                console.log(`Inserting new performance stats for StaffID: ${entry.StaffID}, Query: INSERT INTO Staff_PerformanceStats (${columns}) VALUES (${placeholders}), Values: ${sqlValues}`);
+                queryDB(`INSERT INTO Staff_PerformanceStats (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
+            }
+
+        });
+        updateSeasonModTable("change-stats-2026", 1, "2026");
+    }
+
+}
+
+export function changeLineUps2026() {
+    if (!tables2026.Staff_Contracts || !Array.isArray(tables2026.Staff_Contracts)) {
+        console.log("No contracts found");
+    }
+    else{
+        wipeTableAndRefill("Staff_Contracts", tables2026.Staff_Contracts);
+        updateSeasonModTable("change-line-ups-2026", 1, "2026");
+    }
+    
+    if(!tables2026.Staff_RaceEngineerDriverAssignments || !Array.isArray(tables2026.Staff_RaceEngineerDriverAssignments)){
+        console.log("No race engineer driver assignments found");
+    }
+    else{
+        wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
+    }
+
+}
+
+export function changeDriverNumbers2026() {
+    if (!tables2026.Staff_DriverNumbers || !Array.isArray(tables2026.Staff_DriverNumbers)) {
+        console.log("No driver numbers found");
+    }
+    else{
+        tables2026.Staff_DriverNumbers.forEach((entry) => {
+            const { CurrentHolder, Number } = entry;
+            let driverExists = queryDB(`SELECT 1 FROM Staff_DriverData WHERE StaffID = ?`, [CurrentHolder], "singleRow");
+            if (driverExists) {
+                queryDB(`UPDATE Staff_DriverNumbers SET CurrentHolder = ? WHERE Number = ?`, [CurrentHolder, Number], 'run');
+            }
+            else if (CurrentHolder !== null) {
+                console.log("Driver with StaffID:", CurrentHolder, "does not exist. Skipping driver number update for number:", Number);
+            }
+        });
+    }
 }

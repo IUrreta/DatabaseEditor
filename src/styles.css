@@ -910,7 +910,6 @@ i.bi-file-text:hover {
   opacity: 0.13;
   text-shadow: none;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: none;
   z-index: 1;
@@ -13186,7 +13185,7 @@ body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
   position: absolute;
   left: 0;
   opacity: 0;
-  top: -55px;
+  top: -40px;
 }
 
 .apply-all-button button{
@@ -13202,6 +13201,11 @@ body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
 
 .apply-all-button button span{
   padding-right: 5px !important;
+}
+
+.button-with-icon.apply-all-2026.applied{
+  background-color: var(--positive-transparent);
+  color: var(--positive-general);
 }
 
 body:has(#modpill.active) .apply-all-button, body:has(#modpill.active) .aduo-tp-toggle {
@@ -13700,6 +13704,8 @@ body:has(#modpill.active) .coming-soon {
 @keyframes mod-subtitle-letter-appear {
   0% {
     opacity: 0;
+    filter: blur(2px);
+    transform: translateX(-7px);
     /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
   }
 
@@ -13710,7 +13716,9 @@ body:has(#modpill.active) .coming-soon {
 
   100% {
     opacity: 1;
-    text-shadow: none;
+    filter: blur(0px);
+    transform: translateX(0);
+    /* text-shadow: none; */
   }
 }
 
@@ -14723,6 +14731,12 @@ body.light-theme .one-change .one-change-description {
 .one-change-description.add-results-team .add-results-points {
   font-size: 18px;
   line-height: 1;
+  letter-spacing: -2px;
+  transition: color 0.15s;
+}
+
+.add-results-points.activated{
+  color: var(--dark-text);
 }
 
 .calendar-changes-2026{
@@ -14741,6 +14755,7 @@ body.light-theme .one-change .one-change-description {
 }
 
 .one-change-description.regs-team .regs-team__name {
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
@@ -14840,6 +14855,85 @@ body.light-theme .one-change-description.regs-team--stake .regs-team__name::afte
   transform: translateY(0);
 }
 
+.one-change-description.lineup-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.one-change-description.lineup-team .lineup-team__name {
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.one-change-description.lineup-team .lineup-team__logo {
+  position: relative;
+  width: 28px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.one-change-description.lineup-team .lineup-team__logo::before,
+.one-change-description.lineup-team .lineup-team__logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.one-change-description.lineup-team .lineup-team__logo::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change:has(.change-line-ups-2026.completed) .one-change-description.lineup-team .lineup-team__logo::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-line-ups-2026.completed) .one-change-description.lineup-team .lineup-team__logo::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 2026 Line-ups logos (right side) */
+.one-change-description.lineup-team--cadillac .lineup-team__logo::before {
+  /* nothing shown until applied */
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.one-change-description.lineup-team--cadillac .lineup-team__logo::after {
+  background-image: url('/assets/images/logos/cadillac.png');
+  height: 26px;
+}
+
+.one-change:has(.change-line-ups-2026.completed) .one-change-description.lineup-team--cadillac .lineup-team__logo::after{
+  transform: translateY(-3px);
+}
+
+.one-change-description.lineup-team--hadjar .lineup-team__logo::before {
+  background-image: url('/assets/images/logos/visarb.png');
+}
+
+.one-change-description.lineup-team--hadjar .lineup-team__logo::after {
+  background-image: url('/assets/images/logos/redbull.png');
+}
+
+.one-change-description.lineup-team--lindblad .lineup-team__logo::before {
+  background-image: url('/assets/images/logos/campos.png');
+}
+
+.one-change-description.lineup-team--lindblad .lineup-team__logo::after {
+  background-image: url('/assets/images/logos/visarb.png');
+}
+
 .one-change-description.engine-renamed.engine-renamed-honda,
 .one-change-description.engine-appear {
   color: var(--text-general);
@@ -14873,6 +14967,29 @@ button.one-change-button {
   width: 100%;
 }
 
+#mods2026View button.one-change-button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--text-general) 0%,
+    var(--text-general) 50%,
+    var(--text-general) 100%
+  );
+  transition: color 0.15s, background-image 0.35s ease, box-shadow 0.15s;
+}
+
+#mods2026View button.one-change-button:hover {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    var(--new-primary) 0%,
+    var(--new-primary) 50%,
+    var(--new-primary) 100%
+  );
+}
+
 button.one-change-button.disabled {
   filter: brightness(0.6);
   cursor: default;
@@ -14895,6 +15012,15 @@ button.one-change-button.completed {
   color: var(--positive-general);
   cursor: default;
   pointer-events: none;
+}
+
+#mods2026View button.one-change-button.completed {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--positive-transparent) 50%,
+    transparent 100%
+  );
 }
 
 button.one-change-button.completed:hover {
@@ -14951,10 +15077,20 @@ body:has(#modpill.active) .one-change {
 
 .bor-ovr,
 .ant-ovr,
-.pia-ovr {
+.pia-ovr
+ {
   transform: skewX(-9deg);
   display: inline-block;
   min-width: 122px;
+}
+
+.had-ovr,
+.bea-ovr,
+#mods2026View .ant-ovr {
+  transform: skewX(0deg) !important;
+  display: inline-block;
+  min-width: 122px;
+  transition: color 0.15s;
 }
 
 .ovr-change {
@@ -15074,6 +15210,18 @@ body:has(#modpill.active) .one-change {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes slide-out-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(20px);
+    opacity: 0;
   }
 }
 
@@ -15199,8 +15347,12 @@ body:has(#modpill.active) .one-change {
 
 .bor-change,
 .ant-change,
-.pia-change {
+.pia-change,
+.bea-change,
+.had-change {
   position: relative;
+  overflow: hidden;
+  color: transparent;
 }
 
 .bor-change::before {
@@ -15211,9 +15363,21 @@ body:has(#modpill.active) .one-change {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
+  z-index: 2;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.bor-change::after {
+  content: '69';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
   color: var(--dark-text);
 }
 
@@ -15221,8 +15385,8 @@ body:has(#modpill.active) .one-change {
   animation: slide-down 0.3s forwards 0s;
 }
 
-.one-change:has(.completed) .bor-change {
-  color: transparent;
+.one-change:has(.completed) .bor-change::after {
+  animation: slide-out-down 0.3s forwards 0s;
 }
 
 .ant-change::before {
@@ -15233,18 +15397,42 @@ body:has(#modpill.active) .one-change {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
+  z-index: 2;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
   color: var(--dark-text);
+}
+
+#mods2026View .ant-change::before{
+  content: "84";
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+#mods2026View .ant-change::after{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.ant-change::after {
+  content: '71';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
+  color: var(--dark-text);
+  
 }
 
 .one-change:has(.completed) .ant-change::before {
   animation: slide-down 0.3s forwards 0.05s;
 }
 
-.one-change:has(.completed) .ant-change {
-  color: transparent;
+.one-change:has(.completed) .ant-change::after {
+  animation: slide-out-down 0.3s forwards 0.05s;
 }
 
 .pia-change::before {
@@ -15255,9 +15443,21 @@ body:has(#modpill.active) .one-change {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
+  z-index: 2;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.pia-change::after {
+  content: '84';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
   color: var(--dark-text);
 }
 
@@ -15265,8 +15465,84 @@ body:has(#modpill.active) .one-change {
   animation: slide-down 0.3s forwards 0.1s;
 }
 
-.one-change:has(.completed) .pia-change {
-  color: transparent;
+.one-change:has(.completed) .pia-change::after {
+  animation: slide-out-down 0.3s forwards 0.1s;
+}
+
+.had-change::before {
+  content: '83';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 2;
+  transform: translateY(-20px);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.had-change::after {
+  content: '75';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.one-change:has(.completed) .had-change::before {
+  animation: slide-down 0.3s forwards 0s;
+}
+
+.one-change:has(.completed) .had-change::after {
+  animation: slide-out-down 0.3s forwards 0s;
+}
+
+.bea-change::before {
+  content: '82';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 2;
+  transform: translateY(-20px);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.bea-change::after {
+  content: '77';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.one-change:has(.completed) .bea-change::before {
+  animation: slide-down 0.3s forwards 0.1s;
+}
+
+.one-change:has(.completed) .bea-change::after {
+  animation: slide-out-down 0.3s forwards 0.1s;
 }
 
 .fast-lap-change::before {

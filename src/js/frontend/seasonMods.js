@@ -348,6 +348,7 @@ function initMods2026Actions(){
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
     });
   }
 
@@ -359,6 +360,7 @@ function initMods2026Actions(){
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
     });
   }
 
@@ -367,6 +369,7 @@ function initMods2026Actions(){
 
   const setAdd2025ResultsPoints = (animate = false) => {
     add2025ResultsPoints.forEach((el) => {
+      el.classList.add("activated")
       const target = Number(el.dataset.target);
       if (animate) animatePointsValue(el, target, 1000);
       else el.textContent = String(target);
@@ -391,6 +394,7 @@ function initMods2026Actions(){
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
     });
   }
 
@@ -410,6 +414,7 @@ function initMods2026Actions(){
 
         this.classList.add("completed");
         this.querySelector("span").textContent = "Applied";
+        syncMods2026ApplyAllButtonState();
       }
       finally {
         this.dataset.running = "0";
@@ -418,12 +423,50 @@ function initMods2026Actions(){
     });
   }
 
+  const changeStatsButton = mods2026View.querySelector(".change-stats-2026");
+  if (changeStatsButton) {
+    changeStatsButton.addEventListener("click", function () {
+      const command = new Command("changeStats", {mod: "2026"});
+      command.execute();
+      this.classList.add("completed");
+      this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
+    });
+  }
+
+  const extraDriversButton = mods2026View.querySelector(".extra-drivers-2026");
+  if (extraDriversButton) {
+    extraDriversButton.addEventListener("click", function () {
+      const command = new Command("extraDrivers", {mod: "2026"});
+      command.execute();
+      this.classList.add("completed");
+      this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
+    });
+  }
+
+  const driverLineUpsButton = mods2026View.querySelector(".change-line-ups-2026");
+  if (driverLineUpsButton) {
+    driverLineUpsButton.addEventListener("click", function () {
+      const command = new Command("changeLineUps", {mod: "2026"});
+      command.execute();
+      this.classList.add("completed");
+      this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
+      document.querySelector("#mods2026View .had-ovr").classList.remove("atfont");
+      document.querySelector("#mods2026View .had-ovr").classList.add("rbfont");
+      document.querySelector("#mods2026View .ant-ovr").classList.add("mefont");
+    });
+
+  }
+
   const aduoToggle = mods2026View.querySelector("#aduoTPSToggle");
   if (aduoToggle) {
     aduoToggle.addEventListener("change", function () {
       const enabled = this.checked;
       const command = new Command("updateAduoTPEnabled", { enabled });
       command.execute();
+      syncMods2026ApplyAllButtonState();
     });
   }
 
@@ -444,17 +487,18 @@ function initMods2026Actions(){
           if (!btn.classList.contains("completed") && !btn.classList.contains("disabled")) {
             btn.click();
           }
-        }, index * 150);
+        }, index * 300);
       });
       
 
       if (aduoToggle && !aduoToggle.checked) {
         setTimeout(() => {
           aduoToggle.click();
-        }, buttons.length * 150 + 200);
+        }, buttons.length * 300 + 200);
       }
 
-      applyAllButton.style.display = "none";
+      applyAllButton.classList.add("applied");
+      applyAllButton.querySelector("span").textContent = "Applied";
     }, { once: true }); // evita listeners duplicados
   }
 
@@ -587,6 +631,26 @@ export function initSeasonMods() {
   initMods2025Actions();
   initMods2026Actions();
   initModsParticlesObserver();
+}
+
+export function syncMods2026ApplyAllButtonState() {
+  const mods2026View = document.getElementById("mods2026View");
+  if (!mods2026View) return;
+
+  const applyAllButton = mods2026View.querySelector(".apply-all-2026");
+  if (!applyAllButton) return;
+
+  const applyAllText = applyAllButton.querySelector("span");
+  const aduoToggle = mods2026View.querySelector("#aduoTPSToggle");
+
+  const remaining = mods2026View.querySelectorAll(
+    ".one-change-button:not(.completed):not(.disabled)"
+  ).length;
+
+  const allApplied = remaining === 0 && (!aduoToggle || aduoToggle.checked);
+
+  applyAllButton.classList.toggle("applied", allApplied);
+  if (applyAllText) applyAllText.textContent = allApplied ? "Applied" : "Apply all";
 }
 
 export function updateMod2026Blocking(data) {

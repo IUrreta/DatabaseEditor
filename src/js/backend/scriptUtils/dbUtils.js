@@ -2977,6 +2977,15 @@ export function fixCustomEnginesStatsTable() {
   }
 }
 
+export function wipeTableAndRefill(tableName, data){
+  queryDB(`DELETE FROM ${tableName};`, [], 'run');
+  data.forEach(row => {
+    const placeholders = Object.keys(row).map(() => '?').join(', ');
+    const sql = `INSERT INTO ${tableName} (${Object.keys(row).join(', ')}) VALUES (${placeholders});`;
+    queryDB(sql, Object.values(row), 'run');
+  });
+}
+
 export function insertDefualtEnginesData(list, stats, allocations, customSave, engineRegulationState, year) {
   const engines = [
     {
@@ -3591,6 +3600,14 @@ export function fetch2026ModData() {
     const value = row[1];
     config[key] = value;
   });
+
+  // Also return the aduo turning points flag so the 2026 mods UI can restore the toggle state.
+  const aduoEnabled = queryDB(
+    `SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`,
+    [],
+    'singleValue'
+  );
+  config.aduo_tp_enabled = aduoEnabled ?? "0";
 
   return config;
 }
