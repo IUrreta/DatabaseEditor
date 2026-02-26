@@ -408,9 +408,6 @@ function initMods2026Actions(){
       const command = new Command("changeRegulations", {mod: "2026"});
       try {
         command.execute();
-        const command2 = new Command("add2026Engines", {mod: "2026"});
-        command2.execute();
-        setRenaultEnginePresentation("honda");
 
         this.classList.add("completed");
         this.querySelector("span").textContent = "Applied";
@@ -420,6 +417,18 @@ function initMods2026Actions(){
         this.dataset.running = "0";
         this.classList.remove("disabled");
       }
+    });
+  }
+
+  const changePerformanceButton2026 = mods2026View.querySelector(".change-performance-2026");
+  if (changePerformanceButton2026) {
+    changePerformanceButton2026.addEventListener("click", function () {
+      const command = new Command("add2026Engines", {mod: "2026"});
+      command.execute();
+      setRenaultEnginePresentation("honda");
+      this.classList.add("completed");
+      this.querySelector("span").textContent = "Applied";
+      syncMods2026ApplyAllButtonState();
     });
   }
 

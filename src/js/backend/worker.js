@@ -22,13 +22,14 @@ import { editAge, editMarketability, editName, editRetirement, editSuperlicense,
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
-  insertStaff2025, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod, addAudiCustomEngine, updateRenaultToHonda,
+  insertStaff2025, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod,
   change2025Standings, 
   updateCalendar2026,
   changeStats2026,
   insertStaff2026,
   changeLineUps2026,
-  changeDriverNumbers2026} from "./scriptUtils/modUtils";
+  changeDriverNumbers2026,
+  apply2026EnginePerformanceChanges} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -55,7 +56,6 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
-import { manage_engine_change } from "./scriptUtils/editTeamUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -904,26 +904,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Points regulations fetched", content: pointsInfo });
   },
   add2026Engines: (data, postMessage) => {
-    updateRenaultToHonda(true);
-
-    let audiEngineId = null;
-    try {
-      audiEngineId = addAudiCustomEngine(80);
-    }
-    catch (e) {
-      console.warn("Failed to add custom Audi engine:", e);
-    }
-
-    try {
-      manage_engine_change(10, 10);
-      if (audiEngineId != null) {
-        manage_engine_change(9, audiEngineId);
-      }
-      manage_engine_change(5, 7);
-    }
-    catch (e) {
-      console.warn("Failed to update engine allocations:", e);
-    }
+    apply2026EnginePerformanceChanges();
 
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });

@@ -8,8 +8,9 @@ import contracts from "../../../data/contracts_2025.json"
 import changes from "../../../data/2025_changes.json"
 import changes2026 from "../../../data/2026_changes.json"
 import tables2026 from "../../../data/tables_2026.json"
-import { fetchEngines, setCustomSaveConfig, updateCustomEngines, wipeTableAndRefill } from "./dbUtils.js";
+import { editEngines, fetchEngines, setCustomSaveConfig, updateCustomEngines, wipeTableAndRefill } from "./dbUtils.js";
 import { update } from "idb-keyval";
+import { manage_engine_change } from "./editTeamUtils.js";
 
 
 export function timeTravelWithData(dayNumber, extend = false, mod = "2025") {
@@ -1163,6 +1164,51 @@ export function addAudiCustomEngine(unitValue = 80) {
     updateSeasonModTable("change-regulations-2026", 1, "2026");
 
     return audiEngineId;
+}
+
+
+export function apply2026EnginePerformanceChanges() {
+    updateRenaultToHonda(true);
+
+    let audiEngineId = null;
+    try {
+        audiEngineId = addAudiCustomEngine(80);
+    }
+    catch (e) {
+        console.warn("Failed to add custom Audi engine:", e);
+    }
+
+    try {
+        manage_engine_change(10, 10);
+        if (audiEngineId != null) {
+            manage_engine_change(9, audiEngineId);
+        }
+        manage_engine_change(5, 7);
+    }
+    catch (e) {
+        console.warn("Failed to update engine allocations:", e);
+    }
+
+    const enginePerformance = changes2026?.EnginePerformance || {};
+    const engineStatsById = {
+        1: enginePerformance.ferrari,
+        4: enginePerformance.rbpt,
+        7: enginePerformance.mercedes,
+        10: enginePerformance.honda
+    };
+
+    if (audiEngineId != null) {
+        engineStatsById[audiEngineId] = enginePerformance.audi;
+    }
+
+    const enginesToEdit = Object.fromEntries(
+        Object.entries(engineStatsById).filter(([, stats]) => !!stats)
+    );
+
+    if (Object.keys(enginesToEdit).length > 0) {
+        editEngines(enginesToEdit);
+        updateSeasonModTable("change-performance-2026", 1, "2026");
+    }
 }
 
 export function insertStaff2026() {

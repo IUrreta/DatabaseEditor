@@ -369,7 +369,7 @@
             "SeasonID": 2025
         },
         {
-            "DriverID": 376, 
+            "DriverID": 376,
             "LastPointsChange": 0,
             "LastPositionChange": 0,
             "Points": 150,
@@ -378,7 +378,7 @@
             "SeasonID": 2025
         },
         {
-            "DriverID": 144, 
+            "DriverID": 144,
             "LastPointsChange": 0,
             "LastPositionChange": 0,
             "Points": 51,
@@ -387,7 +387,7 @@
             "SeasonID": 2025
         },
         {
-            "DriverID": 142, 
+            "DriverID": 142,
             "LastPointsChange": 0,
             "LastPositionChange": 0,
             "Points": 41,
@@ -396,7 +396,7 @@
             "SeasonID": 2025
         },
         {
-            "DriverID": 95, 
+            "DriverID": 95,
             "LastPointsChange": 0,
             "LastPositionChange": 0,
             "Points": 38,
@@ -405,7 +405,7 @@
             "SeasonID": 2025
         },
         {
-            "DriverID": 279, 
+            "DriverID": 279,
             "LastPointsChange": 0,
             "LastPositionChange": 0,
             "Points": 19,
@@ -431,5 +431,42 @@
             "RaceFormula": 1,
             "SeasonID": 2025
         }
-    ]
+    ],
+    "EnginePerformance": {
+        "mercedes": {
+            "10": 85,
+            "6": 80,
+            "14": 80,
+            "18": 73,
+            "19": 90
+        },
+        "ferrari": {
+            "10": 72,
+            "6": 95,
+            "14": 90,
+            "18": 95,
+            "19": 90
+        },
+        "rbpt": {
+            "10": 80,
+            "6": 73,
+            "14": 79,
+            "18": 85,
+            "19": 85
+        },
+        "audi": {
+            "10": 60,
+            "6": 75,
+            "14": 55,
+            "18": 70,
+            "19": 45
+        },
+        "honda": {
+            "10": 30,
+            "6": 70,
+            "14": 30,
+            "18": 30,
+            "19": 33
+        }
+    }
 }
