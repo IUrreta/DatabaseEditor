@@ -18,7 +18,7 @@ import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
-import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats } from "./scriptUtils/eidtStatsUtils";
+import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
@@ -329,6 +329,24 @@ const workerCommands = {
       isEditCommand: true,
       unlocksDownload: true
     });
+  },
+  devSetAllDriversStats85: (data, postMessage) => {
+    setAllDriversStatsTo85();
+
+    postMessage({
+      responseMessage: "Dev: driver stats updated",
+      noti_msg: "All drivers stats set to 85",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+
+    const yearData = checkYearSave();
+
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
+
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   editPerformance: (data, postMessage) => {
     let globals = getGlobals();

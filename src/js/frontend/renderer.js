@@ -1665,7 +1665,7 @@ document.querySelectorAll(".team-change-button").forEach(function (elem) {
     })
 })
 
-document.querySelector("#configDetailsButton").addEventListener("click", function () {
+export function applyConfigFromEditorUI(overrides = {}) {
     let alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
     let alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
     let williams = document.querySelector("#williamsReplaceButton").querySelector("button").dataset.value
@@ -1673,6 +1673,17 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
     let redbull = document.querySelector("#redbullReplaceButton").querySelector("button").dataset.value
     let aston = document.querySelector("#astonReplaceButton").querySelector("button").dataset.value
+
+    if (overrides && typeof overrides === "object") {
+        if (typeof overrides.alphatauri === "string") alphatauri = overrides.alphatauri;
+        if (typeof overrides.alpine === "string") alpine = overrides.alpine;
+        if (typeof overrides.williams === "string") williams = overrides.williams;
+        if (typeof overrides.haas === "string") haas = overrides.haas;
+        if (typeof overrides.alfa === "string") alfa = overrides.alfa;
+        if (typeof overrides.redbull === "string") redbull = overrides.redbull;
+        if (typeof overrides.aston === "string") aston = overrides.aston;
+    }
+
     let mentalityFrozen = 0;
     if (document.getElementById("freezeMentalityToggle").checked) {
         mentalityFrozen = 1;
@@ -1732,14 +1743,18 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         let info = { teams: { alphatauri: alphatauri, alpine: alpine, williams: williams, haas: haas, alfa: alfa, redbull: redbull, aston: aston } }
         replace_all_teams(info)
         reloadTables()
+        reload_performance_graph()
+        reload_h2h_graphs()
         if (tempImageData) {
             localStorage.setItem(`${saveName}_image`, tempImageData);
         }
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
     }
+}
 
-
+document.querySelector("#configDetailsButton").addEventListener("click", function () {
+    applyConfigFromEditorUI();
 })
 
 async function askFixDoublePointsBug(message){

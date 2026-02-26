@@ -3,7 +3,7 @@ import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { excelToDate, dateToExcel, changeDriverNumber, excelFromYMD } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, rearrangeDriverEngineerPairings, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
-import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats } from "./carAnalysisUtils.js";
+import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats, getPerformanceAllTeams } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts_2025.json"
 import changes from "../../../data/2025_changes.json"
 import changes2026 from "../../../data/2026_changes.json"
@@ -882,7 +882,7 @@ export function updateCalendar2026(type) {
             let newRaceId = maxRaceId + 1;
             for (const entry of changes2026.Calendar) {
                 const { TrackID, Day, WeekendType } = entry;
-                if (TrackID === null){
+                if (TrackID === null) {
                     continue;
                 }
 
@@ -1232,7 +1232,7 @@ export function insertStaff2026() {
                     // Table names cannot be parameterized, but values can
                     queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
                 }
-                else{
+                else {
                     //update existing entry with new data
                     let setClause = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => `${key} = ?`).join(", ");
                     let updateValues = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => entry[key]);
@@ -1268,7 +1268,7 @@ export function changeStats2026() {
                 values.push(entry.StatID); // Add StatID at the end for the WHERE clause
                 queryDB(`UPDATE Staff_PerformanceStats SET ${setClause} WHERE StaffID = ? AND StatID = ?`, values, 'run');
             }
-            else{
+            else {
                 let columns = Object.keys(entry).join(", ");
                 let values = Object.values(entry);
                 // Generate placeholders for values
@@ -1289,15 +1289,15 @@ export function changeLineUps2026() {
     if (!tables2026.Staff_Contracts || !Array.isArray(tables2026.Staff_Contracts)) {
         console.log("No contracts found");
     }
-    else{
+    else {
         wipeTableAndRefill("Staff_Contracts", tables2026.Staff_Contracts);
         updateSeasonModTable("change-line-ups-2026", 1, "2026");
     }
-    
-    if(!tables2026.Staff_RaceEngineerDriverAssignments || !Array.isArray(tables2026.Staff_RaceEngineerDriverAssignments)){
+
+    if (!tables2026.Staff_RaceEngineerDriverAssignments || !Array.isArray(tables2026.Staff_RaceEngineerDriverAssignments)) {
         console.log("No race engineer driver assignments found");
     }
-    else{
+    else {
         wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
     }
 
@@ -1307,7 +1307,7 @@ export function changeDriverNumbers2026() {
     if (!tables2026.Staff_DriverNumbers || !Array.isArray(tables2026.Staff_DriverNumbers)) {
         console.log("No driver numbers found");
     }
-    else{
+    else {
         tables2026.Staff_DriverNumbers.forEach((entry) => {
             const { CurrentHolder, Number } = entry;
             let driverExists = queryDB(`SELECT 1 FROM Staff_DriverData WHERE StaffID = ?`, [CurrentHolder], "singleRow");
@@ -1323,25 +1323,43 @@ export function changeDriverNumbers2026() {
 
 export function updatePerofmrnace2026() {
     const globals = getGlobals();
-    const teamDict = getBestParts(globals.isCreateATeam);
+    const customTeam = globals.isCreateATeam;
+
+    const perf = getPerformanceAllTeams(null, null, customTeam);
+    const ovr32 = perf[32];
+
+    const teamDict = getBestParts(customTeam);
     let tyreDegDict = {};
 
-
     for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
-        //remove the part 0 from teamDict[team]
         delete teamDict[team]["0"];
-        let teamboost = changes2026.Performance.find(x => x.TeamID === Number(team));
-        applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
+
+        const teamId = Number(team);
+        let teamboost = changes2026.Performance.find(x => x.TeamID === teamId);
+
+        if (teamId === 32) {
+            const objective = teamboost?.Objective ?? 23.4;
+
+            const dynamicBoost =
+                (typeof ovr32 === "number" && ovr32 > 0)
+                    ? (objective / ovr32)
+                    : (teamboost?.Boost ?? 1);
+
+            applyBoostToCarStats(teamDict[team], dynamicBoost, teamId);
+        } else {
+            applyBoostToCarStats(teamDict[team], teamboost.Boost, teamId);
+        }
+
         const tyreDegStatsTemas = getTyreDegStats(teamDict[team]);
         tyreDegDict[team] = tyreDegStatsTemas;
     }
 
-    // for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
-    //     let teamGivingTyreDeg = changes.Performance.find(x => x.TeamID === Number(team)).TyreDeg;
-    //     let tyreDegStats = tyreDegDict[teamGivingTyreDeg];
-    //     updateTyreDegStats(teamDict[team], tyreDegStats, team, teamGivingTyreDeg);
-    // }
+
+    for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+        let teamGivingTyreDeg = changes2026.Performance.find(x => x.TeamID === Number(team)).TyreDeg;
+        let tyreDegStats = tyreDegDict[teamGivingTyreDeg];
+        updateTyreDegStats(teamDict[team], tyreDegStats, team, teamGivingTyreDeg);
+    }
 
     updateSeasonModTable("change-performance-2026", 1, "2026");
-
 }

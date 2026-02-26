@@ -384,3 +384,11 @@ export function editMarketability(driverID, value) {
     WHERE StaffID = ?
   `, [value, driverID], 'run');
 }
+
+export function setAllDriversStatsTo85() {
+  queryDB(`
+    UPDATE Staff_performanceStats
+    SET Val = 85
+    WHERE StaffID IN (SELECT StaffID FROM Staff_DriverData)
+  `, [], 'run');
+}

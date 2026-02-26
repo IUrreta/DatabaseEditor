@@ -1,6 +1,6 @@
 import { set } from "idb-keyval";
 import { Command } from "../backend/command.js";
-import { setRenaultEnginePresentation } from "./renderer.js";
+import { applyConfigFromEditorUI, setRenaultEnginePresentation } from "./renderer.js";
 
 let calendarEditMode = null, calendarEditMode2026 = null;
 let modsParticlesAnimator = null;
@@ -423,6 +423,11 @@ function initMods2026Actions(){
   const changePerformanceButton2026 = mods2026View.querySelector(".change-performance-2026");
   if (changePerformanceButton2026) {
     changePerformanceButton2026.addEventListener("click", function () {
+      const alfaReplaceButton = document.querySelector("#alfaReplaceButton button");
+      if (alfaReplaceButton && alfaReplaceButton.dataset.value === "stake") {
+        applyConfigFromEditorUI({ alfa: "audi" });
+      }
+
       const command = new Command("add2026Engines", {mod: "2026"});
       command.execute();
       setRenaultEnginePresentation("honda");

@@ -472,58 +472,59 @@
     "Performance": [
         {
             "TeamID": 1,
-            "Boost": 0.72,
-            "TyreDeg": 4
+            "Boost": 0.73,
+            "TyreDeg": 10
         },
         {
             "TeamID": 2,
-            "Boost": 0.67,
+            "Boost": 0.68,
             "TyreDeg": 1
         },
         {
             "TeamID": 3,
-            "Boost": 0.69,
-            "TyreDeg": 2
+            "Boost": 0.67,
+            "TyreDeg": 8
         },
         {
             "TeamID": 4,
             "Boost": 0.78,
-            "TyreDeg": 10
+            "TyreDeg": 1
         },
         {
             "TeamID": 5,
             "Boost": 0.70,
-            "TyreDeg": 8
+            "TyreDeg": 10
         },
         {
             "TeamID": 6,
             "Boost": 0.62,
-            "TyreDeg": 6
+            "TyreDeg": 10
         },
         {
             "TeamID": 7,
             "Boost": 0.72,
-            "TyreDeg": 3
+            "TyreDeg": 1
         },
         {
             "TeamID": 8,
-            "Boost": 0.62,
-            "TyreDeg": 9
+            "Boost": 0.60,
+            "TyreDeg": 10
         },
         {
             "TeamID": 9,
-            "Boost": 0.83,
-            "TyreDeg": 5
+            "Boost": 0.80,
+            "TyreDeg": 10
         },
         {
             "TeamID": 10,
-            "Boost": 0.68,
-            "TyreDeg": 5
+            "Boost": 0.66,
+            "TyreDeg": 4
         },
         {
             "TeamID": 32,
-            "Boost": 0.53,
-            "TyreDeg": 6
+            "Boost": 0.49,
+            "TyreDeg": 6,
+            "Objective": 22.4
         }
     ]
 }

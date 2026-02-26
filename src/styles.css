@@ -220,6 +220,85 @@ body.og-theme .important-text {
   gap: 10px;
 }
 
+/* Developer tools (localhost only) */
+.devtools-window {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 200px;
+  background: rgba(110, 110, 110, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  padding: 10px;
+  color: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  z-index: 6000;
+  display: none;
+}
+
+.devtools-window.show {
+  display: block;
+}
+
+.devtools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  user-select: none;
+  margin-bottom: 10px;
+}
+
+.devtools-window.dragging {
+  user-select: none;
+}
+
+.devtools-title {
+  font-family: 'Formula1Bold';
+  font-size: 16px;
+}
+
+.devtools-close {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  line-height: 20px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.devtools-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.devtools-action {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: rgba(40, 40, 40, 0.7);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.devtools-action:hover {
+  background: rgba(40, 40, 40, 0.88);
+}
+
+.devtools-action:active {
+  transform: scale(0.98);
+}
+
+.devtools-action:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
 .patreon-plain-text {
   color: var(--modal-text)
 }
