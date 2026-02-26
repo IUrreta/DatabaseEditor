@@ -205,6 +205,19 @@ export const attributesContributions3 = {
     engine_cooling: 0.031
 };
 
+/* way more impact to accelaration*/
+export const attributesContributions4 = {
+    top_speed: 0.15,
+    acceleration: 0.08,
+    drs: 0.1,
+    low_speed: 0.17,
+    medium_speed: 0.17,
+    high_speed: 0.17,
+    dirty_air: 0.05,
+    brake_cooling: 0.05,
+    engine_cooling: 0.015
+}
+
 export const fuel_efficiency_factors = {
     0: 1
 };

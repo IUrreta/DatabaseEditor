@@ -29,7 +29,8 @@ import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap
   insertStaff2026,
   changeLineUps2026,
   changeDriverNumbers2026,
-  apply2026EnginePerformanceChanges} from "./scriptUtils/modUtils";
+  apply2026EnginePerformanceChanges,
+  updatePerofmrnace2026} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -461,7 +462,7 @@ const workerCommands = {
     });
   },
   timeTravel: (data, postMessage) => {
-    timeTravelWithData(data.dayNumber, true, data.mod);
+    timeTravelWithData(data.dayNumber, false, data.mod);
     if (data.mod === "2026"){
       changeDriverNumbers2026();
     }
@@ -588,7 +589,12 @@ const workerCommands = {
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changePerformance: (data, postMessage) => {
-    updatePerofmrnace2025();
+    if (data.mod === "2025") {
+      updatePerofmrnace2025();
+    }
+    else if (data.mod === "2026") {
+      updatePerofmrnace2026();
+    }
     postMessage({
       responseMessage: "Performance changed",
       isEditCommand: true,

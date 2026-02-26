@@ -1110,7 +1110,7 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     const changeAreasPool = changeType === "major" ? majorChangeAreas : minorChangeAreas;
     const mainChangeArea = randomPick(changeAreasPool);
 
-    const VAR = changeType === "major" ? 0.15 : 0.05;
+    const VAR = changeType === "major" ? 0.28 : 0.13; // major changes can cause up to ±28% change, minor up to ±15%
 
     const randBetween = (min, max) => min + Math.random() * (max - min);
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -1275,7 +1275,6 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
 }
 
 function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null, aduoTPsEnabled = false) {
-    console.log("ADUO TPS ENABVLED?", aduoTPsEnabled);
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason?.[1];
     const newsList = [];
@@ -1366,15 +1365,15 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
         const randomImprovementPct = () => {
             const r = Math.random();
             if (r < 0.05) {
-                // Rare regression: -3% to 0%
-                return Math.round(((-3 + (Math.random() * 3)) * 100)) / 100;
+                // Rare regression: -5% to 0%
+                return Math.round(((-5 + (Math.random() * 5)) * 100)) / 100;
             }
             if (r < 0.95) {
-                // Usual case: 0% to 4%
-                return Math.round(((Math.random() * 4) * 100)) / 100;
+                // Usual case: 0% to 6%
+                return Math.round(((Math.random() * 6) * 100)) / 100;
             }
-            // Very rare breakout: 4% to 10%
-            return Math.round(((4 + (Math.random() * 6)) * 100)) / 100;
+            // Very rare breakout: 6% to 14%
+            return Math.round(((6 + (Math.random() * 8)) * 100)) / 100;
         };
 
         const engineImprovements = underperformers.map(engineRow => {

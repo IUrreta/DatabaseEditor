@@ -429,6 +429,8 @@ function initMods2026Actions(){
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
       syncMods2026ApplyAllButtonState();
+      const command2 = new Command("changePerformance", {mod: "2026"});
+      command2.execute();
     });
   }
 

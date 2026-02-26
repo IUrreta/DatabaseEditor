@@ -175,7 +175,7 @@ export function getBestPartsUntil(day, customTeam = false) {
               AND ValidFrom = ?
               AND ((DayCompleted > 0 AND DayCompleted <= ?) OR DayCreated < 0)
           `, [j, t, season, day], "allRows");
-            designs[j] = row;
+          designs[j] = row;
         }
         // engine
         const engine = queryDB(`
@@ -443,7 +443,7 @@ export function makeAttributesReadable(attributes) {
 export function calculateOverallPerformance(attributes) {
     let ovr = 0;
     for (const attr in attributes) {
-        ovr += attributes[attr] * carConstants.attributesContributions2[attr];
+        ovr += attributes[attr] * carConstants.attributesContributions4[attr];
     }
     return Math.round(ovr * 100) / 100;
 }

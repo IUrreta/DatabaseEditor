@@ -87,7 +87,8 @@ export function timeTravelWithData(dayNumber, extend = false, mod = "2025") {
           WHERE SeasonID = ?
         `, [wayBackSeason, vanillaSeason], 'run');
     } else {
-        queryDB(`UPDATE Races SET SeasonID = ?, Day = Day - ? WHERE SeasonID = ?`, [wayBackSeason, dd, vanillaSeason], 'run')
+        //with State = 2 we move the races to the actual days of the new season but mark them as completed
+        queryDB(`UPDATE Races SET SeasonID = ?, Day = Day - ?, State = 2 WHERE SeasonID = ?`, [wayBackSeason, dd, vanillaSeason], 'run')
     }
 
     // ============================================================
@@ -1207,7 +1208,6 @@ export function apply2026EnginePerformanceChanges() {
 
     if (Object.keys(enginesToEdit).length > 0) {
         editEngines(enginesToEdit);
-        updateSeasonModTable("change-performance-2026", 1, "2026");
     }
 }
 
@@ -1319,4 +1319,29 @@ export function changeDriverNumbers2026() {
             }
         });
     }
+}
+
+export function updatePerofmrnace2026() {
+    const globals = getGlobals();
+    const teamDict = getBestParts(globals.isCreateATeam);
+    let tyreDegDict = {};
+
+
+    for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+        //remove the part 0 from teamDict[team]
+        delete teamDict[team]["0"];
+        let teamboost = changes2026.Performance.find(x => x.TeamID === Number(team));
+        applyBoostToCarStats(teamDict[team], teamboost.Boost, teamboost.TeamID);
+        const tyreDegStatsTemas = getTyreDegStats(teamDict[team]);
+        tyreDegDict[team] = tyreDegStatsTemas;
+    }
+
+    // for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+    //     let teamGivingTyreDeg = changes.Performance.find(x => x.TeamID === Number(team)).TyreDeg;
+    //     let tyreDegStats = tyreDegDict[teamGivingTyreDeg];
+    //     updateTyreDegStats(teamDict[team], tyreDegStats, team, teamGivingTyreDeg);
+    // }
+
+    updateSeasonModTable("change-performance-2026", 1, "2026");
+
 }
