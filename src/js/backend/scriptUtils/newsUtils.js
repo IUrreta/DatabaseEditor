@@ -122,7 +122,6 @@ export function generate_news(savednews, turningPointState) {
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
     let aduoTPsEnabled = queryDB(`SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`, [], 'singleValue');
-    console.log("ADUO TPS ENABLED IN DB", aduoTPsEnabled);
     aduoTPsEnabled = aduoTPsEnabled === "1" || aduoTPsEnabled === 1;
 
     const aduoTurningPointNews = generateAduoTurningPointsNews(currentMonth, savednews, turningPointState, tpConfig, aduoTPsEnabled);
@@ -1369,11 +1368,11 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
                 return Math.round(((-5 + (Math.random() * 5)) * 100)) / 100;
             }
             if (r < 0.95) {
-                // Usual case: 0% to 6%
-                return Math.round(((Math.random() * 6) * 100)) / 100;
+                // Usual case: 1% to 7%
+                return Math.round(((1 + (Math.random() * 6)) * 100)) / 100;
             }
-            // Very rare breakout: 6% to 14%
-            return Math.round(((6 + (Math.random() * 8)) * 100)) / 100;
+            // Very rare breakout: 7% to 17%
+            return Math.round(((7 + (Math.random() * 10)) * 100)) / 100;
         };
 
         const engineImprovements = underperformers.map(engineRow => {

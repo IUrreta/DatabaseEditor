@@ -162,20 +162,31 @@ export function order_by(criterion) {
 
 }
 
-document.getElementById("teamsCarsButton").addEventListener("click", function (elem) {
-    if (event.target.dataset.value === "teams") {
-        event.target.dataset.value = "cars";
-        event.target.className = "bi bi-person-fill"
+const teamsCarsButton = document.getElementById("teamsCarsButton");
+const teamsCarsIcon = teamsCarsButton.querySelector("i");
+const teamsCarsText = teamsCarsButton.querySelector("span");
+
+function updateTeamsCarsButton() {
+    const mode = teamsCarsButton.dataset.value;
+    teamsCarsIcon.className = mode === "cars" ? "bi bi-person-fill" : "bi bi-people-fill";
+    teamsCarsText.textContent = mode === "cars" ? "Cars" : "Teams";
+}
+
+teamsCarsButton.addEventListener("click", function () {
+    if (teamsCarsButton.dataset.value === "teams") {
+        teamsCarsButton.dataset.value = "cars";
         document.getElementById("teamsDiv").classList.add("d-none");
         document.getElementById("carsDiv").classList.remove("d-none");
     }
     else {
-        event.target.dataset.value = "teams";
-        event.target.className = "bi bi-people-fill"
+        teamsCarsButton.dataset.value = "teams";
         document.getElementById("carsDiv").classList.add("d-none");
         document.getElementById("teamsDiv").classList.remove("d-none");
     }
+    updateTeamsCarsButton();
 })
+
+updateTeamsCarsButton();
 
 
 document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
@@ -283,7 +294,9 @@ document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
         manageSaveButton(true, "performance")
-        document.querySelector("#performanceGraphButton").classList.remove("active")
+        performanceGraphButton.classList.remove("active")
+        performanceGraphIcon.className = "bi bi-list-ul"
+        performanceGraphText.textContent = "Details"
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
@@ -300,7 +313,9 @@ document.querySelectorAll(".car").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
         manageSaveButton(true, "performance")
-        document.querySelector("#performanceGraphButton").classList.remove("active")
+        performanceGraphButton.classList.remove("active")
+        performanceGraphIcon.className = "bi bi-list-ul"
+        performanceGraphText.textContent = "Details"
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
@@ -728,9 +743,15 @@ document.querySelector(".performance-show").querySelectorAll(".new-or-existing-p
     })
 })
 
+const performanceGraphButton = document.getElementById("performanceGraphButton");
+const performanceGraphIcon = performanceGraphButton.querySelector("i");
+const performanceGraphText = performanceGraphButton.querySelector("span");
+
 document.querySelector("#performanceGraphButton").addEventListener("click", function () {
     if (!viewingGraph) {
-        document.querySelector("#performanceGraphButton").classList.add("active")
+        performanceGraphButton.classList.add("active")
+        performanceGraphIcon.className = "bi bi-graph-up"
+        performanceGraphText.textContent = "Graph"
         document.querySelector(".teams-show").classList.add("d-none")
         document.querySelector("#performanceGraph").classList.remove("d-none")
     }
@@ -738,6 +759,9 @@ document.querySelector("#performanceGraphButton").addEventListener("click", func
     document.querySelector(".save-button").classList.add("d-none")
     viewingGraph = true;
 })
+
+performanceGraphIcon.className = "bi bi-graph-up"
+performanceGraphText.textContent = "Graph"
 
 document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
     elem.addEventListener("click", function () {
