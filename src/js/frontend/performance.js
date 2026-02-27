@@ -22,10 +22,15 @@ let teamEngineSelected;
 let performanceGraph;
 export let teamsEngine = "teams"
 export let viewingGraph = true;
+export let performanceDetailsMode = "performance";
 let actualMaxDesign = 0;
 let customEnginesCopy;
 let currentData;
 let performanceView = "graph";
+let currentPartsStats = null;
+let currentTeamExpertise = null;
+let performanceDraftStats = null;
+let expertiseDraftStats = null;
 
 const overviewAttributes = [
     { key: "engine_power", label: "Engine Power" },
@@ -70,6 +75,119 @@ function normalizeData(data) {
     }
 
     return normalizedData;
+}
+
+function readPartsStatsFromDom() {
+    let data = {};
+    document.querySelectorAll(".part-performance").forEach(function (elem) {
+        const partKey = elem.dataset.part;
+        data[partKey] = {};
+        elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
+            const statNum = stat.dataset.attribute;
+            if (statNum === "-1" || statNum === "15") return;
+            const input = stat.querySelector(".custom-input-number");
+            if (!input) return;
+            const value = Number(String(input.value).split(" ")[0]);
+            data[partKey][statNum] = Number.isFinite(value) ? value : 0;
+        });
+    });
+    return data;
+}
+
+function applyPartsStatsToDom(data) {
+    if (!data) return;
+    for (let key in data) {
+        const part = document.querySelector(`.part-performance[data-part='${key}']`);
+        if (!part) continue;
+        for (let stat in data[key]) {
+            if (stat === "15") continue;
+            const statInput = part.querySelector(`.part-performance-stat[data-attribute='${stat}'] .custom-input-number`);
+            if (!statInput) continue;
+            statInput.value = Number(data[key][stat]).toFixed(2);
+        }
+    }
+}
+
+function updateExpertiseModeUi() {
+    const teamsShow = document.querySelector(".performance-show.teams-show");
+    if (!teamsShow) return;
+
+    const isExpertise = performanceDetailsMode === "expertise";
+    teamsShow.classList.toggle("expertise-mode", isExpertise);
+
+    document.querySelectorAll(".part-performance").forEach(function (part) {
+        const arrows = part.querySelector(".part-performance-title .arrows");
+        if (arrows) arrows.classList.toggle("d-none", isExpertise);
+
+        const chevron = part.querySelector(".part-performance-title .redesigned-chevron");
+        if (chevron) chevron.classList.toggle("d-none", isExpertise);
+
+        if (isExpertise) {
+            const statsContainer = part.querySelector(".part-performance-stats");
+            if (statsContainer) statsContainer.classList.remove("hidden");
+
+            const partButtons = part.querySelector(".part-performance-title .part-buttons");
+            if (partButtons) partButtons.classList.remove("d-none");
+
+            if (chevron) chevron.classList.remove("clicked");
+        }
+
+        const list = part.querySelector(".parts-list");
+        if (list) list.classList.toggle("d-none", isExpertise);
+
+        const subtitle = part.querySelector(".part-subtitle");
+        if (!subtitle) return;
+        if (isExpertise) {
+            if (subtitle.innerText !== "Expertise") {
+                subtitle.dataset.performanceText = subtitle.innerText;
+            }
+            subtitle.innerText = "Expertise";
+        }
+        else if (subtitle.dataset.performanceText) {
+            subtitle.innerText = subtitle.dataset.performanceText;
+        }
+    });
+}
+
+function setPerformanceDetailsMode(mode) {
+    if (mode !== "performance" && mode !== "expertise") return;
+    if (mode === performanceDetailsMode) return;
+
+    if (performanceDetailsMode === "performance") {
+        performanceDraftStats = readPartsStatsFromDom();
+    }
+    else {
+        expertiseDraftStats = readPartsStatsFromDom();
+    }
+
+    performanceDetailsMode = mode;
+    updatePerformanceExpertiseButton();
+    updateExpertiseModeUi();
+
+    if (mode === "performance") {
+        applyPartsStatsToDom(performanceDraftStats || currentPartsStats);
+    }
+    else {
+        applyPartsStatsToDom(expertiseDraftStats || currentTeamExpertise);
+    }
+}
+
+function updatePerformanceExpertiseButton() {
+    const button = document.getElementById("performanceExpertiseButton");
+    if (!button) return;
+
+    const icon = button.querySelector("i");
+    const text = button.querySelector("span");
+
+    button.dataset.value = performanceDetailsMode;
+    if (performanceDetailsMode === "expertise") {
+        if (icon) icon.className = "bi bi-stars";
+        if (text) text.textContent = "Expertise";
+    }
+    else {
+        if (icon) icon.className = "bi bi-speedometer2";
+        if (text) text.textContent = "Performance";
+    }
 }
 
 
@@ -234,6 +352,9 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
+    if (performanceExpertiseButton) {
+        performanceExpertiseButton.classList.toggle("d-none", performanceView !== "details");
+    }
     removeSelected()
     if (performanceView === "details") {
         document.querySelector(".save-button").classList.remove("d-none")
@@ -250,6 +371,9 @@ enginesPill.addEventListener("click", function () {
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
+    if (performanceExpertiseButton) {
+        performanceExpertiseButton.classList.add("d-none");
+    }
     removeSelected()
     document.querySelector(".save-button").classList.remove("d-none")
     first_show_animation()
@@ -325,6 +449,10 @@ document.querySelectorAll(".team").forEach(function (elem) {
         setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
+        performanceDraftStats = null;
+        expertiseDraftStats = null;
+        currentPartsStats = null;
+        currentTeamExpertise = null;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
     })
@@ -337,6 +465,10 @@ document.querySelectorAll(".car").forEach(function (elem) {
         setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
+        performanceDraftStats = null;
+        expertiseDraftStats = null;
+        currentPartsStats = null;
+        currentTeamExpertise = null;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
     })
@@ -354,22 +486,45 @@ document.querySelectorAll(".engine").forEach(function (elem) {
 })
 
 export function load_parts_stats(data) {
-    for (let key in data) {
-        if (key !== "engine") {
-            let part = document.querySelector(`.part-performance[data-part='${key}']`)
-            for (let stat in data[key]) {
-                if (stat !== "15") {
-                    let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
-                    if (stat === "7" || stat === "8" || stat === "9") {
-                        stat_input.value = data[key][stat].toFixed(2)
-                    }
-                    else {
-                        stat_input.value = data[key][stat].toFixed(2)
-                    }
-                }
-            }
-        }
+    currentPartsStats = data;
+    performanceDraftStats = null;
+
+    if (performanceDetailsMode !== "performance") {
+        return;
     }
+
+    applyPartsStatsToDom(data);
+}
+
+export function load_team_expertise(data) {
+    currentTeamExpertise = data;
+    expertiseDraftStats = null;
+
+    updateExpertiseModeUi();
+
+    if (performanceDetailsMode !== "expertise") {
+        return;
+    }
+
+    applyPartsStatsToDom(data);
+}
+
+export function gather_team_expertise_data() {
+    let expertise = {};
+    document.querySelectorAll(".part-performance").forEach(function (elem) {
+        const partType = elem.dataset.partid;
+        if (!partType) return;
+        expertise[partType] = {};
+        elem.querySelectorAll(".part-performance-stat").forEach(function (stat) {
+            const statNum = stat.dataset.attribute;
+            if (statNum === "-1" || statNum === "15") return;
+            const input = stat.querySelector(".custom-input-number");
+            if (!input) return;
+            const value = input.value.split(" ")[0];
+            expertise[partType][statNum] = value;
+        });
+    });
+    return expertise;
 }
 
 export function load_parts_list(data) {
@@ -394,6 +549,7 @@ export function load_parts_list(data) {
             let subtitle = document.querySelector(`.part-performance[data-part='${key}'] .part-subtitle`)
             subtitle.innerText = partNameText
             subtitle.dataset.editing = data[key][part][0]
+            delete subtitle.dataset.performanceText;
             partTitle.appendChild(partName)
             add_partName_listener(partName, subtitle)
             let loadoutContainer = document.createElement("div")
@@ -459,6 +615,7 @@ export function load_parts_list(data) {
         }
         add_new_part_button(list)
     }
+    updateExpertiseModeUi();
 }
 
 function add_new_part_button(list) {
@@ -519,9 +676,9 @@ function add_n_parts_buttons(loadoutContainer) {
     let buttonsContainer = document.createElement("div")
     buttonsContainer.classList.add("n-parts-buttons")
     let up = document.createElement("i")
-    up.classList.add("bi", "bi-chevron-up")
+    up.classList.add("bi", "bi-chevron-up", "new-augment-button")
     let down = document.createElement("i")
-    down.classList.add("bi", "bi-chevron-down")
+    down.classList.add("bi", "bi-chevron-down", "new-augment-button")
     buttonsContainer.appendChild(up)
     buttonsContainer.appendChild(down)
     up.addEventListener("click", function () {
@@ -563,22 +720,24 @@ function add_n_parts_buttons(loadoutContainer) {
 
 export function load_one_part(data) {
     let key = Object.keys(data)[0]
-    let part = document.querySelector(`.part-performance[data-part='${key}']`)
-    for (let stat in data[key]) {
-        if (stat !== "15") {
-            let stat_input = part.querySelector(`.part-performance-stat[data-attribute='${stat}']`).querySelector(".custom-input-number")
-            if (stat === "7" || stat === "8" || stat === "9") {
-                stat_input.value = data[key][stat].toFixed(2)
-            }
-            else {
-                stat_input.value = data[key][stat].toFixed(2)
-            }
-        }
+    if (!currentPartsStats) {
+        currentPartsStats = {};
     }
+    currentPartsStats[key] = data[key];
+    performanceDraftStats = null;
+
+    if (performanceDetailsMode !== "performance") {
+        return;
+    }
+
+    applyPartsStatsToDom(data);
 }
 
 function add_partName_listener(div, subtitle, type = "old") {
     div.addEventListener("click", function () {
+        if (performanceDetailsMode === "expertise") {
+            return;
+        }
         if (type === "new") {
             subtitle.dataset.editing = -1
         }
@@ -757,6 +916,7 @@ const performanceGraphButton = document.getElementById("performanceGraphButton")
 const performanceGraphIcon = performanceGraphButton.querySelector("i");
 const performanceGraphText = performanceGraphButton.querySelector("span");
 const performanceOverview = document.getElementById("performanceOverview");
+const performanceExpertiseButton = document.getElementById("performanceExpertiseButton");
 
 function setPerformanceView(view) {
     performanceView = view;
@@ -779,6 +939,9 @@ function setPerformanceView(view) {
     document.querySelector("#performanceGraph").classList.toggle("d-none", view !== "graph");
     document.querySelector(".teams-show").classList.toggle("d-none", view !== "details");
     performanceOverview.classList.toggle("d-none", view !== "overview");
+    if (performanceExpertiseButton) {
+        performanceExpertiseButton.classList.toggle("d-none", view !== "details" || teamsEngine !== "teams");
+    }
 
     document.querySelector(".save-button").classList.toggle("d-none", view !== "details");
 
@@ -788,6 +951,13 @@ function setPerformanceView(view) {
     if (view === "overview") {
         load_overview();
     }
+}
+
+if (performanceExpertiseButton) {
+    performanceExpertiseButton.addEventListener("click", function () {
+        const next = performanceDetailsMode === "performance" ? "expertise" : "performance";
+        setPerformanceDetailsMode(next);
+    });
 }
 
 function createOverviewCard(attributeConfig) {
@@ -912,6 +1082,8 @@ document.querySelector("#performanceGraphButton").addEventListener("click", func
 })
 
 setPerformanceView("graph");
+updatePerformanceExpertiseButton();
+updateExpertiseModeUi();
 
 document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
     elem.addEventListener("click", function () {

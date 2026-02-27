@@ -278,6 +278,15 @@ export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, 
     }
 }
 
+export function applyExpertiseBoost(boost, team) {
+    //multiply expertise for every stat for every part of the team by the boost
+    queryDB(`
+        UPDATE Parts_TeamExpertise
+        SET Expertise = Expertise * ?
+        WHERE TeamID = ?
+    `, [boost, team], 'run');
+}
+
 export function applyBoostToCarStats(designDict, boost, team) {
     const statsValues = {};
     for (const part in designDict) {
@@ -383,6 +392,88 @@ export function getUnitValueFromParts(designDict) {
  * UnitValue de un solo diseño
  * (get_unitvalue_from_one_part en Python)
  */
+export function getTeamExpertise(teamId, yearIteration = null) {
+    const expertise = {};
+    const partTypes = [3, 4, 5, 6, 7, 8];
+
+    partTypes.forEach((partType) => {
+        expertise[carConstants.parts[partType]] = {};
+    });
+
+    const rows = queryDB(`
+        SELECT PartType, PartStat, Expertise
+        FROM Parts_TeamExpertise
+        WHERE TeamID = ?
+          AND PartType IN (3, 4, 5, 6, 7, 8)
+          AND PartStat != 15
+    `, [teamId], 'allRows') || [];
+
+    rows.forEach((row) => {
+        const partType = Number(row[0]);
+        const stat = Number(row[1]);
+        const rawValue = Number(row[2]);
+
+        const partKey = carConstants.parts[partType];
+        if (!partKey) return;
+
+        let unitValue = rawValue;
+        if (yearIteration === "24" && stat >= 7 && stat <= 9 && carConstants.downforce24ValueToUnitValue?.[stat]) {
+            unitValue = carConstants.downforce24ValueToUnitValue[stat](rawValue);
+        }
+        else if (carConstants.valueToUnitValue?.[stat]) {
+            unitValue = carConstants.valueToUnitValue[stat](rawValue);
+        }
+
+        expertise[partKey][stat] = Math.round(unitValue * 1000) / 1000;
+    });
+
+    partTypes.forEach((partType) => {
+        const partKey = carConstants.parts[partType];
+        const partStats = expertise[partKey];
+        for (const stat of carConstants.defaultPartsStats[partType] || []) {
+            if (stat === 15) continue;
+            if (partStats[stat] === undefined) {
+                partStats[stat] = 0;
+            }
+        }
+    });
+
+    return expertise;
+}
+
+export function updateTeamExpertise(teamId, expertiseUnitValues, yearIteration = null) {
+    if (!expertiseUnitValues || typeof expertiseUnitValues !== "object") return;
+
+    for (const partTypeKey of Object.keys(expertiseUnitValues)) {
+        const partType = Number(partTypeKey);
+        const stats = expertiseUnitValues[partTypeKey];
+        if (!Number.isFinite(partType) || !stats || typeof stats !== "object") continue;
+
+        for (const statKey of Object.keys(stats)) {
+            const stat = Number(statKey);
+            const unitValue = Number(stats[statKey]);
+            if (!Number.isFinite(stat) || !Number.isFinite(unitValue)) continue;
+            if (stat === 15) continue;
+
+            let value = unitValue;
+            if (yearIteration === "24" && stat >= 7 && stat <= 9 && carConstants.downforce24UnitValueToValue?.[stat]) {
+                value = carConstants.downforce24UnitValueToValue[stat](unitValue);
+            }
+            else if (carConstants.unitValueToValue?.[stat]) {
+                value = carConstants.unitValueToValue[stat](unitValue);
+            }
+
+            queryDB(`
+                UPDATE Parts_TeamExpertise
+                SET Expertise = ?
+                WHERE TeamID = ?
+                  AND PartType = ?
+                  AND PartStat = ?
+            `, [value, teamId, partType, stat], 'run');
+        }
+    }
+}
+
 export function getUnitValueFromOnePart(designId) {
 
     const partType = queryDB(`

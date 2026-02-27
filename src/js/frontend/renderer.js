@@ -16,11 +16,11 @@ import {
     initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
-import {
-    load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-    order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-    teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph
-} from './performance';
+  import {
+      load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
+      order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, gather_team_expertise_data, performanceDetailsMode
+  } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
@@ -122,7 +122,7 @@ function updateTurningPointsFrequencyUI() {
 
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
-const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 const glowSpot = document.querySelector('.glow-spot');
 const blockDiv = document.getElementById('blockDiv');
 
@@ -653,6 +653,16 @@ function teamsModeHandler() {
 function performanceModeHandler() {
     let data;
     if (teamsEngine === "teams") {
+        if (performanceDetailsMode === "expertise") {
+            data = {
+                teamID: teamSelected,
+                expertise: gather_team_expertise_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editExpertise", data);
+            command.execute();
+            return;
+        }
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
@@ -994,12 +1004,18 @@ const messageHandlers = {
         load_parts_stats(message[0])
         load_parts_list(message[1])
         update_max_design(message[2])
+        if (message[3]) {
+            load_team_expertise(message[3])
+        }
     },
     "Game Year": (message) => {
         manage_game_year(message)
     },
     "Part values fetched": (message) => {
         load_one_part(message)
+    },
+    "Team expertise fetched": (message) => {
+        load_team_expertise(message)
     },
     "Cars fetched": (message) => {
         load_cars(message[0])

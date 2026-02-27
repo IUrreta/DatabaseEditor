@@ -3547,7 +3547,7 @@ body.og-theme .main-calendar-section {
 
 #regulations .viewer-element-name {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 #regulations .viewer-element .stat-number {
@@ -6080,11 +6080,16 @@ body.light-theme .flag-header img {
   margin-top: -6px;
 }
 
+.part-performance-title:has(.arrows.d-none) .part-name-buttons{
+  margin-left: 0px;
+}
+
 .part-name-buttons {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  margin-left: 20px;
+  margin-left: 5px;
+  flex-grow: 1;
 }
 
 .part-buttons {
@@ -6306,7 +6311,7 @@ input.engine-performance-title:focus {
 
 .part-performance-title {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   position: relative;
 }
 
@@ -6550,18 +6555,14 @@ input.engine-performance-title:focus {
   margin-left: -7px;
 }
 
-.n-parts-buttons {
+.fitted-icons .n-parts-buttons {
   display: flex;
-  flex-direction: column;
-  font-size: 16px;
+  flex-direction: row-reverse;
+  gap: 3px;
 }
 
-.n-parts-buttons i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s !important;
-  max-height: 12px;
-  display: flex;
-  align-items: center;
+.fitted-icons .n-parts-buttons i {
+  font-size: 14px;
 }
 
 .new-part {
@@ -6589,12 +6590,6 @@ input.engine-performance-title:focus {
 
 
 
-.n-parts-buttons .bi-chevron-up:hover,
-.n-parts-buttons .bi-chevron-down:hover {
-  cursor: pointer;
-  color: var(--new-primary) !important;
-  transform: scale(1.1);
-}
 
 .fitted-icons .n-parts {
   font-family: "Formula1";
@@ -6604,8 +6599,7 @@ input.engine-performance-title:focus {
 }
 
 .fitted-icons i:not(.fitted) {
-  color: var(--disabled-text);
-  transition: color 0.15s, transform 0.15s;
+  transition: color 0.15s;
 }
 
 .fitted-icons .loadout-1.fitted {
@@ -6681,6 +6675,10 @@ input.engine-performance-title:focus {
   max-width: 70px;
 }
 
+.teams-show.expertise-mode .part-performance-stat .custom-input-number {
+  color: var(--new-primary);
+}
+
 
 
 .overview-show {
@@ -6706,7 +6704,7 @@ input.engine-performance-title:focus {
 }
 
 .overview-card-title {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--text-secondary);
   margin-bottom: 6px;
 }
@@ -6722,7 +6720,7 @@ input.engine-performance-title:focus {
 }
 
 .overview-team .car-title {
-  font-size: 10px;
+  font-size: 11px;
   height: auto;
   padding-bottom: 0;
 }
@@ -6736,7 +6734,7 @@ input.engine-performance-title:focus {
 
 .overview-team-rank {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 11px;
   min-width: 12px;
   text-align: right;
 }
@@ -6752,7 +6750,7 @@ input.engine-performance-title:focus {
 
 .overview-team-value {
   color: var(--dark-text);
-  font-size: 10px;
+  font-size: 11px;
 }
 .teams-show,
 .engines-show {
@@ -12882,29 +12880,19 @@ span.reduced-weight,
 
 .name-and-arrows {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   align-items: center;
 }
 
-.arrows {
+.part-performance-title .arrows {
   display: flex;
-  flex-direction: column;
-  position: absolute;
-  font-size: 18px;
-  bottom: 8px;
-  gap: 4px;
-  left: -3px;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 3px;
 }
 
-.arrows i {
-  cursor: pointer;
-  transition: transform 0.15s, color 0.15s;
-  height: 12px;
-}
-
-.arrows i:hover {
-  transform: scale(1.05);
-  color: var(--new-primary);
+.part-performance-title .arrows i {
+  font-size: 14px;
 }
 
 #blockDiv {

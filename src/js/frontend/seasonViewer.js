@@ -3553,7 +3553,7 @@ export function onSessionResultsFetched(data) {
                 timeDiv.innerText = "-";
             }
             else if (rowLaps < leaderLaps) {
-                timeDiv.innerText = `+${leaderLaps - rowLaps} L`;
+                timeDiv.innerText = `+${leaderLaps - rowLaps}L`;
             }
             else if (rowPos === 1 && rowTime > 0) {
                 timeDiv.innerText = formatLapTime(rowTime);

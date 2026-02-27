@@ -16,7 +16,7 @@ import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllC
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, updateTeamExpertise } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
@@ -266,13 +266,27 @@ const workerCommands = {
     postMessage({ responseMessage: "TeamData fetched", content: teamData });
   },
   performanceRequest: (data, postMessage) => {
+    const globals = getGlobals();
     const designDict = getPartsFromTeam(data.teamID);
     const unitValues = getUnitValueFromParts(designDict);
     const allParts = getAllPartsFromTeam(data.teamID);
     const maxDesign = getMaxDesign();
+    const expertise = getTeamExpertise(data.teamID, globals.yearIteration);
 
-    const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign] };
+    const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign, expertise] };
     postMessage(designResponse);
+  },
+  editExpertise: (data, postMessage) => {
+    const globals = getGlobals();
+    updateTeamExpertise(data.teamID, data.expertise, globals.yearIteration);
+    postMessage({
+      responseMessage: "Expertise updated",
+      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s expertise`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+    const expertise = getTeamExpertise(data.teamID, globals.yearIteration);
+    postMessage({ responseMessage: "Team expertise fetched", content: expertise });
   },
   driverRequest: (data, postMessage) => {
     const contract = fetchDriverContracts(data.driverID);

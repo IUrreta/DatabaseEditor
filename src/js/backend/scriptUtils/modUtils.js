@@ -3,7 +3,7 @@ import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { excelToDate, dateToExcel, changeDriverNumber, excelFromYMD } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, rearrangeDriverEngineerPairings, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
-import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats, getPerformanceAllTeams } from "./carAnalysisUtils.js";
+import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats, getPerformanceAllTeams, applyExpertiseBoost } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts_2025.json"
 import changes from "../../../data/2025_changes.json"
 import changes2026 from "../../../data/2026_changes.json"
@@ -1334,7 +1334,7 @@ export function updatePerofmrnace2026() {
     const teamDict = getBestParts(customTeam);
     let tyreDegDict = {};
 
-    for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+    for (let team of Object.keys(teamDict)) {
         delete teamDict[team]["0"];
 
         const teamId = Number(team);
@@ -1358,10 +1358,17 @@ export function updatePerofmrnace2026() {
     }
 
 
-    for (let team of Object.keys(teamDict).filter(key => key !== "0")) {
+    for (let team of Object.keys(teamDict)) {
         let teamGivingTyreDeg = changes2026.Performance.find(x => x.TeamID === Number(team)).TyreDeg;
         let tyreDegStats = tyreDegDict[teamGivingTyreDeg];
         updateTyreDegStats(teamDict[team], tyreDegStats, team, teamGivingTyreDeg);
+    }
+
+    for (let team of Object.keys(teamDict)) {
+        if (changes2026.Performance.find(x => x.TeamID === Number(team))?.Expertise) {
+            let expertiseBoost = changes2026.Performance.find(x => x.TeamID === Number(team)).Expertise;
+            applyExpertiseBoost(expertiseBoost, team);
+        }
     }
 
     updateSeasonModTable("change-performance-2026", 1, "2026");
