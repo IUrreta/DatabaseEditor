@@ -25,6 +25,20 @@ export let viewingGraph = true;
 let actualMaxDesign = 0;
 let customEnginesCopy;
 let currentData;
+let performanceView = "graph";
+
+const overviewAttributes = [
+    { key: "engine_power", label: "Engine Power", source: "overall" },
+    { key: "top_speed", label: "Top speed" },
+    { key: "acceleration", label: "Acceleration" },
+    { key: "low_speed", label: "Low speed" },
+    { key: "medium_speed", label: "Medium speed" },
+    { key: "high_speed", label: "High speed" },
+    { key: "drs", label: "DRS Effectiveness" },
+    { key: "dirty_air", label: "Dirty air tolerance" },
+    { key: "brake_cooling", label: "Brake cooling" },
+    { key: "engine_cooling", label: "Engine cooling" }
+];
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -113,6 +127,7 @@ export function load_attributes(teams) {
             bar.dataset[attribute] = attributeValue.toFixed(3);
         }
     }
+    load_overview();
 }
 
 export function load_car_attributes(teams) {
@@ -207,12 +222,12 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
     removeSelected()
-    if (viewingGraph) {
-        document.querySelector(".save-button").classList.add("d-none")
-    }
-    else {
+    if (performanceView === "details") {
         document.querySelector(".save-button").classList.remove("d-none")
         first_show_animation()
+    }
+    else {
+        document.querySelector(".save-button").classList.add("d-none")
     }
 })
 
@@ -294,18 +309,11 @@ document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
         manageSaveButton(true, "performance")
-        performanceGraphButton.classList.remove("active")
-        performanceGraphIcon.className = "bi bi-list-ul"
-        performanceGraphText.textContent = "Details"
+        setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
-        document.querySelector("#performanceGraph").classList.add("d-none")
-        document.querySelector(".teams-show").classList.remove("d-none")
-        document.querySelector(".save-button").classList.remove("d-none")
-        first_show_animation()
-        viewingGraph = false;
     })
 })
 
@@ -313,18 +321,11 @@ document.querySelectorAll(".car").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
         manageSaveButton(true, "performance")
-        performanceGraphButton.classList.remove("active")
-        performanceGraphIcon.className = "bi bi-list-ul"
-        performanceGraphText.textContent = "Details"
+        setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
-        document.querySelector("#performanceGraph").classList.add("d-none")
-        document.querySelector(".teams-show").classList.remove("d-none")
-        document.querySelector(".save-button").classList.remove("d-none")
-        first_show_animation()
-        viewingGraph = false;
     })
 })
 
@@ -746,22 +747,125 @@ document.querySelector(".performance-show").querySelectorAll(".new-or-existing-p
 const performanceGraphButton = document.getElementById("performanceGraphButton");
 const performanceGraphIcon = performanceGraphButton.querySelector("i");
 const performanceGraphText = performanceGraphButton.querySelector("span");
+const performanceOverview = document.getElementById("performanceOverview");
+
+function setPerformanceView(view) {
+    performanceView = view;
+    viewingGraph = view === "graph";
+
+    performanceGraphButton.classList.add("active");
+    if (view === "graph") {
+        performanceGraphIcon.className = "bi bi-graph-up";
+        performanceGraphText.textContent = "Graph";
+    }
+    else if (view === "details") {
+        performanceGraphIcon.className = "bi bi-list-ul";
+        performanceGraphText.textContent = "Details";
+    }
+    else {
+        performanceGraphIcon.className = "bi bi-grid-3x2-gap";
+        performanceGraphText.textContent = "Overview";
+    }
+
+    document.querySelector("#performanceGraph").classList.toggle("d-none", view !== "graph");
+    document.querySelector(".teams-show").classList.toggle("d-none", view !== "details");
+    performanceOverview.classList.toggle("d-none", view !== "overview");
+
+    document.querySelector(".save-button").classList.toggle("d-none", view !== "details");
+
+    if (view === "details") {
+        first_show_animation();
+    }
+    if (view === "overview") {
+        load_overview();
+    }
+}
+
+function createOverviewCard(attributeConfig) {
+    let card = document.createElement("div");
+    card.classList.add("overview-card");
+
+    let title = document.createElement("div");
+    title.classList.add("overview-card-title", "bold-font");
+    title.textContent = attributeConfig.label;
+    card.appendChild(title);
+
+    let teamsContainer = document.createElement("div");
+    teamsContainer.classList.add("overview-card-teams");
+
+    document.querySelectorAll("#teamsDiv .team-performance").forEach(function (teamElem) {
+        let teamId = teamElem.dataset.teamid;
+        let sourceBar = teamElem.querySelector(".performance-bar-progress");
+        if (!sourceBar) {
+            return;
+        }
+
+        let teamRow = document.createElement("div");
+        teamRow.classList.add("overview-team", "bold-font");
+        if (teamElem.classList.contains("d-none")) {
+            teamRow.classList.add("d-none");
+        }
+
+        let carTitle = document.createElement("div");
+        carTitle.classList.add("car-title");
+
+        let teamName = document.createElement("span");
+        teamName.className = teamElem.querySelector(".team-title-name").className;
+        teamName.textContent = teamElem.querySelector(".team-title-name").textContent;
+        carTitle.appendChild(teamName);
+
+        let teamValue = document.createElement("span");
+        teamValue.classList.add("overview-team-value");
+        carTitle.appendChild(teamValue);
+
+        let performanceBar = document.createElement("div");
+        performanceBar.classList.add("performance-bar");
+        let progressBar = document.createElement("div");
+        progressBar.className = sourceBar.className;
+        performanceBar.appendChild(progressBar);
+
+        teamRow.appendChild(carTitle);
+        teamRow.appendChild(performanceBar);
+
+        let sourceKey = attributeConfig.source || attributeConfig.key;
+        let value = parseFloat(sourceBar.dataset[sourceKey] || 0);
+        progressBar.style.width = value + "%";
+        teamValue.textContent = value.toFixed(2) + " %";
+
+        teamRow.dataset.teamid = teamId;
+        teamRow.dataset.attribute = attributeConfig.key;
+
+        teamsContainer.appendChild(teamRow);
+    });
+
+    card.appendChild(teamsContainer);
+    return card;
+}
+
+function load_overview() {
+    if (!performanceOverview) {
+        return;
+    }
+    performanceOverview.innerHTML = "";
+    overviewAttributes.forEach(function (attributeConfig) {
+        performanceOverview.appendChild(createOverviewCard(attributeConfig));
+    });
+}
 
 document.querySelector("#performanceGraphButton").addEventListener("click", function () {
-    if (!viewingGraph) {
-        performanceGraphButton.classList.add("active")
-        performanceGraphIcon.className = "bi bi-graph-up"
-        performanceGraphText.textContent = "Graph"
-        document.querySelector(".teams-show").classList.add("d-none")
-        document.querySelector("#performanceGraph").classList.remove("d-none")
+    if (performanceView === "graph") {
+        setPerformanceView("details");
     }
-    removeSelected()
-    document.querySelector(".save-button").classList.add("d-none")
-    viewingGraph = true;
+    else if (performanceView === "details") {
+        setPerformanceView("overview");
+    }
+    else {
+        removeSelected();
+        setPerformanceView("graph");
+    }
 })
 
-performanceGraphIcon.className = "bi bi-graph-up"
-performanceGraphText.textContent = "Graph"
+setPerformanceView("graph");
 
 document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
     elem.addEventListener("click", function () {
