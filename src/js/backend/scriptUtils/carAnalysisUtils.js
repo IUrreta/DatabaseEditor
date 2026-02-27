@@ -1411,9 +1411,30 @@ export function getAttributesAllTeams(customTeam = false) {
         const dict = getCarStats(bestParts[i]);
         const partStats = getPartStatsDict(dict);
         const attributes = calculateCarAttributes(contributors, partStats);
+        console.log("PArts stats for team", i, partStats);
+        attributes.engine_power = getOneStatUnitValueFromTeam(0, 10, i) || 0;
         teams[i] = attributes;
     }
     return teams;
+}
+
+export function getOneStatUnitValueFromTeam(part, stat, teamId) {
+    const designId = queryDB(`
+        SELECT MAX(DesignID)
+        FROM Parts_Designs
+        WHERE PartType = ?
+          AND TeamID = ?
+      `, [part, teamId], 'singleValue');
+
+    if (designId){
+        const unitValue = queryDB(`
+            SELECT UnitValue
+            FROM Parts_Designs_StatValues
+            WHERE DesignID = ?
+              AND PartStat = ?
+        `, [designId, stat], 'singleValue');
+        return unitValue;
+    }
 }
 
 export function getMaxDesign() {

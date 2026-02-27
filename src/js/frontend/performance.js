@@ -28,7 +28,7 @@ let currentData;
 let performanceView = "graph";
 
 const overviewAttributes = [
-    { key: "engine_power", label: "Engine Power", source: "overall" },
+    { key: "engine_power", label: "Engine Power" },
     { key: "top_speed", label: "Top speed" },
     { key: "acceleration", label: "Acceleration" },
     { key: "low_speed", label: "Low speed" },
@@ -39,6 +39,19 @@ const overviewAttributes = [
     { key: "brake_cooling", label: "Brake cooling" },
     { key: "engine_cooling", label: "Engine cooling" }
 ];
+
+function clampPercent(value) {
+    let numericValue = Number(value);
+    if (Number.isNaN(numericValue)) {
+        return 0;
+    }
+    return Math.max(0, numericValue);
+}
+
+function setBarWidth(bar, value) {
+    if (!bar) return;
+    bar.style.width = clampPercent(value) + "%";
+}
 
 function normalizeData(data) {
     let values = Object.values(data);
@@ -70,7 +83,7 @@ export function load_performance(teams) {
                 let performanceBarProgress = teamPerformance.querySelector('.performance-bar-progress');
                 let team_value = teamPerformance.querySelector('.team-title-value');
                 if (performanceBarProgress) {
-                    performanceBarProgress.style.width = teams[key] + '%';
+                    setBarWidth(performanceBarProgress, teams[key]);
                     team_value.innerText = teams[key].toFixed(2) + ' %';
                     performanceBarProgress.dataset.overall = teams[key];
                 }
@@ -87,7 +100,7 @@ export function load_cars(data) {
             index = index + 1;
             let bar = car.querySelector('.performance-bar-progress');
             bar.dataset.overall = data[key][carNumber][0];
-            bar.style.width = data[key][carNumber][0] + '%';
+            setBarWidth(bar, data[key][carNumber][0]);
             let name = car.querySelector('.team-title-name');
             name.innerText = car.dataset.teamshow + " " + carNumber.toString() + " -  #" + data[key][carNumber][1];
             let missing_parts = data[key][carNumber][2];
@@ -152,7 +165,7 @@ export function order_by(criterion) {
     teamsArray.forEach(function (team, index) {
         document.getElementById("teamsDiv").appendChild(team);
         let bar = team.querySelector(".performance-bar-progress");
-        bar.style.width = bar.dataset[criterion] + "%";
+        setBarWidth(bar, bar.dataset[criterion]);
         team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
         let number = team.querySelector(".team-number")
         number.innerText = index + 1
@@ -166,7 +179,7 @@ export function order_by(criterion) {
     carsArray.forEach(function (car, index) {
         document.getElementById("carsDiv").appendChild(car);
         let bar = car.querySelector(".performance-bar-progress");
-        bar.style.width = bar.dataset[criterion] + "%";
+        setBarWidth(bar, bar.dataset[criterion]);
         let number = car.querySelector(".performance-number")
         let value = car.querySelector(".car-missing-parts .value")
         value.innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
@@ -285,7 +298,7 @@ export function manage_engineStats(engineData) {
             let input = attribute.querySelector(".custom-input-number");
             let bar = attribute.querySelector(".engine-performance-progress");
             input.value = value.toFixed(1);
-            bar.style.width = value + "%";
+            setBarWidth(bar, value);
         }
     })
     load_custom_engines(customEngines)
@@ -712,9 +725,7 @@ document.querySelector(".engines-show").querySelectorAll(".stat-number .bi-plus.
     if (!input) return;
     attachHold(button, input, 0.5, buildHoldOptions(input, {
         onChange: (val) => {
-            if (bar) {
-                bar.style.width = val + "%";
-            }
+            setBarWidth(bar, val);
         }
     }));
 });
@@ -726,9 +737,7 @@ document.querySelector(".engines-show").querySelectorAll(".stat-number .bi-dash.
     if (!input) return;
     attachHold(button, input, -0.5, buildHoldOptions(input, {
         onChange: (val) => {
-            if (bar) {
-                bar.style.width = val + "%";
-            }
+            setBarWidth(bar, val);
         }
     }));
 });
@@ -788,11 +797,15 @@ function createOverviewCard(attributeConfig) {
     let title = document.createElement("div");
     title.classList.add("overview-card-title", "bold-font");
     title.textContent = attributeConfig.label;
+    if (attributeConfig.key === "brake_cooling" && game_version === 2024) {
+        title.textContent = "Tyre preservation";
+    }
     card.appendChild(title);
 
     let teamsContainer = document.createElement("div");
     teamsContainer.classList.add("overview-card-teams");
 
+    let teamsData = [];
     document.querySelectorAll("#teamsDiv .team-performance").forEach(function (teamElem) {
         let teamId = teamElem.dataset.teamid;
         let sourceBar = teamElem.querySelector(".performance-bar-progress");
@@ -809,10 +822,18 @@ function createOverviewCard(attributeConfig) {
         let carTitle = document.createElement("div");
         carTitle.classList.add("car-title");
 
+        let leftContainer = document.createElement("div");
+        leftContainer.classList.add("overview-team-left");
+
+        let rank = document.createElement("span");
+        rank.classList.add("overview-team-rank");
+        leftContainer.appendChild(rank);
+
         let teamName = document.createElement("span");
         teamName.className = teamElem.querySelector(".team-title-name").className;
         teamName.textContent = teamElem.querySelector(".team-title-name").textContent;
-        carTitle.appendChild(teamName);
+        leftContainer.appendChild(teamName);
+        carTitle.appendChild(leftContainer);
 
         let teamValue = document.createElement("span");
         teamValue.classList.add("overview-team-value");
@@ -829,13 +850,38 @@ function createOverviewCard(attributeConfig) {
 
         let sourceKey = attributeConfig.source || attributeConfig.key;
         let value = parseFloat(sourceBar.dataset[sourceKey] || 0);
-        progressBar.style.width = value + "%";
+        setBarWidth(progressBar, value);
         teamValue.textContent = value.toFixed(2) + " %";
 
         teamRow.dataset.teamid = teamId;
         teamRow.dataset.attribute = attributeConfig.key;
 
-        teamsContainer.appendChild(teamRow);
+        teamsData.push({
+            teamRow: teamRow,
+            teamId: teamId,
+            value: value,
+            isHidden: teamElem.classList.contains("d-none"),
+            rank: rank
+        });
+    });
+
+    let visibleTeams = teamsData.filter(t => !t.isHidden);
+    visibleTeams.sort(function (a, b) {
+        if (a.value === b.value) {
+            return Number(a.teamId) - Number(b.teamId);
+        }
+        return b.value - a.value;
+    });
+
+    const visibleCount = visibleTeams.length;
+    visibleTeams.forEach(function (entry, index) {
+        entry.rank.textContent = String(index + 1);
+        teamsContainer.appendChild(entry.teamRow);
+    });
+
+    teamsData.filter(t => t.isHidden).forEach(function (entry) {
+        entry.rank.textContent = "";
+        teamsContainer.appendChild(entry.teamRow);
     });
 
     card.appendChild(teamsContainer);
@@ -983,7 +1029,7 @@ function add_custom_engine(name, stats) {
             bar_progress.classList.add("engine-performance-progress")
             if (stats[key.toString()] !== undefined) {
                 input.value = Number(stats[key]).toFixed(1);
-                bar_progress.style.width = stats[key] + "%";
+                setBarWidth(bar_progress, stats[key]);
             }
             else {
                 input.value = "50.0";
@@ -998,7 +1044,7 @@ function add_custom_engine(name, stats) {
             let plus = stat_number.querySelector(".bi-plus.new-augment-button");
             const holdOptions = buildHoldOptions(input, {
                 onChange: (val) => {
-                    bar_progress.style.width = val + "%";
+                    setBarWidth(bar_progress, val);
                 }
             });
             attachHold(less, input, -0.5, holdOptions);
@@ -1035,9 +1081,7 @@ function wireEngineStatButtons(container) {
 
         const holdOptions = buildHoldOptions(input, {
             onChange: (val) => {
-                if (bar) {
-                    bar.style.width = val + "%"
-                }
+                setBarWidth(bar, val)
             }
         })
 
@@ -1158,7 +1202,7 @@ function createCustomEngineCard(engineId, name, stats) {
         const rawValue = stats?.[String(key)] ?? stats?.[key]
         const numericValue = rawValue !== undefined ? Number(rawValue) : 50
         input.value = numericValue.toFixed(1)
-        barProgress.style.width = numericValue + "%"
+        setBarWidth(barProgress, numericValue)
 
         stat.appendChild(statTitle)
         stat.appendChild(statNumber)

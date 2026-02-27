@@ -875,7 +875,6 @@ export function updateCalendar2026(type) {
     }
     else {
         if (type === "Start2024" || type === "End2024" || type === "Start2025" || type === "End2025") {
-            console.log("HACIENDO COSAS")
             const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow");
             const season = daySeason[1];
             let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, [], "singleRow")[0];
@@ -1237,7 +1236,6 @@ export function insertStaff2026() {
                     let setClause = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => `${key} = ?`).join(", ");
                     let updateValues = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => entry[key]);
                     updateValues.push(entry[primaryKeyColumn]);
-                    console.log(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?, Values: ${updateValues}`);
                     queryDB(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?`, updateValues, 'run');
                 }
 
@@ -1269,13 +1267,18 @@ export function changeStats2026() {
                 queryDB(`UPDATE Staff_PerformanceStats SET ${setClause} WHERE StaffID = ? AND StatID = ?`, values, 'run');
             }
             else {
+                //check if the staff ID exists in staff_basicData, if not, skip
+                const staffExists = queryDB(`SELECT 1 FROM Staff_BasicData WHERE StaffID = ?`, [entry.StaffID], "singleRow");
+                if (!staffExists) {
+                    console.log("StaffID:", entry.StaffID, "does not exist in Staff_BasicData. Skipping performance stats insertion.");
+                    return;
+                }
                 let columns = Object.keys(entry).join(", ");
                 let values = Object.values(entry);
                 // Generate placeholders for values
                 let placeholders = values.map(() => "?").join(", ");
                 // Filter null values for SQL
                 let sqlValues = values.map(value => value === null ? null : value);
-                console.log(`Inserting new performance stats for StaffID: ${entry.StaffID}, Query: INSERT INTO Staff_PerformanceStats (${columns}) VALUES (${placeholders}), Values: ${sqlValues}`);
                 queryDB(`INSERT INTO Staff_PerformanceStats (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
             }
 

@@ -6696,32 +6696,49 @@ input.engine-performance-title:focus {
 }
 
 .overview-card {
-  background-color: var(--component-general);
-  border: 1px solid var(--separator);
+  background-color: var(--superficials);
   border-radius: 10px;
   padding: 8px;
   display: flex;
   flex-direction: column;
   min-height: 0;
+  box-shadow: var(--shadow-s);
 }
 
 .overview-card-title {
-  font-size: 13px;
-  color: var(--text-general);
+  font-size: 14px;
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 
 .overview-card-teams {
-  display: grid;
+  display: flex;
   gap: 2px;
   overflow-y: auto;
   min-height: 0;
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
 }
 
 .overview-team .car-title {
   font-size: 10px;
   height: auto;
   padding-bottom: 0;
+}
+
+.overview-team-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.overview-team-rank {
+  color: var(--text-secondary);
+  font-size: 10px;
+  min-width: 12px;
+  text-align: right;
 }
 
 .overview-team .performance-bar {
@@ -7165,7 +7182,7 @@ body.og-theme .records-list {
   margin: 0;
   border: none;
   padding: 5.8px;
-  transition: box-shadow 0.15s;
+  transition: background-color 0.15s;
 }
 
 
@@ -14919,12 +14936,12 @@ body.light-theme .one-change .one-change-description {
   transform: translateY(0);
 }
 
-.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team .regs-team__logo::before {
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team .regs-team__logo::before {
   opacity: 0;
   transform: translateY(10px);
 }
 
-.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team .regs-team__logo::after {
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team .regs-team__logo::after {
   opacity: 1;
   transform: translateY(0);
 }
@@ -14980,12 +14997,12 @@ body.light-theme .one-change-description.regs-team--stake .regs-team__name::afte
   color: var(--dark-text);
 }
 
-.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team--stake .regs-team__name::before {
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team--stake .regs-team__name::before {
   opacity: 0;
   transform: translateY(10px);
 }
 
-.one-change:has(.change-regulations-2026.completed) .one-change-description.regs-team--stake .regs-team__name::after {
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team--stake .regs-team__name::after {
   opacity: 1;
   transform: translateY(0);
 }
@@ -15072,6 +15089,58 @@ body.light-theme .one-change-description.regs-team--stake .regs-team__name::afte
 .one-change-description.engine-renamed.engine-renamed-honda,
 .one-change-description.engine-appear {
   color: var(--text-general);
+}
+
+.one-change-description.performance-year-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year {
+  position: relative;
+  display: inline-block;
+  min-width: 44px;
+  min-height: 1em;
+  color: transparent;
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year::before,
+.one-change-description.performance-year-switch .performance-year-switch__year::after {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: var(--modal-text);
+}
+
+body.light-theme .one-change-description.performance-year-switch .performance-year-switch__year::before {
+  color: #282828;
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year::before {
+  content: '2024';
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year::after {
+  content: '2026';
+  color: var(--dark-text);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.performance-year-switch .performance-year-switch__year::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.performance-year-switch .performance-year-switch__year::after {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .one-change-description.engine-appear {

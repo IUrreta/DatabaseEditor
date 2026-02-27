@@ -457,6 +457,7 @@ function initMods2026Actions(){
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
+      syncMods2026Dependencies();
       syncMods2026ApplyAllButtonState();
     });
   }
@@ -493,31 +494,29 @@ function initMods2026Actions(){
       if (applyAllButton.dataset.running === "1") return; // anti-bucle
       applyAllButton.dataset.running = "1";
 
-      const buttons = mods2026View.querySelectorAll(
-        ".one-change-button:not(.completed):not(.disabled)"
-      );
+      const clickNext = () => {
+        syncMods2026Dependencies();
 
-      buttons.forEach((btn, index) => {
-        setTimeout(() => {
-          // re-check por si cambió el estado
-          if (!btn.classList.contains("completed") && !btn.classList.contains("disabled")) {
-            btn.click();
+        const btn = mods2026View.querySelector(".one-change-button:not(.completed):not(.disabled)");
+        if (!btn) {
+          if (aduoToggle && !aduoToggle.checked) {
+            aduoToggle.click();
           }
-        }, index * 300);
-      });
-      
+          applyAllButton.dataset.running = "0";
+          syncMods2026ApplyAllButtonState();
+          return;
+        }
 
-      if (aduoToggle && !aduoToggle.checked) {
-        setTimeout(() => {
-          aduoToggle.click();
-        }, buttons.length * 300 + 200);
-      }
+        btn.click();
+        setTimeout(clickNext, 300);
+      };
 
-      applyAllButton.classList.add("applied");
-      applyAllButton.querySelector("span").textContent = "Applied";
+      clickNext();
     }, { once: true }); // evita listeners duplicados
   }
 
+  syncMods2026Dependencies();
+  syncMods2026ApplyAllButtonState();
 }
 
 function initMods2025Actions() {
@@ -599,13 +598,7 @@ function initMods2025Actions() {
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
-
-      const lineUps = mods2025View.querySelector(".change-line-ups");
-      if (lineUps) {
-        lineUps.classList.remove("disabled");
-        const lineUpsText = lineUps.querySelector("span");
-        if (lineUpsText) lineUpsText.textContent = "Apply";
-      }
+      syncMods2025Dependencies();
     });
   }
 
@@ -667,6 +660,50 @@ export function syncMods2026ApplyAllButtonState() {
 
   applyAllButton.classList.toggle("applied", allApplied);
   if (applyAllText) applyAllText.textContent = allApplied ? "Applied" : "Apply all";
+}
+
+export function syncMods2025Dependencies() {
+  const mods2025View = document.getElementById("mods2025View");
+  if (!mods2025View) return;
+
+  const extraDriversButton = mods2025View.querySelector(".extra-drivers");
+  const lineUpsButton = mods2025View.querySelector(".change-line-ups");
+  if (!lineUpsButton) return;
+
+  if (lineUpsButton.classList.contains("completed")) {
+    lineUpsButton.classList.remove("disabled");
+    return;
+  }
+
+  const hasExtraDrivers = !!(extraDriversButton && extraDriversButton.classList.contains("completed"));
+  const lineUpsText = lineUpsButton.querySelector("span");
+
+  lineUpsButton.classList.toggle("disabled", !hasExtraDrivers);
+  if (lineUpsText) {
+    lineUpsText.textContent = hasExtraDrivers ? "Apply" : "Requires extra drivers";
+  }
+}
+
+export function syncMods2026Dependencies() {
+  const mods2026View = document.getElementById("mods2026View");
+  if (!mods2026View) return;
+
+  const extraDriversButton = mods2026View.querySelector(".extra-drivers-2026");
+  const lineUpsButton = mods2026View.querySelector(".change-line-ups-2026");
+  if (!lineUpsButton) return;
+
+  if (lineUpsButton.classList.contains("completed")) {
+    lineUpsButton.classList.remove("disabled");
+    return;
+  }
+
+  const hasExtraDrivers = !!(extraDriversButton && extraDriversButton.classList.contains("completed"));
+  const lineUpsText = lineUpsButton.querySelector("span");
+
+  lineUpsButton.classList.toggle("disabled", !hasExtraDrivers);
+  if (lineUpsText) {
+    lineUpsText.textContent = hasExtraDrivers ? "Apply" : "Requires extra drivers";
+  }
 }
 
 export function updateMod2026Blocking(data) {

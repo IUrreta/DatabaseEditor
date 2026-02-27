@@ -5296,11 +5296,11 @@
             "StaffID": 664
         },
         {
-            "AgeType": 0,
+            "AgeType": 1,
             "CountryID": 60,
             "DOB": 39661,
             "DOB_ISO": "2008-08-01",
-            "FaceIndex": 34,
+            "FaceIndex": 3,
             "FaceType": 0,
             "FirstName": "[STRING_LITERAL:Value=|Mathilda|]",
             "Gender": 1,
