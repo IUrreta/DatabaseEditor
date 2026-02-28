@@ -436,6 +436,10 @@ const workerCommands = {
       unlocksDownload: true
     });
   },
+  regulationsRefresh: (data, postMessage) => {
+    const regulations = fetchRegulationsData();
+    postMessage({ responseMessage: "Regulations fetched", content: regulations });
+  },
   configUpdate: (data, postMessage) => {
     updateCustomConfig(data);
     postMessage({

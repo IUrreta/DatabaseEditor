@@ -1,10 +1,47 @@
 import { set } from "idb-keyval";
 import { Command } from "../backend/command.js";
-import { applyConfigFromEditorUI, setRenaultEnginePresentation, updateJenzerToDams } from "./renderer.js";
+import { applyConfigFromEditorUI, custom_team, replace_custom_team_logo, setRenaultEnginePresentation, updateJenzerToDams } from "./renderer.js";
 
 let calendarEditMode = null, calendarEditMode2026 = null;
 let modsParticlesAnimator = null;
 let modsParticlesObserverInit = false;
+
+function getCustomTeamName() {
+  const teamNode = document.querySelector(".ct-teamname");
+  return String(teamNode?.dataset.teamshow || teamNode?.dataset.teamname || "");
+}
+
+function shouldAutoApplyCadillacLogo() {
+  if (!custom_team) return false;
+  return getCustomTeamName().toLowerCase().includes("cadillac");
+}
+
+let cadillacLogoDataUrlPromise = null;
+
+function getCadillacLogoDataUrl() {
+  if (cadillacLogoDataUrlPromise) return cadillacLogoDataUrlPromise;
+
+  cadillacLogoDataUrlPromise = fetch("../assets/images/logos/cadillac.png")
+    .then((res) => (res.ok ? res.blob() : Promise.reject(new Error("Cadillac logo not found"))))
+    .then((blob) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error || new Error("Failed to read Cadillac logo"));
+      reader.readAsDataURL(blob);
+    }))
+    .catch(() => null);
+
+  return cadillacLogoDataUrlPromise;
+}
+
+function tryApplyCadillacCustomLogo() {
+  if (!shouldAutoApplyCadillacLogo()) return;
+
+  getCadillacLogoDataUrl().then((dataUrl) => {
+    if (!dataUrl) return;
+    replace_custom_team_logo(String(dataUrl));
+  });
+}
 
 function prefersReducedMotion() {
   return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -416,6 +453,9 @@ function initMods2026Actions(){
       finally {
         this.dataset.running = "0";
         this.classList.remove("disabled");
+
+        const command2 = new Command("regulationsRefresh", {});
+        command2.execute();
       }
     });
   }
@@ -434,6 +474,8 @@ function initMods2026Actions(){
     mo.observe(changePerformanceButton2026, { attributes: true, attributeFilter: ["class"] });
 
     changePerformanceButton2026.addEventListener("click", function () {
+      tryApplyCadillacCustomLogo();
+
       const alfaReplaceButton = document.querySelector("#alfaReplaceButton button");
       if (alfaReplaceButton && alfaReplaceButton.dataset.value === "stake") {
         applyConfigFromEditorUI({ alfa: "audi" });
@@ -749,16 +791,16 @@ export function updateMod2026Blocking(data) {
     if (changeCalendarText) changeCalendarText.textContent = allowCalendarEdit ? "Apply" : "Disabled";
   }
 
-  // if (!modBlocking) return;
-  // if (data === "AlreadyEdited" || data === "Start2024" ) {
-  //   modBlocking.classList.add("d-none");
-  //   changesGrid.classList.remove("d-none");
-  //   recommendedDownloads.classList.remove("d-none");
-  // } else {
-  //   modBlocking.classList.remove("d-none");
-  //   changesGrid.classList.add("d-none");
-  //   recommendedDownloads.classList.add("d-none");
-  // }
+  if (!modBlocking) return;
+  if (data === "AlreadyEdited" || data === "Start2024" ) {
+    modBlocking.classList.add("d-none");
+    changesGrid.classList.remove("d-none");
+    recommendedDownloads.classList.remove("d-none");
+  } else {
+    modBlocking.classList.remove("d-none");
+    changesGrid.classList.add("d-none");
+    recommendedDownloads.classList.add("d-none");
+  }
 }
 
 export function updateMod2025Blocking(data) {

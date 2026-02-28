@@ -553,6 +553,10 @@ export function change2025Standings(mod = "2026") {
             VALUES (?, ?, ?, ?, ?, ?, ?)
             `, [TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
         }
+        const globals = getGlobals();
+        if (!globals.isCreateATeam){
+            queryDB(`DELETE FROM Races_TeamStandings WHERE TeamID = 32`, [], 'run');
+        }
     }
     if (mod === "2026") {
         updateSeasonModTable("change-cfd-2026", 1, "2026");
@@ -1299,6 +1303,10 @@ export function changeLineUps2026() {
     else {
         wipeTableAndRefill("Staff_Contracts", tables2026.Staff_Contracts);
         updateSeasonModTable("change-line-ups-2026", 1, "2026");
+        const globals = getGlobals();
+        if (!globals.isCreateATeam){
+            queryDB(`DELETE FROM Staff_Contracts WHERE TeamID = 32`, [], 'run');
+        }
     }
 
     if (!tables2026.Staff_RaceEngineerDriverAssignments || !Array.isArray(tables2026.Staff_RaceEngineerDriverAssignments)) {

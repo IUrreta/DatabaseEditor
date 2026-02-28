@@ -1442,7 +1442,7 @@ fileInput.addEventListener('change', (event) => {
     reader.readAsDataURL(file);
 });
 
-function replace_custom_team_logo(path) {
+export function replace_custom_team_logo(path) {
     //if not image selected, return
     if (!path) {
         return;

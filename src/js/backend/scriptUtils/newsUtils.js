@@ -1396,9 +1396,6 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
             engineImprovements
         };
 
-        console.log("[Aduo TP] Stat 10 leader:", titleData.leader);
-        console.log("[Aduo TP] Engine improvements:", titleData.engineImprovements);
-
         let manufacutrersAffectedStriing = "";
         if (titleData.engineImprovements.length > 0) {
             manufacutrersAffectedStriing = titleData.engineImprovements.map(e => e.name).join(", ");

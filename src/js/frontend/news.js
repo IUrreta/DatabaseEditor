@@ -1634,6 +1634,12 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         role: "user",
         content: finalInstruction
       });
+
+      // Ensure {{language}} placeholders are always substituted in every prompt message
+      messages = messages.map(m => ({
+        ...m,
+        content: replaceLanguagePlaceholder(m.content, selectedLanguage)
+      }));
     }
 
     console.log("Final messages for AI:", messages);

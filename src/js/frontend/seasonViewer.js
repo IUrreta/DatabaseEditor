@@ -1358,7 +1358,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
     const safePoints = (v) => {
         if (v === -1) return 0; // DNF → 0 puntos
-        const n = parseInt(v);
+        const n = Number.parseInt(String(v), 10);
+        if (!Number.isFinite(n)) return 0;
         return Math.max(0, n);
     };
 
@@ -1536,7 +1537,7 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                     }
                     else {
                         sprintDiv.dataset.points = manage_dataset_info_team(
-                            [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
+                            [safePoints(sprintPoints[0]), safePoints(sprintPoints[1])],
                             undefined,
                             "points"
                         );
@@ -1558,8 +1559,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
                 const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
 
-                const d1PointsTotal = (d1 ? d1.points : 0) + (d1?.qualifyingPoints ?? 0);
-                const d2PointsTotal = (d2 ? d2.points : 0) + (d2?.qualifyingPoints ?? 0);
+                const d1PointsTotal = safePoints(d1?.points) + safePoints(d1?.qualifyingPoints);
+                const d2PointsTotal = safePoints(d2?.points) + safePoints(d2?.qualifyingPoints);
                 if (currentFormula === 3) {
                     const featurePointsTotal = allEntries.reduce(
                         (sum, entry) =>
@@ -1581,7 +1582,7 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                     "pos"
                 );
                 featureDiv.dataset.quali = manage_dataset_info_team(
-                    [d1 ? d1.qualifyingPos ?? 99 : 99, d2 ? d2.qualifyingPos ?? 99 : 99],
+                    [d1 ? d1.qualifyingPos ?? 99 : "-", d2 ? d2.qualifyingPos ?? 99 : "-"],
                     undefined,
                     "quali"
                 );
