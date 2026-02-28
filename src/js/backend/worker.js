@@ -10,9 +10,10 @@ import {
   fetchSessionResults,
   getDate,
   setCustomSaveConfig,
-  check2026ModCompatibility
+  check2026ModCompatibility,
+  snapshotEnginePowerProgression
 } from "./scriptUtils/dbUtils";
-import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars } from "./scriptUtils/carAnalysisUtils"
+import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAduoEngineUpgradeRaceIds } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
@@ -166,8 +167,9 @@ const workerCommands = {
     const numbers = fetchDriverNumbers();
     postMessage({ responseMessage: "Numbers fetched", content: numbers });
 
-    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-    postMessage({ responseMessage: "Season performance fetched", content: [performance, races] });
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    postMessage({ responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds] });
 
     const attributes = getAttributesAllTeams(yearData[2]);
     postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes] });
@@ -229,6 +231,7 @@ const workerCommands = {
     postMessage({ responseMessage: "H2HDriver fetched", content: h2hDrivers });
   },
   customEngines: (data, postMessage) => {
+    snapshotEnginePowerProgression(Object.keys(data?.enginesData || {}), 'pre_engine_edit');
     updateCustomEngines(data.enginesData);
     postMessage({
       responseMessage: "Custom engines updated",
@@ -238,6 +241,14 @@ const workerCommands = {
     });
     const engines = fetchEngines();
     postMessage({ responseMessage: "Engines fetched", content: engines });
+
+    const yearData = checkYearSave();
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const engineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    postMessage({ responseMessage: "Season performance fetched", content: [performance, races, engineUpgradeRaceIds] });
+
+    const attributes = getAttributesAllTeams(yearData[2]);
+    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes] });
   },
   deleteCustomEngine: (data, postMessage) => {
     const res = deleteCustomEngineAndReassign(data?.engineId, data?.fallbackEngineId);
@@ -372,8 +383,9 @@ const workerCommands = {
     updateItemsForDesignDict(data.n_parts_designs, data.teamID)
     fitLoadoutsDict(data.loadouts, data.teamID)
 
-    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races], noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s car performance` };
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds], noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s car performance` };
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
@@ -391,6 +403,7 @@ const workerCommands = {
     postMessage(carPerformanceResponse);
   },
   editEngine: (data, postMessage) => {
+    snapshotEnginePowerProgression(Object.keys(data?.engines || {}), 'pre_engine_edit');
     editEngines(data.engines)
     postMessage({
       responseMessage: "Engines updated",
@@ -398,6 +411,14 @@ const workerCommands = {
       isEditCommand: true,
       unlocksDownload: true
     });
+
+    const yearData = checkYearSave();
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const engineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    postMessage({ responseMessage: "Season performance fetched", content: [performance, races, engineUpgradeRaceIds] });
+
+    const attributes = getAttributesAllTeams(yearData[2]);
+    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes] });
   },
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
@@ -643,8 +664,9 @@ const workerCommands = {
 
     const yearData = checkYearSave();
 
-    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds] };
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
@@ -665,8 +687,9 @@ const workerCommands = {
   performanceRefresh: (data, postMessage) => {
     const yearData = checkYearSave();
 
-    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2]);
-    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races] };
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds] };
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);

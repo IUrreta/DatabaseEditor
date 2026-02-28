@@ -1142,15 +1142,13 @@
             performance, it can't be determined with 100% accuracy, and it's
             calculated based on the other selectable car attributes.
           </div>
-          <div class="mt-2 modal-warning" style="gap: 7px;">
-            Please take into consideration that if you make a specific default engine not be used by any team, when
-            selecting it
-            again as an engine supplier, its stats will be the same as other default engine, not its original ones.
-          </div>
           <div class="mt-2" style="gap: 7px;">
             Creating a custom engine will <span class="important-text bold-font">NOT CREATE </span> a new one in-game,
             it will just apply
             the stats that you assign the custom engine to the engines that the teams who run the custom engine use.
+          </div>
+          <div class="mt-2" style="gap: 7px;">
+            Dashed vertical lines indicate engine performance upgrades, either manual or ADUO turning point upgrades.
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -1241,11 +1239,6 @@
         <div class="modal-body custom-body">
           <div style="gap: 7px;">
             The <span class="important-text bold-font">Board confidence </span> is only editable for the player's team.
-          </div>
-          <div class="mt-2 modal-warning" style="gap: 7px;">
-            Please take into consideration that if you make a specific default engine not be used by any team, when
-            selecting it
-            again as an engine supplier, its stats will be the same as other default engine, not its original ones.
           </div>
         </div>
         <div class="modal-footer custom-footer">
@@ -4446,11 +4439,16 @@
             </div>
           </div>
           <div class="title-buttons-right">
+            <div class="form-check annotations form-switch">
+              <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="performanceAnnotationsToggle"
+                checked>
+              <label class="form-check-label" for="performanceAnnotationsToggle">Annotations</label>
+            </div>
             <ul class="nav nav-pills">
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".teams-section" id="teamsPill">
-                  <div class="basic-label bold-font">Cars</div>
+                  <div class="basic-label bold-font">Teams</div>
                   <div class="pill-line"></div>
                 </a>
               </li>

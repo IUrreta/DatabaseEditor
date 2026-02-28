@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines, ensureCustomEngineProgressionTable, snapshotEnginePowerProgression } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, turningPointsTuningByType } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -315,11 +315,26 @@ function applyAduoEffect(turningPointData) {
         return;
     }
 
+    ensureCustomEngineProgressionTable();
+
     const [enginesData] = fetchEngines();
     const enginesById = {};
     for (const engineRow of enginesData || []) {
         enginesById[String(engineRow[0])] = engineRow;
     }
+
+    const readStat = (stats, statId) => {
+        if (!stats) return null;
+        const raw = stats[statId] !== undefined ? stats[statId] : stats[String(statId)];
+        const num = Number(raw);
+        return Number.isFinite(num) ? num : null;
+    };
+
+    snapshotEnginePowerProgression(
+        (enginesData || []).map((row) => row?.[0]).filter((id) => id !== null && id !== undefined),
+        'pre_aduo_tp',
+        turningPointData?.season
+    );
 
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
     const engineDataToEdit = {};

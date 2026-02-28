@@ -654,17 +654,119 @@ export function getAllRaces() {
     return rows;
 }
 
+function buildEnginePowerProgressionContext() {
+    const seasonId = Number(queryDB(`SELECT CurrentSeason FROM Player_State`, [], 'singleValue')) || null;
+    if (!seasonId) {
+        return { enabled: false };
+    }
+
+    const progressionTableExists = queryDB(
+        `SELECT 1 FROM sqlite_master WHERE type='table' AND name='Custom_Engine_Progression'`,
+        [],
+        'singleValue'
+    );
+    if (!progressionTableExists) {
+        return { enabled: false };
+    }
+
+    const allocations = queryDB(`SELECT teamId, engineId FROM Custom_Engine_Allocations`, [], 'allRows') || [];
+    const teamEngineIdByTeamId = {};
+    for (const row of allocations) {
+        const teamId = Number(row?.[0]);
+        const engineId = Number(row?.[1]);
+        if (!teamId || !engineId) continue;
+        teamEngineIdByTeamId[teamId] = engineId;
+    }
+
+    const currentPowerRows = queryDB(`
+        SELECT engineId, unitValue
+        FROM Custom_Engines_Stats
+        WHERE designId = engineId
+          AND partStat = 10
+    `, [], 'allRows') || [];
+
+    const currentPowerByEngineId = {};
+    for (const row of currentPowerRows) {
+        const engineId = Number(row?.[0]);
+        const unitValue = Number(row?.[1]);
+        if (!engineId || !Number.isFinite(unitValue)) continue;
+        currentPowerByEngineId[engineId] = unitValue;
+    }
+
+    return {
+        enabled: true,
+        seasonId,
+        teamEngineIdByTeamId,
+        currentPowerByEngineId
+    };
+}
+
+function getEnginePowerUnitValueForRace(engineId, raceId, ctx) {
+    const current = ctx?.currentPowerByEngineId?.[engineId];
+    if (!Number.isFinite(current)) {
+        return null;
+    }
+
+    const snapshot = queryDB(`
+        SELECT Power
+        FROM Custom_Engine_Progression
+        WHERE SeasonID = ?
+          AND EngineID = ?
+          AND RaceID > ?
+        ORDER BY RaceID ASC
+        LIMIT 1
+    `, [ctx.seasonId, engineId, raceId], 'singleValue');
+
+    if (snapshot !== null && snapshot !== undefined) {
+        const snapNum = Number(snapshot);
+        if (Number.isFinite(snapNum)) {
+            return snapNum;
+        }
+    }
+
+    return current;
+}
+
 /**
  * Devuelve la performance de todos los equipos en un día dado (o actual)
  * (get_performance_all_teams en Python)
  */
-export function getPerformanceAllTeams(day = null, previous = null, customTeam = false) {
+export function getPerformanceAllTeams(day = null, previous = null, customTeam = false, options = null) {
     const teams = {};
     const contributors = getContributorsDict();
 
     const teamList = customTeam
         ? [...Array(10).keys()].map(i => i + 1).concat(32)
         : [...Array(10).keys()].map(i => i + 1);
+
+    const raceId = options?.raceId;
+    const useHistoricalEnginePower = options?.useHistoricalEnginePower === true;
+    const enginePowerCtx = options?.enginePowerCtx;
+    const canOverrideEnginePower = Boolean(
+        useHistoricalEnginePower &&
+        enginePowerCtx?.enabled &&
+        Number.isFinite(Number(raceId))
+    );
+
+    let enginePowerValueByEngineId = null;
+    if (canOverrideEnginePower) {
+        enginePowerValueByEngineId = {};
+        const enginesUsed = new Set();
+        for (const teamId of teamList) {
+            const engineId = enginePowerCtx.teamEngineIdByTeamId?.[teamId];
+            if (engineId) enginesUsed.add(engineId);
+        }
+
+        const powerToValue = carConstants.engine_unitValueToValue?.[10];
+        if (typeof powerToValue === "function") {
+            for (const engineId of enginesUsed) {
+                const unitValue = getEnginePowerUnitValueForRace(engineId, Number(raceId), enginePowerCtx);
+                if (!Number.isFinite(unitValue)) continue;
+                const value = powerToValue(unitValue);
+                enginePowerValueByEngineId[engineId] = Math.round(value * 1000) / 1000;
+            }
+        }
+    }
 
     let parts;
     if (day == null) {
@@ -676,6 +778,13 @@ export function getPerformanceAllTeams(day = null, previous = null, customTeam =
 
     for (const teamId of teamList) {
         const dict = getCarStats(parts[teamId]);
+        if (enginePowerValueByEngineId && dict?.[0]) {
+            const engineId = enginePowerCtx?.teamEngineIdByTeamId?.[teamId];
+            const overridePower = enginePowerValueByEngineId[engineId];
+            if (overridePower !== undefined && overridePower !== null) {
+                dict[0][10] = overridePower;
+            }
+        }
         const partStats = getPartStatsDict(dict);
         const attributes = calculateCarAttributes(contributors, partStats);
         const ovr = calculateOverallPerformance(attributes);
@@ -1448,7 +1557,10 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
 }
 
 
-export function getPerformanceAllTeamsSeason(customTeam = false) {
+export function getPerformanceAllTeamsSeason(customTeam = false, options = {}) {
+    const useHistoricalEnginePower = options?.useHistoricalEnginePower === true;
+    const enginePowerCtx = useHistoricalEnginePower ? buildEnginePowerProgressionContext() : null;
+
     const races = getRacesDays();
     const firstDay = getFirstDaySeason();
     // Insertamos al principio (0, firstDay, 0)
@@ -1458,14 +1570,43 @@ export function getPerformanceAllTeamsSeason(customTeam = false) {
     let previous = null;
     for (const raceDay of races) {
         // raceDay => [RaceID, Day, TrackID], en python pilla el day en [1]
+        const raceId = raceDay[0];
         const day = raceDay[1];
-        const performances = getPerformanceAllTeams(day, previous, customTeam);
+        const performances = getPerformanceAllTeams(day, previous, customTeam, {
+            raceId,
+            useHistoricalEnginePower,
+            enginePowerCtx
+        });
         racesPerformances.push(performances);
         previous = performances;
     }
 
     const allRaces = getAllRaces();
     return [racesPerformances, allRaces];
+}
+
+export function getAduoEngineUpgradeRaceIds(seasonId = null) {
+    const resolvedSeasonId = Number(seasonId) || Number(queryDB(`SELECT CurrentSeason FROM Player_State`, [], 'singleValue')) || null;
+    if (!resolvedSeasonId) return [];
+
+    const progressionTableExists = queryDB(
+        `SELECT 1 FROM sqlite_master WHERE type='table' AND name='Custom_Engine_Progression'`,
+        [],
+        'singleValue'
+    );
+    if (!progressionTableExists) return [];
+
+    const rows = queryDB(`
+        SELECT DISTINCT RaceID
+        FROM Custom_Engine_Progression
+        WHERE SeasonID = ?
+          AND Source IN ('pre_aduo_tp', 'pre_engine_edit')
+        ORDER BY RaceID ASC
+    `, [resolvedSeasonId], 'allRows') || [];
+
+    return rows
+        .map(r => Number(r?.[0]))
+        .filter(raceId => Number.isFinite(raceId) && raceId > 0);
 }
 
 export function getFirstDaySeason() {
@@ -1502,7 +1643,6 @@ export function getAttributesAllTeams(customTeam = false) {
         const dict = getCarStats(bestParts[i]);
         const partStats = getPartStatsDict(dict);
         const attributes = calculateCarAttributes(contributors, partStats);
-        console.log("PArts stats for team", i, partStats);
         attributes.engine_power = getOneStatUnitValueFromTeam(0, 10, i) || 0;
         teams[i] = attributes;
     }

@@ -4781,7 +4781,7 @@
             "Gender": 0,
             "IsGeneratedForCustomTeam": 0,
             "IsGeneratedStaff": 0,
-            "LastName": "[STRING_LITERAL:Value=|O''Hare|]",
+            "LastName": "[STRING_LITERAL:Value=|O'Hare|]",
             "PhotoDay": 45340,
             "StaffID": 625
         },

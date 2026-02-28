@@ -6,6 +6,7 @@ import { manageSaveButton, game_version, attachHold, first_show_animation, selec
 import { Command } from "../backend/command.js";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import annotationPlugin from 'chartjs-plugin-annotation';
 
 const teamsPill = document.getElementById("teamsPill");
 const enginesPill = document.getElementById("enginesPill");
@@ -31,6 +32,10 @@ let currentPartsStats = null;
 let currentTeamExpertise = null;
 let performanceDraftStats = null;
 let expertiseDraftStats = null;
+let performanceAnnotationsToggle = true;
+
+Chart.register(ChartDataLabels);
+Chart.register(annotationPlugin);
 
 const overviewAttributes = [
     { key: "engine_power", label: "Engine Power" },
@@ -917,6 +922,19 @@ const performanceGraphIcon = performanceGraphButton.querySelector("i");
 const performanceGraphText = performanceGraphButton.querySelector("span");
 const performanceOverview = document.getElementById("performanceOverview");
 const performanceExpertiseButton = document.getElementById("performanceExpertiseButton");
+const performanceAnnotationsToggleInput = document.getElementById("performanceAnnotationsToggle");
+
+if (performanceAnnotationsToggleInput) {
+    performanceAnnotationsToggle = performanceAnnotationsToggleInput.checked;
+    performanceAnnotationsToggleInput.addEventListener("change", function () {
+        performanceAnnotationsToggle = performanceAnnotationsToggleInput.checked;
+        if (!performanceGraph?.options?.plugins?.annotation) return;
+        if (!Array.isArray(performanceGraph?.data?.labels)) return;
+
+        applyAduoUpgradeAnnotations(currentData?.[2], currentData?.[1], performanceGraph.data.labels.length);
+        performanceGraph.update();
+    });
+}
 
 function setPerformanceView(view) {
     performanceView = view;
@@ -1529,6 +1547,7 @@ export function reload_performance_graph() {
 
 export function load_performance_graph(data) {
     currentData = data
+    const aduoUpgradeRaceIds = Array.isArray(data?.[2]) ? data[2] : [];
     let labelsArray = []
     data[1].forEach(function (elem) {
         labelsArray.push(races_names[elem[2]])
@@ -1538,6 +1557,7 @@ export function load_performance_graph(data) {
         performanceGraph.destroy();
     }
     createPerformanceChart(labelsArray)
+    applyAduoUpgradeAnnotations(aduoUpgradeRaceIds, data?.[1], labelsArray.length)
     performanceGraph.update()
     let teamPerformances = {};
 
@@ -1582,6 +1602,45 @@ export function load_performance_graph(data) {
     performanceGraph.update();
 }
 
+function applyAduoUpgradeAnnotations(raceIds, races, labelCount) {
+    if (!performanceGraph?.options?.plugins?.annotation) return;
+
+    const ids = Array.isArray(raceIds)
+        ? raceIds.map(r => Number(r)).filter(r => Number.isFinite(r) && r > 0)
+        : [];
+
+    const raceIdToLabelIndex = new Map();
+    if (Array.isArray(races)) {
+        for (let i = 0; i < races.length; i++) {
+            const raceId = Number(races[i]?.[0]);
+            if (!Number.isFinite(raceId)) continue;
+            raceIdToLabelIndex.set(raceId, i + 1); // +1 because labelsArray.unshift("")
+        }
+    }
+
+    const annotations = {};
+    for (const raceId of ids) {
+        const labelIndex = raceIdToLabelIndex.get(raceId);
+        if (!labelIndex || labelIndex <= 0 || labelIndex >= labelCount) continue;
+
+        const boundaryIndex = labelIndex - 1; // La línea se dibuja antes del índice de la etiqueta correspondiente
+        if (boundaryIndex <= 0) continue;
+
+        annotations[`aduo_engine_${raceId}`] = {
+            type: 'line',
+            xMin: boundaryIndex,
+            xMax: boundaryIndex,
+            display: performanceAnnotationsToggle,
+            borderColor: 'rgba(253, 224, 107, 0.8)',
+            borderWidth: 2,
+            borderDash: [6, 6],
+            drawTime: 'beforeDatasetsDraw'
+        };
+    }
+
+    performanceGraph.options.plugins.annotation.annotations = annotations;
+}
+
 /**
  * Creates the head to head race chart
  * @param {Array} labelsArray array with all the labels for the races
@@ -1598,6 +1657,7 @@ function createPerformanceChart(labelsArray) {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                animation: false,
                 interaction: {
                     mode: 'index'
                 },
@@ -1642,6 +1702,9 @@ function createPerformanceChart(labelsArray) {
                 plugins: {
                     datalabels: {
                         display: false
+                    },
+                    annotation: {
+                        annotations: {}
                     },
                     legend: {
                         labels: {

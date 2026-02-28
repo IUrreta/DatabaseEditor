@@ -296,6 +296,88 @@ export function fetchEngines() {
   return [enginesList, engineAllocations];
 }
 
+export function ensureCustomEngineProgressionTable() {
+  queryDB(`
+    CREATE TABLE IF NOT EXISTS Custom_Engine_Progression (
+      SeasonID INTEGER NOT NULL,
+      RaceID INTEGER NOT NULL,
+      EngineID INTEGER NOT NULL,
+      Power REAL NOT NULL,
+      Source TEXT NULL,
+      PRIMARY KEY (SeasonID, RaceID, EngineID)
+    )
+  `, [], 'run');
+
+  queryDB(`
+    CREATE INDEX IF NOT EXISTS idx_Custom_Engine_Progression_Season_Engine_Race
+    ON Custom_Engine_Progression (SeasonID, EngineID, RaceID)
+  `, [], 'run');
+}
+
+function getNextSnapshotRaceIdForSeason(seasonId) {
+  if (!Number.isFinite(Number(seasonId))) {
+    return null;
+  }
+
+  const nextRaceIdRaw = queryDB(`
+    SELECT RaceID
+    FROM Races
+    WHERE SeasonID = ?
+      AND State != 2
+    ORDER BY Day ASC
+    LIMIT 1
+  `, [seasonId], 'singleValue');
+
+  if (nextRaceIdRaw !== null && nextRaceIdRaw !== undefined) {
+    const nextRaceId = Number(nextRaceIdRaw);
+    return Number.isFinite(nextRaceId) && nextRaceId > 0 ? nextRaceId : null;
+  }
+
+  const maxRaceIdRaw = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ?`, [seasonId], 'singleValue');
+  const maxRaceId = Number(maxRaceIdRaw) || 0;
+  return maxRaceId > 0 ? (maxRaceId + 1) : null;
+}
+
+export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw = null, raceIdRaw = null) {
+  ensureCustomEngineProgressionTable();
+
+  const seasonId = Number(seasonIdRaw) || Number(queryDB(`SELECT CurrentSeason FROM Player_State`, [], 'singleValue')) || null;
+  if (!seasonId) return { ok: false, error: "Missing season id" };
+
+  const raceId = Number(raceIdRaw) || getNextSnapshotRaceIdForSeason(seasonId);
+  if (!Number.isFinite(raceId) || raceId <= 0) return { ok: false, error: "Missing race id" };
+
+  const engineIds = (engineIdsRaw || [])
+    .map((id) => Number(id))
+    .filter((id) => Number.isFinite(id) && id > 0);
+
+  if (!engineIds.length) return { ok: true, seasonId, raceId, inserted: 0 };
+
+  const placeholders = engineIds.map(() => '?').join(', ');
+  const powerRows = queryDB(`
+    SELECT engineId, unitValue
+    FROM Custom_Engines_Stats
+    WHERE designId = engineId
+      AND partStat = 10
+      AND engineId IN (${placeholders})
+  `, engineIds, 'allRows') || [];
+
+  let inserted = 0;
+  for (const row of powerRows) {
+    const engineId = Number(row?.[0]);
+    const power = Number(row?.[1]);
+    if (!engineId || !Number.isFinite(power)) continue;
+
+    queryDB(`
+      INSERT OR IGNORE INTO Custom_Engine_Progression (SeasonID, RaceID, EngineID, Power, Source)
+      VALUES (?, ?, ?, ?, ?)
+    `, [seasonId, raceId, engineId, power, source || null], 'run');
+    inserted += 1;
+  }
+
+  return { ok: true, seasonId, raceId, inserted };
+}
+
 
 export function fetchMentality(staffID) {
   // Obtengo todas las filas (morale es un array de arrays [[opinion],[opinion], ...])
@@ -2895,6 +2977,19 @@ export function checkCustomTables(year) {
               lastSeasonApplied INTEGER
             );
         `
+    },
+    {
+      name: 'Custom_Engine_Progression',
+      createSQL: `
+        CREATE TABLE Custom_Engine_Progression (
+          SeasonID INTEGER NOT NULL,
+          RaceID INTEGER NOT NULL,
+          EngineID INTEGER NOT NULL,
+          Power REAL NOT NULL,
+          Source TEXT NULL,
+          PRIMARY KEY (SeasonID, RaceID, EngineID)
+        )
+      `
     }
   ];
 
@@ -2934,6 +3029,8 @@ export function checkCustomTables(year) {
   insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, createdEngineRegulationState, year);
 
   createEngineMigrationTrigger();
+
+  ensureCustomEngineProgressionTable();
 }
 
 export function fixCustomEnginesStatsTable() {
