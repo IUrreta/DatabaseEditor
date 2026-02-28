@@ -235,11 +235,11 @@ export const attributesContributions3 = {
 /* way more impact to accelaration*/
 export const attributesContributions4 = {
     top_speed: 0.15,
-    acceleration: 0.08,
+    acceleration: 0.05,
     drs: 0.1,
-    low_speed: 0.17,
-    medium_speed: 0.17,
-    high_speed: 0.17,
+    low_speed: 0.18,
+    medium_speed: 0.18,
+    high_speed: 0.18,
     dirty_air: 0.05,
     brake_cooling: 0.05,
     engine_cooling: 0.015

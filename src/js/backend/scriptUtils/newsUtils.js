@@ -1370,7 +1370,7 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
             }
         }
 
-        const threshold = bestStat10 * 0.95; // >5% below leader
+        const threshold = bestStat10 * 0.92; // >8% underperformance to be affected
         const underperformers = enginesData.filter(engineRow => {
             const stat10 = getEngineStat10(engineRow);
             return stat10 !== null && stat10 < threshold;
@@ -1382,12 +1382,28 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
                 // Rare regression: -5% to 0%
                 return Math.round(((-5 + (Math.random() * 5)) * 100)) / 100;
             }
-            if (r < 0.95) {
+            if (r < 0.87) {
                 // Usual case: 1% to 7%
                 return Math.round(((1 + (Math.random() * 6)) * 100)) / 100;
             }
-            // Very rare breakout: 7% to 16%
+            // Very rare breakout: 7% to 18%
             return Math.round(((7 + (Math.random() * 9)) * 100)) / 100;
+        };
+
+        const getUpgradeTuningForEngine = (stat10) => {
+            const best = Number(bestStat10);
+            const current = Number(stat10);
+            if (!Number.isFinite(best) || best <= 0 || !Number.isFinite(current)) {
+                return { minBonusPct: 0, multiplier: 1 };
+            }
+            const behindPct = ((best - current) / best) * 100;
+            if (behindPct > 35) {
+                return { minBonusPct: 5, multiplier: 1.5 };
+            }
+            if (behindPct >= 20) {
+                return { minBonusPct: 0, multiplier: 1.25 };
+            }
+            return { minBonusPct: 0, multiplier: 1 };
         };
 
         const engineImprovements = underperformers.map(engineRow => {
@@ -1395,9 +1411,17 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
             const name = engineRow[2];
             const stats = engineRow[1] || {};
             const improvements = {};
+            const tuning = getUpgradeTuningForEngine(getEngineStat10(engineRow));
 
             for (const statId of Object.keys(stats)) {
-                improvements[statId] = randomImprovementPct();
+                let pct = randomImprovementPct();
+                if (tuning.minBonusPct) {
+                    pct += tuning.minBonusPct;
+                }
+                if (tuning.multiplier !== 1) {
+                    pct *= tuning.multiplier;
+                }
+                improvements[statId] = Math.round(pct * 100) / 100;
             }
 
             return { engineId, name, improvements };

@@ -1261,6 +1261,7 @@ function update_engine_allocations(message) {
         engine_map[team[0]] = team[1]
     })
     setEngineAllocations(engine_map)
+    window.__ENGINE_ALLOCATIONS__ = engine_map
 
     for (let key in engine_names) {
         if (key > 10) {
@@ -1274,6 +1275,7 @@ function update_engine_allocations(message) {
             addEngineName(engineId, engine[2])
         }
     })
+    window.__ENGINE_NAMES__ = { ...engine_names }
 
     reloadTables()
 }

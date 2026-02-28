@@ -38,7 +38,6 @@ Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
 
 const overviewAttributes = [
-    { key: "engine_power", label: "Engine Power" },
     { key: "top_speed", label: "Top speed" },
     { key: "acceleration", label: "Acceleration" },
     { key: "low_speed", label: "Low speed" },
@@ -47,7 +46,9 @@ const overviewAttributes = [
     { key: "drs", label: "DRS Effectiveness" },
     { key: "dirty_air", label: "Dirty air tolerance" },
     { key: "brake_cooling", label: "Brake cooling" },
+    { key: "engine_power", label: "Engine power" },
     { key: "engine_cooling", label: "Engine cooling" }
+    
 ];
 
 function clampPercent(value) {
