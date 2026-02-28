@@ -521,48 +521,6 @@ export function change2024Standings(mod = "2025") {
     }
 }
 
-export function change2025Standings(mod = "2026") {
-    if (!changes2026.DriverStandings || !Array.isArray(changes2026.DriverStandings)) {
-        console.error("No driver standings found");
-    } else {
-        for (const entry of changes2026.DriverStandings) {
-            const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
-            const existingEntry = queryDB(`SELECT * FROM Races_DriverStandings WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?`, [DriverID, RaceFormula, SeasonID], "singleRow");
-            if (!existingEntry) {
-                queryDB(`INSERT INTO Races_DriverStandings (DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
-                VALUES (?, ?, ?, ?, ?, ?, ?)`, [DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
-                console.log("Inserted new driver standing for DriverID:", DriverID);
-            } else {
-                queryDB(`
-                UPDATE Races_DriverStandings SET LastPointsChange = ?, LastPositionChange = ?, Points = ?, Position = ?
-                WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?
-                `, [LastPointsChange, LastPositionChange, Points, Position, DriverID, RaceFormula, SeasonID], 'run');
-            }
-        }
-    }
-
-    if (!changes2026.TeamStandings || !Array.isArray(changes2026.TeamStandings)) {
-        console.error("No team standings found");
-    } else {
-        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2025`, [], 'run');
-        for (const entry of changes2026.TeamStandings) {
-            const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
-
-            queryDB(`
-            INSERT INTO Races_TeamStandings (TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            `, [TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
-        }
-        const globals = getGlobals();
-        if (!globals.isCreateATeam){
-            queryDB(`DELETE FROM Races_TeamStandings WHERE TeamID = 32`, [], 'run');
-        }
-    }
-    if (mod === "2026") {
-        updateSeasonModTable("change-cfd-2026", 1, "2026");
-    }
-}
-
 export function manageFeederSeries() {
     if (!contracts.FeederSeries || !Array.isArray(contracts.FeederSeries)) {
         console.error("No feeder series found");
@@ -1412,6 +1370,64 @@ export function changeAdditionalRegulations2026(){
         changeBudgets(20000000);
         updateFacilities2026();
         updateSeasonModTable("change-regulations-2026", 1, "2026");
+    }
+}
+
+export function change2025Standings(mod = "2026") {
+    if (!changes2026.DriverStandings || !Array.isArray(changes2026.DriverStandings)) {
+        console.error("No driver standings found");
+    } else {
+        for (const entry of changes2026.DriverStandings) {
+            const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
+            const existingEntry = queryDB(`SELECT * FROM Races_DriverStandings WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?`, [DriverID, RaceFormula, SeasonID], "singleRow");
+            if (!existingEntry) {
+                queryDB(`INSERT INTO Races_DriverStandings (DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`, [DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
+                console.log("Inserted new driver standing for DriverID:", DriverID);
+            } else {
+                queryDB(`
+                UPDATE Races_DriverStandings SET LastPointsChange = ?, LastPositionChange = ?, Points = ?, Position = ?
+                WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?
+                `, [LastPointsChange, LastPositionChange, Points, Position, DriverID, RaceFormula, SeasonID], 'run');
+            }
+        }
+    }
+
+    if (!changes2026.TeamStandings || !Array.isArray(changes2026.TeamStandings)) {
+        console.error("No team standings found");
+    } else {
+        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2025`, [], 'run');
+        for (const entry of changes2026.TeamStandings) {
+            const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
+
+            queryDB(`
+            INSERT INTO Races_TeamStandings (TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            `, [TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
+        }
+        const globals = getGlobals();
+        if (!globals.isCreateATeam){
+            queryDB(`DELETE FROM Races_TeamStandings WHERE TeamID = 32`, [], 'run');
+        }
+    }
+    updateRecordsTo2026();
+    if (mod === "2026") {
+        updateSeasonModTable("change-cfd-2026", 1, "2026");
+    }
+}
+
+function updateRecordsTo2026(){
+    if (!changes2026.Records || !Array.isArray(changes2026.Records)) {
+        console.log("No records changes found");
+    }
+    else {
+        changes2026.Records.forEach((record) => {
+            const { StaffID, Wins, Poles, Podiums, FastestLaps, Championships } = record;
+            const points2025 = changes2026.DriverStandings.find(x => x.DriverID === StaffID)?.Points || 0;
+            const points2024 = changes.DriverStandings.find(x => x.DriverID === StaffID)?.Points || 0;
+            const points = points2025 - points2024;
+            queryDB(`UPDATE Staff_Driver_RaceRecordBeforeGameStart SET TotalWins = TotalWins + ?, TotalPoles = TotalPoles + ?, TotalPodiums = TotalPodiums + ?, TotalFastestLaps = TotalFastestLaps + ?, TotalChampionshipWins = TotalChampionshipWins + ?, TotalPointsScored = TotalPointsScored + ? WHERE StaffID = ?`, [Wins, Poles, Podiums, FastestLaps, Championships, points, StaffID], 'run');
+        });
     }
 }
 

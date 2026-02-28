@@ -17676,6 +17676,7 @@ p.news-error-api-key {
   flex-direction: row;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .recent-file {
