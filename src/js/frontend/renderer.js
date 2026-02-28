@@ -1366,6 +1366,8 @@ function manage_custom_team(nameColor) {
         const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
         command.execute();
 
+        document.querySelector(".lineup-team--cadillac").classList.remove("d-none")
+
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -1385,6 +1387,7 @@ function manage_custom_team(nameColor) {
     else {
         resizeWindowToHeight("10teams")
         custom_team = false
+        document.querySelector(".lineup-team--cadillac").classList.add("d-none")
         document.getElementById("customTeamTransfers").classList.add("d-none")
         document.getElementById("customTeamPerformance").classList.add("d-none")
         document.getElementById("customTeamDropdown").classList.add("d-none")

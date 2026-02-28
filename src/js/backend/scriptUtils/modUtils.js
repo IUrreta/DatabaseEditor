@@ -527,11 +527,17 @@ export function change2025Standings(mod = "2026") {
     } else {
         for (const entry of changes2026.DriverStandings) {
             const { DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID } = entry;
-
-            queryDB(`
-            UPDATE Races_DriverStandings SET LastPointsChange = ?, LastPositionChange = ?, Points = ?, Position = ?
-            WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?
-            `, [LastPointsChange, LastPositionChange, Points, Position, DriverID, RaceFormula, SeasonID], 'run');
+            const existingEntry = queryDB(`SELECT * FROM Races_DriverStandings WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?`, [DriverID, RaceFormula, SeasonID], "singleRow");
+            if (!existingEntry) {
+                queryDB(`INSERT INTO Races_DriverStandings (DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID)
+                VALUES (?, ?, ?, ?, ?, ?, ?)`, [DriverID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
+                console.log("Inserted new driver standing for DriverID:", DriverID);
+            } else {
+                queryDB(`
+                UPDATE Races_DriverStandings SET LastPointsChange = ?, LastPositionChange = ?, Points = ?, Position = ?
+                WHERE DriverID = ? AND RaceFormula = ? AND SeasonID = ?
+                `, [LastPointsChange, LastPositionChange, Points, Position, DriverID, RaceFormula, SeasonID], 'run');
+            }
         }
     }
 
@@ -735,6 +741,7 @@ export function manageStandings() {
     queryDB(`INSERT INTO Races_PitCrewStandings (SeasonID, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula)
              SELECT 2024, TeamID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula FROM Races_PitCrewStandings WHERE SeasonID = 2025`, [], 'run');
 }
+
 
 export function changeRaces(type) {
     if (!changes.Calendar || !Array.isArray(changes.Calendar)) {
@@ -1160,9 +1167,6 @@ export function addAudiCustomEngine(unitValue = 80) {
         }
     });
 
-    // Part of the 2026 regulations workflow (engines are changed here).
-    updateSeasonModTable("change-regulations-2026", 1, "2026");
-
     return audiEngineId;
 }
 
@@ -1303,6 +1307,7 @@ export function changeLineUps2026() {
     else {
         wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
     }
+    // fixStandings("2025");
 
 }
 
@@ -1372,4 +1377,31 @@ export function updatePerofmrnace2026() {
     }
 
     updateSeasonModTable("change-performance-2026", 1, "2026");
+}
+
+export function fixStandings(forSeason = "2025") {
+    //driverids that are in staff_driverdata and have a contract with teamids between 0 and 10 or 32 and posInTeam <= 2
+    const f1Drivers = queryDB(`SELECT StaffID FROM Staff_Contracts WHERE (TeamID <= 10 OR TeamID = 32) AND PosInTeam <= 2 AND StaffID IN (SELECT StaffID FROM Staff_DriverData)`, [], "allRows");
+    //delete all from that season
+    queryDB(`DELETE FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1`, [forSeason], 'run');
+    let position = 1;
+    f1Drivers.forEach((driver) => {
+        queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (?, ?, 0, ?, 0, 0, 1)`, [forSeason, driver[0], position], 'run');
+        position++;
+    });
+}
+
+
+export function changeAdditionalRegulations2026(){
+    if (!changes2026.Regulations || !Array.isArray(changes2026.Regulations)) {
+        console.log("No regulations changes found");
+    }
+    else {
+        changes2026.Regulations.forEach((reg) => {
+            const { Name, CurrentValue, MinValue, MaxValue } = reg;
+            queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = ?, MinValue = ?, MaxValue = ? WHERE Name = ?`, [CurrentValue, MinValue, MaxValue, Name], 'run');
+        });
+        changeBudgets();
+        updateSeasonModTable("change-regulations-2026", 1, "2026");
+    }
 }

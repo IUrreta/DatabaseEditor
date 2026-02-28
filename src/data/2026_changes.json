@@ -527,5 +527,13 @@
             "TyreDeg": 6,
             "Objective": 22.4
         }
+    ],
+    "Regulations": [
+        {
+            "Name": "SpendingCap",
+            "CurrentValue": 215000000,
+            "MinValue": 125000000,
+            "MaxValue": 215000000
+        }
     ]
 }

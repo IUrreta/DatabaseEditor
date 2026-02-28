@@ -30,7 +30,8 @@ import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap
   changeLineUps2026,
   changeDriverNumbers2026,
   apply2026EnginePerformanceChanges,
-  updatePerofmrnace2026} from "./scriptUtils/modUtils";
+  updatePerofmrnace2026,
+  changeAdditionalRegulations2026} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -578,6 +579,9 @@ const workerCommands = {
   },
   changeRegulations: (data, postMessage) => {
     removeFastestLap(data.mod);
+    if (data.mod === "2026"){
+      changeAdditionalRegulations2026();
+    }
     postMessage({
       responseMessage: "Regulations changed",
       isEditCommand: true,

@@ -3500,6 +3500,7 @@ body.og-theme .main-calendar-section {
   flex: 1;
   min-height: 0;
   gap: 14px;
+  max-height: calc(100% - 110px);
 }
 
 #regulations .regulations-panels {
@@ -13744,10 +13745,65 @@ body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
   text-shadow: 0 0 5px white;
 }
 
+.download-links{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.recommended-downloads{
+  transform: translateY(25px);
+  color: var(--text-general);
+  font-size: 17px;
+}
+
+.recommended-downloads-title {
+  --order: 0;
+}
+
+.recommended-downloads a{
+  color: var(--text-general);
+  text-decoration: none;
+}
+
+.recommended-downloads .download-link-text {
+  position: relative;
+  display: inline-block;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+
+.recommended-downloads .download-link-text::before {
+  content: attr(data-glow);
+  text-shadow: 0 0 5px white;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.recommended-downloads a:hover .download-link-text::before {
+  opacity: 1;
+}
+
+body:has(#modpill.active) .recommended-downloads .recommended-downloads-title,
+body:has(#modpill.active) .recommended-downloads .download-link,
+body:has(#modpill.active) .recommended-downloads .creator-separator {
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateY(-10px);
+  animation: recommended-downloads 0.6s forwards;
+  animation-delay: calc((var(--order) * 0.07s) + 1.9s);
+}
+
 body:has(#modpill.active) .mod-creators a {
   animation: creator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
-
 }
 
 body:has(#modpill.active) .mod-creators a::before {
@@ -13862,9 +13918,39 @@ body:has(#modpill.active) .coming-soon {
   }
 }
 
+@keyframes recommended-downloads {
+  0% {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(-10px);
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  55% {
+    opacity: 1;
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+    /* text-shadow: none; */
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .mod-subtitle-letter {
     opacity: 1;
+    animation: none !important;
+  }
+
+  body:has(#modpill.active) .recommended-downloads .recommended-downloads-title,
+  body:has(#modpill.active) .recommended-downloads .download-link,
+  body:has(#modpill.active) .recommended-downloads .creator-separator {
+    opacity: 1;
+    filter: none;
+    transform: none;
     animation: none !important;
   }
 }
@@ -15432,19 +15518,71 @@ body:has(#modpill.active) .one-change {
   color: var(--dark-text);
 }
 
-#dateDay2026::before{
-  content: '29th';
+#dateDay2026,
+#dateMonth2026,
+#dateYear2026 {
+  --date-switch-delay: 0s;
+}
+
+#dateMonth2026 {
+  --date-switch-delay: 0.05s;
+}
+
+#dateYear2026 {
+  --date-switch-delay: 0.1s;
+}
+
+#dateDay2026,
+#dateMonth2026,
+#dateYear2026 {
+  transition: transform 0.2s ease, color 0.2s ease;
+  transition-delay: var(--date-switch-delay);
+  transform: translateY(0);
+  overflow: visible;
+}
+
+#dateDay2026::after,
+#dateMonth2026::after,
+#dateYear2026::after {
   position: absolute;
-  font-family: 'Formula1Bold';
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition-delay: var(--date-switch-delay);
   color: var(--dark-text);
+  font-family: 'Formula1Bold';
+  pointer-events: none;
+  z-index: 1;
+}
+
+#dateDay2026::after {
+  content: '29th';
+}
+
+#dateMonth2026::after {
+  content: 'December';
+}
+
+#dateYear2026::after {
+  content: '2025';
+}
+
+.one-change:has(.completed) #dateDay2026,
+.one-change:has(.completed) #dateMonth2026,
+.one-change:has(.completed) #dateYear2026 {
+  transform: translateY(10px);
+  color: transparent;
+}
+
+.one-change:has(.completed) #dateDay2026::after,
+.one-change:has(.completed) #dateMonth2026::after,
+.one-change:has(.completed) #dateYear2026::after {
+  opacity: 1;
+  transform: translateY(-10px);
 }
 
 #dateMonth, #dateMonth2026 {
@@ -15456,21 +15594,6 @@ body:has(#modpill.active) .one-change {
 }
 
 #dateMonth::before {
-  content: 'December';
-  font-family: 'Formula1Bold';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: -1;
-  transform: translateY(-20px);
-  animation-delay: 0.2s;
-  color: var(--dark-text);
-}
-
-#dateMonth2026::before {
   content: 'December';
   font-family: 'Formula1Bold';
   position: absolute;
@@ -15500,39 +15623,21 @@ body:has(#modpill.active) .one-change {
   color: var(--dark-text);
 }
 
-#dateYear2026::before {
-  content: '2025';
-  position: absolute;
-  font-family: 'Formula1Bold';
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  z-index: -1;
-  transform: translateY(-20px);
-  animation-delay: 0.3s;
-  color: var(--dark-text);
-}
-
-.one-change:has(.completed) #dateDay::before, .one-change:has(.completed) #dateDay2026::before {
+.one-change:has(.completed) #dateDay::before {
   animation: slide-down 0.3s forwards 0s;
 }
 
-.one-change:has(.completed) #dateMonth::before, .one-change:has(.completed) #dateMonth2026::before {
+.one-change:has(.completed) #dateMonth::before {
   animation: slide-down 0.3s forwards 0.05s;
 }
 
-.one-change:has(.completed) #dateYear::before, .one-change:has(.completed) #dateYear2026::before {
+.one-change:has(.completed) #dateYear::before {
   animation: slide-down 0.3s forwards 0.1s;
 }
 
 .one-change:has(.completed) #dateDay,
 .one-change:has(.completed) #dateMonth,
-.one-change:has(.completed) #dateYear,
-.one-change:has(.completed) #dateDay2026,
-.one-change:has(.completed) #dateMonth2026,
-.one-change:has(.completed) #dateYear2026 {
+.one-change:has(.completed) #dateYear {
   transition: color 0.15s;
   color: transparent;
 }
