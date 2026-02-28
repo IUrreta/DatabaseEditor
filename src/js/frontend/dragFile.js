@@ -155,6 +155,7 @@ async function updateStatusUI(type, textConfig) {
 
     if (type === 'loading') {
         loadingSpinner.classList.add("show");
+        statusCircle.classList.remove("success-mode");
         
         statusTitle.textContent = "Analyzing database...";
         statusDesc.innerText = "This may take a few seconds.";

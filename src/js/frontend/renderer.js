@@ -1609,6 +1609,17 @@ export function setRenaultEnginePresentation(engineMode) {
 
 }
 
+export function updateJenzerToDams(mode = "dams") {
+    if (mode === "dams") {
+        logos_disc[30] = '../assets/images/logos/dams.png'
+        combined_dict[30] = "DAMS (F3)"
+    }
+    else if (mode === "jenzer") {
+        logos_disc[30] = '../assets/images/logos/jenzer.png'
+        combined_dict[30] = "Jenzer Motorsport (F3)"
+    }
+}
+
 document.querySelectorAll(".color-picker").forEach(function (elem) {
     let reader = elem.parentNode.querySelector(".color-reader")
     elem.addEventListener("input", function () {

@@ -1,6 +1,6 @@
 import { set } from "idb-keyval";
 import { Command } from "../backend/command.js";
-import { applyConfigFromEditorUI, setRenaultEnginePresentation } from "./renderer.js";
+import { applyConfigFromEditorUI, setRenaultEnginePresentation, updateJenzerToDams } from "./renderer.js";
 
 let calendarEditMode = null, calendarEditMode2026 = null;
 let modsParticlesAnimator = null;
@@ -422,6 +422,17 @@ function initMods2026Actions(){
 
   const changePerformanceButton2026 = mods2026View.querySelector(".change-performance-2026");
   if (changePerformanceButton2026) {
+    const syncJenzerDamsState = () => {
+      updateJenzerToDams(changePerformanceButton2026.classList.contains("completed") ? "dams" : "jenzer");
+    };
+
+    // Ensure the UI-dependent state is correct when the mod was already applied
+    // (e.g. after "Mod data fetched" marks the button as completed).
+    syncJenzerDamsState();
+
+    const mo = new MutationObserver(() => syncJenzerDamsState());
+    mo.observe(changePerformanceButton2026, { attributes: true, attributeFilter: ["class"] });
+
     changePerformanceButton2026.addEventListener("click", function () {
       const alfaReplaceButton = document.querySelector("#alfaReplaceButton button");
       if (alfaReplaceButton && alfaReplaceButton.dataset.value === "stake") {
@@ -431,6 +442,7 @@ function initMods2026Actions(){
       const command = new Command("add2026Engines", {mod: "2026"});
       command.execute();
       setRenaultEnginePresentation("honda");
+      updateJenzerToDams("dams");
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
       syncMods2026ApplyAllButtonState();

@@ -47,7 +47,7 @@ export let combined_dict = {
     10: "Aston Martin",
     11: "Prema Racing (F2)",
     12: "Virtuosi Racing (F2)",
-    13: "Carlin (F2)",
+    13: "Rodin (F2)",
     14: "Hitech GP (F2)",
     15: "ART Grand Prix (F2)",
     16: "MP Motorsport (F2)",
@@ -63,8 +63,8 @@ export let combined_dict = {
     26: "VAR Racing (F3)",
     27: "MP Motorsport (F3)",
     28: "Campos Racing (F3)",
-    29: "Carlin (F3)",
-    30: "Jenzzer Motorsport (F3)",
+    29: "Rodin (F3)",
+    30: "Jenzer Motorsport (F3)",
     31: "PHM Racing (F3)",
     32: "Custom Team"
 }
@@ -234,7 +234,7 @@ export let logos_disc = {
     10: '../assets/images/logos/astonMartin.png',
     11: '../assets/images/logos/prema.png',
     12: '../assets/images/logos/invicta.png',
-    13: '../assets/images/logos/carlin.png',
+    13: '../assets/images/logos/rodin.png',
     14: '../assets/images/logos/hitech.png',
     15: '../assets/images/logos/art.png',
     16: '../assets/images/logos/mp.png',
@@ -250,7 +250,7 @@ export let logos_disc = {
     26: '../assets/images/logos/var.png',
     27: '../assets/images/logos/mp.png',
     28: '../assets/images/logos/campos.png',
-    29: '../assets/images/logos/carlin.png',
+    29: '../assets/images/logos/rodin.png',
     30: '../assets/images/logos/jenzer.png',
     31: '../assets/images/logos/phm.png',
     32: '../assets/images/logos/placeholder.png'
