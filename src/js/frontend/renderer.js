@@ -42,7 +42,7 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
-import { initSeasonMods, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
+import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
 
 
 
@@ -1031,6 +1031,7 @@ const messageHandlers = {
     },
     "Mod data fetched": (message) => {
       updateEditsWithModData(message)
+      syncAduoTpToggles(message?.aduo_tp_enabled);
       syncMods2025Dependencies();
       syncMods2026Dependencies();
       syncMods2026ApplyAllButtonState();

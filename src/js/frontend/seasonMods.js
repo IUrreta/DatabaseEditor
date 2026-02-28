@@ -6,6 +6,25 @@ let calendarEditMode = null, calendarEditMode2026 = null;
 let modsParticlesAnimator = null;
 let modsParticlesObserverInit = false;
 
+function normalizeToggleEnabled(value) {
+  return value === true || value === 1 || value === "1";
+}
+
+function setAduoTpTogglesChecked(enabled) {
+  const aduoToggle = document.querySelector("#mods2026View #aduoTPSToggle");
+  if (aduoToggle) aduoToggle.checked = enabled;
+
+  const settingsToggle = document.getElementById("aduoTPSToggleSettings");
+  if (settingsToggle) settingsToggle.checked = enabled;
+}
+
+function updateAduoTpEnabled(enabled) {
+  setAduoTpTogglesChecked(enabled);
+  const command = new Command("updateAduoTPEnabled", { enabled });
+  command.execute();
+  syncMods2026ApplyAllButtonState();
+}
+
 function getCustomTeamName() {
   const teamNode = document.querySelector(".ct-teamname");
   return String(teamNode?.dataset.teamshow || teamNode?.dataset.teamname || "");
@@ -534,10 +553,15 @@ function initMods2026Actions(){
   const aduoToggle = mods2026View.querySelector("#aduoTPSToggle");
   if (aduoToggle) {
     aduoToggle.addEventListener("change", function () {
-      const enabled = this.checked;
-      const command = new Command("updateAduoTPEnabled", { enabled });
-      command.execute();
-      syncMods2026ApplyAllButtonState();
+      updateAduoTpEnabled(this.checked);
+    });
+  }
+
+  const settingsToggle = document.getElementById("aduoTPSToggleSettings");
+  if (settingsToggle && settingsToggle.dataset.aduoInit !== "1") {
+    settingsToggle.dataset.aduoInit = "1";
+    settingsToggle.addEventListener("change", function () {
+      updateAduoTpEnabled(this.checked);
     });
   }
 
@@ -694,6 +718,12 @@ export function initSeasonMods() {
   initMods2025Actions();
   initMods2026Actions();
   initModsParticlesObserver();
+}
+
+export function syncAduoTpToggles(enabledRaw) {
+  const enabled = normalizeToggleEnabled(enabledRaw);
+  setAduoTpTogglesChecked(enabled);
+  syncMods2026ApplyAllButtonState();
 }
 
 export function syncMods2026ApplyAllButtonState() {
