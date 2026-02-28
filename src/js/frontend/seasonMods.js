@@ -715,15 +715,19 @@ export function updateMod2026Blocking(data) {
   const changeCalendarButton = mods2026View.querySelector(".change-calendar-2026");
   const changeCalendarText = changeCalendarButton ? changeCalendarButton.querySelector("span") : null;
 
+  const modBlocking = mods2026View.querySelector(".mod-blocking.mods-2026-blocking");
+  const changesGrid = mods2026View.querySelector(".changes-grid");
+  const recommendedDownloads = mods2026View.querySelector(".recommended-downloads");
+
   calendarEditMode2026 = null;
 
-  const allowTimeTravel = data === "Start2024" || data === "Start2025";
+  const allowTimeTravel = data === "Start2024" || data === "AlreadyEdited";
   if (timeTravelButton && !timeTravelButton.classList.contains("completed")) {
     timeTravelButton.classList.toggle("disabled", !allowTimeTravel);
     if (timeTravelText) timeTravelText.textContent = allowTimeTravel ? "Apply" : "Disabled";
   }
 
-  const allowCalendarEdit = data === "Start2024" || data === "Start2025" || data === "End2025" || data === "Direct2026" || data === "AlreadyEdited";
+  const allowCalendarEdit = data === "Start2024" || data === "AlreadyEdited";
   if (allowCalendarEdit) {
     calendarEditMode2026 = data;
   }
@@ -732,6 +736,17 @@ export function updateMod2026Blocking(data) {
     changeCalendarButton.classList.toggle("disabled", !allowCalendarEdit);
     if (changeCalendarText) changeCalendarText.textContent = allowCalendarEdit ? "Apply" : "Disabled";
   }
+
+  // if (!modBlocking) return;
+  // if (data === "AlreadyEdited" || data === "Start2024" ) {
+  //   modBlocking.classList.add("d-none");
+  //   changesGrid.classList.remove("d-none");
+  //   recommendedDownloads.classList.remove("d-none");
+  // } else {
+  //   modBlocking.classList.remove("d-none");
+  //   changesGrid.classList.add("d-none");
+  //   recommendedDownloads.classList.add("d-none");
+  // }
 }
 
 export function updateMod2025Blocking(data) {

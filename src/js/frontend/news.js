@@ -32,6 +32,44 @@ let editTitleInput = null;
 let saveArticleBtn = null;
 let cancelArticleBtn = null;
 let originalTitleText = '';
+let cachedNewsAvailable = { normal: false, turning: false };
+
+function isPaidNewsMember() {
+  return window.__USER_DATA__?.paidMember || false;
+}
+
+function canUseGenAiForNews(news) {
+  if (news?.type === "turning_point_aduo") {
+    return isPaidNewsMember();
+  }
+  return true;
+}
+
+function setAduoLockedHidden(el, hidden) {
+  if (!el) return;
+  if (hidden) {
+    el.classList.add('d-none');
+    el.dataset.aduoLocked = '1';
+  } else if (el.dataset.aduoLocked === '1') {
+    el.classList.remove('d-none');
+    delete el.dataset.aduoLocked;
+  }
+}
+
+function applyNewsModalGenAiLocks(news) {
+  const lockGenAi = news?.type === "turning_point_aduo" && !canUseGenAiForNews(news);
+  const regenerateButton = document.getElementById('regenerateArticle');
+  const regenerateWithContextButton = document.getElementById('regenerateWithContext');
+  const optionsContextContainer = document.getElementById('newsOptionsContext');
+
+  if (lockGenAi) {
+    setOptionsContextOpen(false);
+  }
+
+  setAduoLockedHidden(regenerateButton, lockGenAi);
+  setAduoLockedHidden(regenerateWithContextButton, lockGenAi);
+  setAduoLockedHidden(optionsContextContainer, lockGenAi);
+}
 
 const DEFAULT_NEWS_LANGUAGE = "English";
 const NEWS_LANGUAGE_STORAGE_KEY = "newsLanguage";
@@ -318,6 +356,7 @@ async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
   currentModalNews = news;
   currentModalExtraContext = extraContext;
   newsItem?.classList.add('with-transition', 'opened');
+  applyNewsModalGenAiLocks(news);
 
   const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
     keyboard: false
@@ -513,8 +552,7 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
 function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
   let approveButton, randomButton, cancelButton;
   const isAduoTurningPoint = news.type === "turning_point_aduo";
-  const isFreeTier = !newsAvailable.normal && !newsAvailable.turning;
-
+  const isFreeTier = !window.__USER_DATA__?.paidMember
   if (isFreeTier && news.hiddenByAvailability && !isAduoTurningPoint) {
     return;
   }
@@ -831,12 +869,14 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   newsBody.appendChild(readbuttonContainer);
 
   if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
-    const canRead =
-      (newsAvailable.normal === true && !isTurning) ||
-      (isTurning && (newsAvailable.turning === true || isAduoTurningPoint));
+    const canUserRead =
+      (!isTurning && window.__USER_DATA__?.paidMember === true) ||
+      (isTurning && (window.__USER_DATA__?.tierNumber >= 2 || isAduoTurningPoint));
 
-    if (canRead) {
-      readActions.appendChild(contextButton);
+    if (canUserRead) {
+      if (canUseGenAiForNews(news)) {
+        readActions.appendChild(contextButton);
+      }
       readActions.appendChild(readButton);
       readbuttonContainer.appendChild(readActions);
     }
@@ -902,7 +942,7 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
     const isAduoTurningPoint = news.type === "turning_point_aduo";
 
     const h = hashStr(news.stableKey);
-    const isFreeTier = !newsAvailable.normal && !newsAvailable.turning;
+    const isFreeTier = !window.__USER_DATA__?.paidMember && !newsAvailable.normal && !newsAvailable.turning;
     if (isFreeTier) {
       news.hiddenByAvailability = !isAduoTurningPoint;
       news.hiddenReason = news.hiddenByAvailability ? (isTurning ? 'turning' : 'normal') : null;
@@ -1403,9 +1443,76 @@ function buildContextualPrompt(data, config = {}) {
   return prompt;
 }
 
+const ADUO_ENGINE_STAT_LABELS = {
+  10: "Power",
+  6: "Fuel efficiency",
+  14: "Engine durability",
+  18: "ERS durability",
+  19: "Gearbox durability"
+};
+
+const ADUO_ENGINE_STAT_ORDER = [10, 6, 14, 18, 19];
+
+function describeAduoChange(pct) {
+  const v = Number(pct) || 0;
+  if (v > 0) {
+    if (v >= 7) return "significantly improved";
+    if (v >= 4) return "notably improved";
+    if (v >= 2) return "improved";
+    return "slightly improved";
+  }
+  if (v < 0) {
+    if (v <= -7) return "significantly worsened";
+    if (v <= -4) return "notably worsened";
+    if (v <= -2) return "worsened";
+    return "slightly worsened";
+  }
+  return "unchanged";
+}
+
+function buildAduoTemplateArticle(newData) {
+  const quarterString = newData?.data?.quarterString || "current";
+  const seasonYear = newData?.data?.season;
+  const engineImprovements = Array.isArray(newData?.data?.engineImprovements) ? newData.data.engineImprovements : [];
+
+  const headerBits = ["## ADUO window"];
+  if (seasonYear != null) headerBits.push(`(${quarterString} quarter, season ${seasonYear})`);
+  else headerBits.push(`(${quarterString} quarter)`);
+
+  if (!engineImprovements.length) {
+    return `${headerBits.join(" ")}\n\nNo manufacturer upgrade data is available for this window.\n\n---\n\n*Patreon members can generate a full AI-written article (with quotes and extra context) for this turning point.*`;
+  }
+
+  const blocks = engineImprovements.map((entry) => {
+    const name = entry?.name || "Unknown manufacturer";
+    const improvements = entry?.improvements || {};
+
+    const lines = ADUO_ENGINE_STAT_ORDER.map((statId) => {
+      const raw = improvements[statId] ?? improvements[String(statId)];
+      if (raw === undefined || raw === null) return null;
+      const label = ADUO_ENGINE_STAT_LABELS[statId] || `Stat ${statId}`;
+      return `- ${label}: ${describeAduoChange(raw)}`;
+    }).filter(Boolean);
+
+    return `**${name}**\n${lines.length ? lines.join("\n") : "- No detailed stat breakdown available."}`;
+  }).join("\n\n");
+
+  return `${headerBits.join(" ")}\n\nThis turning point summary lists what each engine manufacturer is expected to improve or worsen in this ADUO window.\n\n${blocks}\n\n---\n\n*Patreon members can generate a full AI-written article (with quotes and extra context) for this turning point.*`;
+}
+
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
   const { force = false, extraContext = '' } = opts;
   const stableKey = newData.stableKey ?? newData.id ?? computeStableKey(newData);
+
+  const normalizedType = newData?.type?.startsWith("turning_point_outcome_")
+    ? newData.type.replace("turning_point_outcome_", "turning_point_")
+    : newData?.type;
+
+  if (normalizedType === "turning_point_aduo" && !canUseGenAiForNews(newData)) {
+    clearInterval(interval);
+    if (barProgressDiv) barProgressDiv.style.width = '100%';
+    return buildAduoTemplateArticle(newData);
+  }
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {

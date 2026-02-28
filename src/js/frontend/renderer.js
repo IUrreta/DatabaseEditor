@@ -363,12 +363,16 @@ export async function getUserTier() {
         const data = await response.json();
 
         // The structure matches what api/me.js returns
-        return {
-            paidMember: data.paidMember, // true/false
-            tier: data.tier, // "Backer", "Insider", "Free", etc
+        //set a window variable with the user data to be used in other places of the frontend without needing to call the api again
+        let windowData = {
+            paidMember: data.paidMember,
+            tier: data.tier,
+            tierNumber: data.tierNumber,
             isLoggedIn: data.isLoggedIn,
-            user: { fullName: data.user?.fullName || '' }
         };
+        window.__USER_DATA__ = windowData;
+        windowData.user = { fullName: data.user?.fullName || '' };
+        return windowData;
     } catch (error) {
         console.error("Failed to check auth status", error);
         return { paidMember: false, tier: 'Free', isLoggedIn: false };

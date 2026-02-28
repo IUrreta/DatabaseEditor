@@ -1371,8 +1371,8 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
                 // Usual case: 1% to 7%
                 return Math.round(((1 + (Math.random() * 6)) * 100)) / 100;
             }
-            // Very rare breakout: 7% to 17%
-            return Math.round(((7 + (Math.random() * 10)) * 100)) / 100;
+            // Very rare breakout: 7% to 16%
+            return Math.round(((7 + (Math.random() * 9)) * 100)) / 100;
         };
 
         const engineImprovements = underperformers.map(engineRow => {

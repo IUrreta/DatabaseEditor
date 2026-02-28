@@ -20,11 +20,18 @@ export default function handler(req, res) {
         const paidTiers = ["Backer", "Insider", "Founder"];
         const tier = getEffectiveTier({ name: decoded.name, baseTier: decoded.tier });
         const isPaid = paidTiers.includes(tier);
+        const tierNumbers = {
+            "Free": 0,
+            "Backer": 1,
+            "Insider": 2,
+            "Founder": 3
+        }
 
         return res.json({
             isLoggedIn: true,
             paidMember: isPaid,
             tier: tier,
+            tierNumber: tierNumbers[tier] ?? 0,
             user: { fullName: decoded.name },
         });
 
