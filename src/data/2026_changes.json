@@ -502,7 +502,7 @@
         },
         {
             "TeamID": 7,
-            "Boost": 0.72,
+            "Boost": 0.70,
             "TyreDeg": 1
         },
         {
@@ -512,20 +512,19 @@
         },
         {
             "TeamID": 9,
-            "Boost": 0.80,
+            "Boost": 0.77,
             "TyreDeg": 10
         },
         {
             "TeamID": 10,
-            "Boost": 0.65,
-            "TyreDeg": 4,
-            "Expertise": 1.05
+            "Boost": 0.60,
+            "TyreDeg": 4
         },
         {
             "TeamID": 32,
             "Boost": 0.49,
             "TyreDeg": 6,
-            "Objective": 22.4
+            "Objective": 21.4
         }
     ],
     "Regulations": [
