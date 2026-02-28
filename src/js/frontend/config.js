@@ -111,51 +111,91 @@ export const theme_colors = {
         "labels": "#dedde6",
         "grid": "#292929",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "light-theme": {
         "labels": "#252525",
         "grid": "#d6d6d6",
         "general_secondary": "#1f1f1f",
+        "engine_upgrade_line": "#a18f45cc"
     },
     "og-theme": {
         "labels": "#dedde6",
         "grid": "#323046",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "vaporwave-theme": {
         "labels": "#dedde6",
         "grid": "#5329b5",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "nightly-theme": {
         "labels": "#dedde6",
         "grid": "#292929",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "ferrari-theme": {
         "labels": "#f0e6e8",
         "grid": "#5a3a42",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "redbull-theme": {
         "labels": "#d8e5ff",
         "grid": "#39578f",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "mercedes-theme": {
         "labels": "#c8f9f2",
         "grid": "#2a515c",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "astonmartin-theme": {
         "labels": "#e8f3ee",
         "grid": "#2a5a4a",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "mclaren-theme": {
         "labels": "#f7e6dc",
         "grid": "#5a4033",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "audi-theme": {
+        "labels": "#f0e6e8",
+        "grid": "#4a1f27",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "vcarb-theme": {
+        "labels": "#d8e2ff",
+        "grid": "#2b3f6b",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "williams-theme": {
+        "labels": "#d7e8ff",
+        "grid": "#173a70",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "haas-theme": {
+        "labels": "#e7e7ea",
+        "grid": "#3c3c4c",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "alpine-theme": {
+        "labels": "#ffe0f2",
+        "grid": "#5a3a5f",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     }
 }
 
@@ -166,6 +206,11 @@ export const themeToolbarLogos = {
     "mercedes-theme": { src: "../assets/images/logos/mercedes.png", className: "toolbar-logo--mercedes" },
     "astonmartin-theme": { src: "../assets/images/logos/astonMartin.png", className: "toolbar-logo--astonmartin" },
     "mclaren-theme": { src: "../assets/images/logos/mclaren.png", className: "toolbar-logo--mclaren" },
+    "audi-theme": { src: "../assets/images/logos/audi.png", className: "toolbar-logo--audi" },
+    "vcarb-theme": { src: "../assets/images/logos/visarb.png", className: "toolbar-logo--vcarb" },
+    "williams-theme": { src: "../assets/images/logos/Williams_2026_logo.svg", className: "toolbar-logo--williams" },
+    "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
+    "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
 };
 
 //predictions

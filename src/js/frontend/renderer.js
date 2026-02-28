@@ -1786,6 +1786,33 @@ export function applyConfigFromEditorUI(overrides = {}) {
         }
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
+
+        if (!configCopy || typeof configCopy !== "object") {
+            configCopy = {};
+        }
+        if (!configCopy.teams || typeof configCopy.teams !== "object") {
+            configCopy.teams = {};
+        }
+        configCopy.teams.alphatauri = alphatauri;
+        configCopy.teams.alpine = alpine;
+        configCopy.teams.williams = williams;
+        configCopy.teams.haas = haas;
+        configCopy.teams.alfa = alfa;
+        configCopy.teams.redbull = redbull;
+        configCopy.teams.aston = aston;
+        configCopy.frozenMentality = mentalityFrozen;
+        configCopy.refurbish = refurbish;
+        configCopy.freezeDevelopment = freezeDevelopment;
+        configCopy.forceEditorMinimapColors = forceEditorMinimapColors;
+        configCopy.triggerList = triggerList;
+        configCopy.turningPointsFrequencyPreset = tpPresetIndex;
+        if (data.primaryColor) {
+            configCopy.primaryColor = data.primaryColor;
+            configCopy.secondaryColor = data.secondaryColor;
+        }
+        if (playerTeam !== -1) {
+            configCopy.playerTeam = Number(playerTeam);
+        }
     }
 }
 
@@ -2730,6 +2757,8 @@ function changeTheme() {
     init_colors_dict(selectedTheme)
     updateToolbarThemeLogo()
     syncNightlyIndicator()
+    reload_performance_graph()
+    reload_h2h_graphs()
 
 }
 

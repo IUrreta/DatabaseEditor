@@ -1631,7 +1631,7 @@ function applyAduoUpgradeAnnotations(raceIds, races, labelCount) {
             xMin: boundaryIndex,
             xMax: boundaryIndex,
             display: performanceAnnotationsToggle,
-            borderColor: 'rgba(253, 224, 107, 0.8)',
+            borderColor: theme_colors[selectedTheme]?.engine_upgrade_line || 'rgba(253, 224, 107, 0.8)',
             borderWidth: 2,
             borderDash: [6, 6],
             drawTime: 'beforeDatasetsDraw'
