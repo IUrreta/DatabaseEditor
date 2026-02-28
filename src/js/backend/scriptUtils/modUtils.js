@@ -1044,8 +1044,8 @@ export function insertStaff2025() {
     updateSeasonModTable("extra-drivers", 1, "2025");
 }
 
-function changeBudgets() {
-    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + 15000000`, [], 'run');
+function changeBudgets(amount = 15000000) {
+    queryDB(`UPDATE Finance_TeamBalance SET Balance = Balance + ?`, [amount], 'run');
 }
 
 
@@ -1409,7 +1409,28 @@ export function changeAdditionalRegulations2026(){
             const { Name, CurrentValue, MinValue, MaxValue } = reg;
             queryDB(`UPDATE Regulations_Enum_Changes SET CurrentValue = ?, MinValue = ?, MaxValue = ? WHERE Name = ?`, [CurrentValue, MinValue, MaxValue, Name], 'run');
         });
-        changeBudgets();
+        changeBudgets(20000000);
+        updateFacilities2026();
         updateSeasonModTable("change-regulations-2026", 1, "2026");
+    }
+}
+
+function updateFacilities2026(){
+    if (!changes2026.Facilities || !Array.isArray(changes2026.Facilities)) {
+        console.log("No teams HQ changes found");
+    }
+    else {
+        changes2026.Facilities.forEach((fac) => {
+            const { TeamID, UpgradeBy } = fac;
+            //add one if it doesn't en in 5
+            queryDB(`
+                UPDATE Buildings_HQ
+                SET BuildingID = BuildingID + CASE
+                    WHEN (BuildingID % 10) = 5 THEN 0
+                    ELSE ?
+                END
+                WHERE TeamID = ?
+            `, [UpgradeBy, TeamID], "run");
+        });
     }
 }

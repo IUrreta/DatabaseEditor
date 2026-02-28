@@ -535,5 +535,15 @@
             "MinValue": 125000000,
             "MaxValue": 215000000
         }
+    ],
+    "Facilities" : [
+        {
+            "TeamID": 10,
+            "UpgradeBy": 1
+        },
+        {
+            "TeamID": 9,
+            "UpgradeBy": 1
+        }
     ]
 }
