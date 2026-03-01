@@ -3713,6 +3713,11 @@ export function updateNewsYearsButton(message) {
   const newsYearsButton = document.getElementById("newsSeasonButton");
   newsYearsMenu.innerHTML = '';
 
+  if (!Array.isArray(years) || years.length === 0) {
+    newsYearsButton.querySelector("span").innerText = "Season";
+    return;
+  }
+
   years.forEach((year) => {
     const item = document.createElement("a");
     item.classList.add("redesigned-dropdown-item");

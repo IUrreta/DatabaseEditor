@@ -18,6 +18,25 @@ const _seasonResultsCache = new Map();
 export const _standingsCache = new Map();
 const _dropsCache = new Map();
 
+function isTimeTravel2026Enabled() {
+    try {
+        const exists = queryDB(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2026_SeasonMod'`,
+            [],
+            'singleRow'
+        );
+        if (!exists) return false;
+        const value = queryDB(
+            `SELECT value FROM Custom_2026_SeasonMod WHERE key = 'time-travel-2026'`,
+            [],
+            'singleValue'
+        );
+        return value === "1" || value === 1;
+    } catch {
+        return false;
+    }
+}
+
 function loadTurningPointsFrequencyConfig() {
     try {
         const presetRaw = queryDB(
@@ -71,6 +90,12 @@ export function rebuildStandingsUntilCached(season, seasonResults, raceId, inclu
 
 export function generate_news(savednews, turningPointState) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    if (isTimeTravel2026Enabled() && Number(daySeason?.[1]) < 2026) {
+        const existingList = Object.entries(savednews || {}).map(([id, n]) => ({ id, ...n }));
+        existingList.sort((a, b) => (Number(b.date) || 0) - (Number(a.date) || 0));
+        return { newsList: existingList, turningPointState };
+    }
+
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
     const tpConfig = loadTurningPointsFrequencyConfig();
     // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
@@ -5725,6 +5750,7 @@ export function ensureTurningPointsStructure() {
 }
 
 export function getNewsAndTpYearsAvailable() {
+    const minYear = isTimeTravel2026Enabled() ? 2026 : 0;
     const yearsSet = new Set();
     const editorStateRows = queryDB(
         `SELECT key FROM Custom_News_State WHERE key LIKE '%_news' OR key LIKE '%_turning_points'`,
@@ -5735,7 +5761,9 @@ export function getNewsAndTpYearsAvailable() {
         const match = key.match(/^(\d{4})_(news|turning_points)$/);
         if (match) {
             const year = Number(match[1]);
-            yearsSet.add(year);
+            if (year >= minYear) {
+                yearsSet.add(year);
+            }
         }
     }
     const years = Array.from(yearsSet);

@@ -1251,6 +1251,15 @@ export function changeStats2026() {
         });
         updateSeasonModTable("change-stats-2026", 1, "2026");
     }
+    if (!tables2026.Staff_Performancestats_StartOfMonth || !Array.isArray(tables2026.Staff_Performancestats_StartOfMonth)) {
+        console.log("No performance stats start of month data found");
+    }
+    else {
+        tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
+            const { StaffID, StatID, Val } = entry;
+            queryDB(`UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`, [Val, StaffID, StatID], 'run');
+        });
+    }
 
 }
 

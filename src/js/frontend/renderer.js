@@ -152,6 +152,8 @@ let difcultyCustom = "default"
 export let game_version = 2023;
 export let custom_team = false;
 export let nightlyBlock = false;
+export let seasonModData = {};
+let latestSaveYear = null;
 let firstShow = false;
 let configCopy;
 
@@ -940,6 +942,7 @@ const messageHandlers = {
         loadJuniorTeamDrivers(message);
     },
     "Year fetched": (message) => {
+        latestSaveYear = Number(message);
         generateYearsMenu(message);
     },
     "Previous year teams standings fetched": (message) => {
@@ -1030,11 +1033,15 @@ const messageHandlers = {
         load_custom_engines(message.slice(1))
     },
     "Mod data fetched": (message) => {
+      seasonModData = message || {};
       updateEditsWithModData(message)
       syncAduoTpToggles(message?.aduo_tp_enabled);
       syncMods2025Dependencies();
       syncMods2026Dependencies();
       syncMods2026ApplyAllButtonState();
+      if (latestSaveYear) {
+        generateYearsMenu(latestSaveYear);
+      }
     },
     "Mod compatibility": (message) => {
         updateMod2025Blocking(message)

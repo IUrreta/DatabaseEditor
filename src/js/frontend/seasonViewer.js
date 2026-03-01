@@ -1,6 +1,6 @@
 import { races_names, names_full, team_dict, codes_dict, countries_data, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H, queueAutoCompareDrivers } from './head2head';
-import { game_version, custom_team, manageSaveButton, new_update_notifications, updateFront } from "./renderer";
+import { game_version, custom_team, manageSaveButton, new_update_notifications, seasonModData, updateFront } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
@@ -2171,8 +2171,11 @@ export function generateYearsMenu(actualYear) {
     yearMenu.innerHTML = "";
     yearH2H.innerHTML = "";
 
+    const timeTravel2026Enabled = seasonModData?.["time-travel-2026"] === "1" || seasonModData?.["time-travel-2026"] === 1;
+    const minYear = timeTravel2026Enabled ? 2026 : game_version;
+
     // años (con data-year)
-    for (let year = actualYear; year >= game_version; year--) {
+    for (let year = actualYear; year >= minYear; year--) {
         const a = document.createElement("a");
         a.textContent = String(year);
         a.className = "redesigned-dropdown-item";
