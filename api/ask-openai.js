@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     const body =
       typeof req.body === "string" ? JSON.parse(req.body) : req.body;
 
-    const { messages, model, max_tokens } = body;
+    const { messages, max_tokens } = body;
 
     // 1️⃣ Auth
     const user = getUserTierServer(req);
@@ -44,7 +44,14 @@ export default async function handler(req, res) {
     await redis.expire(redisKey, 60 * 60 * 24);
 
     // 6️⃣ OpenAI
-    const aiModel = model || "gpt-5-mini";
+    let aiModel = "gpt-5-mini";
+    if (tier === "Backer") {
+      aiModel = "gpt-5-nano";
+    }
+    else if (tier === "Insider") {
+      const firstHalfLimit = Math.ceil(limit / 2);
+      aiModel = used < firstHalfLimit ? "gpt-5-mini" : "gpt-5-nano";
+    }
     const safeMaxTokens = Math.min(max_tokens || 1500, 4000);
 
     const input = messages.map(m => ({

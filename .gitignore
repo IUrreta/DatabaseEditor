@@ -24,4 +24,4 @@ test/
 AGENTS.md
 *.tsx
 .vercel
-optimize-team-logos.js
+scripts/

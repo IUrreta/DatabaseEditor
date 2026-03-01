@@ -22,6 +22,13 @@
   font-family: 'Formula1Bold' !important;
 }
 
+.numbersFont {
+  font-family: 'NumbersFont' !important;
+}
+
+html {
+  background-color: var(--background, #111111);
+}
 
 body {
   background-color: var(--background) !important;
@@ -211,6 +218,85 @@ body.og-theme .important-text {
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+/* Developer tools (localhost only) */
+.devtools-window {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 260px;
+  height: 200px;
+  background: rgba(110, 110, 110, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  padding: 10px;
+  color: #fff;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45);
+  z-index: 6000;
+  display: none;
+}
+
+.devtools-window.show {
+  display: block;
+}
+
+.devtools-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: move;
+  user-select: none;
+  margin-bottom: 10px;
+}
+
+.devtools-window.dragging {
+  user-select: none;
+}
+
+.devtools-title {
+  font-family: 'Formula1Bold';
+  font-size: 16px;
+}
+
+.devtools-close {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 20px;
+  line-height: 20px;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.devtools-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.devtools-action {
+  border: 0;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: rgba(40, 40, 40, 0.7);
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.1s, background-color 0.15s;
+}
+
+.devtools-action:hover {
+  background: rgba(40, 40, 40, 0.88);
+}
+
+.devtools-action:active {
+  transform: scale(0.98);
+}
+
+.devtools-action:disabled {
+  opacity: 0.7;
+  cursor: default;
 }
 
 .patreon-plain-text {
@@ -903,7 +989,6 @@ i.bi-file-text:hover {
   opacity: 0.13;
   text-shadow: none;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   pointer-events: none;
   z-index: 1;
@@ -1027,43 +1112,79 @@ i.bi-file-text:hover {
   font-size: 20px;
   padding-right: 2rem;
 }
-
+/* Base */
 input[role="switch"] {
-  border: none;
   cursor: pointer;
+  box-shadow: none;
+  background-color: transparent !important;
+  transition: border-color 0.15s, background-color 0.15s;
+  border: 2px solid var(--switch-border-off) !important;
+
+  /* clave: necesitamos posicionar el pseudo-thumb */
+  position: relative;
+
+  /* clave: desactivamos el “ball” de bootstrap (background-image) */
+  --bs-form-switch-bg: none !important;
 }
 
+/* Si no quieres glow de focus */
 input[role="switch"]:focus {
   box-shadow: none;
 }
 
-body.light-theme input[role="switch"]:not(:checked) {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
+/* THUMB: un solo SVG (thumb-general.svg) coloreable */
+input[role="switch"]::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+
+  /* tamaño del thumb: ajusta si tu switch es más grande/pequeño */
+  width: 0.85rem;
+  height: 0.85rem;
+
+  /* posición OFF */
+  left: 0.01rem;
+
+  /* el SVG solo define la forma */
+  -webkit-mask: url('../assets/images/thumb-general.svg') no-repeat center / contain;
+  mask: url('../assets/images/thumb-general.svg') no-repeat center / contain;
+
+  /* color del thumb (OFF por defecto) */
+  background-color: var(--switch-border-off);
+
+  transition: left 0.15s, background-color 0.15s;
 }
 
-body.light-theme input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled-light.svg') !important;
-}
-
+/* OFF */
 input[role="switch"]:not(:checked) {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
+  border-color: var(--switch-border-off) !important;
 }
 
-
-input[role="switch"]:not(:checked):focus {
-  --bs-form-switch-bg: url('../assets/images/thumb-disabled.svg') !important;
-}
-
+/* ON */
 input[role="switch"]:checked {
-  --bs-form-switch-bg: url('../assets/images/thumb.svg') !important;
-  border: 2px solid var(--new-primary) !important;
+  border-color: var(--switch-border-on) !important;
   background-color: transparent !important;
 }
 
-input[role="switch"] {
-  background-color: transparent !important;
-  transition: border-color 0.15s;
-  border: 2px solid var(--text-general) !important;
+/* mover thumb a la derecha cuando está ON */
+input[role="switch"]:checked::after {
+  /* calc: 100% - thumbWidth - margenIzq */
+  left: calc(100% - 0.85rem - 0.01rem);
+  background-color: var(--switch-border-on);
+}
+
+/* Variables por tema */
+body.light-theme {
+  --switch-thumb-color-off: #b0b0b0;          /* gris off */
+  --switch-thumb-color-on: var(--new-primary);/* on */
+  --switch-thumb-color-focus: var(--new-primary);
+}
+
+body:not(.light-theme) {
+  --switch-thumb-color-off: #555;             /* gris oscuro off */
+  --switch-thumb-color-on: var(--new-primary);
+  --switch-thumb-color-focus: var(--new-primary);
 }
 
 
@@ -3349,7 +3470,7 @@ body.og-theme .main-calendar-section {
 #season_viewer,
 #head2head_viewer,
 #car_performance,
-#mod_25,
+#season_mods,
 #news {
   flex-direction: column;
 }
@@ -3379,6 +3500,7 @@ body.og-theme .main-calendar-section {
   flex: 1;
   min-height: 0;
   gap: 14px;
+  max-height: calc(100% - 110px);
 }
 
 #regulations .regulations-panels {
@@ -3426,7 +3548,7 @@ body.og-theme .main-calendar-section {
 
 #regulations .viewer-element-name {
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 #regulations .viewer-element .stat-number {
@@ -3517,6 +3639,10 @@ body.og-theme .main-calendar-section {
   align-items: center;
 }
 
+.form-check{
+  margin-bottom: 0px !important;
+}
+
 #regulations .regulations-switch .form-check-input {
   margin: 0;
 }
@@ -3572,6 +3698,19 @@ DRIVERS TABLE
   display: block;
   text-transform: uppercase;
   font-size: 13px;
+}
+
+.teams-table-engine {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.teams-table-engine-logo {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  flex: 0 0 auto;
 }
 
 .teams-table-row:hover .teams-table-engine-name {
@@ -4155,9 +4294,6 @@ phm
 }
 
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="17"]) img,  .team-logo-abbr:has(.junior-team-logo-team[data-teamid="31"]) img{ 
-  width: 70px;
-}
 
 /* mp */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="27"]) img { 
@@ -4169,17 +4305,14 @@ phm
   width: 38px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="16"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="27"]) img { 
-  width: 90px;
-}
 
 /* carlin*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="29"]) img { 
-  padding: 9px 2px;
+  padding: 0px;
 }
 
 .junior-formula-logo img[data-junior-team-id="13"], .junior-formula-logo img[data-junior-team-id="29"] {
-  padding: 5px 2px;
+  padding: 0px
 }
 
 .team-logo-abbr:has(.junior-team-logo-team[data-teamid="13"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="29"]) img { 
@@ -4195,9 +4328,6 @@ phm
   width: 40px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="21"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="23"]) img {
-  width: 110px;
-}
 
 /* art */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="24"]) img {
@@ -4208,9 +4338,6 @@ phm
   width: 34px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="15"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="24"]) img {
-  width: 80px;
-}
 
 /*hitech*/
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="14"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="25"]) img {
@@ -4234,9 +4361,6 @@ phm
   width: 32px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="20"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="26"]) img {
-  width: 80px;
-}
 
 /* prema */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="11"]) img, .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="22"]) img {
@@ -4256,10 +4380,6 @@ phm
   width: 30px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="19"]) img, .team-logo-abbr:has(.junior-team-logo-team[data-teamid="28"]) img {
-  width: 76px;
-}
-
 /* invicta */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="12"]) img {
   width: 42px;
@@ -4269,28 +4389,16 @@ phm
   width: 32px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="12"]) img {
-  width: 88px;
-}
 
 /* dams */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="18"]) img {
   width: 36px;
 }
 
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="18"]) img {
-  width: 72px;
-}
-
 
 /* jenzer */
 .team-logo-abbr:has(.junior-team-logo-driver[data-teamid="30"]) img {
   width: 38px;
-}
-
-
-.team-logo-abbr:has(.junior-team-logo-team[data-teamid="30"]) img {
-  width: 74px;
 }
 
 .driver-space:not(.affiliates-space) .junior-formula-logo{
@@ -4855,11 +4963,11 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 }
 
 .drivers-table-row:hover .varhoverback {
-  background-color: #dfdfdf !important;
+  background-color: #FF5A00 !important;
 }
 
 .teams-table-row .variconback {
-  background-color: #dfdfdf;
+  background-color: #FF5A00;
 }
 
 .drivers-table-row:hover .trihoverback {
@@ -4871,11 +4979,11 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 }
 
 .drivers-table-row:hover .jenhoverback {
-  background-color: #cbcbcb !important;
+  background-color: #00C8FF !important;
 }
 
 .teams-table-row .jeniconback {
-  background-color: #cbcbcb;
+  background-color: #00C8FF;
 }
 
 .new-team-logo {
@@ -5946,11 +6054,16 @@ body.light-theme .flag-header img {
   margin-top: -6px;
 }
 
+.part-performance-title:has(.arrows.d-none) .part-name-buttons{
+  margin-left: 0px;
+}
+
 .part-name-buttons {
   display: flex;
   flex-direction: row;
   gap: 10px;
-  margin-left: 20px;
+  margin-left: 5px;
+  flex-grow: 1;
 }
 
 .part-buttons {
@@ -6029,9 +6142,48 @@ body.light-theme .flag-header img {
   color: var(--text-selected);
 }
 
+.engine-performance .custom-engine-flag {
+  position: absolute;
+  right: 14px;
+  top: 7px;
+  font-size: 20px;
+  color: var(--text-tertiary);
+  pointer-events: auto;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: color 0.15s, background-color 0.15s, background 0.15s;
+}
+
+.engine-performance .custom-engine-flag.bi-trash {
+  background: color-mix(in srgb, var(--negative-general) 30%, transparent);
+  color: var(--negative-general);
+}
+
+.engine-performance .custom-engine-flag.bi-trash:active{
+  transform: scale(0.97);
+}
+
+.custom-engine-title {
+  max-width: 100%;
+  width: 100%;
+}
+
+.custom-engine-name {
+  background-color: transparent;
+  border: 0;
+  outline: none;
+  color: inherit;
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  text-transform: inherit;
+  field-sizing: content;
+}
+
 .part-performance,
 .engine-performance {
-  background-color: var(--elements);
+  background-color: var(--superficials);
   border-radius: 10px;
   box-shadow: var(--shadow-s);
   padding: 5px 10px;
@@ -6066,6 +6218,10 @@ body.light-theme .flag-header img {
 
 .engine-re {
   border-bottom: 2px solid var(--renault-primary);
+}
+
+.engine-ho {
+  border-bottom: 2px solid var(--honda-primary);
 }
 
 .engine-me {
@@ -6129,12 +6285,22 @@ input.engine-performance-title:focus {
 
 .part-performance-title {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   position: relative;
 }
 
 .engine-performance-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   max-width: max-content;
+}
+
+
+.engine-performance-logo {
+  width: 30px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .engine-modal-body {
@@ -6363,18 +6529,14 @@ input.engine-performance-title:focus {
   margin-left: -7px;
 }
 
-.n-parts-buttons {
+.fitted-icons .n-parts-buttons {
   display: flex;
-  flex-direction: column;
-  font-size: 16px;
+  flex-direction: row-reverse;
+  gap: 3px;
 }
 
-.n-parts-buttons i {
-  cursor: pointer;
-  transition: color 0.15s, transform 0.15s !important;
-  max-height: 12px;
-  display: flex;
-  align-items: center;
+.fitted-icons .n-parts-buttons i {
+  font-size: 14px;
 }
 
 .new-part {
@@ -6402,12 +6564,6 @@ input.engine-performance-title:focus {
 
 
 
-.n-parts-buttons .bi-chevron-up:hover,
-.n-parts-buttons .bi-chevron-down:hover {
-  cursor: pointer;
-  color: var(--new-primary) !important;
-  transform: scale(1.1);
-}
 
 .fitted-icons .n-parts {
   font-family: "Formula1";
@@ -6417,8 +6573,7 @@ input.engine-performance-title:focus {
 }
 
 .fitted-icons i:not(.fitted) {
-  color: var(--disabled-text);
-  transition: color 0.15s, transform 0.15s;
+  transition: color 0.15s;
 }
 
 .fitted-icons .loadout-1.fitted {
@@ -6494,20 +6649,108 @@ input.engine-performance-title:focus {
   max-width: 70px;
 }
 
+.teams-show.expertise-mode .part-performance-stat .custom-input-number {
+  color: var(--new-primary);
+}
 
+
+
+.overview-show {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  flex: 1;
+  padding-right: 7px;
+  overflow-y: auto;
+}
+
+.overview-card {
+  background-color: var(--superficials);
+  border-radius: 10px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-shadow: var(--shadow-s);
+}
+
+.overview-card-title {
+  font-size: 15px;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.overview-card-teams {
+  display: flex;
+  gap: 2px;
+  overflow-y: auto;
+  min-height: 0;
+  justify-content: space-between;
+  flex-direction: column;
+  height: 100%;
+}
+
+.overview-team .car-title {
+  font-size: 11px;
+  height: auto;
+  padding-bottom: 0;
+}
+
+.overview-team-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.overview-team-rank {
+  color: var(--text-secondary);
+  font-size: 11px;
+  min-width: 12px;
+  text-align: right;
+}
+
+.overview-team .performance-bar {
+  height: 3px;
+  margin: 1px 0 2px;
+}
+
+.overview-team .performance-bar-progress {
+  height: 3px;
+}
+
+.overview-team-value {
+  color: var(--dark-text);
+  font-size: 11px;
+}
 .teams-show,
 .engines-show {
+  background-color: transparent !important;
+  box-shadow: none !important;
   display: grid;
   grid-template-columns: repeat(3, 0.333fr);
   grid-template-rows: repeat(2, 1fr);
   gap: 8px;
-  padding: 8px;
   flex: 1;
 }
 
+.main-columns-drag-section:has(.teams-show:not(.d-none)),
+.main-columns-drag-section:has(.overview-show:not(.d-none)){
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
 .engines-show {
-  grid-template-columns: repeat(2, 0.5fr);
-  grid-template-rows: repeat(2, 1fr);
+  /* Keep the grid layout but allow any number of rows (custom engines are appended). */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: unset;
+  grid-auto-rows: max-content;
+  align-content: start;
+  padding-right: 7px;
+  max-height: 81vh;
 }
 
 
@@ -6911,7 +7154,7 @@ body.og-theme .records-list {
   margin: 0;
   border: none;
   padding: 5.8px;
-  transition: box-shadow 0.15s;
+  transition: background-color 0.15s;
 }
 
 
@@ -7605,6 +7848,11 @@ body.og-theme .records-list {
 .toolbar-logo--astonmartin {
   width: 34px;
   height: 34px;
+}
+
+.toolbar-logo--haas{
+  width: 34px;
+  height: 26px;
 }
 
 .toolbar-title {
@@ -9043,7 +9291,11 @@ body.og-theme .records-list {
 }
 
 #recordsTypeDropdown{
-  min-width: 180px;
+  min-width: 215px;
+}
+
+#tableTypeDropdown{
+  right: 0px;
 }
 
 .dropdown-submenu {
@@ -9930,9 +10182,15 @@ body.og-theme .records-list {
 #teamsDiv {
   display: flex;
   flex-direction: column;
+  background-color: var(--superficials);
   gap: 0px;
   padding: 10px;
   justify-content: space-between;
+}
+
+
+#carsDiv{
+  background-color: var(--superficials);
 }
 
 
@@ -9948,6 +10206,7 @@ body.og-theme .records-list {
 
 .basic-label {
   cursor: pointer;
+  z-index: 1;
   transition: color 0.15s, transform 0.15s;
   pointer-events: none;
 }
@@ -9964,7 +10223,7 @@ body.og-theme .records-list {
   transition: opacity 0.25s ease;
   transition-delay: 0.15s;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
 }
 
 .generalPills:hover::before {
@@ -10084,6 +10343,13 @@ body.og-theme .records-list {
   width: 171px;
 }
 
+#modpill:hover,
+#modpill:hover .pill-line,
+#modpill.active .pill-line,
+#modpill.active {
+  width: 78px;
+}
+
 #specialCarIcon {
   width: 20px;
   height: 20px;
@@ -10161,37 +10427,11 @@ body.og-theme .records-list {
   width: max-content;
   margin-top: 5px;
 }
-
-.active #mod25logo,
-#mod25logo:hover {
-  background: linear-gradient(to right, var(--new-primary), var(--text-general), var(--new-primary));
-  background-size: 200% 200%;
-  animation: gradient-move-title 5s linear infinite;
-}
-
 #amoLogo:hover {
   background: linear-gradient(to right, var(--amo-1), var(--amo-2), var(--amo-1));
   background-size: 200% 200%;
   animation: gradient-move-title 5s linear infinite;
   transform: scale(1.1);
-}
-
-
-#mod25logo {
-  height: 40px;
-  width: 200px;
-  transition: transform 0.15s ease;
-  /* Solo transiciona transform */
-  cursor: pointer;
-
-  background: var(--text-general);
-
-  -webkit-mask: url('../assets/images/logoMod.svg') no-repeat center;
-  -webkit-mask-size: contain;
-  mask: url('../assets/images/logoMod.svg') no-repeat center;
-  mask-size: contain;
-
-  will-change: transform;
 }
 
 #amoPill {
@@ -10223,11 +10463,6 @@ body.og-theme .records-list {
 
   will-change: transform;
 }
-
-#mod25logo:hover {
-  transform: scale(1.1);
-}
-
 
 .pill-icon {
   opacity: 1;
@@ -12628,29 +12863,19 @@ span.reduced-weight,
 
 .name-and-arrows {
   display: flex;
-  flex-direction: row;
+  flex-direction: row-reverse;
   align-items: center;
 }
 
-.arrows {
+.part-performance-title .arrows {
   display: flex;
-  flex-direction: column;
-  position: absolute;
-  font-size: 18px;
-  bottom: 8px;
-  gap: 4px;
-  left: -3px;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 3px;
 }
 
-.arrows i {
-  cursor: pointer;
-  transition: transform 0.15s, color 0.15s;
-  height: 12px;
-}
-
-.arrows i:hover {
-  transform: scale(1.05);
-  color: var(--new-primary);
+.part-performance-title .arrows i {
+  font-size: 14px;
 }
 
 #blockDiv {
@@ -13034,9 +13259,101 @@ body:has(#blockDiv:not(.disappear)){
   }
 }
 
-body:has(.active #mod25logo) .background {
-  background-color: transparent;
-  background-image: url('../assets/images/modback.png');
+body:has(#modpill.active):has(#mods2025View:not(.d-none)) {
+  background-color: transparent !important;
+  background-image: url('../assets/images/modback.png') !important;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: none;
+}
+
+body:has(#modpill.active):has(#mods2025View:not(.d-none)) .version-panel{
+  background-color: #0F1D1D;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) .version-panel{
+  background-color: #121519;
+}
+
+body:has(#modpill.active) .tech-grid,
+body:has(#modpill.active) .glow-spot {
+  display: none;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
+  background-color: var(--background) !important;
+  background-image:
+    radial-gradient(circle at 18% 32%, color-mix(in srgb, var(--aston-primary) 6%, transparent) 0%, transparent 72%),
+    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--ferrari-primary) 4%, transparent) 0%, transparent 74%),
+    radial-gradient(circle at 82% 32%, color-mix(in srgb, var(--redbull-primary) 6%, transparent) 0%, transparent 72%),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--aston-primary) 7%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 6%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--redbull-primary) 7%, transparent) 0 1px, transparent 1px 20px) !important;
+  background-size: cover, cover, cover, 33.333% 100%, 33.333% 100%, 33.333% 100%;
+  background-position: center, center, center, left top, center top, right top;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  filter: none;
+}
+
+.aduo-tp-toggle{
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  top: -35px;
+  padding: 0;
+}
+
+.apply-all-button{
+  position: absolute;
+  left: 0;
+  opacity: 0;
+  top: -40px;
+}
+
+.apply-all-button button{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.apply-all-button button i{
+  opacity: 1 !important;
+  transform: rotate(270deg);
+}
+
+.apply-all-button button span{
+  padding-right: 5px !important;
+}
+
+.button-with-icon.apply-all-2026.applied{
+  background-color: var(--positive-transparent);
+  color: var(--positive-general);
+}
+
+body:has(#modpill.active) .apply-all-button, body:has(#modpill.active) .aduo-tp-toggle {
+  animation: change-appear 0.6s ease-out forwards;
+  animation-delay: calc(0.8s + var(--order) * 0.1s);
+}
+
+.mods-particles {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) .mods-particles {
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mods-particles {
+    display: none !important;
+  }
 }
 
 .mod-banner {
@@ -13059,10 +13376,15 @@ body:has(.active #mod25logo) .background {
   gap: 10px;
   transform: translateY(-40px);
   opacity: 0;
+  will-change: opacity, transform, filter;
 }
 
-body:has(.active #mod25logo) .mod-name img {
+body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img:not(.title-2026) {
   animation: logo-appear 0.6s forwards;
+}
+
+body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img.title-2026 {
+  animation: logo-appear-blur 0.75s forwards;
 }
 
 @keyframes logo-appear {
@@ -13074,6 +13396,29 @@ body:has(.active #mod25logo) .mod-name img {
   100% {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes logo-appear-blur {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(12px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(#modpill.active) .mods-year-view:not(.d-none) .mod-name img {
+    animation: none !important;
+    opacity: 1;
+    transform: translateY(0);
+    filter: none;
   }
 }
 
@@ -13169,10 +13514,10 @@ body:has(.active #mod25logo) .mod-name img {
   background-color: #bb0e0f;
 }
 
-body:has(.active #mod25logo) .small-rectangle,
-body:has(.active #mod25logo) .high-rectangle,
-body:has(.active #mod25logo) .small-rectangle img,
-body:has(.active #mod25logo) .high-rectangle img {
+body:has(#modpill.active) .small-rectangle,
+body:has(#modpill.active) .high-rectangle,
+body:has(#modpill.active) .small-rectangle img,
+body:has(#modpill.active) .high-rectangle img {
   animation: rectangle-appear 0.5s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
@@ -13189,9 +13534,9 @@ body:has(.active #mod25logo) .high-rectangle img {
   }
 }
 
-body:has(.active #mod25logo) .mod-drivers .mv-gradient,
-body:has(.active #mod25logo) .mod-drivers .lh-gradient,
-body:has(.active #mod25logo) .mod-drivers .ka-gradient {
+body:has(#modpill.active) .mod-drivers .mv-gradient,
+body:has(#modpill.active) .mod-drivers .lh-gradient,
+body:has(#modpill.active) .mod-drivers .ka-gradient {
   animation: gradient-appear 0.6s forwards;
   animation-delay: calc(var(--order) * 0.08s);
 }
@@ -13270,6 +13615,45 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   transform: translateY(-20px);
 }
 
+.mod-subtitle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  gap: 0.75em;
+  text-transform: uppercase;
+  color: #ffffff;
+  transform: translateY(-20px);
+  white-space: nowrap;
+  margin-top: -20px;
+}
+
+.mod-subtitle-letter {
+  display: inline-block;
+  opacity: 0;
+  text-shadow: none;
+  font-family: 'Formula1Dark';
+  will-change: opacity, text-shadow;
+}
+
+.mod-subtitle-letter.number{
+  font-family: 'NumbersFont';
+}
+
+.mod-subtitle-letter.number + .mod-subtitle-letter.number {
+  margin-left: -0.12em;
+}
+
+.mod-subtitle-space {
+  display: inline-block;
+  width: 0.6ch;
+}
+
+body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
+  animation: mod-subtitle-letter-appear 0.9s forwards;
+  animation-delay: calc(0.15s + (var(--order) * 0.06s));
+}
+
 .mod-creators {
   display: flex;
   flex-direction: row;
@@ -13329,7 +13713,13 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   content: 'W1ECHUZ';
 }
 
+.mod-creators a.kevintaddo::before {
+  content: 'KEVINTADDO';
+}
 
+.mod-creators a.lucas::before {
+  content: 'LUCAS';
+}
 
 
 .mod-creators a:hover {
@@ -13337,19 +13727,113 @@ body:has(.active #mod25logo) .mod-drivers .ka-gradient {
   text-shadow: 0 0 5px white;
 }
 
-body:has(.active #mod25logo) .mod-creators a {
-  animation: creator-appear 0.6s forwards;
-  animation-delay: calc((var(--order) * 0.07s));
-
+.download-links{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
 
-body:has(.active #mod25logo) .mod-creators a::before {
+.recommended-downloads{
+  transform: translateY(25px);
+  color: var(--text-general);
+  font-size: 17px;
+}
+
+.recommended-downloads-title {
+  --order: 0;
+}
+
+.recommended-downloads a{
+  color: var(--text-general);
+  text-decoration: none;
+}
+
+.recommended-downloads .download-link-text {
+  position: relative;
+  display: inline-block;
+  transition: color 0.15s, text-shadow 0.15s;
+}
+
+.recommended-downloads .download-link-text::before {
+  content: attr(data-glow);
+  text-shadow: 0 0 5px white;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+.recommended-downloads a:hover .download-link-text::before {
+  opacity: 1;
+}
+
+body:has(#modpill.active) .recommended-downloads .recommended-downloads-title,
+body:has(#modpill.active) .recommended-downloads .download-link,
+body:has(#modpill.active) .recommended-downloads .creator-separator {
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateY(-10px);
+  animation: recommended-downloads 0.6s forwards;
+  animation-delay: calc((var(--order) * 0.07s) + 1.9s);
+}
+
+body:has(#modpill.active) .mod-creators a {
+  animation: creator-appear 0.6s forwards;
+  animation-delay: calc((var(--order) * 0.07s));
+}
+
+body:has(#modpill.active) .mod-creators a::before {
   animation: before-appear 0.9s;
   animation-delay: calc((var(--order) * 0.07s));
 }
 
-#mod_25 {
+#season_mods {
   align-items: center;
+}
+
+#modSelectPanel{
+  z-index: 2;
+  height: 49px;
+  align-self: flex-start;
+}
+
+.mods-year-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -49px;
+}
+
+.mods-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 30px;
+  opacity: 0.9;
+}
+
+.mods-2026-banner .mods-placeholder {
+  margin-top: 0;
+}
+
+.mods-placeholder-title {
+  color: #dedde6;
+  font-size: 44px;
+  font-family: 'NumbersFont';
+}
+
+.mods-placeholder-subtitle {
+  color: var(--text-general);
+  font-size: 16px;
 }
 
 .coming-soon {
@@ -13366,7 +13850,7 @@ body:has(.active #mod25logo) .mod-creators a::before {
   font-family: 'NumbersFont';
 }
 
-body:has(.active #mod25logo) .coming-soon {
+body:has(#modpill.active) .coming-soon {
   animation: creator-appear 0.7s forwards;
   animation-delay: 1.1s;
 }
@@ -13392,6 +13876,64 @@ body:has(.active #mod25logo) .coming-soon {
 
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes mod-subtitle-letter-appear {
+  0% {
+    opacity: 0;
+    filter: blur(2px);
+    transform: translateX(-7px);
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  55% {
+    opacity: 1;
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateX(0);
+    /* text-shadow: none; */
+  }
+}
+
+@keyframes recommended-downloads {
+  0% {
+    opacity: 0;
+    filter: blur(3px);
+    transform: translateY(-10px);
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  55% {
+    opacity: 1;
+    /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: translateY(0);
+    /* text-shadow: none; */
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mod-subtitle-letter {
+    opacity: 1;
+    animation: none !important;
+  }
+
+  body:has(#modpill.active) .recommended-downloads .recommended-downloads-title,
+  body:has(#modpill.active) .recommended-downloads .download-link,
+  body:has(#modpill.active) .recommended-downloads .creator-separator {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none !important;
   }
 }
 
@@ -13421,7 +13963,7 @@ body:has(.active #mod25logo) .coming-soon {
   opacity: 0;
 }
 
-body:has(.active #mod25logo) .creator-separator {
+body:has(#modpill.active) .creator-separator {
   animation: separator-appear 0.6s forwards;
   animation-delay: calc((var(--order) * 0.07s));
 }
@@ -14051,7 +14593,7 @@ a.bi-custom-patreon.close-slide-up {
 }
 
 #astonMartinTheme .background-color {
-  background-color: #0d211b;
+  background-color: #07120f;
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
@@ -14062,6 +14604,86 @@ a.bi-custom-patreon.close-slide-up {
 
 #astonMartinTheme .secondary-color {
   background-color: #c3dc00;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#audiTheme .background-color {
+  background-color: #1a0f12;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#audiTheme .primary-color {
+  background-color: #c00a26;
+}
+
+#audiTheme .secondary-color {
+  background-color: #f1f1f1;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#vcarbTheme .background-color {
+  background-color: #101827;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#vcarbTheme .primary-color {
+  background-color: #6c8ff3;
+}
+
+#vcarbTheme .secondary-color {
+  background-color: #f1f1f1;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#williamsTheme .background-color {
+  background-color: #0c1526;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#williamsTheme .primary-color {
+  background-color: #1868db;
+}
+
+#williamsTheme .secondary-color {
+  background-color: #f1f1f1;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#haasTheme .background-color {
+  background-color: #17171d;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#haasTheme .primary-color {
+  background-color: #f62039;
+}
+
+#haasTheme .secondary-color {
+  background-color: #c1c1c7;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#alpineTheme .background-color {
+  background-color: #221523;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#alpineTheme .primary-color {
+  background-color: #f168ba;
+}
+
+#alpineTheme .secondary-color {
+  background-color: #47c7fc;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
@@ -14326,6 +14948,7 @@ body.light-theme .founder {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 25px;
+  position: relative;
 }
 
 .one-change {
@@ -14338,6 +14961,7 @@ body.light-theme .founder {
   align-items: center;
   justify-content: space-between;
   backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-s);
   opacity: 0;
 
 }
@@ -14363,6 +14987,314 @@ body.light-theme .one-change .one-change-description {
   color: var(--modal-text);
 }
 
+.one-change-description.add-results-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.one-change-description.add-results-team .add-results-team__left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.one-change-description.add-results-team .add-results-team__logo {
+  width: 26px;
+  height: 18px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.one-change-description.add-results-team .add-results-team__right {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.one-change-description.add-results-team .add-results-points {
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: -2px;
+  transition: color 0.15s;
+}
+
+.add-results-points.activated{
+  color: var(--dark-text);
+}
+
+.calendar-changes-2026{
+  transition: transform 0.15s ease;
+}
+
+.one-change:has(.completed) .calendar-changes-2026{
+  transform: translateX(-25px)
+}
+
+.one-change-description.regs-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.one-change-description.regs-team .regs-team__name {
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.one-change-description.regs-team .regs-team__logo {
+  position: relative;
+  width: 26px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.one-change-description.regs-team .regs-team__logo::before,
+.one-change-description.regs-team .regs-team__logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.one-change-description.regs-team .regs-team__logo::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team .regs-team__logo::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team .regs-team__logo::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.regs-team--aston .regs-team__logo::before {
+  background-image: url('/assets/images/logos/mercedes.png');
+}
+
+.one-change-description.regs-team--aston .regs-team__logo::after {
+  background-image: url('/assets/images/logos/honda.png');
+}
+
+.one-change-description.regs-team--stake .regs-team__logo::before {
+  background-image: url('/assets/images/logos/ferrari.png');
+}
+
+.one-change-description.regs-team--stake .regs-team__logo::after {
+  background-image: url('/assets/images/logos/audi.png');
+}
+
+.one-change-description.regs-team--stake .regs-team__name {
+  position: relative;
+  display: inline-block;
+  min-height: 1em;
+  color: transparent;
+}
+
+.one-change-description.regs-team--stake .regs-team__name::before,
+.one-change-description.regs-team--stake .regs-team__name::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: var(--modal-text);
+}
+
+body.light-theme .one-change-description.regs-team--stake .regs-team__name::before,
+body.light-theme .one-change-description.regs-team--stake .regs-team__name::after {
+  color: #282828;
+}
+
+.one-change-description.regs-team--stake .regs-team__name::before {
+  content: 'Stake Sauber';
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.regs-team--stake .regs-team__name::after {
+  content: 'Audi';
+  font-family: 'Formula1Bold';
+  color: var(--dark-text);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team--stake .regs-team__name::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.regs-team--stake .regs-team__name::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.lineup-team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.one-change-description.lineup-team .lineup-team__name {
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.one-change-description.lineup-team .lineup-team__logo {
+  position: relative;
+  width: 28px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.one-change-description.lineup-team .lineup-team__logo::before,
+.one-change-description.lineup-team .lineup-team__logo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.one-change-description.lineup-team .lineup-team__logo::before {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change:has(.change-line-ups-2026.completed) .one-change-description.lineup-team .lineup-team__logo::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-line-ups-2026.completed) .one-change-description.lineup-team .lineup-team__logo::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 2026 Line-ups logos (right side) */
+.one-change-description.lineup-team--cadillac .lineup-team__logo::before {
+  /* nothing shown until applied */
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.one-change-description.lineup-team--cadillac .lineup-team__logo::after {
+  background-image: url('/assets/images/logos/cadillac.png');
+  height: 26px;
+}
+
+.one-change:has(.change-line-ups-2026.completed) .one-change-description.lineup-team--cadillac .lineup-team__logo::after{
+  transform: translateY(-3px);
+}
+
+.one-change-description.lineup-team--hadjar .lineup-team__logo::before {
+  background-image: url('/assets/images/logos/visarb.png');
+}
+
+.one-change-description.lineup-team--hadjar .lineup-team__logo::after {
+  background-image: url('/assets/images/logos/redbull.png');
+}
+
+.one-change-description.lineup-team--lindblad .lineup-team__logo::before {
+  background-image: url('/assets/images/logos/campos.png');
+}
+
+.one-change-description.lineup-team--lindblad .lineup-team__logo::after {
+  background-image: url('/assets/images/logos/visarb.png');
+}
+
+.one-change-description.engine-renamed.engine-renamed-honda,
+.one-change-description.engine-appear {
+  color: var(--text-general);
+}
+
+.one-change-description.performance-year-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year {
+  position: relative;
+  display: inline-block;
+  min-width: 44px;
+  min-height: 1em;
+  color: transparent;
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year::before,
+.one-change-description.performance-year-switch .performance-year-switch__year::after {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  color: var(--modal-text);
+}
+
+body.light-theme .one-change-description.performance-year-switch .performance-year-switch__year::before {
+  color: #282828;
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year::before {
+  content: '2024';
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.performance-year-switch .performance-year-switch__year::after {
+  content: '2026';
+  color: var(--dark-text);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.performance-year-switch .performance-year-switch__year::before {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.one-change:has(.change-performance-2026.completed) .one-change-description.performance-year-switch .performance-year-switch__year::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.one-change-description.engine-appear {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.15s ease, transform 0.15s ease, max-height 0.15s ease;
+}
+
+.one-change-description.engine-appear.engine-appear-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.engine-renamed{
+  min-height: 24px;
+}
+
+
 button.one-change-button {
   background-color: var(--text-general);
   color: var(--negative-text);
@@ -14370,9 +15302,32 @@ button.one-change-button {
   padding: 7px 13px;
   border-radius: 7px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: color 0.15s, background-color 0.15s, box-shadow 0.15s;
   margin-top: 5px;
   width: 100%;
+}
+
+#mods2026View button.one-change-button {
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-image: linear-gradient(
+    90deg,
+    var(--text-general) 0%,
+    var(--text-general) 50%,
+    var(--text-general) 100%
+  );
+  transition: color 0.15s, background-image 0.35s ease, box-shadow 0.15s;
+}
+
+#mods2026View button.one-change-button:hover {
+  background-color: transparent;
+  background-image: linear-gradient(
+    90deg,
+    var(--new-primary) 0%,
+    var(--new-primary) 50%,
+    var(--new-primary) 100%
+  );
 }
 
 button.one-change-button.disabled {
@@ -14387,7 +15342,7 @@ button.one-change-button:hover {
 }
 
 button.one-change-button:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
   /* Ajusta esto a tu gusto */
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
 }
@@ -14397,6 +15352,15 @@ button.one-change-button.completed {
   color: var(--positive-general);
   cursor: default;
   pointer-events: none;
+}
+
+#mods2026View button.one-change-button.completed {
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--positive-transparent) 50%,
+    transparent 100%
+  );
 }
 
 button.one-change-button.completed:hover {
@@ -14439,7 +15403,7 @@ button.one-change-button.completed span {
   }
 }
 
-body:has(.active #mod25logo) .one-change {
+body:has(#modpill.active) .one-change {
   animation: change-appear 0.6s ease-out forwards;
   animation-delay: calc(0.8s + var(--order) * 0.1s);
 }
@@ -14453,10 +15417,20 @@ body:has(.active #mod25logo) .one-change {
 
 .bor-ovr,
 .ant-ovr,
-.pia-ovr {
+.pia-ovr
+ {
   transform: skewX(-9deg);
   display: inline-block;
   min-width: 122px;
+}
+
+.had-ovr,
+.bea-ovr,
+#mods2026View .ant-ovr {
+  transform: skewX(0deg) !important;
+  display: inline-block;
+  min-width: 122px;
+  transition: color 0.15s;
 }
 
 .ovr-change {
@@ -14579,6 +15553,18 @@ body:has(.active #mod25logo) .one-change {
   }
 }
 
+@keyframes slide-out-down {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
 #dateDay::before {
   content: '29th';
   position: absolute;
@@ -14594,11 +15580,78 @@ body:has(.active #mod25logo) .one-change {
   color: var(--dark-text);
 }
 
-#dateMonth {
+#dateDay2026,
+#dateMonth2026,
+#dateYear2026 {
+  --date-switch-delay: 0s;
+}
+
+#dateMonth2026 {
+  --date-switch-delay: 0.05s;
+}
+
+#dateYear2026 {
+  --date-switch-delay: 0.1s;
+}
+
+#dateDay2026,
+#dateMonth2026,
+#dateYear2026 {
+  transition: transform 0.2s ease, color 0.2s ease;
+  transition-delay: var(--date-switch-delay);
+  transform: translateY(0);
+  overflow: visible;
+}
+
+#dateDay2026::after,
+#dateMonth2026::after,
+#dateYear2026::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition-delay: var(--date-switch-delay);
+  color: var(--dark-text);
+  font-family: 'Formula1Bold';
+  pointer-events: none;
+  z-index: 1;
+}
+
+#dateDay2026::after {
+  content: '29th';
+}
+
+#dateMonth2026::after {
+  content: 'December';
+}
+
+#dateYear2026::after {
+  content: '2025';
+}
+
+.one-change:has(.completed) #dateDay2026,
+.one-change:has(.completed) #dateMonth2026,
+.one-change:has(.completed) #dateYear2026 {
+  transform: translateY(10px);
+  color: transparent;
+}
+
+.one-change:has(.completed) #dateDay2026::after,
+.one-change:has(.completed) #dateMonth2026::after,
+.one-change:has(.completed) #dateYear2026::after {
+  opacity: 1;
+  transform: translateY(-10px);
+}
+
+#dateMonth, #dateMonth2026 {
   min-width: 100px;
 }
 
-#dateDay {
+#dateDay, #dateDay2026 {
   min-width: 50px;
 }
 
@@ -14653,8 +15706,12 @@ body:has(.active #mod25logo) .one-change {
 
 .bor-change,
 .ant-change,
-.pia-change {
+.pia-change,
+.bea-change,
+.had-change {
   position: relative;
+  overflow: hidden;
+  color: transparent;
 }
 
 .bor-change::before {
@@ -14665,9 +15722,21 @@ body:has(.active #mod25logo) .one-change {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
+  z-index: 2;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.bor-change::after {
+  content: '69';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
   color: var(--dark-text);
 }
 
@@ -14675,8 +15744,8 @@ body:has(.active #mod25logo) .one-change {
   animation: slide-down 0.3s forwards 0s;
 }
 
-.one-change:has(.completed) .bor-change {
-  color: transparent;
+.one-change:has(.completed) .bor-change::after {
+  animation: slide-out-down 0.3s forwards 0s;
 }
 
 .ant-change::before {
@@ -14687,18 +15756,42 @@ body:has(.active #mod25logo) .one-change {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
+  z-index: 2;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
   color: var(--dark-text);
+}
+
+#mods2026View .ant-change::before{
+  content: "84";
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+#mods2026View .ant-change::after{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.ant-change::after {
+  content: '71';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
+  color: var(--dark-text);
+  
 }
 
 .one-change:has(.completed) .ant-change::before {
   animation: slide-down 0.3s forwards 0.05s;
 }
 
-.one-change:has(.completed) .ant-change {
-  color: transparent;
+.one-change:has(.completed) .ant-change::after {
+  animation: slide-out-down 0.3s forwards 0.05s;
 }
 
 .pia-change::before {
@@ -14709,9 +15802,21 @@ body:has(.active #mod25logo) .one-change {
   width: 100%;
   height: 100%;
   opacity: 0;
-  z-index: -1;
+  z-index: 2;
   transform: translateY(-20px);
-  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.pia-change::after {
+  content: '84';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
   color: var(--dark-text);
 }
 
@@ -14719,8 +15824,84 @@ body:has(.active #mod25logo) .one-change {
   animation: slide-down 0.3s forwards 0.1s;
 }
 
-.one-change:has(.completed) .pia-change {
-  color: transparent;
+.one-change:has(.completed) .pia-change::after {
+  animation: slide-out-down 0.3s forwards 0.1s;
+}
+
+.had-change::before {
+  content: '83';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 2;
+  transform: translateY(-20px);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.had-change::after {
+  content: '75';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.one-change:has(.completed) .had-change::before {
+  animation: slide-down 0.3s forwards 0s;
+}
+
+.one-change:has(.completed) .had-change::after {
+  animation: slide-out-down 0.3s forwards 0s;
+}
+
+.bea-change::before {
+  content: '82';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 2;
+  transform: translateY(-20px);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.bea-change::after {
+  content: '77';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 1;
+  z-index: 1;
+  transform: translateY(0);
+  color: var(--dark-text);
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+}
+
+.one-change:has(.completed) .bea-change::before {
+  animation: slide-down 0.3s forwards 0.1s;
+}
+
+.one-change:has(.completed) .bea-change::after {
+  animation: slide-out-down 0.3s forwards 0.1s;
 }
 
 .fast-lap-change::before {
@@ -14732,7 +15913,7 @@ body:has(.active #mod25logo) .one-change {
   height: 100%;
   opacity: 0;
   z-index: -1;
-  transform: translateY(-20px);
+  transform: translateY(-10px);
   animation-delay: 0.1s;
   color: var(--dark-text);
 }
@@ -14756,6 +15937,40 @@ body:has(.active #mod25logo) .one-change {
 }
 
 .one-change:has(.completed) .fast-lap-general {
+  color: var(--dark-text);
+}
+
+.cost-cap-change::before {
+  content: '215M €';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-10px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.one-change:has(.completed) .cost-cap-change::before {
+  animation: slide-down 0.3s forwards 0.05s;
+}
+
+.cost-cap-change {
+  position: relative;
+}
+
+.one-change:has(.completed) .cost-cap-change {
+  color: transparent;
+}
+
+.cost-cap-general {
+  transition: all 0.15s;
+}
+
+.one-change:has(.completed) .cost-cap-general {
   color: var(--dark-text);
 }
 
@@ -14924,6 +16139,66 @@ body:has(.active #mod25logo) .one-change {
   color: var(--dark-text);
 }
 
+.sprint-change-2026.change-1::before{
+  content: 'Canada,';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change-2026.change-2::before{
+  content: 'Silverstone,';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change-2026.change-3::before{
+  content: 'Zandvoort,';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 55px;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
+.sprint-change-2026.change-4::before{
+  content: 'Singapore';
+  position: absolute;
+  font-family: "Formula1Bold";
+  bottom: 2px;
+  left: 100px;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: -1;
+  transform: translateY(-20px);
+  animation-delay: 0.1s;
+  color: var(--dark-text);
+}
+
 .one-change:has(.completed) .season-change::before {
   animation: slide-down 0.3s forwards 0s;
 }
@@ -14936,15 +16211,15 @@ body:has(.active #mod25logo) .one-change {
   position: relative;
 }
 
-.one-change:has(.completed) .sprint-change::before {
+.one-change:has(.completed) .sprint-change::before,  .one-change:has(.completed) .sprint-change-2026::before{
   animation: slide-down 0.3s forwards 0.05s;
 }
 
-.one-change:has(.completed) .sprint-change {
+.one-change:has(.completed) .sprint-change, .one-change:has(.completed) .sprint-change-2026 {
   color: transparent;
 }
 
-.sprint-change {
+.sprint-change, .sprint-change-2026 {
   position: relative;
 }
 
@@ -16410,6 +17685,7 @@ p.news-error-api-key {
   flex-direction: row;
   gap: 10px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 
 .recent-file {

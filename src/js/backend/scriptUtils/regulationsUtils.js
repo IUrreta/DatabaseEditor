@@ -58,6 +58,17 @@ function isRowPresent(query, params) {
   return exists !== null && exists !== undefined;
 }
 
+export function updateOneRegulationEnumChange(name, currentValue, minValue, maxValue) {
+  queryDB(
+    `UPDATE Regulations_Enum_Changes
+     SET CurrentValue = ?, MinValue = ?, MaxValue = ?
+     WHERE Name = ?`,
+    [currentValue, minValue, maxValue, name],
+    "run"
+  );
+}
+
+
 export function updateRegulations(data) {
   const enumChanges = data?.enumChanges || {};
 

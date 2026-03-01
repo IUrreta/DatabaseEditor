@@ -16,11 +16,11 @@ import {
     initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
-import {
-    load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-    teamSelected, gather_engines_data, reload_performance_graph
-} from './performance';
+  import {
+      load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
+      order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, gather_team_expertise_data, performanceDetailsMode
+  } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
@@ -42,6 +42,7 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
+import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
 
 
 
@@ -68,7 +69,7 @@ const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
 const teamsDiv = document.getElementById("edit_teams");
-const mod25Div = document.getElementById("mod_25")
+const seasonModsDiv = document.getElementById("season_mods")
 const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
@@ -79,7 +80,8 @@ const patreonToolLoginButton = document.getElementById('patreonToolLoginButton')
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
 
-const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
+initSeasonMods();
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -120,7 +122,7 @@ function updateTurningPointsFrequencyUI() {
 
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
-const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 const glowSpot = document.querySelector('.glow-spot');
 const blockDiv = document.getElementById('blockDiv');
 
@@ -150,6 +152,8 @@ let difcultyCustom = "default"
 export let game_version = 2023;
 export let custom_team = false;
 export let nightlyBlock = false;
+export let seasonModData = {};
+let latestSaveYear = null;
 let firstShow = false;
 let configCopy;
 
@@ -161,8 +165,6 @@ let saveName;
 let tempImageData = null;
 let lastVisibleIndex = 0;
 let viewerLoaded = false;
-
-let calendarEditMode = "Start2024"
 
 export let selectedTheme = "default-theme";
 let isNightlyHost = false;
@@ -363,12 +365,16 @@ export async function getUserTier() {
         const data = await response.json();
 
         // The structure matches what api/me.js returns
-        return {
-            paidMember: data.paidMember, // true/false
-            tier: data.tier, // "Backer", "Insider", "Free", etc
+        //set a window variable with the user data to be used in other places of the frontend without needing to call the api again
+        let windowData = {
+            paidMember: data.paidMember,
+            tier: data.tier,
+            tierNumber: data.tierNumber,
             isLoggedIn: data.isLoggedIn,
-            user: { fullName: data.user?.fullName || '' }
         };
+        window.__USER_DATA__ = windowData;
+        windowData.user = { fullName: data.user?.fullName || '' };
+        return windowData;
     } catch (error) {
         console.error("Failed to check auth status", error);
         return { paidMember: false, tier: 'Free', isLoggedIn: false };
@@ -653,6 +659,16 @@ function teamsModeHandler() {
 function performanceModeHandler() {
     let data;
     if (teamsEngine === "teams") {
+        if (performanceDetailsMode === "expertise") {
+            data = {
+                teamID: teamSelected,
+                expertise: gather_team_expertise_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editExpertise", data);
+            command.execute();
+            return;
+        }
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
@@ -690,13 +706,24 @@ function performanceModeHandler() {
         command.execute();
     }
     else if (teamsEngine === "engines") {
-        let engineData = gather_engines_data()
-        data = {
-            engines: engineData,
+        const engineData = gather_engines_data()
+        const officialEngines = {}
+        for (let engineId in engineData) {
+            if (Number(engineId) <= 10) {
+                officialEngines[engineId] = engineData[engineId]
+            }
         }
 
-        const command = new Command("editEngine", data);
-        command.execute();
+        if (Object.keys(officialEngines).length) {
+            const command = new Command("editEngine", { engines: officialEngines })
+            command.execute()
+        }
+
+        const customEnginesData = gather_custom_engines_data()
+        if (Object.keys(customEnginesData).length) {
+            const command = new Command("customEngines", { enginesData: customEnginesData })
+            command.execute()
+        }
     }
 
 }
@@ -915,6 +942,7 @@ const messageHandlers = {
         loadJuniorTeamDrivers(message);
     },
     "Year fetched": (message) => {
+        latestSaveYear = Number(message);
         generateYearsMenu(message);
     },
     "Previous year teams standings fetched": (message) => {
@@ -983,12 +1011,18 @@ const messageHandlers = {
         load_parts_stats(message[0])
         load_parts_list(message[1])
         update_max_design(message[2])
+        if (message[3]) {
+            load_team_expertise(message[3])
+        }
     },
     "Game Year": (message) => {
         manage_game_year(message)
     },
     "Part values fetched": (message) => {
         load_one_part(message)
+    },
+    "Team expertise fetched": (message) => {
+        load_team_expertise(message)
     },
     "Cars fetched": (message) => {
         load_cars(message[0])
@@ -999,10 +1033,21 @@ const messageHandlers = {
         load_custom_engines(message.slice(1))
     },
     "Mod data fetched": (message) => {
-        updateEditsWithModData(message)
+      seasonModData = message || {};
+      updateEditsWithModData(message)
+      syncAduoTpToggles(message?.aduo_tp_enabled);
+      syncMods2025Dependencies();
+      syncMods2026Dependencies();
+      syncMods2026ApplyAllButtonState();
+      if (latestSaveYear) {
+        generateYearsMenu(latestSaveYear);
+      }
     },
     "Mod compatibility": (message) => {
-        updateModBlocking(message)
+        updateMod2025Blocking(message)
+    },
+    "Mod 2026 compatibility": (message) => {
+        updateMod2026Blocking(message)
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
@@ -1164,8 +1209,7 @@ if (glowSpot && blockDiv) {
 
 export async function generateNews() {
     const patreonTier = await getUserTier();
-    const canGenerate = checkGenerableNews(patreonTier);
-    if (canGenerate === "no") return;
+    checkGenerableNews(patreonTier);
 
     // lanzar sin payload, el worker lee de DB
     new Command("generateNews", {}).execute();
@@ -1225,6 +1269,7 @@ function update_engine_allocations(message) {
         engine_map[team[0]] = team[1]
     })
     setEngineAllocations(engine_map)
+    window.__ENGINE_ALLOCATIONS__ = engine_map
 
     for (let key in engine_names) {
         if (key > 10) {
@@ -1233,11 +1278,14 @@ function update_engine_allocations(message) {
     }
 
     message[0].forEach(function (engine) {
-        if (engine[0] > 10) {
-            addEngineName(engine[0], engine[2])
+        const engineId = Number(engine?.[0]);
+        if (engineId > 10 || engineId === 10) {
+            addEngineName(engineId, engine[2])
         }
     })
+    window.__ENGINE_NAMES__ = { ...engine_names }
 
+    reloadTables()
 }
 
 
@@ -1332,6 +1380,8 @@ function manage_custom_team(nameColor) {
         const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
         command.execute();
 
+        document.querySelector(".lineup-team--cadillac").classList.remove("d-none")
+
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -1351,6 +1401,7 @@ function manage_custom_team(nameColor) {
     else {
         resizeWindowToHeight("10teams")
         custom_team = false
+        document.querySelector(".lineup-team--cadillac").classList.add("d-none")
         document.getElementById("customTeamTransfers").classList.add("d-none")
         document.getElementById("customTeamPerformance").classList.add("d-none")
         document.getElementById("customTeamDropdown").classList.add("d-none")
@@ -1401,7 +1452,7 @@ fileInput.addEventListener('change', (event) => {
     reader.readAsDataURL(file);
 });
 
-function replace_custom_team_logo(path) {
+export function replace_custom_team_logo(path) {
     //if not image selected, return
     if (!path) {
         return;
@@ -1472,6 +1523,12 @@ function replace_all_teams(info) {
 }
 
 function manage_config_content(info, year_config = false) {
+    if (info["renaultEngine"] === "honda") {
+        setRenaultEnginePresentation("honda");
+    }
+    else {
+        setRenaultEnginePresentation("renault");
+    }
     replace_all_teams(info)
     if (!year_config) {
         let image = localStorage.getItem(`${saveName}_image`);
@@ -1493,11 +1550,18 @@ function manage_config_content(info, year_config = false) {
         else {
             document.getElementById("refurbishingToggle").checked = false
         }
+        if (info["freezeDevelopment"] === 1) {
+            document.getElementById("freezeDevelopmentToggle").checked = true
+        }
+        else {
+            document.getElementById("freezeDevelopmentToggle").checked = false
+        }
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+        update_development_span(info["freezeDevelopment"])
         if (forceEditorMinimapColorsToggle) {
             forceEditorMinimapColorsToggle.checked = parseInt(info["forceEditorMinimapColors"] || 0, 10) === 1;
         }
@@ -1510,6 +1574,59 @@ function manage_config_content(info, year_config = false) {
             turningPointsFrequencySlider.value = String(presetIndex);
             updateTurningPointsFrequencyUI();
         }
+    }
+}
+
+export function setRenaultEnginePresentation(engineMode) {
+    const engineMenuItem = document.querySelector(".renault-engine-menu-item");
+    const engineTitleText = document.querySelector(".renault-engine-title-text");
+    const renaultLogo = document.querySelector(".renault-engine-logo");
+
+    if (engineMode === "honda") {
+        if (engineMenuItem) {
+            engineMenuItem.textContent = "Honda";
+        }
+        if (engineTitleText) {
+            engineTitleText.textContent = "HONDA";
+        }
+        if (renaultLogo) {
+            renaultLogo.src = "../assets/images/logos/honda.png";
+            renaultLogo.alt = "Honda logo";
+        }
+    }
+    else {
+        if (engineMenuItem) {
+            engineMenuItem.textContent = "Renault";
+        }
+        if (engineTitleText) {
+            engineTitleText.textContent = "RENAULT";
+        }
+        if (renaultLogo) {
+            renaultLogo.src = "../assets/images/logos/renault.png";
+            renaultLogo.alt = "Renault logo";
+        }
+    }
+
+    const renaultEngineTitle = document.querySelector(".renault-engine-title");
+    if (renaultEngineTitle) {
+        renaultEngineTitle.classList.remove("engine-re", "engine-ho");
+        renaultEngineTitle.classList.add(engineMode === "honda" ? "engine-ho" : "engine-re");
+    }
+
+    if (renaultLogo) {
+        renaultLogo.style.display = "inline-block";
+    }
+
+}
+
+export function updateJenzerToDams(mode = "dams") {
+    if (mode === "dams") {
+        logos_disc[30] = '../assets/images/logos/dams.png'
+        combined_dict[30] = "DAMS (F3)"
+    }
+    else if (mode === "jenzer") {
+        logos_disc[30] = '../assets/images/logos/jenzer.png'
+        combined_dict[30] = "Jenzer Motorsport (F3)"
     }
 }
 
@@ -1594,7 +1711,7 @@ document.querySelectorAll(".team-change-button").forEach(function (elem) {
     })
 })
 
-document.querySelector("#configDetailsButton").addEventListener("click", function () {
+export function applyConfigFromEditorUI(overrides = {}) {
     let alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
     let alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
     let williams = document.querySelector("#williamsReplaceButton").querySelector("button").dataset.value
@@ -1602,6 +1719,17 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
     let redbull = document.querySelector("#redbullReplaceButton").querySelector("button").dataset.value
     let aston = document.querySelector("#astonReplaceButton").querySelector("button").dataset.value
+
+    if (overrides && typeof overrides === "object") {
+        if (typeof overrides.alphatauri === "string") alphatauri = overrides.alphatauri;
+        if (typeof overrides.alpine === "string") alpine = overrides.alpine;
+        if (typeof overrides.williams === "string") williams = overrides.williams;
+        if (typeof overrides.haas === "string") haas = overrides.haas;
+        if (typeof overrides.alfa === "string") alfa = overrides.alfa;
+        if (typeof overrides.redbull === "string") redbull = overrides.redbull;
+        if (typeof overrides.aston === "string") aston = overrides.aston;
+    }
+
     let mentalityFrozen = 0;
     if (document.getElementById("freezeMentalityToggle").checked) {
         mentalityFrozen = 1;
@@ -1609,6 +1737,10 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let refurbish = 0;
     if (document.getElementById("refurbishingToggle").checked) {
         refurbish = 1;
+    }
+    let freezeDevelopment = 0;
+    if (document.getElementById("freezeDevelopmentToggle").checked) {
+        freezeDevelopment = 1;
     }
     let forceEditorMinimapColors = 0;
     if (forceEditorMinimapColorsToggle && forceEditorMinimapColorsToggle.checked) {
@@ -1632,6 +1764,7 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         aston: aston,
         frozenMentality: mentalityFrozen,
         refurbish: refurbish,
+        freezeDevelopment: freezeDevelopment,
         forceEditorMinimapColors: forceEditorMinimapColors,
         disabled: disabledList,
         triggerList: triggerList,
@@ -1656,14 +1789,45 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
         let info = { teams: { alphatauri: alphatauri, alpine: alpine, williams: williams, haas: haas, alfa: alfa, redbull: redbull, aston: aston } }
         replace_all_teams(info)
         reloadTables()
+        reload_performance_graph()
+        reload_h2h_graphs()
         if (tempImageData) {
             localStorage.setItem(`${saveName}_image`, tempImageData);
         }
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
+
+        if (!configCopy || typeof configCopy !== "object") {
+            configCopy = {};
+        }
+        if (!configCopy.teams || typeof configCopy.teams !== "object") {
+            configCopy.teams = {};
+        }
+        configCopy.teams.alphatauri = alphatauri;
+        configCopy.teams.alpine = alpine;
+        configCopy.teams.williams = williams;
+        configCopy.teams.haas = haas;
+        configCopy.teams.alfa = alfa;
+        configCopy.teams.redbull = redbull;
+        configCopy.teams.aston = aston;
+        configCopy.frozenMentality = mentalityFrozen;
+        configCopy.refurbish = refurbish;
+        configCopy.freezeDevelopment = freezeDevelopment;
+        configCopy.forceEditorMinimapColors = forceEditorMinimapColors;
+        configCopy.triggerList = triggerList;
+        configCopy.turningPointsFrequencyPreset = tpPresetIndex;
+        if (data.primaryColor) {
+            configCopy.primaryColor = data.primaryColor;
+            configCopy.secondaryColor = data.secondaryColor;
+        }
+        if (playerTeam !== -1) {
+            configCopy.playerTeam = Number(playerTeam);
+        }
     }
+}
 
-
+document.querySelector("#configDetailsButton").addEventListener("click", function () {
+    applyConfigFromEditorUI();
 })
 
 async function askFixDoublePointsBug(message){
@@ -1990,6 +2154,22 @@ function update_refurbish_span(value) {
     }
 }
 
+document.getElementById("freezeDevelopmentToggle").addEventListener("change", function () {
+    let value = this.checked;
+    update_development_span(value)
+});
+
+function update_development_span(value) {
+    let span = document.querySelector("#developmentSpan")
+    if (value) {
+        span.className = "option-state frozen"
+        span.textContent = "Frozen"
+    } else {
+        span.className = "option-state default"
+        span.textContent = "Active"
+    }
+}
+
 function manage_difficulty_warnings(level, triggerList) {
     const elements = [
         "defaultDif", "lightDif", "researchDif", "statDif", "designTimeDif", "buildDif"
@@ -2161,6 +2341,8 @@ function manageNewsStatus(patreonTier) {
 
 function checkGenerableNews(patreonTier) {
     let canGenerate = "no";
+    newsAvailable.normal = false;
+    newsAvailable.turning = false;
     if (patreonTier.paidMember) {
         canGenerate = "yes";
         if (patreonTier.tier === "Insider" || patreonTier.tier === "Founder") {
@@ -2585,6 +2767,8 @@ function changeTheme() {
     init_colors_dict(selectedTheme)
     updateToolbarThemeLogo()
     syncNightlyIndicator()
+    reload_performance_graph()
+    reload_h2h_graphs()
 
 }
 
@@ -2716,103 +2900,6 @@ function shouldShowPatchModal(storedVersion, versionNow) {
 
     return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
 }
-
-function updateModBlocking(data) {
-    if (data === "AlreadyEdited") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-    }
-    else if (data === "Start2024") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-
-        document.querySelector(".time-travel").classList.remove("disabled")
-        document.querySelector(".time-travel span").textContent = "Apply"
-    }
-    else if (data === "Direct2025" || data === "End2024") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-
-        document.querySelector(".time-travel").classList.add("disabled")
-        document.querySelector(".time-travel span").textContent = "Disabled"
-        calendarEditMode = data;
-    }
-    else {
-        document.querySelector(".mod-blocking").classList.remove("d-none")
-        document.querySelector(".changes-grid").classList.add("d-none")
-    }
-}
-
-document.querySelector(".time-travel").addEventListener("click", function () {
-    const command = new Command("timeTravel", { dayNumber: 45657 });
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-line-ups").addEventListener("click", function () {
-    const command = new Command("changeLineUps", {});
-    command.execute();
-    document.querySelector(".ham-transfer").classList.remove("mefont")
-    document.querySelector(".sai-transfer").classList.remove("fefont")
-    document.querySelector(".ham-transfer").classList.add("fefont")
-    document.querySelector(".sai-transfer").classList.add("wifont")
-    document.querySelector(".ant-transfer").classList.add("mefont")
-    document.querySelector(".ant-ovr").classList.add("mefont")
-    document.querySelector(".bor-ovr").classList.remove("mcfont")
-    document.querySelector(".bor-ovr").classList.add("affont")
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-stats").addEventListener("click", function () {
-    const command = new Command("changeStats", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-cfd").addEventListener("click", function () {
-    const command = new Command("changeCfd", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-regulations").addEventListener("click", function () {
-    const command = new Command("changeRegulations", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".extra-drivers").addEventListener("click", function () {
-    const command = new Command("extraDrivers", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-
-    document.querySelector(".change-line-ups").classList.remove("disabled")
-    document.querySelector(".change-line-ups span").textContent = "Apply"
-})
-
-document.querySelector(".change-calendar").addEventListener("click", function () {
-    const command = new Command("changeCalendar", { type: calendarEditMode });
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-
-document.querySelector(".change-performance").addEventListener("click", function () {
-    const command = new Command("changePerformance", {});
-    command.execute();
-    document.querySelector(".mclaren-performance").innerText = "63.7%"
-    document.querySelector(".redbull-performance").innerText = "59.4%"
-    document.querySelector(".williams-performance").innerText = "56.8%"
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
 
 document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     elem.addEventListener("click", function () {

@@ -1,6 +1,6 @@
 import { races_names, names_full, team_dict, codes_dict, countries_data, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H, queueAutoCompareDrivers } from './head2head';
-import { game_version, custom_team, manageSaveButton, new_update_notifications, updateFront } from "./renderer";
+import { game_version, custom_team, manageSaveButton, new_update_notifications, seasonModData, updateFront } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
@@ -177,6 +177,21 @@ export function deleteEngineName(id) {
 
 export function setEngineAllocations(allocations) {
     engine_allocations = allocations
+}
+
+function getEngineLogoSrc(name) {
+    const normalized = String(name || "").toLowerCase()
+    if (normalized.includes("ferrari")) return "../assets/images/logos/ferrari.png"
+    if (normalized.includes("rbpt") || normalized.includes("red bull")) return "../assets/images/logos/redbull.png"
+    if (normalized.includes("mercedes")) return "../assets/images/logos/mercedes.png"
+    if (normalized.includes("renault")) return "../assets/images/logos/renault.png"
+    if (normalized.includes("honda")) return "../assets/images/logos/honda.png"
+    if (normalized.includes("audi")) return "../assets/images/logos/audi.png"
+    if (normalized.includes("ford")) return "../assets/images/logos/ford.png"
+    if (normalized.includes("bmw")) return "../assets/images/logos/bmw.png"
+    if (normalized.includes("porsche")) return "../assets/images/logos/porsche.png"
+    if (normalized.includes("toyota")) return "../assets/images/logos/toyota.png"
+    return "../assets/images/engine.png"
 }
 
 
@@ -1285,10 +1300,25 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
     teamName.innerText = name.toUpperCase();
     nameDiv.appendChild(teamName);
     if (currentFormula === 1) {
-        let engineName = document.createElement("span");
-        engineName.classList = "teams-table-engine-name bold-font";
-        engineName.textContent = engine_names[engine_allocations[id]];
-        nameDiv.appendChild(engineName);
+        const engineId = engine_allocations?.[id]
+        const engineNameText = engineId != null ? engine_names?.[engineId] : ""
+
+        const engineDiv = document.createElement("div")
+        engineDiv.className = "teams-table-engine"
+
+        const engineLogo = document.createElement("img")
+        engineLogo.className = "teams-table-engine-logo"
+        engineLogo.src = getEngineLogoSrc(engineNameText)
+        engineLogo.alt = ""
+        engineLogo.setAttribute("aria-hidden", "true")
+
+        const engineName = document.createElement("span")
+        engineName.classList = "teams-table-engine-name bold-font"
+        engineName.textContent = engineNameText
+
+        // engineDiv.appendChild(engineLogo) disabled for now
+        engineDiv.appendChild(engineName)
+        nameDiv.appendChild(engineDiv)
     }
     row.appendChild(nameDiv);
 
@@ -1328,7 +1358,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
     const safePoints = (v) => {
         if (v === -1) return 0; // DNF → 0 puntos
-        const n = parseInt(v);
+        const n = Number.parseInt(String(v), 10);
+        if (!Number.isFinite(n)) return 0;
         return Math.max(0, n);
     };
 
@@ -1506,7 +1537,7 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                     }
                     else {
                         sprintDiv.dataset.points = manage_dataset_info_team(
-                            [sprintPoints[0] ?? 0, sprintPoints[1] ?? 0],
+                            [safePoints(sprintPoints[0]), safePoints(sprintPoints[1])],
                             undefined,
                             "points"
                         );
@@ -1528,8 +1559,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
                 const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
 
-                const d1PointsTotal = (d1 ? d1.points : 0) + (d1?.qualifyingPoints ?? 0);
-                const d2PointsTotal = (d2 ? d2.points : 0) + (d2?.qualifyingPoints ?? 0);
+                const d1PointsTotal = safePoints(d1?.points) + safePoints(d1?.qualifyingPoints);
+                const d2PointsTotal = safePoints(d2?.points) + safePoints(d2?.qualifyingPoints);
                 if (currentFormula === 3) {
                     const featurePointsTotal = allEntries.reduce(
                         (sum, entry) =>
@@ -1551,7 +1582,7 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                     "pos"
                 );
                 featureDiv.dataset.quali = manage_dataset_info_team(
-                    [d1 ? d1.qualifyingPos ?? 99 : 99, d2 ? d2.qualifyingPos ?? 99 : 99],
+                    [d1 ? d1.qualifyingPos ?? 99 : "-", d2 ? d2.qualifyingPos ?? 99 : "-"],
                     undefined,
                     "quali"
                 );
@@ -2140,8 +2171,11 @@ export function generateYearsMenu(actualYear) {
     yearMenu.innerHTML = "";
     yearH2H.innerHTML = "";
 
+    const timeTravel2026Enabled = seasonModData?.["time-travel-2026"] === "1" || seasonModData?.["time-travel-2026"] === 1;
+    const minYear = timeTravel2026Enabled ? 2026 : game_version;
+
     // años (con data-year)
-    for (let year = actualYear; year >= game_version; year--) {
+    for (let year = actualYear; year >= minYear; year--) {
         const a = document.createElement("a");
         a.textContent = String(year);
         a.className = "redesigned-dropdown-item";
@@ -3523,7 +3557,7 @@ export function onSessionResultsFetched(data) {
                 timeDiv.innerText = "-";
             }
             else if (rowLaps < leaderLaps) {
-                timeDiv.innerText = `+${leaderLaps - rowLaps} L`;
+                timeDiv.innerText = `+${leaderLaps - rowLaps}L`;
             }
             else if (rowPos === 1 && rowTime > 0) {
                 timeDiv.innerText = formatLapTime(rowTime);

@@ -29,3 +29,15 @@
 - Added new team themes (Ferrari, Red Bull, Aston Martin, Mercedes, McLaren) plus nightly theme
 - Team logos resized for improved performance
 - Stronger contract protection logic (F2/F3 contract bug fixed)
+
+## 28th february
+- Added 2026 Season mod option in "Mods" tab
+- Added performance overview in "Performance" tab
+- Added expertise editing in "Performance" tab
+- Added engine upgrades over performance chart in "Performance" tab
+- Added ADUO (Additional Development and Upgrade Opportunities) turning points, toggable from the "Settings" modal and the 2026 season mod tab
+- Added engine upgrades annotations and annotations toggle in "Performance" tab
+- Changed F2/F3 logos to improve readability
+- Minor UI fixes
+- Fixed bug that would cause F2/F3 teams to have NaN points
+- Fixed an issue that would prevent the user from toggling "driver line ups" in the 2025 Season DLC if he reloaded the page and uploaded his save with extra drivers again
