@@ -1,6 +1,7 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, fetchEventsFrom, fetchPointsRegulations, fetchLastCompletedRaceId, ensureCustomDoDRankingTable } from "./dbUtils.js";
 import records from "../../../data/records.json";
+import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
     return Array.from(new Set(ids)).filter(x => x != null).join(",");
 }
@@ -205,6 +206,58 @@ export function enrichDriversWithHistory(drivers, season = null) {
 export function getSelectedRecord(type, year) {
     let recordTargetColumn, recordTargetTable;
 
+    if (type === "dotd") {
+        if (year === "all") {
+            ensureCustomDoDRankingTable();
+            const rows = queryDB(`
+        SELECT
+          bas.FirstName,
+          bas.LastName,
+          t.DriverID,
+          COUNT(*) AS Count,
+          COALESCE((
+            SELECT w.TeamID
+            FROM Custom_DriverOfTheDay_Ranking w
+            JOIN Races r ON r.RaceID = w.RaceID
+            WHERE w.Rank = 1
+              AND w.DriverID = t.DriverID
+            ORDER BY w.Season DESC, r.Day DESC, w.RaceID DESC
+            LIMIT 1
+          ), -1) AS TeamID,
+          COALESCE(gam.Retired, 0) AS Retired
+        FROM Custom_DriverOfTheDay_Ranking t
+        JOIN Staff_BasicData bas ON bas.StaffID = t.DriverID
+        LEFT JOIN Staff_GameData gam ON gam.StaffID = t.DriverID
+        WHERE t.Rank = 1
+        GROUP BY t.DriverID
+        ORDER BY Count DESC
+      `, [], 'allRows') || [];
+
+            const formatted = rows.map(r => ({
+                name: formatNamesSimple([r[0], r[1]])[0],
+                id: r[2],
+                record: type,
+                value: r[3],
+                teamId: r[4],
+                retired: r[5],
+            }));
+
+            return enrichDriversWithHistory(formatted);
+        }
+
+        const counts = fetchDriverOfTheDayCounts(year) || [];
+        const formatted = counts.map(r => ({
+            name: r.name,
+            id: r.id,
+            record: type,
+            value: r.count,
+            teamId: r.teamId,
+            retired: 0,
+        })).sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
+
+        return enrichDriversWithHistory(formatted, year);
+    }
+
     if (type === "wins") recordTargetColumn = "TotalWins";
     else if (type === "podiums") recordTargetColumn = "TotalPodiums";
     else if (type === "poles") recordTargetColumn = "TotalPoles";
@@ -326,6 +379,315 @@ export function getSelectedRecord(type, year) {
 
 }
 
+export function fetchSeasonReviewData(year, formula = 1, isCurrentYear = true) {
+    const teamsStandings = fetchTeamsStandingsWithPoints(year, formula);
+    const driversStandings = fetchDriversStandings(year, formula);
+    const events = fetchEventsFrom(year, formula);
+    const pointsInfo = fetchPointsRegulations();
+    const lastRaceDoneId = fetchLastCompletedRaceId(year, formula);
+    const winsRecords = getSelectedRecord("wins", year);
+    const polesRecords = getSelectedRecord("poles", year);
+    const podiumsRecords = getSelectedRecord("podiums", year);
+    const teamWinsTotals = fetchTeamSeasonWinsTotals(year, formula);
+    const teamPolesTotals = fetchTeamSeasonPolesTotals(year, formula);
+    const teamPodiumsTotals = fetchTeamSeasonPodiumsTotals(year, formula);
+    const qualifyingStageCounts = fetchQualifyingStageCounts(year, formula, isCurrentYear);
+    const driverOfTheDayCounts = fetchDriverOfTheDayCounts(year);
+    const teamMateHeadToHead = fetchTeamMateQualiRaceHeadToHead(year);
+
+    return {
+        year,
+        formula,
+        teamsStandings,
+        driversStandings,
+        events,
+        pointsInfo,
+        lastRaceDoneId,
+        qualifyingStageCounts,
+        driverOfTheDayCounts,
+        teamMateHeadToHead,
+        teamWinsTotals,
+        teamPolesTotals,
+        teamPodiumsTotals,
+        polesRecords,
+        podiumsRecords,
+        winsRecords
+    };
+}
+
+export function getSelectedTeamRecord(type, year, formula = 1) {
+    if (!type) return [];
+    if (String(year) === "all") return [];
+
+    const recordType = String(type);
+
+    let base = [];
+    let breakdownRows = [];
+    if (recordType === "wins") base = fetchTeamSeasonWinsTotals(year, formula);
+    else if (recordType === "podiums") base = fetchTeamSeasonPodiumsTotals(year, formula);
+    else if (recordType === "poles") base = fetchTeamSeasonPolesTotals(year, formula);
+    else if (recordType === "dotd") {
+        if (Number(formula) !== 1) return [];
+
+        ensureCustomDoDRankingTable();
+        const globals = getGlobals();
+        const teamFilterSql = globals.isCreateATeam
+            ? `(t.TeamID BETWEEN 1 AND 10 OR t.TeamID = 32)`
+            : `(t.TeamID BETWEEN 1 AND 10)`;
+
+        const rows = queryDB(`
+      SELECT t.TeamID, COUNT(*) AS Cnt
+      FROM Custom_DriverOfTheDay_Ranking t
+      WHERE t.Season = ?
+        AND t.Rank = 1
+        AND ${teamFilterSql}
+      GROUP BY t.TeamID
+      ORDER BY Cnt DESC, t.TeamID ASC
+    `, [year], 'allRows') || [];
+
+        base = rows.map(r => ({
+            teamId: Number(r[0]),
+            value: Number(r[1]) || 0,
+        }));
+
+        breakdownRows = queryDB(`
+      SELECT
+        t.TeamID,
+        t.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COUNT(*) AS Cnt
+      FROM Custom_DriverOfTheDay_Ranking t
+      JOIN Staff_BasicData bas ON bas.StaffID = t.DriverID
+      WHERE t.Season = ?
+        AND t.Rank = 1
+        AND ${teamFilterSql}
+      GROUP BY t.TeamID, t.DriverID
+      ORDER BY t.TeamID ASC, Cnt DESC
+    `, [year], 'allRows') || [];
+    }
+    else {
+        return [];
+    }
+
+    const breakdownByTeamId = new Map();
+    if (recordType === "wins" || recordType === "podiums" || recordType === "poles") {
+        if (Number(formula) !== 1) return base;
+        const globals = getGlobals();
+        const teamFilterSql = globals.isCreateATeam
+            ? `(rr.TeamID BETWEEN 1 AND 10 OR rr.TeamID = 32)`
+            : `(rr.TeamID BETWEEN 1 AND 10)`;
+
+        let whereSql = "";
+        if (recordType === "wins") whereSql = `rr.FinishingPos = 1`;
+        else if (recordType === "podiums") whereSql = `rr.FinishingPos BETWEEN 1 AND 3`;
+        else whereSql = `rr.StartingPos = 1`;
+
+        breakdownRows = queryDB(`
+      SELECT
+        rr.TeamID,
+        rr.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COUNT(*) AS Cnt
+      FROM Races_Results rr
+      JOIN Staff_BasicData bas ON bas.StaffID = rr.DriverID
+      WHERE rr.Season = ?
+        AND ${teamFilterSql}
+        AND ${whereSql}
+      GROUP BY rr.TeamID, rr.DriverID
+      ORDER BY rr.TeamID ASC, Cnt DESC
+    `, [year], 'allRows') || [];
+    }
+
+    breakdownRows.forEach((r) => {
+        const teamId = Number(r[0]);
+        const driverId = Number(r[1]);
+        const count = Number(r[4]) || 0;
+        if (count <= 0) return;
+        const name = formatNamesSimple([r[2], r[3]])[0];
+        if (!breakdownByTeamId.has(teamId)) breakdownByTeamId.set(teamId, []);
+        breakdownByTeamId.get(teamId).push({ id: driverId, name, count });
+    });
+
+    const lastRaceId = Number(formula) === 1 ? queryDB(`
+    SELECT RaceID
+    FROM Races
+    WHERE SeasonID = ?
+      AND State = 2
+    ORDER BY Day DESC, RaceID DESC
+    LIMIT 1
+  `, [year], 'singleValue') : null;
+
+    const attachDriversAndBreakdown = (item) => ({
+        ...item,
+        breakdown: breakdownByTeamId.get(item.teamId) || [],
+        drivers: (() => {
+            if (!lastRaceId) return { driver1: null, driver2: null };
+            const drivers = fetchTeamDriversAtRace(lastRaceId, item.teamId);
+            return {
+                driver1: drivers[0] ?? null,
+                driver2: drivers[1] ?? null
+            };
+        })()
+    });
+
+    if (!lastRaceId) return base.map(attachDriversAndBreakdown);
+
+    const fetchTeamDriversAtRace = (raceId, teamId) => {
+        const rows = queryDB(`
+      SELECT DISTINCT rr.DriverID, bas.FirstName, bas.LastName, rr.FinishingPos
+      FROM Races_Results rr
+      JOIN Staff_BasicData bas ON bas.StaffID = rr.DriverID
+      WHERE rr.RaceID = ?
+        AND rr.TeamID = ?
+      ORDER BY rr.FinishingPos ASC, rr.DriverID ASC
+    `, [raceId, teamId], 'allRows') || [];
+
+        return rows.slice(0, 2).map(r => {
+            const driverID = r[0];
+            const driverName = formatNamesSimple([r[1], r[2]])[0];
+            const currentNumber = queryDB(`
+        SELECT Number
+        FROM Staff_DriverNumbers
+        WHERE CurrentHolder = ?
+      `, [driverID], 'singleValue');
+
+            return {
+                id: Number(driverID),
+                name: driverName,
+                number: currentNumber != null ? Number(currentNumber) : null
+            };
+        });
+    };
+
+    return base.map(attachDriversAndBreakdown);
+}
+
+export function fetchQualifyingStageCounts(year, formula = 1, isCurrentYear = true) {
+    if (Number(formula) === 1 && !isCurrentYear) {
+        const cutoffQ2 = getGlobals().isCreateATeam ? 16 : 15;
+        const rows = queryDB(`
+      SELECT
+        ds.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COALESCE((
+          SELECT rr.TeamID
+          FROM Races_Results rr
+          JOIN Races r ON r.RaceID = rr.RaceID
+          WHERE rr.DriverID = ds.DriverID
+            AND r.SeasonID = ?
+          ORDER BY r.Day DESC, r.RaceID DESC
+          LIMIT 1
+        ), -1) AS TeamID,
+        SUM(CASE WHEN rr.StartingPos = 1 THEN 1 ELSE 0 END) AS PoleCount,
+        SUM(CASE WHEN rr.StartingPos > 0 AND rr.StartingPos != 99 AND rr.StartingPos <= 10 THEN 1 ELSE 0 END) AS Q3Count,
+        SUM(CASE WHEN rr.StartingPos > 0 AND rr.StartingPos != 99 AND rr.StartingPos <= ${cutoffQ2} THEN 1 ELSE 0 END) AS Q2Count
+      FROM Races_DriverStandings ds
+      JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
+      LEFT JOIN Races_Results rr
+        ON rr.DriverID = ds.DriverID
+       AND rr.Season = ?
+      WHERE ds.SeasonID = ?
+        AND ds.RaceFormula = ?
+      GROUP BY ds.DriverID
+      ORDER BY PoleCount DESC, Q3Count DESC, Q2Count DESC, ds.Position ASC
+    `, [year, year, year, formula], 'allRows') || [];
+
+        return rows.map(r => ({
+            id: r[0],
+            name: formatNamesSimple([r[1], r[2]])[0],
+            teamId: r[3],
+            q2Count: r[6] ?? 0,
+            q3Count: r[5] ?? 0,
+            poleCount: r[4] ?? 0
+        }));
+    }
+
+    if (Number(formula) === 1) {
+        const rows = queryDB(`
+      SELECT
+        ds.DriverID,
+        bas.FirstName,
+        bas.LastName,
+        COALESCE((
+          SELECT rr.TeamID
+          FROM Races_Results rr
+          JOIN Races r ON r.RaceID = rr.RaceID
+          WHERE rr.DriverID = ds.DriverID
+            AND r.SeasonID = ?
+          ORDER BY r.Day DESC, r.RaceID DESC
+          LIMIT 1
+        ), -1) AS TeamID,
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 2 THEN q.RaceID END) AS Q2Count,
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count,
+        COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 AND q.FinishingPos = 1 THEN q.RaceID END) AS PoleCount
+      FROM Races_DriverStandings ds
+      JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
+      LEFT JOIN Races_QualifyingResults q
+        ON q.DriverID = ds.DriverID
+       AND q.SeasonID = ds.SeasonID
+       AND q.RaceFormula = ds.RaceFormula
+       AND COALESCE(q.SprintShootout, 0) = 0
+       AND q.QualifyingStage IN (2, 3)
+      WHERE ds.SeasonID = ?
+        AND ds.RaceFormula = ?
+      GROUP BY ds.DriverID
+      ORDER BY Q3Count DESC, Q2Count DESC, ds.Position ASC
+    `, [year, year, formula], 'allRows') || [];
+
+        return rows.map(r => ({
+            id: r[0],
+            name: formatNamesSimple([r[1], r[2]])[0],
+            teamId: r[3],
+            q2Count: r[4] ?? 0,
+            q3Count: r[5] ?? 0,
+            poleCount: r[6] ?? 0
+        }));
+    }
+
+    const rows = queryDB(`
+    SELECT
+      ds.DriverID,
+      bas.FirstName,
+      bas.LastName,
+      COALESCE((
+        SELECT fr.TeamID
+        FROM Races_FeatureRaceResults fr
+        JOIN Races r ON r.RaceID = fr.RaceID
+        WHERE fr.DriverID = ds.DriverID
+          AND fr.SeasonID = ?
+          AND fr.RaceFormula = ?
+        ORDER BY r.Day DESC, r.RaceID DESC
+        LIMIT 1
+      ), -1) AS TeamID,
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 2 THEN q.RaceID END) AS Q2Count,
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 THEN q.RaceID END) AS Q3Count,
+      COUNT(DISTINCT CASE WHEN q.QualifyingStage = 3 AND q.FinishingPos = 1 THEN q.RaceID END) AS PoleCount
+    FROM Races_DriverStandings ds
+    JOIN Staff_BasicData bas ON bas.StaffID = ds.DriverID
+    LEFT JOIN Races_QualifyingResults q
+      ON q.DriverID = ds.DriverID
+     AND q.SeasonID = ds.SeasonID
+     AND q.RaceFormula = ds.RaceFormula
+     AND q.QualifyingStage IN (2, 3)
+    WHERE ds.SeasonID = ?
+      AND ds.RaceFormula = ?
+    GROUP BY ds.DriverID
+    ORDER BY Q3Count DESC, Q2Count DESC, ds.Position ASC
+  `, [year, formula, year, formula], 'allRows') || [];
+
+    return rows.map(r => ({
+        id: r[0],
+        name: formatNamesSimple([r[1], r[2]])[0],
+        teamId: r[3],
+        q2Count: r[4] ?? 0,
+        q3Count: r[5] ?? 0,
+        poleCount: r[6] ?? 0
+    }));
+}
+
 function pickValueFromType(item, type) {
     if (!item) return 0;
     switch (type) {
@@ -387,4 +749,513 @@ function mergeWithExternalRecords(dbDrivers, externalJson, type, year) {
     // Ordenamos por la columna value desc
     merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
     return merged;
+}
+
+function fetchRacePointsSnapshot(raceIdNum) {
+    const rows = queryDB(
+        `SELECT DriverID, TeamID, Points
+         FROM Races_Results
+         WHERE RaceID = ?`,
+        [raceIdNum],
+        'allRows'
+    ) || [];
+
+    const pointsByDriver = new Map();
+    const pointsByTeam = new Map();
+
+    for (const r of rows) {
+        const driverId = Number(r?.[0]);
+        const teamId = Number(r?.[1]);
+        const pts = Number(r?.[2] ?? 0);
+        pointsByDriver.set(driverId, pts);
+        const prev = Number(pointsByTeam.get(teamId) ?? 0);
+        pointsByTeam.set(teamId, prev + pts);
+    }
+
+    return { pointsByDriver, pointsByTeam };
+}
+
+function fetchSprintPointsSnapshot(raceIdNum) {
+    const rows = queryDB(
+        `SELECT DriverID, TeamID, ChampionshipPoints
+         FROM Races_SprintResults
+         WHERE RaceID = ?
+           AND RaceFormula = 1`,
+        [raceIdNum],
+        'allRows'
+    ) || [];
+
+    const pointsByDriver = new Map();
+    const pointsByTeam = new Map();
+
+    for (const r of rows) {
+        const driverId = Number(r?.[0]);
+        const teamId = Number(r?.[1]);
+        const pts = Number(r?.[2] ?? 0);
+        pointsByDriver.set(driverId, pts);
+        const prev = Number(pointsByTeam.get(teamId) ?? 0);
+        pointsByTeam.set(teamId, prev + pts);
+    }
+
+    return { pointsByDriver, pointsByTeam };
+}
+
+function fetchSprintPosToPointsMap(raceIdNum) {
+    const rows = queryDB(
+        `SELECT FinishingPos, ChampionshipPoints, DNF
+         FROM Races_SprintResults
+         WHERE RaceID = ?
+           AND RaceFormula = 1`,
+        [raceIdNum],
+        'allRows'
+    ) || [];
+
+    const posToPts = new Map();
+    for (const r of rows) {
+        const pos = Number(r?.[0]);
+        const pts = Number(r?.[1] ?? 0);
+        const dnf = Number(r?.[2]) === 1;
+        if (!dnf && pos > 0 && pos !== 99) posToPts.set(pos, Math.max(0, pts));
+    }
+    return posToPts;
+}
+
+function fetchRaceDriverRecordsSnapshot(raceIdNum) {
+    const rows = queryDB(
+        `SELECT DriverID, FinishingPos, DNF, Points
+         FROM Races_Results
+         WHERE RaceID = ?`,
+        [raceIdNum],
+        'allRows'
+    ) || [];
+
+    const byDriver = new Map();
+
+    for (const r of rows) {
+        const driverId = Number(r?.[0]);
+
+        const pos = Number(r?.[1]);
+        const dnf = Number(r?.[2]) === 1;
+        const pts = Number(r?.[3] ?? 0);
+
+        const starts = 1;
+        const wins = (!dnf && pos === 1) ? 1 : 0;
+        const podiums = (!dnf && pos >= 1 && pos <= 3) ? 1 : 0;
+        const points = Math.max(0, pts);
+
+        byDriver.set(driverId, { starts, wins, podiums, points });
+    }
+
+    return byDriver;
+}
+
+function diffPointsMaps(newMap, oldMap) {
+    const deltas = new Map();
+    const keys = new Set([...(oldMap ? oldMap.keys() : []), ...(newMap ? newMap.keys() : [])]);
+    for (const k of keys) {
+        const before = Number(oldMap?.get(k) ?? 0);
+        const after = Number(newMap?.get(k) ?? 0);
+        const delta = after - before;
+        if (delta !== 0) deltas.set(k, delta);
+    }
+    return deltas;
+}
+
+function diffDriverRecordMaps(newMap, oldMap) {
+    const deltas = new Map();
+    const keys = new Set([...(oldMap ? oldMap.keys() : []), ...(newMap ? newMap.keys() : [])]);
+    for (const k of keys) {
+        const before = oldMap?.get(k) || { starts: 0, wins: 0, podiums: 0, points: 0 };
+        const after = newMap?.get(k) || { starts: 0, wins: 0, podiums: 0, points: 0 };
+
+        const dStarts = Number(after.starts ?? 0) - Number(before.starts ?? 0);
+        const dWins = Number(after.wins ?? 0) - Number(before.wins ?? 0);
+        const dPodiums = Number(after.podiums ?? 0) - Number(before.podiums ?? 0);
+        const dPoints = Number(after.points ?? 0) - Number(before.points ?? 0);
+
+        if (dStarts !== 0 || dWins !== 0 || dPodiums !== 0 || dPoints !== 0) {
+            deltas.set(k, { starts: dStarts, wins: dWins, podiums: dPodiums, points: dPoints });
+        }
+    }
+    return deltas;
+}
+
+function resortF1StandingsForSeason(seasonId) {
+    const seasonNum = Number(seasonId);
+
+    const driverRows = queryDB(
+        `SELECT DriverID, Points, Position
+         FROM Races_DriverStandings
+         WHERE SeasonID = ?
+           AND RaceFormula = 1`,
+        [seasonNum],
+        'allRows'
+    ) || [];
+
+    const existingDriverPos = new Map();
+    const pointsByDriver = new Map();
+    const driverIds = [];
+
+    driverRows.forEach((r) => {
+        const driverId = Number(r?.[0]);
+        const pts = Number(r?.[1] ?? 0);
+        const pos = Number(r?.[2]);
+        driverIds.push(driverId);
+        pointsByDriver.set(driverId, pts);
+        existingDriverPos.set(driverId, pos);
+    });
+
+    const finishCountsRows = queryDB(
+        `SELECT DriverID, FinishingPos, COUNT(*) AS Cnt
+         FROM Races_Results
+         WHERE Season = ?
+           AND FinishingPos > 0
+           AND FinishingPos != 99
+         GROUP BY DriverID, FinishingPos`,
+        [seasonNum],
+        'allRows'
+    ) || [];
+
+    const countsByDriver = new Map();
+    finishCountsRows.forEach((r) => {
+        const driverId = Number(r?.[0]);
+        const finPos = Number(r?.[1]);
+        const cnt = Number(r?.[2] ?? 0);
+        if (!countsByDriver.has(driverId)) countsByDriver.set(driverId, new Map());
+        countsByDriver.get(driverId).set(finPos, cnt);
+    });
+
+    const sortedDrivers = driverIds.slice().sort((a, b) => {
+        const pa = Number(pointsByDriver.get(a) ?? 0);
+        const pb = Number(pointsByDriver.get(b) ?? 0);
+        if (pa !== pb) return pb - pa;
+        const ca = countsByDriver.get(a) || new Map();
+        const cb = countsByDriver.get(b) || new Map();
+        for (let pos = 1; pos <= 30; pos++) {
+            const da = Number(ca.get(pos) ?? 0);
+            const db = Number(cb.get(pos) ?? 0);
+            if (da !== db) return db - da;
+        }
+        const ea = Number(existingDriverPos.get(a) ?? Infinity);
+        const eb = Number(existingDriverPos.get(b) ?? Infinity);
+        if (ea !== eb) return ea - eb;
+        return a - b;
+    });
+
+    for (let i = 0; i < sortedDrivers.length; i++) {
+        const driverId = sortedDrivers[i];
+        const pts = Number(pointsByDriver.get(driverId) ?? 0);
+        queryDB(
+            `UPDATE Races_DriverStandings
+             SET Points = ?, Position = ?, LastPointsChange = 0, LastPositionChange = 0
+             WHERE SeasonID = ? AND RaceFormula = 1 AND DriverID = ?`,
+            [pts, i + 1, seasonNum, driverId],
+            'run'
+        );
+    }
+
+    const teamRows = queryDB(
+        `SELECT TeamID, Points, Position
+         FROM Races_TeamStandings
+         WHERE SeasonID = ?
+           AND RaceFormula = 1`,
+        [seasonNum],
+        'allRows'
+    ) || [];
+
+    const existingTeamPos = new Map();
+    const pointsByTeam = new Map();
+    const teamIds = [];
+
+    teamRows.forEach((r) => {
+        const teamId = Number(r?.[0]);
+        const pts = Number(r?.[1] ?? 0);
+        const pos = Number(r?.[2]);
+        teamIds.push(teamId);
+        pointsByTeam.set(teamId, pts);
+        existingTeamPos.set(teamId, pos);
+    });
+
+    const teamFinishCountsRows = queryDB(
+        `SELECT TeamID, FinishingPos, COUNT(*) AS Cnt
+         FROM Races_Results
+         WHERE Season = ?
+           AND FinishingPos > 0
+           AND FinishingPos != 99
+         GROUP BY TeamID, FinishingPos`,
+        [seasonNum],
+        'allRows'
+    ) || [];
+
+    const countsByTeam = new Map();
+    teamFinishCountsRows.forEach((r) => {
+        const teamId = Number(r?.[0]);
+        const finPos = Number(r?.[1]);
+        const cnt = Number(r?.[2] ?? 0);
+        if (!countsByTeam.has(teamId)) countsByTeam.set(teamId, new Map());
+        countsByTeam.get(teamId).set(finPos, cnt);
+    });
+
+    const sortedTeams = teamIds.slice().sort((a, b) => {
+        const pa = Number(pointsByTeam.get(a) ?? 0);
+        const pb = Number(pointsByTeam.get(b) ?? 0);
+        if (pa !== pb) return pb - pa;
+        const ca = countsByTeam.get(a) || new Map();
+        const cb = countsByTeam.get(b) || new Map();
+        for (let pos = 1; pos <= 30; pos++) {
+            const da = Number(ca.get(pos) ?? 0);
+            const db = Number(cb.get(pos) ?? 0);
+            if (da !== db) return db - da;
+        }
+        const ea = Number(existingTeamPos.get(a) ?? Infinity);
+        const eb = Number(existingTeamPos.get(b) ?? Infinity);
+        if (ea !== eb) return ea - eb;
+        return a - b;
+    });
+
+    for (let i = 0; i < sortedTeams.length; i++) {
+        const teamId = sortedTeams[i];
+        const pts = Number(pointsByTeam.get(teamId) ?? 0);
+        queryDB(
+            `UPDATE Races_TeamStandings
+             SET Points = ?, Position = ?, LastPointsChange = 0, LastPositionChange = 0
+             WHERE SeasonID = ? AND RaceFormula = 1 AND TeamID = ?`,
+            [pts, i + 1, seasonNum, teamId],
+            'run'
+        );
+    }
+}
+
+export function editRaceResults(raceId, edits = [], opts = {}) {
+    const raceIdNum = Number(raceId);
+    if (!Array.isArray(edits) || edits.length === 0) return { ok: false, error: "No edits provided" };
+    const sessionKey = String(opts?.sessionKey || (opts?.isSprint ? "sprintrace" : "race")).toLowerCase();
+    const isSprint = sessionKey === "sprintrace" || sessionKey === "sprint" || sessionKey === "sprintrace";
+
+    try {
+        queryDB(`BEGIN IMMEDIATE`, [], "run");
+
+        const seasonId = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceIdNum], "singleValue");
+        if (seasonId == null) {
+            queryDB(`ROLLBACK`, [], "run");
+            return { ok: false, error: "Race not found" };
+        }
+
+        const rowCount = Number(queryDB(
+            isSprint
+                ? `SELECT COUNT(*) FROM Races_SprintResults WHERE RaceID = ? AND RaceFormula = 1`
+                : `SELECT COUNT(*) FROM Races_Results WHERE RaceID = ?`,
+            [raceIdNum],
+            "singleValue"
+        ) ?? 0);
+        if (rowCount > 0 && edits.length !== rowCount) {
+            queryDB(`ROLLBACK`, [], "run");
+            return { ok: false, error: `Edits count (${edits.length}) does not match ${isSprint ? "sprint" : "race"} entries (${rowCount}).` };
+        }
+
+        for (const edit of edits) {
+            const dnf = Number(edit?.dnf);
+            if (!(dnf === 0 || dnf === 1)) {
+                queryDB(`ROLLBACK`, [], "run");
+                return { ok: false, error: "Invalid edits payload" };
+            }
+        }
+        const posSet = new Set(edits.map(e => Number(e?.finishingPos)));
+        if (posSet.size !== edits.length) {
+            queryDB(`ROLLBACK`, [], "run");
+            return { ok: false, error: "Duplicate finishing positions in edits." };
+        }
+
+        const before = isSprint ? fetchSprintPointsSnapshot(raceIdNum) : fetchRacePointsSnapshot(raceIdNum);
+        const beforeDriverRecords = isSprint ? null : fetchRaceDriverRecordsSnapshot(raceIdNum);
+
+        if (!isSprint) {
+            // Avoid UNIQUE constraint collisions while reordering (Season, RaceID, FinishingPos)
+            queryDB(
+                `UPDATE Races_Results SET FinishingPos = COALESCE(FinishingPos, 0) + 1000 WHERE RaceID = ?`,
+                [raceIdNum],
+                "run"
+            );
+
+            for (const edit of edits) {
+                const dnf = Number(edit.dnf) === 1 ? 1 : 0;
+                const time = dnf ? 0 : Number(edit.time);
+                queryDB(
+                    `UPDATE Races_Results SET FinishingPos = ?, Time = ?, DNF = ? WHERE RaceID = ? AND DriverID = ?`,
+                    [Number(edit.finishingPos), time, dnf, raceIdNum, Number(edit.driverId)],
+                    "run"
+                );
+            }
+
+            // Recalculate points for the edited race
+            queryDB(`UPDATE Races_Results SET Points = 0 WHERE RaceID = ?`, [raceIdNum], "run");
+
+            const regs = fetchPointsRegulations();
+            const posPoints = new Map(
+                (Array.isArray(regs?.positionAndPoints) ? regs.positionAndPoints : [])
+                    .map((r) => [Number(r?.[0]), Number(r?.[1])])
+            );
+
+            const lastRaceId = queryDB(
+                `SELECT RaceID FROM Races WHERE SeasonID = ? ORDER BY Day DESC, RaceID DESC LIMIT 1`,
+                [seasonId],
+                "singleValue"
+            );
+            const isLastRace = Number(lastRaceId) === raceIdNum;
+            const doublePoints = isLastRace && Number(regs?.isLastraceDouble) === 1;
+            const flBonusEnabled = Number(regs?.fastestLapBonusPoint) === 1;
+
+            const rows = queryDB(
+                `SELECT DriverID, FinishingPos, DNF, FastestLap FROM Races_Results WHERE RaceID = ? ORDER BY FinishingPos`,
+                [raceIdNum],
+                "allRows"
+            ) || [];
+
+            let fastestDriverId = null;
+            let fastestLap = null;
+            let fastestPos = null;
+
+            for (const r of rows) {
+                const fl = Number(r?.[3]);
+                if (fl > 0 && (fastestLap == null || fl < fastestLap)) {
+                    fastestLap = fl;
+                    fastestDriverId = Number(r?.[0]);
+                    fastestPos = Number(r?.[1]);
+                }
+            }
+
+            for (const r of rows) {
+                const driverId = Number(r?.[0]);
+                const pos = Number(r?.[1]);
+                const dnf = Number(r?.[2]) === 1;
+
+                let pts = 0;
+                if (!dnf && pos >= 1 && pos <= 11) {
+                    pts = Number(posPoints.get(pos) ?? 0);
+                }
+
+                if (flBonusEnabled && fastestDriverId != null && driverId === fastestDriverId && Number(fastestPos) <= 10 && !dnf) {
+                    pts += 1;
+                }
+
+                if (doublePoints) pts *= 2;
+
+                queryDB(`UPDATE Races_Results SET Points = ? WHERE RaceID = ? AND DriverID = ?`, [pts, raceIdNum, driverId], "run");
+            }
+        } else {
+            const posToPts = fetchSprintPosToPointsMap(raceIdNum);
+
+            // Avoid UNIQUE constraint collisions while reordering
+            queryDB(
+                `UPDATE Races_SprintResults
+                 SET FinishingPos = COALESCE(FinishingPos, 0) + 1000
+                 WHERE RaceID = ? AND RaceFormula = 1`,
+                [raceIdNum],
+                "run"
+            );
+
+            for (const edit of edits) {
+                const dnf = Number(edit.dnf) === 1 ? 1 : 0;
+                const time = dnf ? 0 : Number(edit.time);
+                queryDB(
+                    `UPDATE Races_SprintResults
+                     SET FinishingPos = ?, RaceTime = ?, DNF = ?
+                     WHERE RaceID = ? AND RaceFormula = 1 AND DriverID = ?`,
+                    [Number(edit.finishingPos), time, dnf, raceIdNum, Number(edit.driverId)],
+                    "run"
+                );
+            }
+
+            queryDB(
+                `UPDATE Races_SprintResults
+                 SET ChampionshipPoints = 0
+                 WHERE RaceID = ? AND RaceFormula = 1`,
+                [raceIdNum],
+                "run"
+            );
+
+            const rows = queryDB(
+                `SELECT DriverID, FinishingPos, DNF
+                 FROM Races_SprintResults
+                 WHERE RaceID = ? AND RaceFormula = 1
+                 ORDER BY FinishingPos`,
+                [raceIdNum],
+                "allRows"
+            ) || [];
+
+            for (const r of rows) {
+                const driverId = Number(r?.[0]);
+                const pos = Number(r?.[1]);
+                const dnf = Number(r?.[2]) === 1;
+                const pts = (!dnf && pos > 0 && pos !== 99) ? Number(posToPts.get(pos) ?? 0) : 0;
+                queryDB(
+                    `UPDATE Races_SprintResults
+                     SET ChampionshipPoints = ?
+                     WHERE RaceID = ? AND RaceFormula = 1 AND DriverID = ?`,
+                    [pts, raceIdNum, driverId],
+                    "run"
+                );
+            }
+        }
+
+        const after = isSprint ? fetchSprintPointsSnapshot(raceIdNum) : fetchRacePointsSnapshot(raceIdNum);
+        const afterDriverRecords = isSprint ? null : fetchRaceDriverRecordsSnapshot(raceIdNum);
+
+        const driverDeltas = diffPointsMaps(after.pointsByDriver, before.pointsByDriver);
+        for (const [driverId, delta] of driverDeltas.entries()) {
+            queryDB(
+                `UPDATE Races_DriverStandings
+                 SET Points = COALESCE(Points, 0) + ?
+                 WHERE SeasonID = ? AND RaceFormula = 1 AND DriverID = ?`,
+                [Number(delta), Number(seasonId), Number(driverId)],
+                "run"
+            );
+        }
+
+        const teamDeltas = diffPointsMaps(after.pointsByTeam, before.pointsByTeam);
+        for (const [teamId, delta] of teamDeltas.entries()) {
+            queryDB(
+                `UPDATE Races_TeamStandings
+                 SET Points = COALESCE(Points, 0) + ?
+                 WHERE SeasonID = ? AND RaceFormula = 1 AND TeamID = ?`,
+                [Number(delta), Number(seasonId), Number(teamId)],
+                "run"
+            );
+        }
+
+        if (!isSprint && beforeDriverRecords && afterDriverRecords) {
+            const recordDeltas = diffDriverRecordMaps(afterDriverRecords, beforeDriverRecords);
+            for (const [driverId, delta] of recordDeltas.entries()) {
+                queryDB(
+                    `UPDATE Staff_Driver_RaceRecordSinceGameStart
+                     SET TotalStarts = MAX(0, COALESCE(TotalStarts, 0) + ?),
+                         TotalWins = MAX(0, COALESCE(TotalWins, 0) + ?),
+                         TotalPodiums = MAX(0, COALESCE(TotalPodiums, 0) + ?),
+                         TotalPointsScored = MAX(0, COALESCE(TotalPointsScored, 0) + ?)
+                     WHERE StaffID = ? AND Formula = 1`,
+                    [Number(delta.starts), Number(delta.wins), Number(delta.podiums), Number(delta.points), Number(driverId)],
+                    "run"
+                );
+
+                queryDB(
+                    `UPDATE Staff_Driver_RaceRecordPerSeason
+                     SET TotalStarts = MAX(0, COALESCE(TotalStarts, 0) + ?),
+                         TotalWins = MAX(0, COALESCE(TotalWins, 0) + ?),
+                         TotalPodiums = MAX(0, COALESCE(TotalPodiums, 0) + ?),
+                         TotalPointsScored = MAX(0, COALESCE(TotalPointsScored, 0) + ?)
+                     WHERE StaffID = ? AND SeasonID = ?`,
+                    [Number(delta.starts), Number(delta.wins), Number(delta.podiums), Number(delta.points), Number(driverId), Number(seasonId)],
+                    "run"
+                );
+            }
+        }
+
+        resortF1StandingsForSeason(seasonId);
+
+        queryDB(`COMMIT`, [], "run");
+        return { ok: true };
+    } catch (e) {
+        try { queryDB(`ROLLBACK`, [], "run"); } catch (e2) { /* ignore */ }
+        return { ok: false, error: e?.message || String(e) };
+    }
 }

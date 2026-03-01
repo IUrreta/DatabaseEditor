@@ -272,15 +272,19 @@ export function editCode(driverID, newCode) {
 
 // Helpers de fechas
 export function excelToDate(excelDate) {
-  const baseDate = new Date(1899, 11, 30);
-  const ms = excelDate * 86400000;
-  return new Date(baseDate.getTime() + ms);
+  const baseUTC = Date.UTC(1899, 11, 30); // 1899-12-30 UTC
+  return new Date(baseUTC + excelDate * 86400000);
 }
 
 export function dateToExcel(date) {
-  const baseDate = new Date(1899, 11, 30);
-  const diff = date.getTime() - baseDate.getTime();
-  return Math.floor(diff / 86400000);
+  const baseUTC = Date.UTC(1899, 11, 30);
+  const utcMidnight = Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+  return Math.floor((utcMidnight - baseUTC) / 86400000);
+}
+
+export function excelFromYMD(year, month, day) {
+  const d = new Date(Date.UTC(year, month - 1, day));
+  return dateToExcel(d);
 }
 
 export function changeYearsInExcelDate(excelDate, years) {
@@ -381,54 +385,10 @@ export function editMarketability(driverID, value) {
   `, [value, driverID], 'run');
 }
 
-export function editFreezeMentality(state) {
-  if (state === 0) {
-    queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Insert;`, [], 'run');
-    queryDB(`DROP TRIGGER IF EXISTS update_Opinion_After_Update;`, [], 'run');
-    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_Statuses;`, [], 'run');
-    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_AreaOpinions;`, [], 'run');
-    queryDB(`DROP TRIGGER IF EXISTS clear_Staff_Mentality_Events;`, [], 'run');
-    queryDB(`DROP TRIGGER IF EXISTS reset_Staff_State;`, [], 'run');
-  } else {
-    queryDB(`
-      CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Insert
-      AFTER INSERT ON Staff_Mentality_AreaOpinions
-      BEGIN
-        UPDATE Staff_Mentality_AreaOpinions
-        SET Opinion = 2
-        WHERE Opinion != 2;
-      END;
-    `, [], 'run');
-    queryDB(`
-      CREATE TRIGGER IF NOT EXISTS update_Opinion_After_Update
-      AFTER UPDATE OF Opinion ON Staff_Mentality_AreaOpinions
-      BEGIN
-        UPDATE Staff_Mentality_AreaOpinions
-        SET Opinion = 2
-        WHERE Opinion != 2;
-      END;
-    `, [], 'run');
-    queryDB(`
-      CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Statuses
-      AFTER INSERT ON Staff_Mentality_Statuses
-      BEGIN
-        DELETE FROM Staff_Mentality_Statuses;
-      END;
-    `, [], 'run');
-    queryDB(`
-      CREATE TRIGGER IF NOT EXISTS clear_Staff_Mentality_Events
-      AFTER INSERT ON Staff_Mentality_Events
-      BEGIN
-        DELETE FROM Staff_Mentality_Events;
-      END;
-    `, [], 'run');
-    queryDB(`
-      CREATE TRIGGER IF NOT EXISTS reset_Staff_State
-      AFTER UPDATE ON Staff_State
-      BEGIN
-        UPDATE Staff_State
-        SET Mentality = 50, MentalityOpinion = 2;
-      END;
-    `, [], 'run');
-  }
+export function setAllDriversStatsTo85() {
+  queryDB(`
+    UPDATE Staff_performanceStats
+    SET Val = 85
+    WHERE StaffID IN (SELECT StaffID FROM Staff_DriverData)
+  `, [], 'run');
 }

@@ -24,6 +24,13 @@ let freeDriverItems = []
 let t;
 
 const autoContractToggle = document.getElementById("autoContractToggle")
+const lineupsViewButton = document.getElementById("lineupsViewButton");
+const transfersMainLayout = document.getElementById("transfersMainLayout");
+const lineupsView = document.getElementById("lineupsView");
+const lineupsCircle = document.getElementById("lineupsCircle");
+const lineupsSeasonPillsTop = document.getElementById("lineupsSeasonPillsTop");
+const lineupsCurrentPill = document.getElementById("lineupsCurrentPill");
+const lineupsNextPill = document.getElementById("lineupsNextPill");
 
 const divsArray = [freeDriversDiv, f2DriversDiv, f3DriversDiv]
 
@@ -41,6 +48,8 @@ let driver1;
 let driver2;
 let originalTeamId
 export let currentSeason;
+let lineupsData = null;
+let lineupsSeasonType = "current";
 
 let juniorTeamIdActive = -1;
 let juniorTeamDrivers = [];
@@ -324,6 +333,7 @@ function manage_staff_drivers(value) {
 }
 
 function add_future_team_noti(driverDiv, teamInfo) {
+    console.log("ADDING NOTI FOR FUTURE TEAM ", teamInfo)
     let notiDiv = document.createElement("div")
     notiDiv.className = `future-contract-noti noti-${team_dict[teamInfo.teamId]}${teamInfo.posInTeam > 2 ? "-affiliate" : ""}`
     driverDiv.appendChild(notiDiv)
@@ -721,7 +731,7 @@ export function manage_modal(info) {
         const juniorTeamId = Number(info[2][6]);
         const juniorButton = document.getElementById("juniorTeamContractButton");
         const posInput = document.getElementById("juniorPosInTeam");
-        if (juniorButton && Number.isFinite(juniorTeamId)) {
+        if (juniorButton) {
             juniorTeamIdActive = juniorTeamId;
             juniorContractDirty = false;
             juniorButton.dataset.teamid = String(juniorTeamId);
@@ -731,7 +741,7 @@ export function manage_modal(info) {
             setJuniorPosInputLimits(juniorTeamId);
             if (posInput) {
                 const pos = Number(info[2][5]);
-                posInput.value = Number.isFinite(pos) ? String(pos) : "1";
+                posInput.value = String(pos);
             }
 
             const listDiv = document.querySelector(".junior-team-drivers-list");
@@ -806,10 +816,6 @@ function setJuniorPosInputLimits(teamId) {
     input.max = String(maxCars);
 
     const current = Number(input.value || 1);
-    if (!Number.isFinite(current)) {
-        input.value = "1";
-        return;
-    }
     input.value = String(Math.min(maxCars, Math.max(1, current)));
 }
 
@@ -824,7 +830,6 @@ function renderJuniorDriversList() {
     const driversByPos = new Map();
     (juniorTeamDrivers || []).forEach((d) => {
         const pos = Number(d?.posInTeam);
-        if (!Number.isFinite(pos)) return;
         driversByPos.set(pos, d?.name || "Free driver");
     });
 
@@ -937,7 +942,7 @@ function ensureJuniorTeamDropdownBuilt() {
             const max = Number(posInput.max || 1);
             const min = Number(posInput.min || 1);
             const cur = Number(posInput.value || min);
-            const normalized = Number.isFinite(cur) ? cur : min;
+            const normalized = cur;
 
             let next = normalized + delta;
             if (next > max) next = min;
@@ -961,10 +966,8 @@ export function loadJuniorTeamDrivers(payload) {
     if (!listDiv) return;
 
     const teamId = Number(payload?.teamID);
-    if (Number.isFinite(teamId)) {
-        juniorTeamIdActive = teamId;
-        setJuniorPosInputLimits(teamId);
-    }
+    juniorTeamIdActive = teamId;
+    setJuniorPosInputLimits(teamId);
 
     juniorTeamDrivers = Array.isArray(payload?.driverNames) ? payload.driverNames : [];
     renderJuniorDriversList();
@@ -1021,7 +1024,6 @@ function formatNumber(num) {
 
 function formatPosInTeamFutureLabel(pos) {
     const n = Math.trunc(Number(pos));
-    if (!Number.isFinite(n)) return "";
     if (n === 1) return "Car 1";
     if (n === 2) return "Car 2";
     return `Reserve ${n}`;
@@ -1041,12 +1043,8 @@ function getPosInTeamFutureValue(input) {
     if (!input) return NaN;
 
     const parsed = parsePosInTeamFutureValue(input.value);
-    if (Number.isFinite(parsed)) return parsed;
-
     const fromDataset = Number(input.dataset.posValue);
-    if (Number.isFinite(fromDataset)) return fromDataset;
-
-    return 1;
+    return parsed || fromDataset || 1;
 }
 
 function setPosInTeamFutureValue(input, pos, opts = {}) {
@@ -1056,9 +1054,8 @@ function setPosInTeamFutureValue(input, pos, opts = {}) {
     const max = input.max !== "" ? Number(input.max) : Infinity;
 
     let next = Math.trunc(Number(pos));
-    if (!Number.isFinite(next)) next = 1;
-    if (Number.isFinite(min)) next = Math.max(min, next);
-    if (Number.isFinite(max)) next = Math.min(max, next);
+    next = Math.max(min, next);
+    next = Math.min(max, next);
 
     input.dataset.posValue = String(next);
     input.value = formatPosInTeamFutureLabel(next);
@@ -1172,14 +1169,14 @@ function attachHoldWithAttrClamp(btn, input, step, opts = {}) {
         max: Infinity,
         format,
         onChange: (val) => {
-            if (typeof val !== "number" || !Number.isFinite(val)) return;
+            if (typeof val !== "number") return;
 
             const min = input.min !== "" ? Number(input.min) : -Infinity;
             const max = input.max !== "" ? Number(input.max) : Infinity;
             let clamped = val;
 
-            if (Number.isFinite(min)) clamped = Math.max(min, clamped);
-            if (Number.isFinite(max)) clamped = Math.min(max, clamped);
+            clamped = Math.max(min, clamped);
+            clamped = Math.min(max, clamped);
 
             if (clamped === val) return;
 
@@ -1352,9 +1349,16 @@ function editContract() {
     const command = new Command("editContract", data);
     command.execute();
 
+    console.log("FUTURE TEAM: ", future_team)
+
+    let teamInfo = {
+        teamId: future_team,
+        posInTeam: futureValues[5]
+    }
+
     if (future_team !== "-1") {
         let driverDiv = document.querySelector('.free-driver[data-driverid="' + driverEditingID + '"]')
-        add_future_team_noti(driverDiv, future_team)
+        add_future_team_noti(driverDiv, teamInfo)
         driverDiv.dataset.futureteam = future_team
     }
     else {
@@ -1608,6 +1612,417 @@ document.querySelector("#freefilterTransfers").addEventListener("click", functio
         })
     }
 })
+
+function setLineupsButtonState(isOpen) {
+    if (!lineupsViewButton) return;
+
+    const label = lineupsViewButton.querySelector("span");
+    const icon = lineupsViewButton.querySelector("i");
+
+    if (label) {
+        label.textContent = isOpen ? "Transfers" : "Line ups";
+    }
+    if (icon) {
+        icon.className = isOpen ? "bi bi-arrow-return-left" : "bi bi-diagram-3";
+    }
+}
+
+
+function getLineupsDisplaySeason() {
+    const baseSeason = Number(lineupsData?.season) || Number(currentSeason) || 0;
+    if (lineupsSeasonType === "next") return baseSeason + 1;
+    return baseSeason;
+}
+
+function setLineupsSeasonPillActive(seasonType) {
+    lineupsSeasonType = seasonType;
+    if (lineupsCurrentPill) {
+        lineupsCurrentPill.classList.toggle("active", seasonType === "current");
+    }
+    if (lineupsNextPill) {
+        lineupsNextPill.classList.toggle("active", seasonType === "next");
+    }
+}
+
+function getLineupsTeamIds(payload) {
+    const availableIds = Array.isArray(payload?.teamIds)
+        ? payload.teamIds.map(id => Number(id))
+        : Object.keys(payload?.teams || {}).map(id => Number(id));
+    const standardOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32];
+
+    const standingsRows = Array.isArray(payload?.previousSeasonStandings)
+        ? payload.previousSeasonStandings
+        : [];
+
+    const standingsOrder = standingsRows
+        .map((row) => Number(Array.isArray(row) ? row[0] : (row?.teamId ?? row?.TeamID)))
+        .filter((teamId) => !Number.isNaN(teamId) && availableIds.includes(teamId));
+
+    const uniqueStandingsOrder = [...new Set(standingsOrder)];
+    const fallbackOrder = standardOrder.filter((id) => availableIds.includes(id) && !uniqueStandingsOrder.includes(id));
+
+    return [...uniqueStandingsOrder, ...fallbackOrder];
+}
+
+function buildFallbackLogo(teamId) {
+    const logo = document.createElement("img");
+    logo.src = logos_disc[teamId] || "../assets/images/logos/placeholder.png";
+    logo.className = "standardlogo";
+    return logo;
+}
+
+function getTeamTemplateById(teamId) {
+    const staffSection = document.querySelector(`.staff-section[data-teamid="${teamId}"]`);
+    return staffSection ? staffSection.closest(".team-template") : null;
+}
+
+function createTeamLogoNode(teamId) {
+    const logoContainer = document.createElement("div");
+    logoContainer.classList.add("lineups-team-logo");
+
+    const teamTemplate = getTeamTemplateById(teamId);
+    const sourceLogo = teamTemplate?.querySelector(".new-logo-and-name")?.children?.[0];
+
+    if (sourceLogo) {
+        logoContainer.appendChild(sourceLogo.cloneNode(true));
+    } else {
+        logoContainer.appendChild(buildFallbackLogo(teamId));
+    }
+
+    return logoContainer;
+}
+
+function getTeamNameForLineup(teamId, teamInfo) {
+    const teamTemplate = getTeamTemplateById(teamId);
+    const templateName = teamTemplate?.querySelector(".team-name")?.textContent?.trim();
+    if (templateName && templateName.length > 0) return templateName;
+    if (teamInfo?.name) return teamInfo.name;
+    return combined_dict[teamId] || "Unknown Team";
+}
+
+function normalizeDriverNumber(value) {
+    const parsed = Number(value);
+    return !Number.isNaN(parsed) && parsed > 0 ? Math.trunc(parsed) : null;
+}
+
+function getDriverSeatPriority(driver, seasonType) {
+    let priority = 0;
+    const contractType = Number(driver?.contractType);
+    if (seasonType === "next" && contractType === 3) priority += 100;
+    if (contractType === 0) priority += 50;
+    if (driver?.isForNextSeason) priority += 20;
+    if (normalizeDriverNumber(driver?.driverNumber) != null) priority += 1;
+    return priority;
+}
+
+function getLineupDriversBySeat(teamInfo, seasonType) {
+    const sourceDrivers = seasonType === "next"
+        ? (teamInfo?.driversNextSeason || [])
+        : (teamInfo?.driversThisSeason || []);
+
+    const slots = [null, null];
+    const priorities = [-Infinity, -Infinity];
+    const overflow = [];
+
+    sourceDrivers.forEach((driver) => {
+        const seat = Number(driver?.posInTeam);
+        if (seat === 1 || seat === 2) {
+            const idx = seat - 1;
+            const nextPriority = getDriverSeatPriority(driver, seasonType);
+            if (slots[idx] == null || nextPriority > priorities[idx]) {
+                slots[idx] = driver;
+                priorities[idx] = nextPriority;
+            }
+            return;
+        }
+        overflow.push(driver);
+    });
+
+    for (let idx = 0; idx < 2; idx++) {
+        if (!slots[idx] && overflow.length > 0) {
+            slots[idx] = overflow.shift();
+        }
+    }
+
+    return slots.map((driver, idx) => driver || { name: "TBD", posInTeam: idx + 1 });
+}
+
+function createLineupDriverRows(teamInfo, seasonType) {
+    const rows = document.createElement("div");
+    rows.classList.add("lineups-team-drivers");
+    const drivers = getLineupDriversBySeat(teamInfo, seasonType);
+
+    drivers.forEach((driver) => {
+        const line = document.createElement("div");
+        line.classList.add("lineups-team-driver");
+        if (seasonType === "next" && driver?.isForNextSeason) {
+            line.classList.add("next-contract");
+        }
+
+        const driverNumber = normalizeDriverNumber(driver?.driverNumber);
+        if (driverNumber != null) {
+            const numberMark = document.createElement("span");
+            numberMark.classList.add("lineups-driver-number");
+            numberMark.textContent = String(driverNumber);
+            line.appendChild(numberMark);
+        }
+
+        const rawName = (driver?.name || "TBD").trim();
+        if (rawName === "TBD") {
+            const last = document.createElement("span");
+            last.classList.add("lineups-driver-last", "bold-font", "to-be-decided");
+            last.textContent = "TBD";
+            line.appendChild(last);
+            rows.appendChild(line);
+            return;
+        }
+
+        const parts = rawName.split(/\s+/);
+        const surname = parts.pop() || "";
+        const firstNames = parts.join(" ");
+
+        if (firstNames) {
+            const first = document.createElement("span");
+            first.classList.add("lineups-driver-first");
+            first.textContent = firstNames;
+            line.appendChild(first);
+        }
+
+        const last = document.createElement("span");
+        last.classList.add("lineups-driver-last", "bold-font");
+        last.textContent = surname.toUpperCase();
+        line.appendChild(last);
+
+        rows.appendChild(line);
+    });
+
+    return rows;
+}
+
+function buildLineupCard(teamId, teamInfo, seasonType) {
+    const card = document.createElement("div");
+    card.classList.add("lineups-team-card");
+    if (teamId === 32) {
+        card.classList.add("lineups-custom-team");
+    }
+    const accentByTeamId = {
+        1: "var(--ferrari-primary)",
+        2: "var(--mclaren-primary)",
+        3: "var(--redbull-primary)",
+        4: "var(--mercedes-primary)",
+        5: "var(--alpine-primary)",
+        6: "var(--williams-primary)",
+        7: "var(--haas-primary)",
+        8: "var(--alphatauri-primary)",
+        9: "var(--alfa-primary)",
+        10: "var(--aston-primary)",
+        32: "var(--custom-team-primary)"
+    };
+    card.style.setProperty("--lineup-accent", accentByTeamId[teamId] || "var(--new-primary)");
+
+    const header = document.createElement("div");
+    header.classList.add("lineups-team-header");
+
+    const teamName = document.createElement("div");
+    teamName.classList.add("lineups-team-name", "bold-font");
+    const lineupTeamName = getTeamNameForLineup(teamId, teamInfo);
+    teamName.textContent = lineupTeamName;
+
+    header.appendChild(teamName);
+    header.appendChild(createTeamLogoNode(teamId));
+
+    card.appendChild(header);
+    card.appendChild(createLineupDriverRows(teamInfo, seasonType));
+
+    return card;
+}
+
+function computeLineupPositions(teamIds, width, height) {
+    const positions = new Map();
+    const hasCenterBottomTeam = teamIds.length % 2 === 1;
+    const centerBottomTeamId = hasCenterBottomTeam ? teamIds[teamIds.length - 1] : null;
+    const pairedTeams = hasCenterBottomTeam ? teamIds.slice(0, -1) : teamIds.slice();
+    // Alternate by standings rank: 1st left, 2nd right, 3rd left, 4th right, ...
+    const leftTeams = pairedTeams.filter((_, idx) => idx % 2 === 0);
+    const rightTeams = pairedTeams.filter((_, idx) => idx % 2 === 1);
+    const topY = height * 0.06;
+    const bottomY = hasCenterBottomTeam ? (height * 0.80) : (height * 0.90);
+
+    const buildYPositions = (count) => {
+        if (count <= 0) return [];
+        if (count === 1) return [height * 0.5];
+        const step = (bottomY - topY) / (count - 1);
+        return Array.from({ length: count }, (_, i) => topY + (i * step));
+    };
+
+    const placeColumn = (teamsInColumn, side) => {
+        const yPositions = buildYPositions(teamsInColumn.length);
+        const baseX = side === "left" ? (width * 0.23) : (width * 0.77);
+        const outwardShift = width * 0.23;
+        const cardHalfWidth = width <= 900 ? 98 : (width <= 1200 ? 121 : 132);
+        const denom = Math.max(1, teamsInColumn.length - 1);
+
+        const getArcStrength = (idx) => {
+            // Hand-tuned 5-row profile: tighter top pair, strong middle opening,
+            // and configurable bottom pair spacing when there is a bottom-center team.
+            if (teamsInColumn.length === 5) {
+                if (hasCenterBottomTeam) {
+                    // Wider bottom spread to leave cleaner space for team 11 in the center.
+                    return [-0.7, -0.1, 0.3, 0.1, -0.3][idx];
+                }
+                // Standard saves: bottom pair spacing mirrors top pair spacing.
+                return [-0.6, -0.1, 0.2, -0.1, -0.6][idx];
+            }
+
+            const t = idx / denom;
+            const arcBase = 1 - (Math.abs(t - 0.5) * 2);
+            return Math.max(0, arcBase);
+        };
+
+        teamsInColumn.forEach((teamId, idx) => {
+            const arcStrength = getArcStrength(idx);
+            const x = side === "left"
+                ? (baseX - outwardShift * arcStrength)
+                : (baseX + outwardShift * arcStrength);
+
+            const clampedX = side === "left"
+                ? Math.max(cardHalfWidth + 12, x)
+                : Math.min(width - cardHalfWidth - 12, x);
+
+            positions.set(teamId, {
+                x: clampedX,
+                y: yPositions[idx]
+            });
+        });
+    };
+
+    placeColumn(leftTeams, "left");
+    placeColumn(rightTeams, "right");
+
+    if (centerBottomTeamId != null) {
+        positions.set(centerBottomTeamId, {
+            x: width * 0.5,
+            y: height * 0.91
+        });
+    }
+
+    return positions;
+}
+
+function updateLineupPillLabels(season) {
+    if (lineupsCurrentPill) {
+        const label = lineupsCurrentPill.querySelector(".lineups-pill-label");
+        if (label) label.textContent = `${season}`;
+    }
+    if (lineupsNextPill) {
+        const label = lineupsNextPill.querySelector(".lineups-pill-label");
+        if (label) label.textContent = `${season + 1}`;
+    }
+}
+
+function renderLineupsCircle() {
+    if (!lineupsCircle || !lineupsData) return;
+
+    lineupsCircle.innerHTML = "";
+    const teamIds = getLineupsTeamIds(lineupsData);
+
+    if (teamIds.length === 0) {
+        return;
+    }
+
+    const rect = lineupsCircle.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return;
+
+    const positions = computeLineupPositions(teamIds, rect.width, rect.height);
+    const teams = lineupsData.teams || {};
+    const centerTitle = document.createElement("div");
+    centerTitle.classList.add("lineups-center-title");
+    const displaySeason = getLineupsDisplaySeason();
+    const yearText = displaySeason > 0 ? `${displaySeason}` : "F1";
+    centerTitle.innerHTML = `
+        <span class="lineups-center-year">${yearText}</span>
+        <span class="lineups-center-label">DRIVER</span>
+        <span class="lineups-center-label lineups">LINE UPS</span>
+    `;
+    lineupsCircle.appendChild(centerTitle);
+
+    teamIds.forEach((teamId) => {
+        const teamInfo = teams[teamId] || teams[String(teamId)] || {};
+        const card = buildLineupCard(teamId, teamInfo, lineupsSeasonType);
+        const pos = positions.get(teamId);
+        if (!pos) return;
+        card.style.left = `${pos.x}px`;
+        card.style.top = `${pos.y}px`;
+        lineupsCircle.appendChild(card);
+    });
+
+}
+
+function renderLineupsAfterLayout() {
+    requestAnimationFrame(() => {
+        renderLineupsCircle();
+    });
+}
+
+async function fetchLineupsData() {
+    const command = new Command("lineupsRequest", {});
+    const response = await command.promiseExecute();
+    lineupsData = response.content || null;
+    return lineupsData;
+}
+
+function closeLineupsView() {
+    if (!lineupsView || !transfersMainLayout) return;
+    lineupsView.classList.add("d-none");
+    transfersMainLayout.classList.remove("d-none");
+    lineupsSeasonPillsTop?.classList.add("d-none");
+    setLineupsButtonState(false);
+}
+
+async function openLineupsView() {
+    if (!lineupsView || !transfersMainLayout) return;
+
+    setLineupsButtonState(true);
+    transfersMainLayout.classList.add("d-none");
+    lineupsView.classList.remove("d-none");
+    lineupsSeasonPillsTop?.classList.remove("d-none");
+
+    try {
+        const payload = await fetchLineupsData();
+        const season = Number(payload?.season) || Number(currentSeason) || 0;
+        if (season > 0) {
+            updateLineupPillLabels(season);
+        }
+        setLineupsSeasonPillActive("current");
+        renderLineupsAfterLayout();
+    } catch (err) {
+        console.error("Error fetching line ups:", err);
+    }
+}
+
+lineupsViewButton?.addEventListener("click", async function () {
+    const isClosed = lineupsView?.classList.contains("d-none");
+    if (isClosed) {
+        await openLineupsView();
+    } else {
+        closeLineupsView();
+    }
+});
+
+[lineupsCurrentPill, lineupsNextPill].forEach((pill) => {
+    pill?.addEventListener("click", function () {
+        const seasonType = pill.dataset.seasonType;
+        if (!seasonType) return;
+        setLineupsSeasonPillActive(seasonType);
+        renderLineupsCircle();
+    });
+});
+
+window.addEventListener("resize", function () {
+    if (lineupsView && !lineupsView.classList.contains("d-none")) {
+        renderLineupsAfterLayout();
+    }
+});
 
 function hire_modal_standars() {
     document.querySelector(".add-contract").classList.add("d-none")

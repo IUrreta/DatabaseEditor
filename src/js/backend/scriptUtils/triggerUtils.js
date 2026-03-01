@@ -317,10 +317,14 @@ export function fetchExistingTriggers() {
   };
   let refurbish = 0;
   let frozenMentality = 0;
+  let freezeDevelopment = 0;
   const triggers = queryDB("SELECT name FROM sqlite_master WHERE type='trigger';", [], "allRows");
   if (triggers && triggers.length) {
     triggers.forEach(row => {
       const triggerName = row[0];
+      if (triggerName === "freeze_development") {
+        freezeDevelopment = 1;
+      }
       const parts = triggerName.split("_");
       const dif = parts[parts.length - 1];
       console.log("Processing trigger:", triggerName, "with difficulty part:", dif);
@@ -353,7 +357,7 @@ export function fetchExistingTriggers() {
       if (dif_level > highest_difficulty) highest_difficulty = dif_level;
     });
   }
-  return { highest_difficulty, triggerList, refurbish, frozenMentality };
+  return { highest_difficulty, triggerList, refurbish, frozenMentality, freezeDevelopment };
 }
 
 
@@ -422,5 +426,33 @@ export function editFreezeMentality(state) {
         SET Mentality = 50, MentalityOpinion = 2;
       END;
     `, [], 'run');
+  }
+}
+
+export function editFreezeDevelopment(state) {
+  queryDB("DROP TRIGGER IF EXISTS freeze_development", [], 'run');
+  if (parseInt(state) === 1) {
+    queryDB(`
+        CREATE TRIGGER freeze_development
+        AFTER UPDATE ON Parts_Designs
+        FOR EACH ROW
+        WHEN NEW.TeamID != (SELECT TeamID FROM Player)
+        AND NEW.PartType BETWEEN 3 AND 8
+        AND (
+          NEW.DesignWork != OLD.DesignWork OR
+          NEW.DayCompleted != OLD.DayCompleted OR
+          NEW.ValidFrom != OLD.ValidFrom OR
+          NEW.DayCreated != OLD.DayCreated
+        )
+        BEGIN
+          UPDATE Parts_Designs
+          SET 
+            DesignWork = OLD.DesignWork,
+            DayCompleted = OLD.DayCompleted,
+            ValidFrom = OLD.ValidFrom,
+            DayCreated = OLD.DayCreated
+          WHERE rowid = NEW.rowid;
+        END;
+      `, [], 'run');
   }
 }

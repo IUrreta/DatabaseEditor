@@ -1,0 +1,670 @@
+{
+    "Calendar": [
+        {
+            "TrackID": 1,
+            "Day": 46089,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 3,
+            "Day": 46096,
+            "WeekendType": 1
+        },
+        {
+            "TrackID": 17,
+            "Day": 46110,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 2,
+            "Day": 46124,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 11,
+            "Day": 46131,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 22,
+            "Day": 46145,
+            "WeekendType": 1
+        },
+        {
+            "TrackID": 7,
+            "Day": 46166,
+            "WeekendType": 1
+        },
+        {
+            "TrackID": 6,
+            "Day": 46180,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 5,
+            "Day": 46187,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 9,
+            "Day": 46201,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 10,
+            "Day": 46208,
+            "WeekendType": 1
+        },
+        {
+            "TrackID": 13,
+            "Day": 46222,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 12,
+            "Day": 46229,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 23,
+            "Day": 46257,
+            "WeekendType": 1
+        },
+        {
+            "TrackID": 14,
+            "Day": 46271,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": null,
+            "Day": 46278,
+            "WeekendType": 0,
+            "isNotInGame": true
+        },
+        {
+            "TrackID": 4,
+            "Day": 46292,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 15,
+            "Day": 46306,
+            "WeekendType": 1
+        },
+        {
+            "TrackID": 19,
+            "Day": 46320,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 18,
+            "Day": 46327,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 20,
+            "Day": 46334,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 25,
+            "Day": 46347,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 26,
+            "Day": 46355,
+            "WeekendType": 0
+        },
+        {
+            "TrackID": 21,
+            "Day": 46362,
+            "WeekendType": 0
+        }
+    ],
+    "TeamStandings": [
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 398,
+            "Position": 4,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 1
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 833,
+            "Position": 1,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 2
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 451,
+            "Position": 3,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 3
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 469,
+            "Position": 2,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 4
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 22,
+            "Position": 10,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 5
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 137,
+            "Position": 5,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 6
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 79,
+            "Position": 8,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 7
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 92,
+            "Position": 6,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 8
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 70,
+            "Position": 9,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 9
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 89,
+            "Position": 7,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 10
+        },
+        {
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 11,
+            "RaceFormula": 1,
+            "SeasonID": 2025,
+            "TeamID": 32
+        }
+    ],
+    "DriverStandings": [
+        {
+            "DriverID": 1,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 156,
+            "Position": 6,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 2,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 242,
+            "Position": 5,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 3,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 73,
+            "Position": 8,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 8,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 23,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 10,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 421,
+            "Position": 2,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 11,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 64,
+            "Position": 9,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 12,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 423,
+            "Position": 1,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 14,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 38,
+            "Position": 15,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 15,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 22,
+            "Position": 18,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 17,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 22,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 18,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 33,
+            "Position": 16,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 23,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 319,
+            "Position": 4,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 77,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 56,
+            "Position": 10,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 81,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 33,
+            "Position": 17,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 83,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 51,
+            "Position": 11,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 102,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 410,
+            "Position": 3,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 376,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 150,
+            "Position": 7,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 144,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 51,
+            "Position": 12,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 142,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 41,
+            "Position": 13,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 95,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 38,
+            "Position": 14,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 279,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 19,
+            "Position": 19,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 248,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 20,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        },
+        {
+            "DriverID": 135,
+            "LastPointsChange": 0,
+            "LastPositionChange": 0,
+            "Points": 0,
+            "Position": 21,
+            "RaceFormula": 1,
+            "SeasonID": 2025
+        }
+    ],
+    "EnginePerformance": {
+        "mercedes": {
+            "10": 85,
+            "6": 80,
+            "14": 80,
+            "18": 73,
+            "19": 90
+        },
+        "ferrari": {
+            "10": 75,
+            "6": 95,
+            "14": 90,
+            "18": 95,
+            "19": 90
+        },
+        "rbpt": {
+            "10": 80,
+            "6": 73,
+            "14": 79,
+            "18": 85,
+            "19": 85
+        },
+        "audi": {
+            "10": 60,
+            "6": 75,
+            "14": 55,
+            "18": 70,
+            "19": 45
+        },
+        "honda": {
+            "10": 35,
+            "6": 70,
+            "14": 40,
+            "18": 40,
+            "19": 26
+        }
+    },
+    "Performance": [
+        {
+            "TeamID": 1,
+            "Boost": 0.73,
+            "TyreDeg": 10
+        },
+        {
+            "TeamID": 2,
+            "Boost": 0.68,
+            "TyreDeg": 1
+        },
+        {
+            "TeamID": 3,
+            "Boost": 0.67,
+            "TyreDeg": 8
+        },
+        {
+            "TeamID": 4,
+            "Boost": 0.78,
+            "TyreDeg": 1
+        },
+        {
+            "TeamID": 5,
+            "Boost": 0.70,
+            "TyreDeg": 10
+        },
+        {
+            "TeamID": 6,
+            "Boost": 0.56,
+            "TyreDeg": 10
+        },
+        {
+            "TeamID": 7,
+            "Boost": 0.70,
+            "TyreDeg": 1
+        },
+        {
+            "TeamID": 8,
+            "Boost": 0.60,
+            "TyreDeg": 10
+        },
+        {
+            "TeamID": 9,
+            "Boost": 0.75,
+            "TyreDeg": 10
+        },
+        {
+            "TeamID": 10,
+            "Boost": 0.58,
+            "TyreDeg": 4
+        },
+        {
+            "TeamID": 32,
+            "Boost": 0.49,
+            "TyreDeg": 6,
+            "Objective": 21.4
+        }
+    ],
+    "Regulations": [
+        {
+            "Name": "SpendingCap",
+            "CurrentValue": 215000000,
+            "MinValue": 125000000,
+            "MaxValue": 215000000
+        }
+    ],
+    "Facilities" : [
+        {
+            "TeamID": 10,
+            "UpgradeBy": 1
+        },
+        {
+            "TeamID": 9,
+            "UpgradeBy": 1
+        }
+    ],
+    "Records" : [
+        {
+            "StaffID": 12,
+            "Wins": 11,
+            "Podiums": 31,
+            "Poles": 15,
+            "FastestLaps": 12,
+            "Championships": 1
+        },
+        {
+            "StaffID": 10,
+            "Wins": 17,
+            "Podiums": 29,
+            "Poles": 16,
+            "FastestLaps": 6,
+            "Championships": 1
+        },
+        {
+            "StaffID": 102,
+            "Wins": 9,
+            "Podiums": 24,
+            "Poles": 6,
+            "FastestLaps": 7,
+            "Championships": 0
+        },
+        {
+            "StaffID": 23,
+            "Wins": 4,
+            "Podiums": 13,
+            "Poles": 6,
+            "FastestLaps": 5,
+            "Championships": 0
+        },
+        {
+            "StaffID": 376,
+            "Wins": 0,
+            "Podiums": 3,
+            "Poles": 0,
+            "FastestLaps": 3,
+            "Championships": 0
+        },
+        {
+            "StaffID": 2,
+            "Wins": 3,
+            "Podiums": 20,
+            "Poles": 4,
+            "FastestLaps": 4,
+            "Championships": 0
+        },
+        {
+            "StaffID": 11,
+            "Wins": 2,
+            "Podiums": 11,
+            "Poles": 1,
+            "FastestLaps": 1,
+            "Championships": 0
+        },
+        {
+            "StaffID": 1,
+            "Wins": 2,
+            "Podiums": 5,
+            "Poles": 0,
+            "FastestLaps": 3,
+            "Championships": 0
+        },
+        {
+            "StaffID": 17,
+            "Wins": 0,
+            "Podiums": 4,
+            "Poles": 0,
+            "FastestLaps": 1,
+            "Championships": 0
+        },
+        {
+            "StaffID": 77,
+            "Wins": 0,
+            "Podiums": 0,
+            "Poles": 0,
+            "FastestLaps": 2,
+            "Championships": 0
+        },
+        {
+            "StaffID": 3,
+            "Wins": 0,
+            "Podiums": 0,
+            "Poles": 0,
+            "FastestLaps": 1,
+            "Championships": 0
+        },
+        {
+            "StaffID": 14,
+            "Wins": 0,
+            "Podiums": 1,
+            "Poles": 0,
+            "FastestLaps": 1,
+            "Championships": 0
+        },
+        {   
+            "StaffID": 15,
+            "Wins": 0,
+            "Podiums": 1,
+            "Poles": 0,
+            "FastestLaps": 0,
+            "Championships": 0
+        },
+        {
+            "StaffID": 13,
+            "Wins": 0,
+            "Podiums": 0,
+            "Poles": 0,
+            "FastestLaps": 1,
+            "Championships": 0
+        },
+        {
+            "StaffID": 255,
+            "Wins": 0,
+            "Podiums": 0,
+            "Poles": 0,
+            "FastestLaps": 1,
+            "Championships": 0
+        }
+    ]
+}
