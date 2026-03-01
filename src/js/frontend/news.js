@@ -1610,6 +1610,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
       }
 
       finalInstruction = replaceLanguagePlaceholder(finalInstruction, selectedLanguage);
+      instruction = replaceLanguagePlaceholder(instruction, selectedLanguage);
 
       // Message 1: Instruction
       messages.push({
