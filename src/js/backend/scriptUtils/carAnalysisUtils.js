@@ -263,11 +263,12 @@ export function updateTyreDegStats(designDictTeamReceiver, designDictTeamGiver, 
     for (const part in reducedDesignDictTeamReceiver){
         let designID = reducedDesignDictTeamReceiver[part];
         let newTyreDegStat = designDictTeamGiver[part][2];
+        let newTyreDegUnitValue = carConstants.valueToUnitValue[2](newTyreDegStat);
         queryDB(`
             UPDATE Parts_Designs_StatValues
-            SET Value = ?
+            SET Value = ?, UnitValue = ?
             WHERE DesignID = ? AND PartStat = 2
-        `, [newTyreDegStat, designID], 'run');
+        `, [newTyreDegStat, newTyreDegUnitValue, designID], 'run');
 
         queryDB(`UPDATE Parts_TeamExpertise
             SET Expertise = ?

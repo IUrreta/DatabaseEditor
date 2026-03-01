@@ -1895,6 +1895,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     const cap = capsByPart[partId] || 5;               // máximo +/-
     const standingsWeight = 0.25;   // 0 = ignora standings; prueba 0.2–0.3 si quieres mezclar un poco
     const zeroSum = true;          // intenta balance neto ~0 en compresión
+    const spreadCapMultiplier = 1.45; // Higher = more "spread" in spread mode
     let effectOnEachteam = {};
 
     // Normaliza tipos de teamIds por si vienen como strings
@@ -1903,18 +1904,24 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     // Helper clamp
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-    if (Math.random() < 0.5) {
-        // --- MODO RANDOM PURO (50%) ---
+    const modeRoll = Math.random();
+    const mode = modeRoll < 0.30 ? "random" : modeRoll < 0.40 ? "compact" : "spread"; // 30% / 10% / 60%
+
+    if (mode === "random") {
+        // --- MODO RANDOM PURO (30%) ---
         for (const teamId of ids) {
-            const v = (Math.random() * 2 * cap) - cap; // [-2, 2]
+            const v = (Math.random() * 2 * cap) - cap; // [-cap, cap]
             effectOnEachteam[teamId] = {
                 performanceGainLoss: v.toFixed(2),
                 teamName: combined_dict[teamId] || "Unknown Team"
             };
         }
     } else {
-        // console.log("MODO COMPRESION");
-        // --- MODO COMPRESIÓN (50%) basado en rendimiento (+ opcional standings) ---
+        const isSpread = mode === "spread";
+        const direction = isSpread ? 1 : -1; // compact: better teams lose, spread: better teams gain
+        const effectiveCap = isSpread ? (cap * spreadCapMultiplier) : cap;
+
+        // --- MODO COMPACT (10%) / SPREAD (60%) basado en rendimiento (+ opcional standings) ---
         const vals = ids
             .map(id => performance[id])
             .filter(v => typeof v === "number");
@@ -1934,14 +1941,14 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
             const score = performance[teamId] ?? mean;
             const norm = (score - mean) / maxAbsDev; // [-1, 1]
 
-            // efecto “compresión” por rendimiento
-            let eff = -norm * cap;
+            // efecto por rendimiento (compact/spread)
+            let eff = direction * norm * effectiveCap;
 
-            // mezcla ligera con standings (mejores => leve castigo, peores => ayuda)
+            // mezcla ligera con standings (compact/spread)
             if (standingsWeight > 0) {
                 const pts = constructorsStandings[teamId]?.points ?? 0;
                 const ptsNorm = (pts / maxPts);                // 0..1
-                const standingsEff = -(ptsNorm - 0.5) * cap;   // centra en 0.5
+                const standingsEff = direction * (ptsNorm - 0.5) * effectiveCap;   // centra en 0.5
                 eff = (1 - standingsWeight) * eff + standingsWeight * standingsEff;
             }
 
@@ -1961,7 +1968,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         // clamp + salida
         for (const { teamId, eff } of adjusted) {
             effectOnEachteam[teamId] = {
-                performanceGainLoss: clamp(eff, -cap, cap).toFixed(2),
+                performanceGainLoss: clamp(eff, -effectiveCap, effectiveCap).toFixed(2),
                 teamName: combined_dict[teamId] || "Unknown Team",
                 teamId: teamId
             };

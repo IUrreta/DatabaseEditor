@@ -7850,6 +7850,11 @@ body.og-theme .records-list {
   height: 34px;
 }
 
+.toolbar-logo--haas{
+  width: 34px;
+  height: 26px;
+}
+
 .toolbar-title {
   font-size: 16px;
   display: flex;
@@ -9286,7 +9291,11 @@ body.og-theme .records-list {
 }
 
 #recordsTypeDropdown{
-  min-width: 180px;
+  min-width: 215px;
+}
+
+#tableTypeDropdown{
+  right: 0px;
 }
 
 .dropdown-submenu {
