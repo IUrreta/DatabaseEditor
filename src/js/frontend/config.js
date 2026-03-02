@@ -624,8 +624,8 @@ export const turningPointsTuningByType = {
         max: [1, 1, 2, 3, 4],
     },
     midSeasonTransfers: {
-        chance: [0.15, 0.3, 0.5, 0.7, 0.9],
-        max: [1, 2, 3, 3, 3],
+        chance: [0.05, 0.15, 0.25, 0.7, 0.9],
+        max: [1, 2, 2, 3, 3],
     },
     technicalDirective: {
         chance: [0.1, 0.25, 0.4, 0.6, 0.8],
