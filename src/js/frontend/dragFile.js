@@ -104,7 +104,10 @@ export async function processSaveFile(file) {
                     document.querySelector("#dateDay").textContent = completeDay;
                     document.querySelector("#dateMonth").textContent = month;
                     document.querySelector("#dateYear").textContent = year;
-                    
+                    document.querySelector("#dateDay2026").textContent = completeDay;
+                    document.querySelector("#dateMonth2026").textContent = month;
+                    document.querySelector("#dateYear2026").textContent = year;           
+
                     resolve(); 
                 } else if (msg.data.error) {
                     console.error("[Main Thread] Error loading DB:", msg.data.error);
@@ -152,6 +155,7 @@ async function updateStatusUI(type, textConfig) {
 
     if (type === 'loading') {
         loadingSpinner.classList.add("show");
+        statusCircle.classList.remove("success-mode");
         
         statusTitle.textContent = "Analyzing database...";
         statusDesc.innerText = "This may take a few seconds.";

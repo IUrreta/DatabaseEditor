@@ -1,6 +1,6 @@
 import { countries_abreviations } from "./countries.js";
 import { engine_unitValueToValue } from "./carConstants.js";
-import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers } from "./triggerUtils.js";
+import { manageDifficultyTriggers, manageRefurbishTrigger, editFreezeMentality, fetchExistingTriggers, editFreezeDevelopment } from "./triggerUtils.js";
 import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
 import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
@@ -294,6 +294,88 @@ export function fetchEngines() {
     `, [], 'allRows');
 
   return [enginesList, engineAllocations];
+}
+
+export function ensureCustomEngineProgressionTable() {
+  queryDB(`
+    CREATE TABLE IF NOT EXISTS Custom_Engine_Progression (
+      SeasonID INTEGER NOT NULL,
+      RaceID INTEGER NOT NULL,
+      EngineID INTEGER NOT NULL,
+      Power REAL NOT NULL,
+      Source TEXT NULL,
+      PRIMARY KEY (SeasonID, RaceID, EngineID)
+    )
+  `, [], 'run');
+
+  queryDB(`
+    CREATE INDEX IF NOT EXISTS idx_Custom_Engine_Progression_Season_Engine_Race
+    ON Custom_Engine_Progression (SeasonID, EngineID, RaceID)
+  `, [], 'run');
+}
+
+function getNextSnapshotRaceIdForSeason(seasonId) {
+  if (!Number.isFinite(Number(seasonId))) {
+    return null;
+  }
+
+  const nextRaceIdRaw = queryDB(`
+    SELECT RaceID
+    FROM Races
+    WHERE SeasonID = ?
+      AND State != 2
+    ORDER BY Day ASC
+    LIMIT 1
+  `, [seasonId], 'singleValue');
+
+  if (nextRaceIdRaw !== null && nextRaceIdRaw !== undefined) {
+    const nextRaceId = Number(nextRaceIdRaw);
+    return Number.isFinite(nextRaceId) && nextRaceId > 0 ? nextRaceId : null;
+  }
+
+  const maxRaceIdRaw = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ?`, [seasonId], 'singleValue');
+  const maxRaceId = Number(maxRaceIdRaw) || 0;
+  return maxRaceId > 0 ? (maxRaceId + 1) : null;
+}
+
+export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw = null, raceIdRaw = null) {
+  ensureCustomEngineProgressionTable();
+
+  const seasonId = Number(seasonIdRaw) || Number(queryDB(`SELECT CurrentSeason FROM Player_State`, [], 'singleValue')) || null;
+  if (!seasonId) return { ok: false, error: "Missing season id" };
+
+  const raceId = Number(raceIdRaw) || getNextSnapshotRaceIdForSeason(seasonId);
+  if (!Number.isFinite(raceId) || raceId <= 0) return { ok: false, error: "Missing race id" };
+
+  const engineIds = (engineIdsRaw || [])
+    .map((id) => Number(id))
+    .filter((id) => Number.isFinite(id) && id > 0);
+
+  if (!engineIds.length) return { ok: true, seasonId, raceId, inserted: 0 };
+
+  const placeholders = engineIds.map(() => '?').join(', ');
+  const powerRows = queryDB(`
+    SELECT engineId, unitValue
+    FROM Custom_Engines_Stats
+    WHERE designId = engineId
+      AND partStat = 10
+      AND engineId IN (${placeholders})
+  `, engineIds, 'allRows') || [];
+
+  let inserted = 0;
+  for (const row of powerRows) {
+    const engineId = Number(row?.[0]);
+    const power = Number(row?.[1]);
+    if (!engineId || !Number.isFinite(power)) continue;
+
+    queryDB(`
+      INSERT OR IGNORE INTO Custom_Engine_Progression (SeasonID, RaceID, EngineID, Power, Source)
+      VALUES (?, ?, ?, ?, ?)
+    `, [seasonId, raceId, engineId, power, source || null], 'run');
+    inserted += 1;
+  }
+
+  return { ok: true, seasonId, raceId, inserted };
 }
 
 
@@ -2895,6 +2977,19 @@ export function checkCustomTables(year) {
               lastSeasonApplied INTEGER
             );
         `
+    },
+    {
+      name: 'Custom_Engine_Progression',
+      createSQL: `
+        CREATE TABLE Custom_Engine_Progression (
+          SeasonID INTEGER NOT NULL,
+          RaceID INTEGER NOT NULL,
+          EngineID INTEGER NOT NULL,
+          Power REAL NOT NULL,
+          Source TEXT NULL,
+          PRIMARY KEY (SeasonID, RaceID, EngineID)
+        )
+      `
     }
   ];
 
@@ -2934,6 +3029,8 @@ export function checkCustomTables(year) {
   insertDefualtEnginesData(createdEnginesList, createdEnginesStats, createdEnginesAllocations, createdCustomSaveConfig, createdEngineRegulationState, year);
 
   createEngineMigrationTrigger();
+
+  ensureCustomEngineProgressionTable();
 }
 
 export function fixCustomEnginesStatsTable() {
@@ -2975,6 +3072,15 @@ export function fixCustomEnginesStatsTable() {
 
 
   }
+}
+
+export function wipeTableAndRefill(tableName, data){
+  queryDB(`DELETE FROM ${tableName};`, [], 'run');
+  data.forEach(row => {
+    const placeholders = Object.keys(row).map(() => '?').join(', ');
+    const sql = `INSERT INTO ${tableName} (${Object.keys(row).join(', ')}) VALUES (${placeholders});`;
+    queryDB(sql, Object.values(row), 'run');
+  });
 }
 
 export function insertDefualtEnginesData(list, stats, allocations, customSave, engineRegulationState, year) {
@@ -3159,6 +3265,8 @@ export function editEngines(engineData) {
 }
 
 export function check2025ModCompatibility(year_version) {
+  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
+
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
   const currentDay = daySeason[0];
   const currentSeason = daySeason[1];
@@ -3197,6 +3305,95 @@ export function check2025ModCompatibility(year_version) {
   }
 
   return "NotCompatible";
+}
+
+export function check2026ModCompatibility(year_version) {
+  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
+
+  const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+  const currentDay = daySeason[0];
+  const currentSeason = daySeason[1];
+
+  const minDay2024 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2024`, [], 'singleValue');
+  const firstRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2024`, [minDay2024], 'singleValue');
+
+  const maxDay2024 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2024`, [], 'singleValue');
+  const lastRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2024`, [maxDay2024], 'singleValue');
+
+  const minDay2025 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2025`, [], 'singleValue');
+  const firstRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2025`, [minDay2025], 'singleValue');
+
+  const maxDay2025 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2025`, [], 'singleValue');
+  const lastRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2025`, [maxDay2025], 'singleValue');
+
+  const minDay2026 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2026`, [], 'singleValue');
+  const firstRaceState2026 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2026`, [minDay2026], 'singleValue');
+
+  if (year_version !== "24") {
+    return "NotCompatible";
+  }
+
+  const edited = queryDB(`SELECT * FROM Custom_2026_SeasonMod WHERE value = 1`, [], 'allRows');
+  if (edited.length > 0) {
+    return "AlreadyEdited";
+  }
+
+  if (firstRaceState2024 === 0 && currentSeason === 2024) {
+    return "Start2024";
+  }
+  
+  if (lastRaceState2024 === 2 && currentSeason === 2024) {
+    return "End2024";
+  }
+
+  if (firstRaceState2025 === 0 && currentSeason === 2025) {
+    return "Start2025";
+  }
+  if (lastRaceState2025 === 2 && currentSeason === 2025) {
+    return "End2025";
+  }
+
+  if (currentSeason === 2026 && firstRaceState2026 === 0) {
+    return "Direct2026";
+  }
+
+  return "NotCompatible";
+}
+
+const defaultSeasonModKeys2025 = [
+  'time-travel',
+  'extra-drivers',
+  'change-line-ups',
+  'change-stats',
+  'change-calendar',
+  'change-regulations',
+  'change-cfd',
+  'change-performance'
+];
+
+const defaultSeasonModKeys2026 = [
+  'time-travel-2026',
+  'extra-drivers-2026',
+  'change-line-ups-2026',
+  'change-stats-2026',
+  'change-calendar-2026',
+  'change-regulations-2026',
+  'change-cfd-2026',
+  'change-performance-2026'
+];
+
+function ensureSeasonModTable(tableName, defaultKeys) {
+  const tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName], "singleRow");
+  if (!tableExists) {
+    // Table name cannot be parameterized
+    queryDB(`CREATE TABLE ${tableName} (key TEXT PRIMARY KEY, value TEXT)`, [], 'run');
+  }
+
+  if (Array.isArray(defaultKeys) && defaultKeys.length > 0) {
+    const valuesSql = defaultKeys.map((k) => `('${k}', '0')`).join(", ");
+    // Default keys are fixed constants; safe to inline.
+    queryDB(`INSERT OR IGNORE INTO ${tableName} (key, value) VALUES ${valuesSql}`, [], 'run');
+  }
 }
 
 
@@ -3362,6 +3559,10 @@ export function updateCustomConfig(data) {
 
   manageDifficultyTriggers(data.triggerList)
   manageRefurbishTrigger(data.refurbish)
+  const freezeDevelopment = (data.freezeDevelopment !== undefined && data.freezeDevelopment !== null)
+    ? data.freezeDevelopment
+    : (queryDB("SELECT name FROM sqlite_master WHERE type='trigger' AND name='freeze_development';", [], "singleValue") ? 1 : 0);
+  editFreezeDevelopment(freezeDevelopment)
   const globals = getGlobals()
   if (globals.yearIteration === "24") {
     editFreezeMentality(data.frozenMentality)
@@ -3394,7 +3595,8 @@ export function fetchCustomConfig() {
     primaryColor: null,
     secondaryColor: null,
     turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset,
-    forceEditorMinimapColors: 0
+    forceEditorMinimapColors: 0,
+    renaultEngine: 'renault'
   };
 
   rows.forEach(row => {
@@ -3411,11 +3613,19 @@ export function fetchCustomConfig() {
       config.difficulty = value;
     } else if (key === 'turningPointsFrequencyPreset') {
       config.turningPointsFrequencyPreset = parseInt(value, 10);
-
+    } else if (key === 'renaultEngine') {
+      if (String(value).toLowerCase() === 'honda') {
+        config.renaultEngine = 'honda';
+      } else {
+        config.renaultEngine = 'renault';
+      }
     } else if (key === 'forceEditorMinimapColors') {
       config.forceEditorMinimapColors = parseInt(value, 10) === 1 ? 1 : 0;
     }
   });
+
+  const engine10Name = config.renaultEngine === 'honda' ? 'Honda' : 'Renault';
+  queryDB(`UPDATE Custom_Engines_List SET name = ? WHERE engineId = 10`, [engine10Name], 'run');
 
   const triggers = fetchExistingTriggers()
   const playerTeam = fetchPlayerTeam()
@@ -3423,6 +3633,7 @@ export function fetchCustomConfig() {
   config.triggerList = triggers.triggerList
   config.refurbish = triggers.refurbish
   config.frozenMentality = triggers.frozenMentality
+  config.freezeDevelopment = triggers.freezeDevelopment
 
   if (!config.teams.williams) {
     config.teams.williams = 'williams';
@@ -3443,6 +3654,13 @@ export function fetchCustomConfig() {
   return config;
 }
 
+export function setCustomSaveConfig(key, value) {
+  queryDB(`
+    INSERT OR REPLACE INTO Custom_Save_Config (key, value)
+    VALUES (?, ?)
+  `, [key, value], 'run');
+}
+
 function fetchPlayerTeam() {
   const playerTeam = queryDB(`
       SELECT TeamID
@@ -3453,13 +3671,7 @@ function fetchPlayerTeam() {
 }
 
 export function fetch2025ModData() {
-  let tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2025_SeasonMod'`, [], "singleRow");
-  if (!tableExists) {
-    queryDB(`CREATE TABLE Custom_2025_SeasonMod (key TEXT PRIMARY KEY, value TEXT)`, [], 'run');
-    //insert change-regulations with value 0
-    queryDB(`INSERT INTO Custom_2025_SeasonMod (key, value) VALUES ('time-travel', '0'), ('extra-drivers', '0'),
-        ('change-line-ups', '0'), ('change-stats', '0'), ('change-calendar', '0'), ('change-regulations', '0'), ('change-cfd', '0'), ('change-performance', '0')`, [], 'run');
-  }
+  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
 
   const rows = queryDB(`SELECT key, value FROM Custom_2025_SeasonMod`, [], 'allRows') || [];
   const config = {};
@@ -3472,6 +3684,29 @@ export function fetch2025ModData() {
 
   return config;
 
+}
+
+export function fetch2026ModData() {
+  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
+
+  const rows = queryDB(`SELECT key, value FROM Custom_2026_SeasonMod`, [], 'allRows') || [];
+  const config = {};
+
+  rows.forEach(row => {
+    const key = row[0];
+    const value = row[1];
+    config[key] = value;
+  });
+
+  // Also return the aduo turning points flag so the 2026 mods UI can restore the toggle state.
+  const aduoEnabled = queryDB(
+    `SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`,
+    [],
+    'singleValue'
+  );
+  config.aduo_tp_enabled = aduoEnabled ?? "0";
+
+  return config;
 }
 
 function createEngineMigrationTrigger() {

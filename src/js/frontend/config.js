@@ -47,7 +47,7 @@ export let combined_dict = {
     10: "Aston Martin",
     11: "Prema Racing (F2)",
     12: "Virtuosi Racing (F2)",
-    13: "Carlin (F2)",
+    13: "Rodin (F2)",
     14: "Hitech GP (F2)",
     15: "ART Grand Prix (F2)",
     16: "MP Motorsport (F2)",
@@ -63,8 +63,8 @@ export let combined_dict = {
     26: "VAR Racing (F3)",
     27: "MP Motorsport (F3)",
     28: "Campos Racing (F3)",
-    29: "Carlin (F3)",
-    30: "Jenzzer Motorsport (F3)",
+    29: "Rodin (F3)",
+    30: "Jenzer Motorsport (F3)",
     31: "PHM Racing (F3)",
     32: "Custom Team"
 }
@@ -111,51 +111,91 @@ export const theme_colors = {
         "labels": "#dedde6",
         "grid": "#292929",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "light-theme": {
         "labels": "#252525",
         "grid": "#d6d6d6",
         "general_secondary": "#1f1f1f",
+        "engine_upgrade_line": "#a18f45cc"
     },
     "og-theme": {
         "labels": "#dedde6",
         "grid": "#323046",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "vaporwave-theme": {
         "labels": "#dedde6",
         "grid": "#5329b5",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "nightly-theme": {
         "labels": "#dedde6",
         "grid": "#292929",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "ferrari-theme": {
         "labels": "#f0e6e8",
         "grid": "#5a3a42",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "redbull-theme": {
         "labels": "#d8e5ff",
         "grid": "#39578f",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "mercedes-theme": {
         "labels": "#c8f9f2",
         "grid": "#2a515c",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "astonmartin-theme": {
         "labels": "#e8f3ee",
         "grid": "#2a5a4a",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "mclaren-theme": {
         "labels": "#f7e6dc",
         "grid": "#5a4033",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "audi-theme": {
+        "labels": "#f0e6e8",
+        "grid": "#4a1f27",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "vcarb-theme": {
+        "labels": "#d8e2ff",
+        "grid": "#2b3f6b",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "williams-theme": {
+        "labels": "#d7e8ff",
+        "grid": "#173a70",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "haas-theme": {
+        "labels": "#e7e7ea",
+        "grid": "#3c3c4c",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "alpine-theme": {
+        "labels": "#ffe0f2",
+        "grid": "#5a3a5f",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     }
 }
 
@@ -166,6 +206,11 @@ export const themeToolbarLogos = {
     "mercedes-theme": { src: "../assets/images/logos/mercedes.png", className: "toolbar-logo--mercedes" },
     "astonmartin-theme": { src: "../assets/images/logos/astonMartin.png", className: "toolbar-logo--astonmartin" },
     "mclaren-theme": { src: "../assets/images/logos/mclaren.png", className: "toolbar-logo--mclaren" },
+    "audi-theme": { src: "../assets/images/logos/audi.png", className: "toolbar-logo--audi" },
+    "vcarb-theme": { src: "../assets/images/logos/visarb.png", className: "toolbar-logo--vcarb" },
+    "williams-theme": { src: "../assets/images/logos/Williams_2026_logo.svg", className: "toolbar-logo--williams" },
+    "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
+    "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
 };
 
 //predictions
@@ -234,7 +279,7 @@ export let logos_disc = {
     10: '../assets/images/logos/astonMartin.png',
     11: '../assets/images/logos/prema.png',
     12: '../assets/images/logos/invicta.png',
-    13: '../assets/images/logos/carlin.png',
+    13: '../assets/images/logos/rodin.png',
     14: '../assets/images/logos/hitech.png',
     15: '../assets/images/logos/art.png',
     16: '../assets/images/logos/mp.png',
@@ -250,7 +295,7 @@ export let logos_disc = {
     26: '../assets/images/logos/var.png',
     27: '../assets/images/logos/mp.png',
     28: '../assets/images/logos/campos.png',
-    29: '../assets/images/logos/carlin.png',
+    29: '../assets/images/logos/rodin.png',
     30: '../assets/images/logos/jenzer.png',
     31: '../assets/images/logos/phm.png',
     32: '../assets/images/logos/placeholder.png'
@@ -489,6 +534,10 @@ export function getParamMap(data) {
             driver1: data.driver1,
             driver2: data.driver2,
             driver3: data.driver3
+        },
+        109: {
+            manufacturers: data.manufacturers,
+            number_period: data.quarterString
         }
     };
 }

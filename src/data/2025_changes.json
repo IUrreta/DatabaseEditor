@@ -5042,7 +5042,7 @@
         {
             "StaffID": 625,
             "FirstName": "[STRING_LITERAL:Value=|Ronan|]",
-            "LastName": "[STRING_LITERAL:Value=|O''Hare|]",
+            "LastName": "[STRING_LITERAL:Value=|O'Hare|]",
             "CountryID": 186,
             "DOB": 29221,
             "DOB_ISO": "1980-01-01",
