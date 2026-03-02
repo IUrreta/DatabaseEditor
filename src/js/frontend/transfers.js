@@ -1964,6 +1964,16 @@ function renderLineupsAfterLayout() {
     });
 }
 
+function refreshLineupsCircleAfterTeamReplace() {
+    if (!lineupsView || lineupsView.classList.contains("d-none")) return;
+    if (!lineupsCircle || !lineupsData) return;
+    renderLineupsAfterLayout();
+}
+
+document.addEventListener("teamsReplaced", function () {
+    refreshLineupsCircleAfterTeamReplace();
+});
+
 async function fetchLineupsData() {
     const command = new Command("lineupsRequest", {});
     const response = await command.promiseExecute();
