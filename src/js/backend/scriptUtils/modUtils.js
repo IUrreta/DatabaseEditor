@@ -12,6 +12,13 @@ import { editEngines, fetchEngines, setCustomSaveConfig, updateCustomEngines, wi
 import { update } from "idb-keyval";
 import { manage_engine_change } from "./editTeamUtils.js";
 
+let staffIDChanges = {};
+let newStaffIDCounter = 800;
+
+export function resetStaffIDChanges() {
+    staffIDChanges = {};
+    newStaffIDCounter = 800;
+}
 
 export function timeTravelWithData(dayNumber, extend = false, mod = "2025") {
     let metadata, version;
@@ -1191,18 +1198,33 @@ export function insertStaff2026() {
                 let sqlValues = values.map(value => value === null ? null : value);
                 //check if the entry already exists in the table to avoid duplicates
                 let primaryKeyColumn = "StaffID";
-                const existingEntry = queryDB(`SELECT * FROM ${table} WHERE ${primaryKeyColumn} = ?`, [entry[primaryKeyColumn]], "singleRow");
-
-                if (!existingEntry) {
+                let staffID = entry[primaryKeyColumn];
+                const existingEntry = queryDB(`SELECT 1 FROM ${table} WHERE ${primaryKeyColumn} = ?`, [staffID], "singleRow");
+                if (!existingEntry || staffIDChanges[staffID]) {
                     // Table names cannot be parameterized, but values can
+                    if (staffIDChanges[staffID]) {
+                        sqlValues[sqlValues.findIndex((_, index) => Object.keys(entry)[index] === primaryKeyColumn)] = staffIDChanges[staffID];
+                    }
                     queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
                 }
                 else {
+                    let isGeneratedForCustomTeam = queryDB(`SELECT IsGeneratedForCustomTeam FROM Staff_BasicData WHERE StaffID = ?`, [staffID], "singleValue");
                     //update existing entry with new data
-                    let setClause = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => `${key} = ?`).join(", ");
-                    let updateValues = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => entry[key]);
-                    updateValues.push(entry[primaryKeyColumn]);
-                    queryDB(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?`, updateValues, 'run');
+                    if (isGeneratedForCustomTeam !== 1) {
+                        let setClause = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => `${key} = ?`).join(", ");
+                        let updateValues = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => entry[key]);
+                        updateValues.push(entry[primaryKeyColumn]);
+                        queryDB(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?`, updateValues, 'run');
+                    }
+                    else{
+                        //push the satffID into staffIDChanges 
+                        let staffID = entry[primaryKeyColumn];
+                        staffIDChanges[staffID] = newStaffIDCounter;
+                        //do the insert with the new staff ID
+                        sqlValues[sqlValues.findIndex((_, index) => Object.keys(entry)[index] === primaryKeyColumn)] = staffIDChanges[staffID];
+                        queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
+                        newStaffIDCounter++;
+                    }
                 }
 
             });
@@ -1217,8 +1239,12 @@ export function changeStats2026() {
     }
     else {
         tables2026.Staff_PerformanceStats.forEach((entry) => {
+            let staffID = entry.StaffID;
+            if (staffIDChanges[staffID]) {
+                staffID = staffIDChanges[staffID];
+            }
             //check if the driver already has performance stats
-            let existingStats = queryDB(`SELECT 1 FROM Staff_PerformanceStats WHERE StaffID = ? AND StatID = ?`, [entry.StaffID, entry.StatID], "singleRow");
+            let existingStats = queryDB(`SELECT 1 FROM Staff_PerformanceStats WHERE StaffID = ? AND StatID = ?`, [staffID, entry.StatID], "singleRow");
             if (existingStats) {
                 //update where staffid = entry.staffid and statid = entry.statid
                 let setClause = Object.keys(entry).filter(key => key !== "StaffID" && key !== "StatID").map(key => `${key} = ?`).join(", ");
@@ -1228,15 +1254,15 @@ export function changeStats2026() {
                     // console.log("Skipping update for StaffID:", entry.StaffID, "StatID:", entry.StatID);
                     return;
                 }
-                values.push(entry.StaffID); // Add StaffID at the end for the WHERE clause
+                values.push(staffID); // Add StaffID at the end for the WHERE clause
                 values.push(entry.StatID); // Add StatID at the end for the WHERE clause
                 queryDB(`UPDATE Staff_PerformanceStats SET ${setClause} WHERE StaffID = ? AND StatID = ?`, values, 'run');
             }
             else {
                 //check if the staff ID exists in staff_basicData, if not, skip
-                const staffExists = queryDB(`SELECT 1 FROM Staff_BasicData WHERE StaffID = ?`, [entry.StaffID], "singleRow");
+                const staffExists = queryDB(`SELECT 1 FROM Staff_BasicData WHERE StaffID = ?`, [staffID], "singleRow");
                 if (!staffExists) {
-                    console.log("StaffID:", entry.StaffID, "does not exist in Staff_BasicData. Skipping performance stats insertion.");
+                    console.log("StaffID:", staffID, "does not exist in Staff_BasicData. Skipping performance stats insertion.");
                     return;
                 }
                 let columns = Object.keys(entry).join(", ");
@@ -1245,6 +1271,10 @@ export function changeStats2026() {
                 let placeholders = values.map(() => "?").join(", ");
                 // Filter null values for SQL
                 let sqlValues = values.map(value => value === null ? null : value);
+                //change the staffID in sqlValues if it is in staffIDChanges
+                if (staffIDChanges[entry.StaffID]) {
+                    sqlValues[sqlValues.findIndex((_, index) => Object.keys(entry)[index] === "StaffID")] = staffIDChanges[entry.StaffID];
+                }
                 queryDB(`INSERT INTO Staff_PerformanceStats (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
             }
 
@@ -1257,9 +1287,14 @@ export function changeStats2026() {
     else {
         tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
             const { StaffID, StatID, Val } = entry;
-            queryDB(`UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`, [Val, StaffID, StatID], 'run');
+            let staffID = StaffID;
+            if (staffIDChanges[staffID]) {
+                staffID = staffIDChanges[staffID];
+            }
+            queryDB(`UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`, [Val, staffID, StatID], 'run');
         });
     }
+    console.log("staffIDChanges at the end:", staffIDChanges);
 
 }
 

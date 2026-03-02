@@ -33,7 +33,7 @@ import {
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
-import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
+import { resetStaffIDChanges, updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
@@ -1048,6 +1048,7 @@ const messageHandlers = {
     },
     "Mod 2026 compatibility": (message) => {
         updateMod2026Blocking(message)
+        resetStaffIDChanges();
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
