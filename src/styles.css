@@ -4468,7 +4468,10 @@ phm
   padding-bottom: 12px;
 }
 
-.logo-ferrari-table,
+.logo-ferrari-table{
+  padding: 5px;
+}
+
 .logo-andretti-table,
 .logo-renault-table {
   padding: 4px 3px;
