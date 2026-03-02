@@ -1520,6 +1520,8 @@ function replace_all_teams(info) {
     update_logo("redbull", logos_configs[redbull], redbull)
     update_logo("aston", logos_configs[aston], aston)
 
+    // Notify other screens (e.g. transfers lineups circle) that team names/logos changed.
+    document.dispatchEvent(new CustomEvent("teamsReplaced", { detail: { teams } }));
 }
 
 function manage_config_content(info, year_config = false) {

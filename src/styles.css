@@ -13287,9 +13287,9 @@ body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
     radial-gradient(circle at 18% 32%, color-mix(in srgb, var(--aston-primary) 6%, transparent) 0%, transparent 72%),
     radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--ferrari-primary) 4%, transparent) 0%, transparent 74%),
     radial-gradient(circle at 82% 32%, color-mix(in srgb, var(--redbull-primary) 6%, transparent) 0%, transparent 72%),
-    repeating-linear-gradient(115deg, color-mix(in srgb, var(--aston-primary) 7%, transparent) 0 1px, transparent 1px 20px),
-    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 6%, transparent) 0 1px, transparent 1px 22px),
-    repeating-linear-gradient(115deg, color-mix(in srgb, var(--redbull-primary) 7%, transparent) 0 1px, transparent 1px 20px) !important;
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--aston-primary) 9%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 8%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--redbull-primary) 9%, transparent) 0 1px, transparent 1px 20px) !important;
   background-size: cover, cover, cover, 33.333% 100%, 33.333% 100%, 33.333% 100%;
   background-position: center, center, center, left top, center top, right top;
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
@@ -13334,26 +13334,6 @@ body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
 body:has(#modpill.active) .apply-all-button, body:has(#modpill.active) .aduo-tp-toggle {
   animation: change-appear 0.6s ease-out forwards;
   animation-delay: calc(0.8s + var(--order) * 0.1s);
-}
-
-.mods-particles {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  display: none;
-}
-
-body:has(#modpill.active):has(#mods2026View:not(.d-none)) .mods-particles {
-  display: block;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .mods-particles {
-    display: none !important;
-  }
 }
 
 .mod-banner {
