@@ -358,7 +358,7 @@ function initMods2025Actions() {
   const changeLineUpsButton = mods2025View.querySelector(".change-line-ups");
   if (changeLineUpsButton) {
     changeLineUpsButton.addEventListener("click", function () {
-      const command = new Command("changeLineUps", {});
+      const command = new Command("changeLineUps", { mod: "2025" });
       command.execute();
 
       const hamTransfer = mods2025View.querySelector(".ham-transfer");
@@ -384,7 +384,7 @@ function initMods2025Actions() {
   const changeStatsButton = mods2025View.querySelector(".change-stats");
   if (changeStatsButton) {
     changeStatsButton.addEventListener("click", function () {
-      const command = new Command("changeStats", {});
+      const command = new Command("changeStats", { mod: "2025" });
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
@@ -414,7 +414,7 @@ function initMods2025Actions() {
   const extraDriversButton = mods2025View.querySelector(".extra-drivers");
   if (extraDriversButton) {
     extraDriversButton.addEventListener("click", function () {
-      const command = new Command("extraDrivers", {});
+      const command = new Command("extraDrivers", { mod: "2025" });
       command.execute();
       this.classList.add("completed");
       this.querySelector("span").textContent = "Applied";
@@ -436,7 +436,7 @@ function initMods2025Actions() {
   const changePerformanceButton = mods2025View.querySelector(".change-performance");
   if (changePerformanceButton) {
     changePerformanceButton.addEventListener("click", function () {
-      const command = new Command("changePerformance", {});
+      const command = new Command("changePerformance", { mod: "2025" });
       command.execute();
 
       const mclaren = mods2025View.querySelector(".mclaren-performance");
