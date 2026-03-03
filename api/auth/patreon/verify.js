@@ -34,7 +34,7 @@ export default async function handler(req, res) {
 
         if (!tokenResponse.ok) {
             console.error('Token exchange failed:', tokenData);
-            return res.status(tokenResponse.status).json({ error: 'Failed to exchange token', details: tokenData });
+            return res.status(tokenResponse.status).json({ error: 'Failed to exchange token' });
         }
 
         const accessToken = tokenData.access_token;
@@ -51,7 +51,7 @@ export default async function handler(req, res) {
 
         if (!identityResponse.ok) {
             console.error('Identity fetch failed:', identityData);
-            return res.status(identityResponse.status).json({ error: 'Failed to fetch identity', details: identityData });
+            return res.status(identityResponse.status).json({ error: 'Failed to fetch identity' });
         }
 
         // 3. Parse membership data to find tier
@@ -132,6 +132,6 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Server error:', error);
-        return res.status(500).json({ error: 'Internal server error', message: error.message });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }
