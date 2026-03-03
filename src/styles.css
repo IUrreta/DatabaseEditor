@@ -4468,6 +4468,10 @@ phm
   padding-bottom: 12px;
 }
 
+.bento-grid .logo-ferrari-table{
+  padding: 4px;
+}
+
 .logo-ferrari-table{
   padding: 5px;
 }
@@ -5785,14 +5789,14 @@ body.light-theme .flag-header img {
 .staff-list::-webkit-scrollbar,
 .news-grid::-webkit-scrollbar,
 .records-list::-webkit-scrollbar,
-#juniorTeamContractMenu::-webkit-scrollbar {
+#juniorTeamContractMenu::-webkit-scrollbar{
   width: 4px;
 }
 
 .staff-list::-webkit-scrollbar-thumb,
 .news-grid::-webkit-scrollbar-thumb,
 .records-list::-webkit-scrollbar-thumb,
-#juniorTeamContractMenu::-webkit-scrollbar-thumb {
+#juniorTeamContractMenu::-webkit-scrollbar-thumb{
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -9353,17 +9357,24 @@ body.og-theme .records-list {
   padding-right: 2px;
 }
 
-#sessionResultsGpList::-webkit-scrollbar {
+#sessionResultsGpList::-webkit-scrollbar,
+.news-context-textarea::-webkit-scrollbar,
+.news-options-context-textarea::-webkit-scrollbar  {
   width: 4px !important;
 }
 
-#sessionResultsGpList::-webkit-scrollbar-thumb {
+#sessionResultsGpList::-webkit-scrollbar-thumb,
+.news-context-textarea::-webkit-scrollbar-thumb,
+.news-options-context-textarea::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px !important;
 }
 
-#sessionResultsGpList::-webkit-scrollbar-thumb:hover {
+#sessionResultsGpList::-webkit-scrollbar-thumb:hover,
+.news-context-textarea::-webkit-scrollbar-thumb:hover,
+.news-options-context-textarea::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
+  cursor: default !important;
 }
 
 #sessionResultsGpList {
