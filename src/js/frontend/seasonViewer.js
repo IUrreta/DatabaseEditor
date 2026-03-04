@@ -32,6 +32,8 @@ let standingsDetailsEnabled = false;
 let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
+let teamsStandingsHeightListenerAttached = false;
+let comparisonsHeightListenerAttached = false;
 const sessionResultsEventsCache = new Map();
 let sessionResultsActiveGpAnchor = null;
 let sessionResultsActiveGpMeta = null;
@@ -1174,6 +1176,7 @@ export function new_load_teams_table(data) {
         if (teamName && (teamName.endsWith(" (F2)") || teamName.endsWith(" (F3)"))) {
             teamName = teamName.slice(0, -5)
         }
+        teamName = formatTeamNameForDisplay(teamName);
         const result = new_addTeam(teamData[teamId], teamName, pos, teamId, lastPositionChange);
         const points = result.points;
         teamRows.push({ teamId, pos, points, row: result.row, posDiv: result.posDiv, pointsDiv: result.pointsDiv, pointsGapDiv: result.pointsGapDiv });
@@ -2311,6 +2314,7 @@ export function populateSeasonReview(data) {
         pointsInfo: data.pointsInfo,
         lastRaceDoneId: data.lastRaceDoneId
     })
+    updateRoundsCounterSeasonReview(data.events)
     populateComparisonsSeasonReview(data.teamMateHeadToHead, data.teamsStandings)
     populateQualifyingAnalysisSeasonReview(data.qualifyingStageCounts)
     populateWinsDriversSeasonReview(data.winsRecords)
@@ -2321,6 +2325,18 @@ export function populateSeasonReview(data) {
     populatePodiumsDriversSeasonReview(data.podiumsRecords)
 }
 
+function updateRoundsCounterSeasonReview(events) {
+    const totalEvents = Array.isArray(events) ? events.length : 0;
+    // eventos que tienen event[3] == 2
+    const eventsDone = Array.isArray(events) ? events.filter(e => e[3] === 2).length : 0;
+    document.querySelectorAll(".bento-title .first-number").forEach(el => {
+        el.textContent = eventsDone;
+    });
+    document.querySelectorAll(".bento-title .second-number").forEach(el => {
+        el.textContent = totalEvents;
+    });
+}
+
 function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     const raceComparisons = document.querySelector(".race-comparison");
     const qualiComparisons = document.querySelector(".quali-comparison");
@@ -2328,6 +2344,8 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
 
     raceComparisons.innerHTML = "";
     qualiComparisons.innerHTML = "";
+    updateComparisonsMaxHeight();
+    ensureComparisonsHeightListener();
     if (!Array.isArray(comparisons) || comparisons.length === 0) return;
 
     const startH2HFromSeasonReview = (driver1Id, driver2Id) => {
@@ -2452,6 +2470,8 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
         raceComparisons.appendChild(buildRow(item, race1, race2));
         qualiComparisons.appendChild(buildRow(item, quali1, quali2));
     });
+
+    updateComparisonsMaxHeight();
 }
 
 function populateDriversStandingsSeasonReview(data, meta = {}) {
@@ -2505,13 +2525,12 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
 
         const nameDiv = document.createElement("div");
         nameDiv.className = "season-review-driver-name";
-        const fullName = news_insert_space(driver.DriverName);
-        const surname = fullName.split(" ").pop();
         const nameSpan = document.createElement("span");
-        nameSpan.textContent = fullName.replace(surname, "");
         const surnameSpan = document.createElement("span");
-        surnameSpan.textContent = surname;
         surnameSpan.className = "bold-font";
+        const fullName = news_insert_space(String(driver.DriverName ?? ""));
+        const nameParts = fullName.split(" ");
+        format_name(fullName, nameParts, nameSpan, surnameSpan, true);
         nameDiv.appendChild(nameSpan);
         nameDiv.appendChild(surnameSpan);
         driverDiv.appendChild(nameDiv);
@@ -2578,6 +2597,76 @@ function ensureDriversStandingsHeightListener() {
     });
 }
 
+function updateTeamsStandingsMaxHeight() {
+    const item = document.querySelector(".bento-item.item-2");
+    const standings = document.querySelector(".bento-team-standings, .bento-teams-standings");
+    if (!item || !standings) return;
+
+    const height = item.getBoundingClientRect().height;
+    // if height is less than 60, maxHeight will be 570px
+    const maxHeight = height <= 60 ? 570 : Math.max(0, Math.floor(height - 60));
+
+    standings.style.maxHeight = `${maxHeight}px`;
+    standings.style.overflowX = "hidden";
+    standings.style.overflowY = "hidden";
+    standings.classList.remove("with-scrollbar");
+    const needsScroll = standings.scrollHeight > (standings.clientHeight + 4);
+    if (needsScroll) {
+        standings.style.overflowY = "auto";
+        standings.classList.add("with-scrollbar");
+    }
+}
+
+function ensureTeamsStandingsHeightListener() {
+    if (teamsStandingsHeightListenerAttached) return;
+    teamsStandingsHeightListenerAttached = true;
+
+    let rafId = null;
+    window.addEventListener("resize", () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            updateTeamsStandingsMaxHeight();
+        });
+    });
+}
+
+function updateComparisonsMaxHeight() {
+    const item = document.querySelector(".bento-item.item-4");
+    if (!item) return;
+
+    const height = item.getBoundingClientRect().height;
+    // if height is less than 60, maxHeight will be 570px
+    const maxHeight = height <= 60 ? 570 : Math.max(0, Math.floor(height - 60));
+
+    document.querySelectorAll(".race-comparison, .quali-comparison").forEach((el) => {
+        el.style.maxHeight = `${maxHeight}px`;
+        el.style.height = `${maxHeight}px`; 
+        el.style.overflowX = "hidden";
+        el.style.overflowY = "hidden";
+        el.classList.remove("with-scrollbar");
+        const needsScroll = el.scrollHeight > (el.clientHeight + 4);
+        if (needsScroll) {
+            el.style.overflowY = "auto";
+            el.classList.add("with-scrollbar");
+        }
+    });
+}
+
+function ensureComparisonsHeightListener() {
+    if (comparisonsHeightListenerAttached) return;
+    comparisonsHeightListenerAttached = true;
+
+    let rafId = null;
+    window.addEventListener("resize", () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = requestAnimationFrame(() => {
+            rafId = null;
+            updateComparisonsMaxHeight();
+        });
+    });
+}
+
 function populateTeamsStandingsSeasonReview(data, meta = {}) {
     if (!Array.isArray(data)) return;
 
@@ -2640,7 +2729,7 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
 
         const nameDiv = document.createElement("div");
         nameDiv.className = "season-review-team-name bold-font";
-        nameDiv.textContent = combined_dict[teamId] || "";
+        nameDiv.textContent = formatTeamNameForDisplay(combined_dict[teamId] || "");
         teamDiv.appendChild(nameDiv);
 
         const pointsDiv = document.createElement("div");
@@ -2663,6 +2752,9 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
 
         container.appendChild(teamDiv);
     });
+
+    updateTeamsStandingsMaxHeight();
+    ensureTeamsStandingsHeightListener();
 }
 
 function populateQualifyingAnalysisSeasonReview(data) {
@@ -2860,12 +2952,32 @@ function ensureWinsDriversListHeightListener() {
     });
 }
 
+function formatTeamNameForDisplay(teamName, { upper = false } = {}) {
+    const raw = String(teamName ?? "").trim();
+    const rawUpper = raw.toUpperCase();
+    const shortened = rawUpper === "VISA CASHAPP RB" ? "VCARB" : raw;
+    return upper ? shortened.toUpperCase() : shortened;
+}
+
+function addSeasonReviewPhantomRows(container, targetCount = 4) {
+    if (!container) return;
+    const currentCount = container.children.length;
+    for (let i = currentCount; i < targetCount; i++) {
+        const phantom = document.createElement("div");
+        phantom.className = "season-review-wins-row phantom-row";
+        container.appendChild(phantom);
+    }
+}
+
 function populateTeamsAggregateSeasonReview(driverRecords, containerSelector, limit = 4) {
     const container = document.querySelector(containerSelector);
     if (!container) return;
 
     container.innerHTML = "";
-    if (!Array.isArray(driverRecords) || driverRecords.length === 0) return;
+    if (!Array.isArray(driverRecords) || driverRecords.length === 0) {
+        addSeasonReviewPhantomRows(container, 4);
+        return;
+    }
 
     const totalsByTeamId = new Map();
 
@@ -2899,7 +3011,8 @@ function populateTeamsAggregateSeasonReview(driverRecords, containerSelector, li
 
         const nameDiv = document.createElement("div");
         nameDiv.className = "season-review-wins-name bold-font";
-        nameDiv.textContent = (combined_dict[team.teamId] || "").toUpperCase();
+        const teamName = combined_dict[team.teamId] || "";
+        nameDiv.textContent = formatTeamNameForDisplay(teamName, { upper: true });
         row.appendChild(nameDiv);
 
         const countDiv = document.createElement("div");
@@ -2909,6 +3022,8 @@ function populateTeamsAggregateSeasonReview(driverRecords, containerSelector, li
 
         container.appendChild(row);
     });
+
+    addSeasonReviewPhantomRows(container, 4);
 }
 
 function populateDriverOfTheDaySeasonReview(data) {
@@ -2918,7 +3033,11 @@ function populateDriverOfTheDaySeasonReview(data) {
 
     left.innerHTML = "";
     right.innerHTML = "";
-    if (!Array.isArray(data) || data.length === 0) return;
+    if (!Array.isArray(data) || data.length === 0) {
+        addSeasonReviewPhantomRows(left, 4);
+        addSeasonReviewPhantomRows(right, 4);
+        return;
+    }
 
     const ordered = [...data]
         .filter(d => Number(d?.count) > 0)
@@ -2961,6 +3080,9 @@ function populateDriverOfTheDaySeasonReview(data) {
 
         half.appendChild(row);
     });
+
+    addSeasonReviewPhantomRows(left, 4);
+    addSeasonReviewPhantomRows(right, 4);
 }
 
 function computeTeamTotalsFromDriverRecords(driverRecords) {
@@ -3007,7 +3129,7 @@ function populateWinsTeamsSeasonReview(winsRecords) {
 
         const nameDiv = document.createElement("div");
         nameDiv.className = "season-review-wins-name bold-font";
-        nameDiv.textContent = (combined_dict[team.teamId] || "").toUpperCase();
+        nameDiv.textContent = formatTeamNameForDisplay(combined_dict[team.teamId] || "", { upper: true });
         row.appendChild(nameDiv);
 
         const countDiv = document.createElement("div");
@@ -3047,7 +3169,7 @@ function populatePodiumsTeamsSeasonReview(podiumsRecords) {
 
         const nameDiv = document.createElement("div");
         nameDiv.className = "season-review-wins-name bold-font";
-        nameDiv.textContent = (combined_dict[team.teamId] || "").toUpperCase();
+        nameDiv.textContent = formatTeamNameForDisplay(combined_dict[team.teamId] || "", { upper: true });
         row.appendChild(nameDiv);
 
         const countDiv = document.createElement("div");
@@ -3057,6 +3179,9 @@ function populatePodiumsTeamsSeasonReview(podiumsRecords) {
 
         half.appendChild(row);
     });
+
+    addSeasonReviewPhantomRows(left, 4);
+    addSeasonReviewPhantomRows(right, 4);
 }
 
 function populatePodiumsDriversSeasonReview(podiumsRecords) {
@@ -3066,7 +3191,11 @@ function populatePodiumsDriversSeasonReview(podiumsRecords) {
 
     left.innerHTML = "";
     right.innerHTML = "";
-    if (!Array.isArray(podiumsRecords) || podiumsRecords.length === 0) return;
+    if (!Array.isArray(podiumsRecords) || podiumsRecords.length === 0) {
+        addSeasonReviewPhantomRows(left, 4);
+        addSeasonReviewPhantomRows(right, 4);
+        return;
+    }
 
     const ordered = [...podiumsRecords]
         .filter(r => Number(r?.value) > 0)
@@ -3109,6 +3238,9 @@ function populatePodiumsDriversSeasonReview(podiumsRecords) {
 
         half.appendChild(row);
     });
+
+    addSeasonReviewPhantomRows(left, 4);
+    addSeasonReviewPhantomRows(right, 4);
 }
 
 document.querySelector(".bento-grid .item-1").addEventListener("click", () => {
@@ -3461,8 +3593,7 @@ export function onSessionResultsFetched(data) {
 
         const teamNameSpan = document.createElement("span");
         teamNameSpan.className = "session-results-team-name";
-        teamNameSpan.textContent = (teamId !== -1) ? (combined_dict?.[teamId] ?? "") : "";
-        teamNameSpan.textContent = String(teamNameSpan.textContent || "").toUpperCase();
+        teamNameSpan.textContent = (teamId !== -1) ? formatTeamNameForDisplay((combined_dict?.[teamId] ?? ""), { upper: true }) : "";
         teamDiv.appendChild(teamNameSpan);
 
         const engineNameSpan = document.createElement("span");
@@ -3701,8 +3832,7 @@ export function onSessionResultsFetched(data) {
 
     const footerTeamNameSpan = document.createElement("span");
     footerTeamNameSpan.className = "session-results-team-name";
-    footerTeamNameSpan.textContent = (footerTeamId !== -1) ? (combined_dict?.[footerTeamId] ?? "") : "";
-    footerTeamNameSpan.textContent = String(footerTeamNameSpan.textContent || "").toUpperCase();
+    footerTeamNameSpan.textContent = (footerTeamId !== -1) ? formatTeamNameForDisplay((combined_dict?.[footerTeamId] ?? ""), { upper: true }) : "";
     footerTeamDiv.appendChild(footerTeamNameSpan);
 
     const footerEngineNameSpan = document.createElement("span");
@@ -4229,7 +4359,7 @@ export function loadRecordsList(data) {
 
         let teamDiv = document.createElement("div")
         teamDiv.classList = "record-team"
-        teamDiv.textContent = record.teamId !== -1 ? combined_dict[record.teamId] : record.retired === 1 ? "Retired" : "N/A";
+        teamDiv.textContent = record.teamId !== -1 ? formatTeamNameForDisplay(combined_dict[record.teamId]) : record.retired === 1 ? "Retired" : "N/A";
 
         nameAndTeam.appendChild(recordName)
         nameAndTeam.appendChild(teamDiv)
@@ -4465,7 +4595,7 @@ export function loadTeamRecordsList(payload) {
 
         const recordName = document.createElement("div");
         recordName.classList = "record-name bold-font";
-        recordName.textContent = (combined_dict[teamId] || "").toUpperCase();
+        recordName.textContent = formatTeamNameForDisplay(combined_dict[teamId] || "", { upper: true });
 
         nameAndTeam.appendChild(recordName);
 

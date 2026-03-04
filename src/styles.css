@@ -76,6 +76,7 @@ body.og-theme .footer {
 
 .scroll-wrapper {
   overflow-y: auto;
+  height: 92%;
 }
 
 .scroll-wrapper::-webkit-scrollbar {
@@ -1346,7 +1347,11 @@ input[type="checkbox"]:focus {
 .wins-drivers-list::-webkit-scrollbar,
 .bento-driver-standings::-webkit-scrollbar,
 #sessionResultsGpMenu::-webkit-scrollbar,
-#engineMenu::-webkit-scrollbar {
+#engineMenu::-webkit-scrollbar,
+.bento-team-standings::-webkit-scrollbar,
+.quali-comparison::-webkit-scrollbar,
+.race-comparison::-webkit-scrollbar,
+.script-view::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -1370,8 +1375,12 @@ input[type="checkbox"]:focus {
 .q2-comparison::-webkit-scrollbar-thumb,
 .wins-drivers-list::-webkit-scrollbar-thumb,
 .bento-driver-standings::-webkit-scrollbar-thumb,
+.bento-team-standings::-webkit-scrollbar-thumb,
 #sessionResultsGpMenu::-webkit-scrollbar-thumb,
-#engineMenu::-webkit-scrollbar-thumb {
+#engineMenu::-webkit-scrollbar-thumb,
+.quali-comparison::-webkit-scrollbar-thumb,
+.race-comparison::-webkit-scrollbar-thumb,
+.script-view::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -1397,7 +1406,11 @@ input[type="checkbox"]:focus {
 .wins-drivers-list::-webkit-scrollbar-thumb:hover,
 .bento-driver-standings::-webkit-scrollbar-thumb:hover,
 #sessionResultsGpMenu::-webkit-scrollbar-thumb:hover,
-#engineMenu::-webkit-scrollbar-thumb:hover {
+#engineMenu::-webkit-scrollbar-thumb:hover,
+.bento-team-standings::-webkit-scrollbar-thumb:hover,
+.quali-comparison::-webkit-scrollbar-thumb:hover,
+.race-comparison::-webkit-scrollbar-thumb:hover,
+.script-view::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -2850,6 +2863,10 @@ body.mclaren-theme .background {
   overflow-x: hidden;
 }
 
+#season_viewer.script-view{
+  height: 91vh;
+}
+
 .script-view {
   display: flex;
   width: 100%;
@@ -2858,8 +2875,9 @@ body.mclaren-theme .background {
   top: 0;
   left: 0;
   opacity: 1;
-  height: 91vh;
+  height: 88vh;
   /* overflow-x: hidden; */
+  overflow-y: auto;
 }
 
 .script-view.hide {
@@ -18376,6 +18394,9 @@ p.news-error-api-key {
 .bento-title{
   font-size: 18px;
   color: var(--text-general);
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
 }
 
 .bento-subtitle{
@@ -18388,12 +18409,16 @@ p.news-error-api-key {
   display: flex;
   flex-direction: column;
   width: 100%;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .bento-team-standings{
   display: flex;
   flex-direction: column;
   width: 100%;
+  justify-content: space-between;
+  height: 100%;
 }
 
 .bento-split-list{
@@ -18401,6 +18426,7 @@ p.news-error-api-key {
   flex-direction: row;
   width: 100%;
   gap: 10px;
+  flex-grow: 1;
 }
 
 .bento-split-list .bento-standings-half + .bento-standings-half{
@@ -18412,6 +18438,7 @@ p.news-error-api-key {
   display: flex;
   flex-direction: column;
   width: 100%;
+  justify-content: space-between;
 }
 
 .season-review-driver{
@@ -18599,7 +18626,10 @@ p.news-error-api-key {
 .poles-comparison.with-scrollbar,
 .q3-comparison.with-scrollbar,
 .q2-comparison.with-scrollbar,
-.bento-driver-standings.with-scrollbar {
+.bento-driver-standings.with-scrollbar,
+.bento-team-standings.with-scrollbar,
+.race-comparison.with-scrollbar,
+.quali-comparison.with-scrollbar {
   padding-right: 6px;
 }
 
@@ -18622,12 +18652,16 @@ p.news-error-api-key {
   display: flex;
   flex-direction: column;
   width: 100%;
+  justify-content: space-between;
+  padding: 2px;
 }
 
 .quali-comparison{
   display: flex;
   flex-direction: column;
   width: 100%;
+  justify-content: space-between;
+  padding: 2px;
 }
 
 .season-review-comparison-row{
@@ -18768,6 +18802,15 @@ p.news-error-api-key {
   flex-direction: column;
 }
 
+.bento-item.item-10 .wins-drivers-list, .bento-item.item-6 .wins-drivers-list{
+  justify-content: space-between;
+  height: 100%;
+}
+
+.bento-item.item-5 .wins-drivers-list{
+  gap: 3px;
+}
+
 .season-review-wins-row{
   display: flex;
   align-items: center;
@@ -18776,10 +18819,36 @@ p.news-error-api-key {
   gap: 4px;
 }
 
+.season-review-wins-row.phantom-row{
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.rounds-counter{
+  margin-left: auto;
+  padding-right: 8px;
+  color: var(--text-tertiary);
+  font-family: "Formula1";
+}
+
+.first-number{
+  padding-right: 2px;
+}
+
+.round-number{
+  font-family: "NumbersFont";
+  letter-spacing: -2.2px;
+  width: 18px;
+  text-align: center;
+  font-size: 16px;
+  padding-top: 3px;
+  height: 22px;
+}
+
 .season-review-wins-position{
   font-family: "NumbersFont";
   letter-spacing: -2.2px;
-  width: 28px;
+  width: 18px;
   text-align: center;
   font-size: 14px;
   padding-top: 3px;
@@ -18811,6 +18880,7 @@ p.news-error-api-key {
   padding-top: 3px;
   font-size: 14px;
   height: 22px;
+  margin-left: auto;
 }
 
 .podiums-teams-list .season-review-wins-position,
@@ -18822,13 +18892,12 @@ p.news-error-api-key {
 .podiums-teams-list .season-review-wins-name,
 .poles-teams-list .season-review-wins-name,
 .item-8 .bento-split-list .season-review-wins-name{
-  max-width: 120px;
-  font-size: 12px;
+  max-width: 135px;
 }
 
 .item-7 .bento-split-list .season-review-wins-name,
 .item-9 .bento-split-list .season-review-wins-name{
-  max-width: 120px;
+  max-width: 135px;
 }
 
 .session-results-rows{
