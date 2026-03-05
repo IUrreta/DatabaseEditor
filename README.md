@@ -3,8 +3,8 @@
 <h3>OPEN SOURCE TOOL TO EDIT YOUR SAVE FILES FROM F1 MANAGER 23 & 24</h3>
 <h4>Supports every bit of cuistomization you can imagine, and even more</h4>
 
-[![Discord](https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/AspRvTTAch)
-[![Patreon](https://img.shields.io/badge/Patreon-Support%20the%20project-F96854?style=flat-square&logo=patreon&logoColor=white)](https://patreon.com/IUrreta)
+[![Discord](https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/3QXg3hsD8B)
+[![Patreon](https://img.shields.io/badge/Patreon-Support%20the%20project-F96854?style=flat-square&logo=patreon&logoColor=white)](https://www.patreon.com/f1dbeditor)
 [![GitHub Release](https://img.shields.io/github/v/release/IUrreta/DatabaseEditor?style=flat-square&logo=github&logoColor=white)](https://github.com/IUrreta/DatabaseEditor/releases/latest)
 [![GitHub Stars](https://img.shields.io/github/stars/IUrreta/DatabaseEditor?style=flat-square&logo=github&logoColor=white)](https://github.com/IUrreta/DatabaseEditor/stargazers)
 
