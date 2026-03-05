@@ -5138,7 +5138,7 @@
             "FaceIndex": 23,
             "FaceType": 0,
             "FirstName": "[STRING_LITERAL:Value=|Kanato|]",
-            "Gender": 0,
+            "Gender": 1,
             "IsGeneratedForCustomTeam": 0,
             "IsGeneratedStaff": 1,
             "LastName": "[STRING_LITERAL:Value=|Le|]",

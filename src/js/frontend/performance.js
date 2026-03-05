@@ -7,6 +7,7 @@ import { Command } from "../backend/command.js";
 import Chart from 'chart.js/auto';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import annotationPlugin from 'chartjs-plugin-annotation';
+import { getEngineLogoSrc } from "./seasonViewer.js";
 
 const teamsPill = document.getElementById("teamsPill");
 const enginesPill = document.getElementById("enginesPill");
@@ -1253,16 +1254,6 @@ function add_custom_engine(name, stats) {
     document.querySelector(".custom-engines-div").appendChild(generalEngineDiv)
 }
 
-function getCustomEngineLogoSrc(name) {
-    const normalized = String(name || "").toLowerCase()
-    if (normalized.includes("honda")) {
-        return "../assets/images/logos/honda.png"
-    }
-    if (normalized.includes("audi")) {
-        return "../assets/images/logos/audi.png"
-    }
-    return "../assets/images/engine.png"
-}
 
 function wireEngineStatButtons(container) {
     container.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
@@ -1298,7 +1289,7 @@ function createCustomEngineCard(engineId, name, stats) {
 
     const logo = document.createElement("img")
     logo.classList.add("engine-performance-logo")
-    logo.src = getCustomEngineLogoSrc(name)
+    logo.src = getEngineLogoSrc(name)
     logo.alt = `${name || "Custom engine"} logo`
 
     const nameInput = document.createElement("input")
@@ -1306,7 +1297,7 @@ function createCustomEngineCard(engineId, name, stats) {
     nameInput.classList.add("custom-engine-name")
     nameInput.value = name || "New Engine"
     nameInput.addEventListener("input", function () {
-        logo.src = getCustomEngineLogoSrc(nameInput.value)
+        logo.src = getEngineLogoSrc(nameInput.value)
         const engineDropdownItem = document.querySelector(`#engineMenu a.custom-engine[data-engine="${engineId}"]`)
         if (engineDropdownItem) {
             engineDropdownItem.innerText = nameInput.value

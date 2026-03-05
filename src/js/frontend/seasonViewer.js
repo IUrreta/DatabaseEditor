@@ -181,7 +181,7 @@ export function setEngineAllocations(allocations) {
     engine_allocations = allocations
 }
 
-function getEngineLogoSrc(name) {
+export function getEngineLogoSrc(name) {
     const normalized = String(name || "").toLowerCase()
     if (normalized.includes("ferrari")) return "../assets/images/logos/ferrari.png"
     if (normalized.includes("rbpt") || normalized.includes("red bull")) return "../assets/images/logos/redbull.png"
@@ -193,7 +193,25 @@ function getEngineLogoSrc(name) {
     if (normalized.includes("bmw")) return "../assets/images/logos/bmw.png"
     if (normalized.includes("porsche")) return "../assets/images/logos/porsche.png"
     if (normalized.includes("toyota")) return "../assets/images/logos/toyota.png"
+    //if name contains baby we should return this emoji ☺️ 
+    if (normalized.includes("babi")) return emojiToDataUri("☺️");
     return "../assets/images/engine.png"
+}
+
+function emojiToDataUri(emoji) {
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="-10 -10 120 120">
+      <text x="50" y="50"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            font-size="100"
+            font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif">
+        ${emoji}
+      </text>
+    </svg>
+  `.trim();
+
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 }
 
 

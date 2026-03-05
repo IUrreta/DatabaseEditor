@@ -1460,6 +1460,19 @@ export function change2025Standings(mod = "2026") {
     }
 }
 
+
+export function fixesMod2026(){
+    //if has trhe extra drivers
+    let wasError = false;
+    const extraDrivers = queryDB(`SELECT value FROM Custom_2026_SeasonMod WHERE key = 'extra-drivers-2026'`, [], "singleValue");
+    const isWrong = queryDB(`SELECT Gender FROM Staff_BasicData WHERE StaffID = 654`, [], "singleValue");
+    if (extraDrivers === "1" && isWrong === 0) {
+        queryDB(`UPDATE Staff_BasicData SET Gender = 1 WHERE StaffID = 654`, [], "run")
+        wasError = true;
+    }
+    return wasError;
+}
+
 function updateRecordsTo2026(){
     if (!changes2026.Records || !Array.isArray(changes2026.Records)) {
         console.log("No records changes found");

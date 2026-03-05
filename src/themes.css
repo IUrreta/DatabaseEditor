@@ -201,6 +201,12 @@
         0 6px 110px #00000015;
     /*soft shadow */
 
+    --shadow-red:
+        inset 0 -1px 2px #ff3b3b25,   /* light from bottom */
+        2px 2px 4px #ff3b3b20,        /* red glow bottom-right */
+        -1px -1px 2px #00000030,      /* opposite shadow */
+        0 2px 4px #00000020;          /* soft depth */
+
 
     --switch-border-on: var(--new-primary);
     --switch-border-off: var(--text-general);
