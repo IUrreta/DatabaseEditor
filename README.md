@@ -1,14 +1,12 @@
-![Image](https://github.com/user-attachments/assets/b9163ea4-b304-40b7-ab11-98404306719e)
+<img width="100%"  src="https://github.com/user-attachments/assets/e29b6bdb-57a0-43f6-a7e8-5dd9d5c7b764" />
 
-Friendly to use tool for editing your save files from F1 Manager 24 and 23. Supports driver transfers, calendar customization, staff stat editing and car performance editing, and much more!
+<h3>OPEN SOURCE TOOL TO EDIT YOUR SAVE FILES FROM F1 MANAGER 23 & 24</h3>
+<h4>Supports every bit of cuistomization you can imagine, and even more</h4>
 
-**NOW ON THE WEB**: The DB Editor is now fully online! No more installations or stuff like that! Just get in, and edit. Everything. Everywhere.
-
-## What's the Database Editor?
-
-Friendly user interface that helps you make the modifications you wish for the database from your save file from F1 Manager 24 and 23!
-
----
+[![Discord](https://img.shields.io/badge/Discord-Community-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.gg/AspRvTTAch)
+[![Patreon](https://img.shields.io/badge/Patreon-Support%20the%20project-F96854?style=flat-square&logo=patreon&logoColor=white)](https://patreon.com/IUrreta)
+[![GitHub Release](https://img.shields.io/github/v/release/IUrreta/DatabaseEditor?style=flat-square&logo=github&logoColor=white)](https://github.com/IUrreta/DatabaseEditor/releases/latest)
+[![GitHub Stars](https://img.shields.io/github/stars/IUrreta/DatabaseEditor?style=flat-square&logo=github&logoColor=white)](https://github.com/IUrreta/DatabaseEditor/stargazers)
 
 ## Features Overview
 
