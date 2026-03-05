@@ -32,7 +32,8 @@ import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap
   changeDriverNumbers2026,
   apply2026EnginePerformanceChanges,
   updatePerofmrnace2026,
-  changeAdditionalRegulations2026} from "./scriptUtils/modUtils";
+  changeAdditionalRegulations2026,
+  fixesMod2026} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -188,9 +189,14 @@ const workerCommands = {
     const mod2026Compatibility = check2026ModCompatibility(yearData[0]);
     postMessage({ responseMessage: "Mod 2026 compatibility", content: mod2026Compatibility });
 
-    const wasError = fixes_mod();
-    if (wasError) {
+    const wasError2025 = fixes_mod();
+    if (wasError2025) {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2025 DLC has been automatically fixed", unlocksDownload: true });
+    }
+
+    const wasError2026 = fixesMod2026();
+    if (wasError2026) {
+      postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2026 DLC has been automatically fixed", unlocksDownload: true });
     }
 
     fetchSeasonResults(year, true, true, 1);

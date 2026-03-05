@@ -87,23 +87,36 @@ export function insert_space(str) {
     return str.replace(/([A-Z])/g, ' $1').trim();
 }
 
-export function format_name(fullName, nameSplitted, spanName, spanLastName) {
-    if (fullName.length > 17) {
-        let nameArray = fullName.split(" ");
-        let firstName = nameArray[0];
+export function format_name(fullName, nameSplitted, spanName, spanLastName, onlyLastWordLastName = false) {
+    const nameArray = String(fullName || "").split(" ").filter(Boolean);
+    const firstName = nameArray[0] || "";
+    const lastName = nameArray[nameArray.length - 1] || "";
+    const middleNames = nameArray.slice(1, -1);
+
+    if (String(fullName || "").length > 17) {
         if (insert_space(firstName).includes(" ")) {
             let splitName = insert_space(firstName).split(" ");
-            spanName.textContent = splitName[0][0] + ". " + splitName[1] + " ";
+            spanName.textContent = splitName[0][0] + ". " + splitName[1];
         } else {
-            spanName.textContent = firstName[0] + ". ";
+            spanName.textContent = firstName[0] + ".";
         }
 
-        spanLastName.textContent = nameArray.slice(1).join(" ").toUpperCase();
-    } else {
-        spanName.textContent = insert_space(nameSplitted[0]) + " "
-        spanLastName.textContent = nameSplitted.slice(1).join(" ").toUpperCase()
-    }
+        if (onlyLastWordLastName && middleNames.length > 0) {
+            spanName.textContent = spanName.textContent + " " + middleNames.map(n => insert_space(n)).join(" ");
+        }
+        spanName.textContent = spanName.textContent + " ";
 
+        spanLastName.textContent = (onlyLastWordLastName ? lastName : nameArray.slice(1).join(" ")).toUpperCase();
+    } else {
+        const parts = Array.isArray(nameSplitted) ? nameSplitted.filter(Boolean) : [];
+        if (onlyLastWordLastName && parts.length > 1) {
+            spanName.textContent = parts.slice(0, -1).map(p => insert_space(p)).join(" ").trim() + " ";
+            spanLastName.textContent = String(parts[parts.length - 1] || "").toUpperCase();
+        } else {
+            spanName.textContent = insert_space(parts[0] || "") + " ";
+            spanLastName.textContent = parts.slice(1).join(" ").toUpperCase();
+        }
+    }
 }
 
 

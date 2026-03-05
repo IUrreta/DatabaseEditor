@@ -1473,16 +1473,6 @@ export function replace_custom_team_logo(path) {
 
 
 
-
-function ajustScrollWrapper() {
-    var windowHeight = window.innerHeight - 80;
-    document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
-}
-
-window.addEventListener('resize', ajustScrollWrapper);
-window.addEventListener('load', ajustScrollWrapper);
-
-
 document.querySelector(".gear-container").addEventListener("click", function () {
     let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
         keyboard: false
