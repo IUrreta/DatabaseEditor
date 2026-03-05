@@ -13291,6 +13291,8 @@ body:has(#blockDiv:not(.disappear)){
   }
 }
 
+
+
 body:has(#modpill.active):has(#mods2025View:not(.d-none)) {
   background-color: transparent !important;
   background-image: url('../assets/images/modback.png') !important;
@@ -13304,8 +13306,16 @@ body:has(#modpill.active):has(#mods2025View:not(.d-none)) .version-panel{
   background-color: #0F1D1D;
 }
 
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) .footer-notification{
+  opacity: 0;
+}
+
 body:has(#modpill.active):has(#mods2026View:not(.d-none)) .version-panel{
-  background-color: #121519;
+  background-color: var(--background);
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none).illuminated) .version-panel{
+  background-color: #262626;
 }
 
 body:has(#modpill.active) .tech-grid,
@@ -13313,19 +13323,34 @@ body:has(#modpill.active) .glow-spot {
   display: none;
 }
 
-body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
+body:has(#modpill.active):has(#mods2026View:not(.d-none):not(.illuminated)) {
   background-color: var(--background) !important;
   background-image:
-    radial-gradient(circle at 18% 32%, color-mix(in srgb, var(--aston-primary) 6%, transparent) 0%, transparent 72%),
-    radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--ferrari-primary) 4%, transparent) 0%, transparent 74%),
-    radial-gradient(circle at 82% 32%, color-mix(in srgb, var(--redbull-primary) 6%, transparent) 0%, transparent 72%),
-    repeating-linear-gradient(115deg, color-mix(in srgb, var(--aston-primary) 9%, transparent) 0 1px, transparent 1px 20px),
-    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 8%, transparent) 0 1px, transparent 1px 22px),
-    repeating-linear-gradient(115deg, color-mix(in srgb, var(--redbull-primary) 9%, transparent) 0 1px, transparent 1px 20px) !important;
+    repeating-linear-gradient(115deg, color-mix(in srgb, gray 9%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, gray 8%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, gray 9%, transparent) 0 1px, transparent 1px 20px) !important;
   background-size: cover, cover, cover, 33.333% 100%, 33.333% 100%, 33.333% 100%;
   background-position: center, center, center, left top, center top, right top;
   background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
   filter: none;
+  overflow: hidden !important;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) {
+  background-color: var(--background) !important;
+  background-image:
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 9%, transparent) 0 1px, transparent 1px 20px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 8%, transparent) 0 1px, transparent 1px 22px),
+    repeating-linear-gradient(115deg, color-mix(in srgb, var(--ferrari-primary) 9%, transparent) 0 1px, transparent 1px 20px) !important;
+  background-size: cover, cover, cover, 33.333% 100%, 33.333% 100%, 33.333% 100%;
+  background-position: center, center, center, left top, center top, right top;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  filter: none;
+  overflow: hidden !important;
+}
+
+body:has(#modpill.active):has(#mods2026View:not(.d-none)) .scroll-wrapper{
+  height: 100%;
 }
 
 .aduo-tp-toggle{
@@ -13646,6 +13671,7 @@ body:has(#modpill.active) .mod-drivers .ka-gradient {
   text-shadow: none;
   font-family: 'Formula1Dark';
   will-change: opacity, text-shadow;
+  padding-top: 3px;
 }
 
 .mod-subtitle-letter.number{
@@ -13725,12 +13751,20 @@ body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
   content: 'W1ECHUZ';
 }
 
+.mod-creators a.cody::before {
+  content: 'CMDESIGNS';
+}
+
+.mod-creators a.murillo::before {
+  content: 'MURILO';
+}
+
 .mod-creators a.kevintaddo::before {
   content: 'KEVINTADDO';
 }
 
 .mod-creators a.lucas::before {
-  content: 'LUCAS';
+  content: 'LCSKPMN';
 }
 
 
@@ -13751,6 +13785,188 @@ body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
   transform: translateY(25px);
   color: var(--text-general);
   font-size: 17px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grid-and-downloads{
+  display: flex;
+  flex-direction: column;
+  /* width: 50%; */
+  min-width: 63%;
+  margin-top: -90px;
+  z-index: 1;
+}
+
+#mods2026View{
+  flex-direction: row;
+  padding: 0 26px;
+  height: 100%;
+}
+
+#mods2026View .changes-grid{
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mods-2026-banner{
+  scale: 1;
+  width: 100%;
+  flex-direction: column;
+  padding: 0;
+  height: 100%;
+  z-index: 2;
+}
+
+#mods2026View .one-change{
+  box-shadow: none;
+  transition: box-shadow 0.15s;
+}
+
+#mods2026View.illuminated .one-change{
+  box-shadow: var(--shadow-s);
+}
+
+#mods2026View.illuminated .glow-2026{
+  opacity: 0.2;
+}
+
+#mods2026View.illuminated .driver-and-rectangle,
+#mods2026View.illuminated .mod-subtitle{
+  filter: grayscale(0) !important;
+}
+
+.driver-and-rectangle{
+  scale: 1.7;
+  opacity: 1;
+  transform: translateY(21px);
+  filter: grayscale(1);
+  transition: filter 0.15s;
+}
+
+@keyframes rectangle-2026-appear {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+  
+}
+
+@keyframes driver-appear {
+    0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+    filter: blur(10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    filter: blur(0);
+  }
+}
+
+.rectangle-2026{
+  width: 295px;
+  height: 340px;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  position: relative;
+  opacity: 0;
+  will-change: opacity;
+  /* transform: translateY(20px); */
+  background: linear-gradient(to top, #F43627, #58120d);
+  overflow: clip;
+  animation: rectangle-2026-appear 0.5s forwards;
+}
+
+
+.glow-2026{
+  position: absolute;
+  bottom: 0;
+  left: 80%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at bottom, white 0%, transparent 48%);
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.driver-2026{
+  height: 485px;
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  opacity: 0;
+  transform: translateX(-50%) translateY(0px);
+  /* opacity: 0; */
+  z-index: 20;
+  animation: driver-appear 0.6s forwards 0.2s;
+}
+
+.lines-2026{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 101.5%;
+  height: 100%;
+  z-index: 15;
+  transform: scaleY(1.7);
+}
+
+.mod-name.title-2026{
+  margin-bottom: 180px;
+  margin-top: -100px;
+  z-index: 22;
+}
+
+img.title-2026{
+  margin-top: -70px;
+}
+
+.title-2026 .mod-subtitle{
+  background: red;
+  padding: 0 20px;
+  transform: skewX(325deg);
+  margin-top: -35px;
+  font-size: 17px;
+  filter: grayscale(1);
+  animation: mod-subtitle-appear 0.5s forwards;
+  transition: filter 0.15s;
+}
+
+@keyframes mod-subtitle-appear {
+  0% {
+    opacity: 0;
+    filter: blur(5px) grayscale(1);
+    transform: translateY(20px) skewX(325deg);
+  }
+
+  55% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+    filter: blur(0px) grayscale(1);
+    transform: translateY(0px) skewX(325deg);
+  }
+  
+}
+
+#mods2026View .mod-creators{
+  margin-top: 20px;
+  max-width: 600px;
+  flex-wrap: wrap;
 }
 
 .recommended-downloads-title {
@@ -13805,8 +14021,11 @@ body:has(#modpill.active) .mod-creators a::before {
   animation-delay: calc((var(--order) * 0.07s));
 }
 
+
 #season_mods {
   align-items: center;
+  overflow: hidden;
+  height: 100%;
 }
 
 #modSelectPanel{
@@ -13895,7 +14114,7 @@ body:has(#modpill.active) .coming-soon {
   0% {
     opacity: 0;
     filter: blur(2px);
-    transform: translateX(-7px);
+    transform: translateX(-7px) skewX(35deg);
     /* text-shadow: 0 0 10px rgba(255, 255, 255, 0.95); */
   }
 
@@ -13907,7 +14126,7 @@ body:has(#modpill.active) .coming-soon {
   100% {
     opacity: 1;
     filter: blur(0px);
-    transform: translateX(0);
+    transform: translateX(0) skewX(35deg);
     /* text-shadow: none; */
   }
 }
@@ -14972,7 +15191,7 @@ body.light-theme .founder {
   gap: 10px;
   align-items: center;
   justify-content: space-between;
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(2px);
   box-shadow: var(--shadow-s);
   opacity: 0;
 
@@ -14991,6 +15210,7 @@ body.light-theme .one-change .one-change-description {
   text-transform: uppercase;
   font-size: 20px;
   color: var(--text-general);
+  text-align: center;
 }
 
 
@@ -15318,6 +15538,7 @@ button.one-change-button {
   margin-top: 5px;
   width: 100%;
 }
+
 
 #mods2026View button.one-change-button {
   background-color: transparent;

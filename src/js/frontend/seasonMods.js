@@ -3,14 +3,49 @@ import { Command } from "../backend/command.js";
 import { applyConfigFromEditorUI, custom_team, replace_custom_team_logo, setRenaultEnginePresentation, updateJenzerToDams } from "./renderer.js";
 
 let calendarEditMode = null, calendarEditMode2026 = null;
+let mods2026IlluminationTimeout = null;
 
 function normalizeToggleEnabled(value) {
   return value === true || value === 1 || value === "1";
 }
 
+function clearMods2026Illumination() {
+  if (mods2026IlluminationTimeout) {
+    clearTimeout(mods2026IlluminationTimeout);
+    mods2026IlluminationTimeout = null;
+  }
+
+  const mods2026View = document.getElementById("mods2026View");
+  if (mods2026View) mods2026View.classList.remove("illuminated");
+}
+
+function seasonModsIsVisible() {
+  const seasonModsDiv = document.getElementById("season_mods");
+  if (!seasonModsDiv) return false;
+  return !seasonModsDiv.classList.contains("hide") && !seasonModsDiv.classList.contains("unloaded");
+}
+
+function scheduleMods2026Illumination() {
+  clearMods2026Illumination();
+
+  mods2026IlluminationTimeout = setTimeout(() => {
+    mods2026IlluminationTimeout = null;
+
+    if (!seasonModsIsVisible()) return;
+
+    const mods2026Pill = document.getElementById("mods2026Pill");
+    if (mods2026Pill && !mods2026Pill.classList.contains("active")) return;
+
+    const mods2026View = document.getElementById("mods2026View");
+    if (mods2026View && !mods2026View.classList.contains("d-none")) {
+      mods2026View.classList.add("illuminated");
+    }
+  }, 2200);
+}
+
 function setAduoTpTogglesChecked(enabled) {
-  const aduoToggle = document.querySelector("#mods2026View #aduoTPSToggle");
-  if (aduoToggle) aduoToggle.checked = enabled;
+  const aduoButton = document.querySelector("#mods2026View .change-aduo-tps-2026");
+  if (aduoButton) aduoButton.classList.toggle("completed", enabled);
 
   const settingsToggle = document.getElementById("aduoTPSToggleSettings");
   if (settingsToggle) settingsToggle.checked = enabled;
@@ -110,6 +145,8 @@ function setModsSeason(seasonYear) {
 
   mods2025View.classList.toggle("d-none", is2026);
   mods2026View.classList.toggle("d-none", !is2026);
+
+  if (!is2026) clearMods2026Illumination();
 }
 
 function initModsSeasonPills() {
@@ -128,6 +165,7 @@ function initModsSeasonPills() {
   mods2026Pill.addEventListener("click", function (e) {
     e.preventDefault();
     setModsSeason(2026);
+    scheduleMods2026Illumination();
   });
 
   setModsSeason(2026);
@@ -292,10 +330,12 @@ function initMods2026Actions(){
 
   }
 
-  const aduoToggle = mods2026View.querySelector("#aduoTPSToggle");
+  const aduoToggle = mods2026View.querySelector(".change-aduo-tps-2026");
   if (aduoToggle) {
-    aduoToggle.addEventListener("change", function () {
-      updateAduoTpEnabled(this.checked);
+    aduoToggle.addEventListener("click", function () {
+      this.classList.add("completed");
+      this.querySelector("span").textContent = "Applied";
+      updateAduoTpEnabled(this.classList.contains("completed"));
     });
   }
 
@@ -319,7 +359,7 @@ function initMods2026Actions(){
 
         const btn = mods2026View.querySelector(".one-change-button:not(.completed):not(.disabled)");
         if (!btn) {
-          if (aduoToggle && !aduoToggle.checked) {
+          if (aduoToggle && !aduoToggle.classList.contains("completed")) {
             aduoToggle.click();
           }
           applyAllButton.dataset.running = "0";
@@ -459,6 +499,37 @@ export function initSeasonMods() {
   initModsSeasonPills();
   initMods2025Actions();
   initMods2026Actions();
+
+  if (seasonModsDiv.dataset.modsIllumInit !== "1") {
+    seasonModsDiv.dataset.modsIllumInit = "1";
+    let wasVisible = seasonModsIsVisible();
+
+    const syncVisibility = () => {
+      const visible = seasonModsIsVisible();
+      if (visible === wasVisible) return;
+      wasVisible = visible;
+
+      if (!visible) {
+        clearMods2026Illumination();
+        return;
+      }
+
+      const mods2026Pill = document.getElementById("mods2026Pill");
+      if (mods2026Pill && mods2026Pill.classList.contains("active")) {
+        scheduleMods2026Illumination();
+      }
+    };
+
+    const mo = new MutationObserver(syncVisibility);
+    mo.observe(seasonModsDiv, { attributes: true, attributeFilter: ["class"] });
+
+    if (wasVisible) {
+      const mods2026Pill = document.getElementById("mods2026Pill");
+      if (mods2026Pill && mods2026Pill.classList.contains("active")) {
+        scheduleMods2026Illumination();
+      }
+    }
+  }
 }
 
 export function syncAduoTpToggles(enabledRaw) {
@@ -475,13 +546,13 @@ export function syncMods2026ApplyAllButtonState() {
   if (!applyAllButton) return;
 
   const applyAllText = applyAllButton.querySelector("span");
-  const aduoToggle = mods2026View.querySelector("#aduoTPSToggle");
+  const aduoToggle = mods2026View.querySelector(".change-aduo-tps-2026");
 
   const remaining = mods2026View.querySelectorAll(
     ".one-change-button:not(.completed):not(.disabled)"
   ).length;
 
-  const allApplied = remaining === 0 && (!aduoToggle || aduoToggle.checked);
+  const allApplied = remaining === 0 && (!aduoToggle || aduoToggle.classList.contains("completed"));
 
   applyAllButton.classList.toggle("applied", allApplied);
   if (applyAllText) applyAllText.textContent = allApplied ? "Applied" : "Apply all";
