@@ -120,3 +120,4 @@ Update your freshly created save to the 2025 or 2026 seasons with a complete dat
 ### Credits
 
 - [xAranaktu for the Save Repacker](https://github.com/xAranaktu/F1-Manager-2022-SaveFile-Repacker)
+- F1 Dark font: Font used under CC BY 4.0  Source: https://www.onlinewebfonts.com
