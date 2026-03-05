@@ -19,13 +19,14 @@ Friendly user interface that helps you make the modifications you wish for the d
 - **View pre-contracts** at a glance with icons  
 - **Edit stats**, mentality, and marketability  
 - **Rename** any driver or staff member (even abbreviations)  
-- **Compare** two drivers or staff members side-by-side  
+- **Compare** two drivers or staff members side-by-side
+- **Visualize** next year's grid
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/7c421290-f7df-451c-9814-dca84f8f477f" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/0ef645ab-561a-4e7d-b0b9-11d3ef8f9972" width="45%"/><br/>
-  <img src="https://github.com/user-attachments/assets/95db87e6-6441-4ace-b5b0-892a8bc668d8" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/f152992f-9868-40a7-8466-72c3e07ba74e" width="45%"/>
+  <img width="45%" src="https://github.com/user-attachments/assets/a20915e9-c7ce-48b5-8e51-d4a6c72e01f3" />
+  <img width="45%" src="https://github.com/user-attachments/assets/5b73f044-feb7-4f43-9841-fa21a7eeea07" /><br/>
+  <img width="45%" src="https://github.com/user-attachments/assets/ac01d8ac-e03d-45ce-94e6-f4bd4ef425e7" />
+  <img width="45%" src="https://github.com/user-attachments/assets/c69be6f8-9056-4e69-8632-952a190d2283" />
 </p>
 
 ---
@@ -39,8 +40,8 @@ Friendly user interface that helps you make the modifications you wish for the d
 - **Change team** at any moment  
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/44f5def9-70e3-4533-8b11-f992b76b273f" width="90%"/>
-  <img src="https://github.com/user-attachments/assets/f0f8544c-841f-438c-89d8-715ffe7a7631" width="90%"/>
+  <img width="90%" src="https://github.com/user-attachments/assets/0dfaa612-3ae6-405d-8b06-217d018507af" />
+  <img width="90%" src="https://github.com/user-attachments/assets/447c9aab-87ce-4693-8166-a36cd543e837" />
 </p>
 
 > [!CAUTION]
@@ -51,16 +52,16 @@ Friendly user interface that helps you make the modifications you wish for the d
 
 ### Car & Engine Management
 
-- **Edit every car stat** from all teams  
-- **View performance evolution** across the season  
+- **Edit every car stat** from all teams, including **espertise**
+- **View performance evolution** across the season and details in all areas  
 - **Compare performance** attributes with graphs  
 - **Edit or add new engine suppliers**  
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/3b27bae3-77c3-43c4-87ab-0c4d76f36e99" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/647f3bbe-27dd-4afb-a99a-e4f66495bf1a" width="45%"/><br/>
-  <img src="https://github.com/user-attachments/assets/2d960fcc-7240-43eb-841c-70185f77cfe4" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/d696ce13-4676-49be-8c6e-cb55498c2df0" width="45%"/>
+  <img width="45%" src="https://github.com/user-attachments/assets/aac7145b-624e-4de0-b3dc-d41027dc8290" />
+  <img width="45%" src="https://github.com/user-attachments/assets/5ca943d5-43f9-4872-8710-c23bbe95c39e" /><br/>
+  <img width="45%" src="https://github.com/user-attachments/assets/7e61cdbb-c2a8-4874-9144-2d967c4a86bc" />
+  <img width="45%" src="https://github.com/user-attachments/assets/a488a752-b45e-4313-bd87-28f62261c1ad" />
 </p>
 
 ---
@@ -71,21 +72,25 @@ Friendly user interface that helps you make the modifications you wish for the d
 - Change **engine supplier** instantly  
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c7b9e9c6-0196-4daf-a0cb-ff325cb12321" width="90%"/>
+  <img width="90%" src="https://github.com/user-attachments/assets/aa316454-6437-45e1-aa03-7e0a0be4af96" />
 </p>
 
 ---
 
 ### Career History & Stats
-
-- View past seasons in a **Wikipedia-style table**  
-- Check **career records** (wins, poles, podiums, WDCs, points...)  
+- View past seasons in a **Wikipedia-style table**   (including F2/F3)
+- Check **career records** (wins, poles, podiums, WDCs, points...)
+- See **all details at once** with Season Review
+- See **every session result** and **edit race results**
 - Compare **drivers and teams** through detailed **Head-to-Head** charts  
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/d8c017da-2972-482a-825c-0b1192d9a521" width="45%"/>
-  <img src="https://github.com/user-attachments/assets/e46c6d35-447f-4e8d-9b5f-c66de5c700fd" width="45%"/><br/>
-  <img src="https://github.com/user-attachments/assets/3b0cceb4-b6a4-427b-93fa-39ddc61a6b72" width="90%"/>
+  <img width="45%" src="https://github.com/user-attachments/assets/6318515c-abaf-45c0-b1be-199c1e64397b" />
+  <img width="45%" src="https://github.com/user-attachments/assets/771ffc67-07e1-49b7-a4ef-01b9b0e0a713" />
+  <img width="45%"  src="https://github.com/user-attachments/assets/ed5b3f84-ef60-4062-b558-21730841a062" />
+  <img width="45%" src="https://github.com/user-attachments/assets/a1b33991-0d53-4a26-83be-e203c3a02b5c" />
+  <img width="90%" src="https://github.com/user-attachments/assets/601100a0-ffa0-4eef-9aba-ed45ec7111b6" />
+
 </p>
 
 ---
@@ -97,15 +102,20 @@ Friendly user interface that helps you make the modifications you wish for the d
 - All news and outcomes are stored directly in your save file  
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/368896bc-5c13-4384-adfc-d40ab61f3b45" width="90%"/><br/>
-  <img src="https://github.com/user-attachments/assets/2bec0baa-0911-49f9-b839-2f61c366616e" width="90%"/>
+  <img width="90%" src="https://github.com/user-attachments/assets/4673f79d-acaa-464b-8631-fea0315e64d7" /><br/>
+  <img width="90%" src="https://github.com/user-attachments/assets/9e550082-4922-40db-9be1-3b892f405484" />
 </p>
 
 ---
 
-### Updating
+### Seasonal Mods
 
-No need to install updates anymore — since the **DB Editor runs on the web**, it’s automatically updated every time a new release is published!
+Update your freshly created save to the 2025 or 2026 seasons with a complete database overhaul with **driver transfers**, **car and engine performance**, **driver ratings**, **calendars**, **regulations** and even **FREE TURNING POINTS** for engine development in the 2026 Season Update! (also available in Settings -> Editor)
+
+<p align="center">
+  <img width="45%" src="https://github.com/user-attachments/assets/288239ee-0cee-4ffe-8c8e-34462eadf38f" />
+  <img width="45%" src="https://github.com/user-attachments/assets/9011a678-9aee-462d-b9ce-3fe4d81abc81" />
+</p>
 
 ---
 
