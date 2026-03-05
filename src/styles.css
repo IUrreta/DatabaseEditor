@@ -13809,6 +13809,13 @@ body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
   grid-template-columns: repeat(3, 1fr);
 }
 
+.mods-2026-blocking{
+  width: 100%;
+  text-align: center;
+  margin-top: -150px !important;
+  margin-left: 8%;
+}
+
 .mods-2026-banner{
   scale: 1;
   width: 100%;

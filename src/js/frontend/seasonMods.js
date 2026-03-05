@@ -612,7 +612,7 @@ export function updateMod2026Blocking(data) {
   const changeCalendarText = changeCalendarButton ? changeCalendarButton.querySelector("span") : null;
 
   const modBlocking = mods2026View.querySelector(".mod-blocking.mods-2026-blocking");
-  const changesGrid = mods2026View.querySelector(".changes-grid");
+  const changesGrid = mods2026View.querySelector(".grid-and-downloads");
   const recommendedDownloads = mods2026View.querySelector(".recommended-downloads");
 
   calendarEditMode2026 = null;
