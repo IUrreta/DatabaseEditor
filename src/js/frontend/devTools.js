@@ -15,13 +15,31 @@ if (isLocalhost) {
   function createWindow() {
     windowEl = document.createElement("div");
     windowEl.className = "devtools-window";
+    windowEl.setAttribute("role", "dialog");
+    windowEl.setAttribute("aria-modal", "false");
 
     const headerEl = document.createElement("div");
     headerEl.className = "devtools-header";
 
+    const chromeEl = document.createElement("div");
+    chromeEl.className = "devtools-chrome";
+
+    const chromeDotRed = document.createElement("span");
+    chromeDotRed.className = "devtools-dot is-red";
+
+    const chromeDotYellow = document.createElement("span");
+    chromeDotYellow.className = "devtools-dot is-yellow";
+
+    const chromeDotGreen = document.createElement("span");
+    chromeDotGreen.className = "devtools-dot is-green";
+
     const titleEl = document.createElement("div");
     titleEl.className = "devtools-title";
-    titleEl.textContent = "Developer";
+    titleEl.textContent = "DEVTOOLS.EXE";
+
+    const statusEl = document.createElement("div");
+    statusEl.className = "devtools-status";
+    statusEl.textContent = "LOCALHOST SESSION";
 
     const closeButton = document.createElement("button");
     closeButton.className = "devtools-close";
@@ -31,6 +49,10 @@ if (isLocalhost) {
 
     const bodyEl = document.createElement("div");
     bodyEl.className = "devtools-body";
+
+    const hintEl = document.createElement("div");
+    hintEl.className = "devtools-hint";
+    hintEl.textContent = "Ctrl+D to toggle";
 
     const statsButton = document.createElement("button");
     statsButton.className = "devtools-action";
@@ -42,8 +64,14 @@ if (isLocalhost) {
     downloadButton.type = "button";
     downloadButton.textContent = "Download database (.db)";
 
+    chromeEl.appendChild(chromeDotRed);
+    chromeEl.appendChild(chromeDotYellow);
+    chromeEl.appendChild(chromeDotGreen);
+    headerEl.appendChild(chromeEl);
     headerEl.appendChild(titleEl);
+    headerEl.appendChild(statusEl);
     headerEl.appendChild(closeButton);
+    bodyEl.appendChild(hintEl);
     bodyEl.appendChild(statsButton);
     bodyEl.appendChild(downloadButton);
     windowEl.appendChild(headerEl);
@@ -53,6 +81,10 @@ if (isLocalhost) {
 
     closeButton.addEventListener("click", () => {
       closeWindow();
+    });
+
+    closeButton.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
     });
 
     statsButton.addEventListener("click", () => {
@@ -95,6 +127,7 @@ if (isLocalhost) {
 
     headerEl.addEventListener("pointerdown", (e) => {
       if (e.button !== 0) return;
+      if (e.target.closest(".devtools-close")) return;
       isDragging = true;
 
       const rect = windowEl.getBoundingClientRect();
