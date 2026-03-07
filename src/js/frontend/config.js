@@ -47,7 +47,7 @@ export let combined_dict = {
     10: "Aston Martin",
     11: "Prema Racing (F2)",
     12: "Virtuosi Racing (F2)",
-    13: "Carlin (F2)",
+    13: "Rodin (F2)",
     14: "Hitech GP (F2)",
     15: "ART Grand Prix (F2)",
     16: "MP Motorsport (F2)",
@@ -63,8 +63,8 @@ export let combined_dict = {
     26: "VAR Racing (F3)",
     27: "MP Motorsport (F3)",
     28: "Campos Racing (F3)",
-    29: "Carlin (F3)",
-    30: "Jenzzer Motorsport (F3)",
+    29: "Rodin (F3)",
+    30: "Jenzer Motorsport (F3)",
     31: "PHM Racing (F3)",
     32: "Custom Team"
 }
@@ -111,23 +111,107 @@ export const theme_colors = {
         "labels": "#dedde6",
         "grid": "#292929",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "light-theme": {
         "labels": "#252525",
         "grid": "#d6d6d6",
         "general_secondary": "#1f1f1f",
+        "engine_upgrade_line": "#a18f45cc"
     },
     "og-theme": {
         "labels": "#dedde6",
         "grid": "#323046",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     },
     "vaporwave-theme": {
         "labels": "#dedde6",
         "grid": "#5329b5",
         "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "nightly-theme": {
+        "labels": "#dedde6",
+        "grid": "#292929",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "ferrari-theme": {
+        "labels": "#f0e6e8",
+        "grid": "#5a3a42",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "redbull-theme": {
+        "labels": "#d8e5ff",
+        "grid": "#39578f",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "mercedes-theme": {
+        "labels": "#c8f9f2",
+        "grid": "#2a515c",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "astonmartin-theme": {
+        "labels": "#e8f3ee",
+        "grid": "#2a5a4a",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "mclaren-theme": {
+        "labels": "#f7e6dc",
+        "grid": "#5a4033",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "audi-theme": {
+        "labels": "#f0e6e8",
+        "grid": "#4a1f27",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "vcarb-theme": {
+        "labels": "#d8e2ff",
+        "grid": "#2b3f6b",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "williams-theme": {
+        "labels": "#d7e8ff",
+        "grid": "#173a70",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "haas-theme": {
+        "labels": "#e7e7ea",
+        "grid": "#3c3c4c",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
+    "alpine-theme": {
+        "labels": "#ffe0f2",
+        "grid": "#5a3a5f",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
     }
 }
+
+export const themeToolbarLogos = {
+    "nightly-theme": { src: "../assets/images/logoNightly.svg", className: "toolbar-logo--nightly" },
+    "ferrari-theme": { src: "../assets/images/logos/ferrari.png", className: "toolbar-logo--ferrari" },
+    "redbull-theme": { src: "../assets/images/logos/redbull.png", className: "toolbar-logo--redbull" },
+    "mercedes-theme": { src: "../assets/images/logos/mercedes.png", className: "toolbar-logo--mercedes" },
+    "astonmartin-theme": { src: "../assets/images/logos/astonMartin.png", className: "toolbar-logo--astonmartin" },
+    "mclaren-theme": { src: "../assets/images/logos/mclaren.png", className: "toolbar-logo--mclaren" },
+    "audi-theme": { src: "../assets/images/logos/audi.png", className: "toolbar-logo--audi" },
+    "vcarb-theme": { src: "../assets/images/logos/visarb.png", className: "toolbar-logo--vcarb" },
+    "williams-theme": { src: "../assets/images/logos/Williams_2026_logo.svg", className: "toolbar-logo--williams" },
+    "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
+    "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
+};
 
 //predictions
 export const names_full = {
@@ -160,9 +244,10 @@ export const names_full = {
 
 //seasonViewer
 export let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-williams-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
-    "brawn": "logo-brawn-table", "toyota": "logo-williams-table", "alphatauri": "logo-alphatauri-table", "porsche": "logo-porsche-table",
-    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table"
+    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-sauber-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
+    "brawn": "logo-brawn-table", "toyota": "logo-toyota-table", "alphatauri": "logo-alphatauri-table", "porsche": "logo-porsche-table",
+    "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table",
+    "cadillac": "logo-cadillac-table", "ford": "logo-ford-table", "racingpoint": "logo-racingpoint-table", "jordan": "logo-jordan-table"
 }
 
 export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
@@ -182,38 +267,38 @@ export const continentDict = {
 }
 export const teams_full_name_dict = { 'FERRARI': 1, 'MCLAREN': 2, 'RED BULL': 3, 'MERCEDES': 4, 'ALPINE': 5, 'WILLIAMS': 6, 'HAAS': 7, 'ALPHA TAURI': 8, 'ALFA ROMEO': 9, 'ASTON MARTIN': 10 }
 export let logos_disc = {
-    1: '../assets/images/ferrari.png',
-    2: '../assets/images/mclaren.png',
-    3: '../assets/images/redbull.png',
-    4: '../assets/images/mercedes.png',
-    5: '../assets/images/alpine.png',
-    6: '../assets/images/Williams_2026_logo.svg',
-    7: '../assets/images/haas.png',
-    8: '../assets/images/alphatauri.png',
-    9: '../assets/images/alfaromeo.png',
-    10: '../assets/images/astonMartin.png',
-    11: '../assets/images/prema.png',
-    12: '../assets/images/invicta.png',
-    13: '../assets/images/carlin.png',
-    14: '../assets/images/hitech.png',
-    15: '../assets/images/art.png',
-    16: '../assets/images/mp.png',
-    17: '../assets/images/phm.png',
-    18: '../assets/images/dams.png',
-    19: '../assets/images/campos.png',
-    20: '../assets/images/var.png',
-    21: '../assets/images/trident.png',
-    22: '../assets/images/prema.png',
-    23: '../assets/images/trident.png',
-    24: '../assets/images/art.png',
-    25: '../assets/images/hitech.png',
-    26: '../assets/images/var.png',
-    27: '../assets/images/mp.png',
-    28: '../assets/images/campos.png',
-    29: '../assets/images/carlin.png',
-    30: '../assets/images/jenzer.png',
-    31: '../assets/images/phm.png',
-    32: '../assets/images/placeholder.png'
+    1: '../assets/images/logos/ferrari.png',
+    2: '../assets/images/logos/mclaren.png',
+    3: '../assets/images/logos/redbull.png',
+    4: '../assets/images/logos/mercedes.png',
+    5: '../assets/images/logos/alpine.png',
+    6: '../assets/images/logos/Williams_2026_logo.svg',
+    7: '../assets/images/logos/haas.png',
+    8: '../assets/images/logos/alphatauri.png',
+    9: '../assets/images/logos/alfaromeo.png',
+    10: '../assets/images/logos/astonMartin.png',
+    11: '../assets/images/logos/prema.png',
+    12: '../assets/images/logos/invicta.png',
+    13: '../assets/images/logos/rodin.png',
+    14: '../assets/images/logos/hitech.png',
+    15: '../assets/images/logos/art.png',
+    16: '../assets/images/logos/mp.png',
+    17: '../assets/images/logos/phm.png',
+    18: '../assets/images/logos/dams.png',
+    19: '../assets/images/logos/campos.png',
+    20: '../assets/images/logos/var.png',
+    21: '../assets/images/logos/trident.png',
+    22: '../assets/images/logos/prema.png',
+    23: '../assets/images/logos/trident.png',
+    24: '../assets/images/logos/art.png',
+    25: '../assets/images/logos/hitech.png',
+    26: '../assets/images/logos/var.png',
+    27: '../assets/images/logos/mp.png',
+    28: '../assets/images/logos/campos.png',
+    29: '../assets/images/logos/rodin.png',
+    30: '../assets/images/logos/jenzer.png',
+    31: '../assets/images/logos/phm.png',
+    32: '../assets/images/logos/placeholder.png'
 };
 
 
@@ -272,31 +357,31 @@ export let inverted_dict = { 'ferrari': 1, 'mclaren': 2, 'redbull': 3, 'merc': 4
 
 // news
 export const countries_data = {
-    "BAH": { "country": "Bahrain", "adjective": "Bahrain", "circuit": "Bahrain" },
-    "AUS": { "country": "Australia", "adjective": "Australian", "circuit": "Albert Park" },
-    "SAU": { "country": "Saudi Arabia", "adjective": "Saudi Arabian", "circuit": "Jeddah" },
-    "IMO": { "country": "Imola", "adjective": "Emilia Romagna", "circuit": "Imola" },
-    "MIA": { "country": "Miami", "adjective": "Miami", "circuit": "Miami" },
-    "SPA": { "country": "Spain", "adjective": "Spanish", "circuit": "Barcelona" },
-    "MON": { "country": "Monaco", "adjective": "Monaco", "circuit": "Monaco" },
-    "AZE": { "country": "Azerbaijan", "adjective": "Azerbaijan", "circuit": "Baku" },
-    "CAN": { "country": "Canada", "adjective": "Canadian", "circuit": "Montreal" },
-    "GBR": { "country": "Great Britain", "adjective": "British", "circuit": "Silverstone" },
-    "AUT": { "country": "Austria", "adjective": "Austrian", "circuit": "Red Bull Ring" },
-    "FRA": { "country": "France", "adjective": "French", "circuit": "Paul Ricard" },
-    "HUN": { "country": "Hungary", "adjective": "Hungarian", "circuit": "Hungaroring" },
-    "BEL": { "country": "Belgium", "adjective": "Belgian", "circuit": "Spa" },
-    "ITA": { "country": "Italy", "adjective": "Italian", "circuit": "Monza" },
-    "SGP": { "country": "Singapore", "adjective": "Singapore", "circuit": "Marina Bay" },
-    "JAP": { "country": "Japan", "adjective": "Japanese", "circuit": "Suzuka" },
-    "USA": { "country": "United States", "adjective": "United States", "circuit": "COTA" },
-    "MEX": { "country": "Mexico", "adjective": "Mexican", "circuit": "Mexico City" },
-    "BRA": { "country": "Brazil", "adjective": "Brazilian", "circuit": "Interlagos" },
-    "UAE": { "country": "Abu Dhabi", "adjective": "Abu Dhabi", "circuit": "Yas Marina" },
-    "NED": { "country": "Netherlands", "adjective": "Netherlands", "circuit": "Zandvoort" },
-    "VEG": { "country": "Vegas", "adjective": "Vegas", "circuit": "Las Vegas" },
-    "QAT": { "country": "Qatar", "adjective": "Qatar", "circuit": "Lusail" },
-    "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai" }
+    "BAH": { "country": "Bahrain", "adjective": "Bahrain", "circuit": "Bahrain", "track": "Bahrain International Circuit" },
+    "AUS": { "country": "Australia", "adjective": "Australian", "circuit": "Albert Park", "track": "Albert Park Circuit" },
+    "SAU": { "country": "Saudi Arabia", "adjective": "Saudi Arabian", "circuit": "Jeddah", "track": "Jeddah Corniche Circuit" },
+    "IMO": { "country": "Imola", "adjective": "Emilia Romagna", "circuit": "Imola", "track": "Autodromo Enzo e Dino Ferrari" },
+    "MIA": { "country": "Miami", "adjective": "Miami", "circuit": "Miami", "track": "Miami International Autodrome" },
+    "SPA": { "country": "Spain", "adjective": "Spanish", "circuit": "Barcelona", "track": "Circuit de Barcelona-Catalunya" },
+    "MON": { "country": "Monaco", "adjective": "Monaco", "circuit": "Monaco", "track": "Circuit de Monaco" },
+    "AZE": { "country": "Azerbaijan", "adjective": "Azerbaijan", "circuit": "Baku", "track": "Baku City Circuit" },
+    "CAN": { "country": "Canada", "adjective": "Canadian", "circuit": "Montreal", "track": "Circuit Gilles Villeneuve" },
+    "GBR": { "country": "Great Britain", "adjective": "British", "circuit": "Silverstone", "track": "Silverstone Circuit" },
+    "AUT": { "country": "Austria", "adjective": "Austrian", "circuit": "Red Bull Ring", "track": "Red Bull Ring" },
+    "FRA": { "country": "France", "adjective": "French", "circuit": "Paul Ricard", "track": "Circuit Paul Ricard" },
+    "HUN": { "country": "Hungary", "adjective": "Hungarian", "circuit": "Hungaroring", "track": "Hungaroring" },
+    "BEL": { "country": "Belgium", "adjective": "Belgian", "circuit": "Spa", "track": "Circuit de Spa-Francorchamps" },
+    "ITA": { "country": "Italy", "adjective": "Italian", "circuit": "Monza", "track": "Autodromo Nazionale Monza" },
+    "SGP": { "country": "Singapore", "adjective": "Singapore", "circuit": "Marina Bay", "track": "Marina Bay Street Circuit" },
+    "JAP": { "country": "Japan", "adjective": "Japanese", "circuit": "Suzuka", "track": "Suzuka International Racing Course" },
+    "USA": { "country": "United States", "adjective": "United States", "circuit": "COTA", "track": "Circuit of the Americas" },
+    "MEX": { "country": "Mexico", "adjective": "Mexican", "circuit": "Mexico City", "track": "Autódromo Hermanos Rodríguez" },
+    "BRA": { "country": "Brazil", "adjective": "Brazilian", "circuit": "Interlagos", "track": "Autódromo José Carlos Pace" },
+    "UAE": { "country": "Abu Dhabi", "adjective": "Abu Dhabi", "circuit": "Yas Marina", "track": "Yas Marina Circuit" },
+    "NED": { "country": "Netherlands", "adjective": "Netherlands", "circuit": "Zandvoort", "track": "Circuit Zandvoort" },
+    "VEG": { "country": "Vegas", "adjective": "Vegas", "circuit": "Las Vegas", "track": "Las Vegas Street Circuit" },
+    "QAT": { "country": "Qatar", "adjective": "Qatar", "circuit": "Lusail", "track": "Lusail International Circuit" },
+    "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai", "track": "Shanghai International Circuit" }
 };
 
 export function getParamMap(data) {
@@ -449,6 +534,10 @@ export function getParamMap(data) {
             driver1: data.driver1,
             driver2: data.driver2,
             driver3: data.driver3
+        },
+        109: {
+            manufacturers: data.manufacturers,
+            number_period: data.quarterString
         }
     };
 }
@@ -535,8 +624,8 @@ export const turningPointsTuningByType = {
         max: [1, 1, 2, 3, 4],
     },
     midSeasonTransfers: {
-        chance: [0.15, 0.3, 0.5, 0.7, 0.9],
-        max: [1, 2, 3, 3, 3],
+        chance: [0.05, 0.15, 0.25, 0.7, 0.9],
+        max: [1, 2, 2, 3, 3],
     },
     technicalDirective: {
         chance: [0.1, 0.25, 0.4, 0.6, 0.8],
@@ -564,3 +653,36 @@ export const turningPointsTuningByType = {
     },
 };
 
+export const defaultColors = {
+  1: 4293394477,
+  2: 4294934528,
+  3: 4281758150,
+  4: 4280808658,
+  5: 4278227916,
+  6: 4284794111,
+  7: 4290165437,
+  8: 4284912383,
+  9: 4283621970,
+  10: 4280457585
+};
+
+export const customColors = {
+    "audi": "#C00A26",
+    "sauber": "#f50537",
+    "stake": "#54d650",
+    "visarb": "#6c8ff3",
+    "toyota": "#989898",
+    "brawn": "#d0e610",
+    "porsche": "#873AC4",
+    "alphatauri": "#5E8FAA",
+    "hugo": "#bd9514",
+    "lotus": "#b09247",
+    "renault": "#b09247",
+    "andretti": "#fac51c",
+    "alpine": "#F168BA",
+    "racingpoint": "#F395C7",
+    "jordan": "#e6e624",
+    "bmw": "#f1f1f1",
+    "cadillac": "#111111",
+    "ford": "#3172bf"
+}

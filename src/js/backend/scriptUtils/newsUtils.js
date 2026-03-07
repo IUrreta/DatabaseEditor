@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines, ensureCustomEngineProgressionTable, snapshotEnginePowerProgression } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, turningPointsTuningByType } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -17,6 +17,25 @@ const USE_COMPRESSION = false;
 const _seasonResultsCache = new Map();
 export const _standingsCache = new Map();
 const _dropsCache = new Map();
+
+function isTimeTravel2026Enabled() {
+    try {
+        const exists = queryDB(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2026_SeasonMod'`,
+            [],
+            'singleRow'
+        );
+        if (!exists) return false;
+        const value = queryDB(
+            `SELECT value FROM Custom_2026_SeasonMod WHERE key = 'time-travel-2026'`,
+            [],
+            'singleValue'
+        );
+        return value === "1" || value === 1;
+    } catch {
+        return false;
+    }
+}
 
 function loadTurningPointsFrequencyConfig() {
     try {
@@ -71,6 +90,12 @@ export function rebuildStandingsUntilCached(season, seasonResults, raceId, inclu
 
 export function generate_news(savednews, turningPointState) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    if (isTimeTravel2026Enabled() && Number(daySeason?.[1]) < 2026) {
+        const existingList = Object.entries(savednews || {}).map(([id, n]) => ({ id, ...n }));
+        existingList.sort((a, b) => (Number(b.date) || 0) - (Number(a.date) || 0));
+        return { newsList: existingList, turningPointState };
+    }
+
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
     const tpConfig = loadTurningPointsFrequencyConfig();
     // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
@@ -121,6 +146,11 @@ export function generate_news(savednews, turningPointState) {
     const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
+    let aduoTPsEnabled = queryDB(`SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`, [], 'singleValue');
+    aduoTPsEnabled = aduoTPsEnabled === "1" || aduoTPsEnabled === 1;
+
+    const aduoTurningPointNews = generateAduoTurningPointsNews(currentMonth, savednews, turningPointState, tpConfig, aduoTPsEnabled);
+
     let turningPointOutcomes = [];
     if (Object.keys(savednews).length > 0) {
         turningPointOutcomes = Object.entries(savednews)
@@ -133,7 +163,7 @@ export function generate_news(savednews, turningPointState) {
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...juniorSeasonReviewNews || [], ...dsqTurningPointNews || [], 
     ...midSeasonTransfersTurningPointNews || [], ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
     ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
-    ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || []];
+    ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
 
     // Include saved news entries that are not produced by the current generation logic (e.g. custom-created entries).
     // Otherwise, those entries would exist in the DB but not appear in the current-season view.
@@ -304,10 +334,76 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             applyYoungDriversBoost(turningPointData);
         }
     }
+    else if(type === "turning_point_aduo") {
+        if (outcome === "positive") {
+            applyAduoEffect(turningPointData);
+        }
+
+    }
 
     return newEntry;
 }
 
+function applyAduoEffect(turningPointData) {
+    const engineImprovements = turningPointData?.engineImprovements || [];
+    if (!engineImprovements.length) {
+        return;
+    }
+
+    ensureCustomEngineProgressionTable();
+
+    const [enginesData] = fetchEngines();
+    const enginesById = {};
+    for (const engineRow of enginesData || []) {
+        enginesById[String(engineRow[0])] = engineRow;
+    }
+
+    const readStat = (stats, statId) => {
+        if (!stats) return null;
+        const raw = stats[statId] !== undefined ? stats[statId] : stats[String(statId)];
+        const num = Number(raw);
+        return Number.isFinite(num) ? num : null;
+    };
+
+    snapshotEnginePowerProgression(
+        (enginesData || []).map((row) => row?.[0]).filter((id) => id !== null && id !== undefined),
+        'pre_aduo_tp',
+        turningPointData?.season
+    );
+
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const engineDataToEdit = {};
+
+    for (const engineChange of engineImprovements) {
+        const engineId = String(engineChange.engineId);
+        const engineRow = enginesById[engineId];
+        if (!engineRow) continue;
+
+        const baseStats = engineRow[1] || {};
+        const improvements = engineChange.improvements || {};
+        const newStats = {};
+
+        for (const statId of Object.keys(baseStats)) {
+            newStats[statId] = Number(baseStats[statId]) || 0;
+        }
+
+        for (const statId of Object.keys(improvements)) {
+            if (improvements[statId] === undefined || improvements[statId] === null) continue;
+            const pct = improvements[statId];
+
+            const current = newStats[statId];
+            if (current === undefined || current === null) continue;
+
+            const next = (current * (100 + pct)) / 100;
+            newStats[statId] = clamp(next, 0, 100);
+        }
+
+        engineDataToEdit[engineId] = newStats;
+    }
+
+    console.log("[Aduo TP] Applying engine improvements:", engineImprovements);
+    editEngines(engineDataToEdit);
+}
 
 
 function applyRaceSubstitution(turningPointData) {
@@ -330,31 +426,27 @@ function applyInvestmentEffect(turningPointData) {
             const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');
             let newLevel = 4;
             if (current) {
-                //get last digit
-                const currentLevel = parseInt(current.toString().slice(-1), 10);
-                if (!Number.isFinite(currentLevel)) continue;
-                const safeLevel = Math.min(5, Math.max(0, currentLevel));
-                if (safeLevel >= 4) {
-                    newLevel = 5;
-                }
-                const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString(), 10);
-                if (!Number.isFinite(newBuildingId)) continue;
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
-            }
+                 //get last digit
+                 const currentLevel = parseInt(current.toString().slice(-1), 10);
+                 const safeLevel = Math.min(5, Math.max(0, currentLevel));
+                 if (safeLevel >= 4) {
+                     newLevel = 5;
+                 }
+                 const newBuildingId = parseInt(current.toString().slice(0, -1) + newLevel.toString(), 10);
+                 queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
+             }
 
         }
         else {//set to at least level 4
             const current = queryDB(`SELECT BuildingID FROM Buildings_HQ WHERE TeamID = ? AND BuildingType = ?`, [teamId, buildingId], 'singleValue');    
-            if (current) {
-                const currentStr = current.toString();
-                const currentLevel = parseInt(currentStr.slice(-1), 10);
-                if (!Number.isFinite(currentLevel)) continue;
-                const safeLevel = Math.min(5, Math.max(0, currentLevel));
-                const newLevel = safeLevel >= 5 ? 5 : 4;
-                const newBuildingId = parseInt(currentStr.slice(0, -1) + newLevel.toString(), 10);
-                if (!Number.isFinite(newBuildingId)) continue;
-                queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
-            }
+             if (current) {
+                 const currentStr = current.toString();
+                 const currentLevel = parseInt(currentStr.slice(-1), 10);
+                 const safeLevel = Math.min(5, Math.max(0, currentLevel));
+                 const newLevel = safeLevel >= 5 ? 5 : 4;
+                 const newBuildingId = parseInt(currentStr.slice(0, -1) + newLevel.toString(), 10);
+                 queryDB(`UPDATE Buildings_HQ SET BuildingID = ?, DegradationValue = 1 WHERE BuildingType = ? AND TeamID = ?`, [newBuildingId, buildingId, teamId], 'run');
+             }
 
         }
 
@@ -1067,7 +1159,7 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     const changeAreasPool = changeType === "major" ? majorChangeAreas : minorChangeAreas;
     const mainChangeArea = randomPick(changeAreasPool);
 
-    const VAR = changeType === "major" ? 0.15 : 0.05;
+    const VAR = changeType === "major" ? 0.28 : 0.13; // major changes can cause up to ±28% change, minor up to ±15%
 
     const randBetween = (min, max) => min + Math.random() * (max - min);
     const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
@@ -1231,9 +1323,190 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
     return newsList;
 }
 
+function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null, aduoTPsEnabled = false) {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const season = daySeason?.[1];
+    const newsList = [];
+
+    if (!season) {
+        return newsList;
+    }
+
+    const nRacesThisSeasonRaw = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [season], 'singleValue');
+    const nRacesDoneRaw = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`, [season], 'singleValue');
+
+    const totalRaces = Number(nRacesThisSeasonRaw) || 0;
+    const racesDone = Number(nRacesDoneRaw) || 0;
+
+    if (totalRaces <= 0) {
+        return newsList;
+    }
+
+    turningPointState.aduoTurningPoints = turningPointState.aduoTurningPoints || {};
+
+    // Turning points are unlocked after each quarter of the season (25%, 50%, 75%),
+    // excluding the final quarter (100%).
+    const quarterThresholds = [
+        { quarter: 1, minRacesDone: Math.ceil(totalRaces * 0.25), string: "1st" },
+        { quarter: 2, minRacesDone: Math.ceil(totalRaces * 0.50), string: "2nd" },
+        { quarter: 3, minRacesDone: Math.ceil(totalRaces * 0.75), string: "3rd" }
+    ];
+
+    let enginesData = null;
+
+
+    for (const { quarter, minRacesDone, string } of quarterThresholds) {
+        if (racesDone < minRacesDone) continue;
+
+        const entryId = `turning_point_aduo_q${quarter}_${season}`;
+
+        //get the month from that race
+        const raceInfo = queryDB(`SELECT Day FROM Races WHERE SeasonID = ? AND State = 2 ORDER BY Day ASC LIMIT ?, 1`, [season, minRacesDone - 1], 'singleRow');
+        const raceDay = raceInfo ? Number(raceInfo[0]) : null;
+        const raceDate = raceDay ? excelToDate(raceDay) : null;
+        const raceMonth = raceDate ? raceDate.getMonth() : null;
+
+        // Already saved in DB -> just surface it again.
+        if (savednews[entryId]) {
+            newsList.push({ id: entryId, ...savednews[entryId] });
+            continue;
+        }
+
+        // Already generated this session (but not persisted yet) -> surface it again.
+        if (turningPointState.aduoTurningPoints[entryId]) {
+            newsList.push({ id: entryId, ...turningPointState.aduoTurningPoints[entryId] });
+            continue;
+        }
+
+        if (!aduoTPsEnabled) {
+            continue;
+        }
+
+        if (!enginesData) {
+            const engines = fetchEngines();
+            enginesData = engines?.[0] || [];
+        }
+
+        const getEngineStat10 = engineRow => {
+            const stats = engineRow?.[1] || {};
+            const raw = stats[10] !== undefined ? stats[10] : stats["10"];
+            if (raw === undefined || raw === null) return null;
+            return Number(raw);
+        };
+
+        let bestEngine = null;
+        let bestStat10 = -Infinity;
+        for (const engineRow of enginesData) {
+            const stat10 = getEngineStat10(engineRow);
+            if (stat10 === null) continue;
+            if (stat10 > bestStat10) {
+                bestStat10 = stat10;
+                bestEngine = engineRow;
+            }
+        }
+
+        const threshold = bestStat10 * 0.92; // >8% underperformance to be affected
+        const underperformers = enginesData.filter(engineRow => {
+            const stat10 = getEngineStat10(engineRow);
+            return stat10 !== null && stat10 < threshold;
+        });
+
+        const randomImprovementPct = () => {
+            const r = Math.random();
+            if (r < 0.05) {
+                // Rare regression: -5% to 0%
+                return Math.round(((-5 + (Math.random() * 5)) * 100)) / 100;
+            }
+            if (r < 0.87) {
+                // Usual case: 1% to 7%
+                return Math.round(((1 + (Math.random() * 6)) * 100)) / 100;
+            }
+            // Very rare breakout: 7% to 18%
+            return Math.round(((7 + (Math.random() * 9)) * 100)) / 100;
+        };
+
+        const getUpgradeTuningForEngine = (stat10) => {
+            const best = Number(bestStat10);
+            const current = Number(stat10);
+            if (!Number.isFinite(best) || best <= 0 || !Number.isFinite(current)) {
+                return { minBonusPct: 0, multiplier: 1 };
+            }
+            const behindPct = ((best - current) / best) * 100;
+            if (behindPct > 35) {
+                return { minBonusPct: 5, multiplier: 1.5 };
+            }
+            if (behindPct >= 20) {
+                return { minBonusPct: 0, multiplier: 1.25 };
+            }
+            return { minBonusPct: 0, multiplier: 1 };
+        };
+
+        const engineImprovements = underperformers.map(engineRow => {
+            const engineId = engineRow[0];
+            const name = engineRow[2];
+            const stats = engineRow[1] || {};
+            const improvements = {};
+            const tuning = getUpgradeTuningForEngine(getEngineStat10(engineRow));
+
+            for (const statId of Object.keys(stats)) {
+                let pct = randomImprovementPct();
+                if (tuning.minBonusPct) {
+                    pct += tuning.minBonusPct;
+                }
+                if (tuning.multiplier !== 1) {
+                    pct *= tuning.multiplier;
+                }
+                improvements[statId] = Math.round(pct * 100) / 100;
+            }
+
+            return { engineId, name, improvements };
+        });
+
+        let titleData = {
+            season,
+            quarter,
+            leader: { engineId: bestEngine?.[0], name: bestEngine?.[2], stat10: bestStat10 },
+            thresholdStat10: threshold,
+            engineImprovements
+        };
+
+        let manufacutrersAffectedStriing = "";
+        if (titleData.engineImprovements.length > 0) {
+            manufacutrersAffectedStriing = titleData.engineImprovements.map(e => e.name).join(", ");
+            //the last one should have "and" if there are more than 1
+            if (titleData.engineImprovements.length > 1) {
+                const lastCommaIndex = manufacutrersAffectedStriing.lastIndexOf(", ");
+                manufacutrersAffectedStriing = manufacutrersAffectedStriing.substring(0, lastCommaIndex) + " and" + manufacutrersAffectedStriing.substring(lastCommaIndex + 1);
+            }
+        } else {
+            return newsList; // No underperformers, no turning point
+        }
+
+        titleData.quarterString = string;
+        titleData.manufacturers = manufacutrersAffectedStriing;
+
+        const title = generateTurningPointTitle(titleData, 109, "original");
+        const image = getImagePath(null, "engine", "engine");
+
+        const newsEntry = {
+            id: entryId,
+            title,
+            image,
+            date: dateToExcel(new Date(season, raceMonth, 8 + quarter)), // Mid-month date for the news
+            data: titleData,
+            turning_point_type: "original",
+            type: "turning_point_aduo"
+        };
+
+        newsList.push(newsEntry);
+
+    }
+
+    return newsList;
+}
+
 
 function generateYoungDriversTurningPointNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null) {
-    console.log("TP CONFIG:", tpConfig);
     const FREE_AGENT_MAX_AGE = 19;
     const YOUNG_DRIVER_MAX_PER_SERIES = 3;
     const FREE_AGENT_MAX = 3;
@@ -1632,6 +1905,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     const cap = capsByPart[partId] || 5;               // máximo +/-
     const standingsWeight = 0.25;   // 0 = ignora standings; prueba 0.2–0.3 si quieres mezclar un poco
     const zeroSum = true;          // intenta balance neto ~0 en compresión
+    const spreadCapMultiplier = 1.45; // Higher = more "spread" in spread mode
     let effectOnEachteam = {};
 
     // Normaliza tipos de teamIds por si vienen como strings
@@ -1640,21 +1914,27 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
     // Helper clamp
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-    if (Math.random() < 0.5) {
-        // --- MODO RANDOM PURO (50%) ---
+    const modeRoll = Math.random();
+    const mode = modeRoll < 0.30 ? "random" : modeRoll < 0.40 ? "compact" : "spread"; // 30% / 10% / 60%
+
+    if (mode === "random") {
+        // --- MODO RANDOM PURO (30%) ---
         for (const teamId of ids) {
-            const v = (Math.random() * 2 * cap) - cap; // [-2, 2]
+            const v = (Math.random() * 2 * cap) - cap; // [-cap, cap]
             effectOnEachteam[teamId] = {
                 performanceGainLoss: v.toFixed(2),
                 teamName: combined_dict[teamId] || "Unknown Team"
             };
         }
     } else {
-        // console.log("MODO COMPRESION");
-        // --- MODO COMPRESIÓN (50%) basado en rendimiento (+ opcional standings) ---
+        const isSpread = mode === "spread";
+        const direction = isSpread ? 1 : -1; // compact: better teams lose, spread: better teams gain
+        const effectiveCap = isSpread ? (cap * spreadCapMultiplier) : cap;
+
+        // --- MODO COMPACT (10%) / SPREAD (60%) basado en rendimiento (+ opcional standings) ---
         const vals = ids
             .map(id => performance[id])
-            .filter(v => typeof v === "number" && Number.isFinite(v));
+            .filter(v => typeof v === "number");
         const mean = vals.length ? (vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
 
         let maxAbsDev = 1e-9; // evita div/0
@@ -1671,14 +1951,14 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
             const score = performance[teamId] ?? mean;
             const norm = (score - mean) / maxAbsDev; // [-1, 1]
 
-            // efecto “compresión” por rendimiento
-            let eff = -norm * cap;
+            // efecto por rendimiento (compact/spread)
+            let eff = direction * norm * effectiveCap;
 
-            // mezcla ligera con standings (mejores => leve castigo, peores => ayuda)
+            // mezcla ligera con standings (compact/spread)
             if (standingsWeight > 0) {
                 const pts = constructorsStandings[teamId]?.points ?? 0;
                 const ptsNorm = (pts / maxPts);                // 0..1
-                const standingsEff = -(ptsNorm - 0.5) * cap;   // centra en 0.5
+                const standingsEff = direction * (ptsNorm - 0.5) * effectiveCap;   // centra en 0.5
                 eff = (1 - standingsWeight) * eff + standingsWeight * standingsEff;
             }
 
@@ -1698,7 +1978,7 @@ function generateTechnicalDirectiveTurningPointNews(currentMonth, savednews = {}
         // clamp + salida
         for (const { teamId, eff } of adjusted) {
             effectOnEachteam[teamId] = {
-                performanceGainLoss: clamp(eff, -cap, cap).toFixed(2),
+                performanceGainLoss: clamp(eff, -effectiveCap, effectiveCap).toFixed(2),
                 teamName: combined_dict[teamId] || "Unknown Team",
                 teamId: teamId
             };
@@ -3623,6 +3903,127 @@ export function generateBigConfirmedTransferNews(savedNews = {}, currentMonth) {
     return newsList;
 }
 
+function buildGridLineupsData(season) {
+    const globals = getGlobals();
+    const teamIds = globals.isCreateATeam
+        ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32]
+        : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const currentTeamFilterSql = globals.isCreateATeam
+        ? `(TeamID BETWEEN 1 AND 10 OR TeamID = 32)`
+        : `(TeamID BETWEEN 1 AND 10)`;
+    const currentContractsRows = queryDB(
+        `SELECT StaffID, TeamID
+            FROM Staff_Contracts
+            WHERE ContractType = 0
+              AND PosInTeam <= 2
+              AND EndSeason >= ?
+              AND ${currentTeamFilterSql}`,
+        [season],
+        'allRows'
+    ) || [];
+    const currentTeamByDriver = new Map();
+    currentContractsRows.forEach((row) => {
+        const driverId = Number(row[0]);
+        const teamId = Number(row[1]);
+        if (!Number.isNaN(driverId) && !Number.isNaN(teamId)) {
+            currentTeamByDriver.set(driverId, teamId);
+        }
+    });
+
+    const teamsDict = {};
+
+    teamIds.forEach(teamId => {
+        const teamName = combined_dict[teamId] || "Unknown Team";
+        const teamInfo = {
+            name: teamName,
+            teamId,
+            driversNextSeason: [],
+            driversThisSeason: []
+        };
+
+        const driversThisSeason = queryDB(
+            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType, con.PosInTeam, num.Number
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                  ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                    ON bas.StaffID = con.StaffID
+                LEFT JOIN Staff_DriverNumbers num
+                    ON num.CurrentHolder = bas.StaffID
+                WHERE con.TeamID = ?
+                  AND con.PosInTeam <= 2
+                  AND con.ContractType = 0
+                  AND con.EndSeason >= ?
+                ORDER BY con.PosInTeam, con.ContractType, dri.StaffID`, [teamId, season],
+            'allRows'
+        ) || [];
+
+        const driversNextSeason = queryDB(
+            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType, con.PosInTeam, num.Number
+                FROM Staff_BasicData bas
+                JOIN Staff_DriverData dri
+                  ON bas.StaffID = dri.StaffID
+                JOIN Staff_Contracts con
+                    ON bas.StaffID = con.StaffID
+                LEFT JOIN Staff_DriverNumbers num
+                    ON num.CurrentHolder = bas.StaffID
+                WHERE con.TeamID = ?
+                  AND con.PosInTeam <= 2
+                  AND con.ContractType IN (0,3)
+                  AND con.EndSeason > ?
+                ORDER BY con.PosInTeam, con.ContractType, dri.StaffID`, [teamId, season],
+            'allRows'
+        ) || [];
+
+        const seenThisSeason = new Set();
+        driversThisSeason.forEach(d => {
+            const name = formatNamesSimple(d);
+            const driverId = Number(name[1]);
+            if (seenThisSeason.has(driverId)) return;
+            seenThisSeason.add(driverId);
+            const driverNumber = Number(d[6]);
+            teamInfo.driversThisSeason.push({
+                name: news_insert_space(name[0]),
+                driverId,
+                posInTeam: Number(d[5]) || null,
+                contractType: Number(d[4]) || 0,
+                driverNumber: !Number.isNaN(driverNumber) && driverNumber > 0 ? driverNumber : null
+            });
+        });
+
+        const seenNextSeason = new Set();
+        driversNextSeason.forEach(d => {
+            const name = formatNamesSimple(d);
+            const contractType = Number(d[4]) || 0;
+            const driverId = Number(name[1]);
+            if (seenNextSeason.has(driverId)) return;
+            seenNextSeason.add(driverId);
+            const driverNumber = Number(d[6]);
+            const currentTeamId = Number(currentTeamByDriver.get(driverId));
+            const isTeamChangeForNextSeason = contractType === 3 && currentTeamId !== teamId;
+            teamInfo.driversNextSeason.push({
+                name: news_insert_space(name[0]),
+                driverId,
+                posInTeam: Number(d[5]) || null,
+                contractType,
+                driverNumber: !Number.isNaN(driverNumber) && driverNumber > 0 ? driverNumber : null,
+                isForNextSeason: isTeamChangeForNextSeason
+            });
+        });
+
+        teamsDict[teamId] = teamInfo;
+    });
+
+    return { teamIds, teamsDict };
+}
+
+export function getCurrentAndNextSeasonGridLineups() {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const season = daySeason[1];
+    const { teamIds, teamsDict } = buildGridLineupsData(season);
+    return { season, teamIds, teams: teamsDict };
+}
+
 function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
     const season = daySeason[1];
@@ -3645,66 +4046,7 @@ function generateNextSeasonGridNews(savedNews = {}, currentMonth) {
         return [{ id: entryId, ...savedNews[entryId] }];
     }
 
-    const globals = getGlobals();
-    let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    if (globals.isCreateATeam) {
-        teamIds.push(32);
-    }
-    let teamsDict = {};
-    teamIds.forEach(teamId => {
-        const teamName = combined_dict[teamId] || "Unknown Team";
-        let teamInfo = {
-            "name": teamName,
-            "teamId": teamId,
-            "driversNextSeason": [],
-            "driversThisSeason": []
-        }
-        const driversThisSeason = queryDB(
-            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
-                FROM Staff_BasicData bas
-                JOIN Staff_DriverData dri
-                  ON bas.StaffID = dri.StaffID
-                JOIN Staff_Contracts con
-                    ON bas.StaffID = con.StaffID
-                WHERE con.TeamID = ?
-                  AND con.PosInTeam <= 2
-                  AND con.ContractType = 0
-                  AND EndSeason >= ?`, [teamId, season],
-            'allRows'
-        );
-        const driversNextSeason = queryDB(
-            `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
-                FROM Staff_BasicData bas
-                JOIN Staff_DriverData dri
-                  ON bas.StaffID = dri.StaffID
-                JOIN Staff_Contracts con
-                    ON bas.StaffID = con.StaffID
-                WHERE con.TeamID = ?
-                  AND con.PosInTeam <= 2
-                  AND con.ContractType IN (0,3)
-                  AND EndSeason > ?`, [teamId, season],
-            'allRows'
-        );
-        driversNextSeason.forEach(d => {
-            const name = formatNamesSimple(d);
-            const contractType = d[4];
-            let driverInfo = {
-                "name": news_insert_space(name[0]),
-                "driverId": name[1],
-                "isForNextSeason": contractType === 3
-            }
-            teamInfo.driversNextSeason.push(driverInfo);
-        });
-        driversThisSeason.forEach(d => {
-            const name = formatNamesSimple(d);
-            let driverInfo = {
-                "name": news_insert_space(name[0]),
-                "driverId": name[1]
-            }
-            teamInfo.driversThisSeason.push(driverInfo);
-        });
-        teamsDict[teamId] = teamInfo;
-    });
+    const { teamsDict } = buildGridLineupsData(season);
 
     const title = generateTitle({ season_year: season + 1 }, 19);
     const image = getImagePath(null, null, "grid");
@@ -5162,7 +5504,7 @@ function getImagePath(teamId, code, type) {
         return `./assets/images/news/${code}_pad.webp`;
     }
     else if (type === "engine"){
-        const randomNum = getRandomInt(1, 5);
+        const randomNum = getRandomInt(1, 10);
         return `./assets/images/news/engine_${randomNum}.webp`;
     }
     else if (type === "grid"){
@@ -5537,13 +5879,11 @@ export function checkDoublePointsBug(turningPointState){
             SELECT DriverID, Points FROM Races_Results
             WHERE RaceID = ? AND FinishingPos = 1
         `, [raceId], 'singleRow');
-        console.log("Winner row race " + raceId + ": ", winnerRow);
         
         let winnerRowPrevRace = queryDB(`
             SELECT DriverID, Points FROM Races_Results
             WHERE RaceID = ? AND FinishingPos = 1 AND Season = ?
         `, [raceId - 1, daySeason[1]], 'singleRow');
-        console.log("Winner row previous race " + (raceId - 1) + ": ", winnerRowPrevRace);
         //if it doesnt existe then take the next race
         if (!winnerRowPrevRace) {
             winnerRowPrevRace = queryDB(`
@@ -6055,6 +6395,7 @@ export function ensureTurningPointsStructure() {
 }
 
 export function getNewsAndTpYearsAvailable() {
+    const minYear = isTimeTravel2026Enabled() ? 2026 : 0;
     const yearsSet = new Set();
     const editorStateRows = queryDB(
         `SELECT key FROM Custom_News_State WHERE key LIKE '%_news' OR key LIKE '%_turning_points'`,
@@ -6065,7 +6406,9 @@ export function getNewsAndTpYearsAvailable() {
         const match = key.match(/^(\d{4})_(news|turning_points)$/);
         if (match) {
             const year = Number(match[1]);
-            yearsSet.add(year);
+            if (year >= minYear) {
+                yearsSet.add(year);
+            }
         }
     }
     const years = Array.from(yearsSet);

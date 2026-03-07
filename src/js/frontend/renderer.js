@@ -4,9 +4,11 @@ import DOMPurify from 'dompurify';
 import { resetTeamEditing, fillLevels, longTermObj, originalCostCap, gather_team_data, gather_pit_crew, teamCod } from './teams';
 import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
-    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables
+    new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
+    populateSeasonReview,
+    onSessionResultsFetched
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels } from './config';
+import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -14,11 +16,11 @@ import {
     initFreeDriversElems
 } from './transfers';
 import { load_calendar } from './calendar';
-import {
-    load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
-    order_by, load_car_attributes, viewingGraph, engine_allocations, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-    teamSelected, gather_engines_data, reload_performance_graph
-} from './performance';
+  import {
+      load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
+      order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, gather_team_expertise_data, performanceDetailsMode
+  } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
@@ -30,43 +32,19 @@ import {
 } from './head2head';
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
-import { loadRecordsList } from './seasonViewer';
-import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
+import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
+import { resetStaffIDChanges, updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
 import members from "../../data/members.json"
+import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacements.js";
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
+import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
 
 
-const names_configs = {
-    "visarb": "VISA CASHAPP RB", "toyota": "TOYOTA", "hugo": "HUGO BOSS", "alphatauri": "ALPHA TAURI", "brawn": "BRAWN GP", "porsche": "PORSCHE",
-    "alpine": "ALPINE", "renault": "RENAULT", "andretti": "ANDRETTI", "lotus": "LOTUS", "alfa": "ALFA ROMEO",
-    "audi": "AUDI", "sauber": "SAUBER", "stake": "STAKE SAUBER"
-}
-const pretty_names = {
-    "visarb": "Visa Cashapp RB", "toyota": "Toyota", "hugo": "Hugo Boss", "alphatauri": "Alpha Tauri", "brawn": "Brawn GP", "porsche": "Porsche",
-    "alpine": "Alpine", "renault": "Renault", "andretti": "Andretti", "lotus": "Lotus", "alfa": "Alfa Romeo",
-    "audi": "Audi", "sauber": "Sauber", "stake": "Stake Sauber"
-}
-const abreviations_for_replacements = {
-    "visarb": "VCARB", "toyota": "TOY", "hugo": "HUGO", "alphatauri": "AT", "brawn": "BGP", "porsche": "POR",
-    "alpine": "ALP", "renault": "REN", "andretti": "AND", "lotus": "LOT", "alfa": "ALFA", "audi": "AUDI", "sauber": "SAU", "stake": "STK"
-}
-const logos_configs = {
-    "visarb": "../assets/images/visarb.png", "toyota": "../assets/images/toyota.png", "hugo": "../assets/images/hugoboss.png", "alphatauri": "../assets/images/alphatauri.png",
-    "brawn": "../assets/images/brawn.png", "porsche": "../assets/images/porsche.png",
-    "alpine": "../assets/images/alpine.png", "renault": "../assets/images/renault.png", "andretti": "../assets/images/andretti.png", "lotus": "../assets/images/lotus.png",
-    "alfa": "../assets/images/alfaromeo.png", "audi": "../assets/images/audi.png", "sauber": "../assets/images/sauber.png", "stake": "../assets/images/kick.png"
-}
-const logos_classes_configs = {
-    "visarb": "visarblogo", "toyota": "toyotalogo", "hugo": "hugologo", "alphatauri": "alphataurilogo",
-    "porsche": "porschelogo", "brawn": "brawnlogo",
-    "alpine": "alpinelogo", "renault": "renaultlogo", "andretti": "andrettilogo", "lotus": "lotuslogo",
-    "alfa": "alfalogo", "audi": "audilogo", "sauber": "sauberlogo", "stake": "alfalogo"
-}
 
 const driverTransferPill = document.getElementById("transferpill");       
 const editStatsPill = document.getElementById("statspill");
@@ -91,7 +69,7 @@ const carPerformanceDiv = document.getElementById("car_performance");
 const viewDiv = document.getElementById("season_viewer");
 const h2hDiv = document.getElementById("head2head_viewer");
 const teamsDiv = document.getElementById("edit_teams");
-const mod25Div = document.getElementById("mod_25")
+const seasonModsDiv = document.getElementById("season_mods")
 const newsDiv = document.getElementById("news")
 
 const patchNotesBody = document.getElementById("patchNotesBody")
@@ -102,7 +80,8 @@ const patreonToolLoginButton = document.getElementById('patreonToolLoginButton')
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
 
-const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, mod25Div]
+const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
+initSeasonMods();
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -125,6 +104,7 @@ const updateInfo = document.querySelector(".update-info")
 const turningPointsFrequencyConfig = document.getElementById("turningPointsFrequencyConfig");
 const turningPointsFrequencySlider = document.getElementById("turningPointsFrequencySlider");
 const turningPointsFrequencyLabel = document.getElementById("turningPointsFrequencyLabel");
+const forceEditorMinimapColorsToggle = document.getElementById("forceEditorMinimapColorsToggle");
 
 function updateTurningPointsFrequencyUI() {
     if (!turningPointsFrequencySlider || !turningPointsFrequencyLabel) return;
@@ -142,7 +122,7 @@ function updateTurningPointsFrequencyUI() {
 
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
-const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 const glowSpot = document.querySelector('.glow-spot');
 const blockDiv = document.getElementById('blockDiv');
 
@@ -172,6 +152,8 @@ let difcultyCustom = "default"
 export let game_version = 2023;
 export let custom_team = false;
 export let nightlyBlock = false;
+export let seasonModData = {};
+let latestSaveYear = null;
 let firstShow = false;
 let configCopy;
 
@@ -182,10 +164,11 @@ let divBlocking = 1;
 let saveName;
 let tempImageData = null;
 let lastVisibleIndex = 0;
-
-let calendarEditMode = "Start2024"
+let viewerLoaded = false;
 
 export let selectedTheme = "default-theme";
+let isNightlyHost = false;
+let hasPatreonThemeAccess = false;
 
 let newsAvailable = {
     "normal": false,
@@ -382,12 +365,16 @@ export async function getUserTier() {
         const data = await response.json();
 
         // The structure matches what api/me.js returns
-        return {
-            paidMember: data.paidMember, // true/false
-            tier: data.tier, // "Backer", "Insider", "Free", etc
+        //set a window variable with the user data to be used in other places of the frontend without needing to call the api again
+        let windowData = {
+            paidMember: data.paidMember,
+            tier: data.tier,
+            tierNumber: data.tierNumber,
             isLoggedIn: data.isLoggedIn,
-            user: { fullName: data.user?.fullName || '' }
         };
+        window.__USER_DATA__ = windowData;
+        windowData.user = { fullName: data.user?.fullName || '' };
+        return windowData;
     } catch (error) {
         console.error("Failed to check auth status", error);
         return { paidMember: false, tier: 'Free', isLoggedIn: false };
@@ -459,6 +446,7 @@ function maybeReloadForNightlyAccess(tierInfo) {
 }
 
 function updatePatreonUI(tier) {
+    hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
 
     if (tier.paidMember) {
@@ -471,7 +459,13 @@ function updatePatreonUI(tier) {
         patreonUnlockables.classList.add("d-none");
         patreonThemes.classList.add("d-none");
         document.getElementById("patreonStatusText").textContent = tier.isLoggedIn ? tier.tier : "Not logged in"
+        selectedTheme = "default-theme";
+        document.querySelector("body").className = "font default-theme";
+        init_colors_dict(selectedTheme);
+        updateToolbarThemeLogo();
+        syncNightlyIndicator();
     }
+    syncNightlyThemeVisibility();
 
     if (tier.isLoggedIn) {
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
@@ -665,6 +659,16 @@ function teamsModeHandler() {
 function performanceModeHandler() {
     let data;
     if (teamsEngine === "teams") {
+        if (performanceDetailsMode === "expertise") {
+            data = {
+                teamID: teamSelected,
+                expertise: gather_team_expertise_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editExpertise", data);
+            command.execute();
+            return;
+        }
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
@@ -702,13 +706,24 @@ function performanceModeHandler() {
         command.execute();
     }
     else if (teamsEngine === "engines") {
-        let engineData = gather_engines_data()
-        data = {
-            engines: engineData,
+        const engineData = gather_engines_data()
+        const officialEngines = {}
+        for (let engineId in engineData) {
+            if (Number(engineId) <= 10) {
+                officialEngines[engineId] = engineData[engineId]
+            }
         }
 
-        const command = new Command("editEngine", data);
-        command.execute();
+        if (Object.keys(officialEngines).length) {
+            const command = new Command("editEngine", { engines: officialEngines })
+            command.execute()
+        }
+
+        const customEnginesData = gather_custom_engines_data()
+        if (Object.keys(customEnginesData).length) {
+            const command = new Command("customEngines", { enginesData: customEnginesData })
+            command.execute()
+        }
     }
 
 }
@@ -724,13 +739,19 @@ export function first_show_animation() {
     }
 }
 
-export function manageSaveButton(show, mode) {
+let saveButtonCustomHandler = null;
+
+export function manageSaveButton(show, mode, customHandler) {
     let button = document.querySelector(".save-button")
     button.removeEventListener("click", editModeHandler);
     button.removeEventListener("click", calendarModeHandler);
     button.removeEventListener("click", regulationsModeHandler);
     button.removeEventListener("click", teamsModeHandler);
     button.removeEventListener("click", performanceModeHandler);
+    if (saveButtonCustomHandler) {
+        button.removeEventListener("click", saveButtonCustomHandler);
+        saveButtonCustomHandler = null;
+    }
 
     if (!show) {
         button.classList.add("d-none")
@@ -753,6 +774,10 @@ export function manageSaveButton(show, mode) {
     }
     else if (mode === "performance") {
         button.addEventListener("click", performanceModeHandler);
+    }
+    else if (mode === "custom" && typeof customHandler === "function") {
+        saveButtonCustomHandler = customHandler;
+        button.addEventListener("click", saveButtonCustomHandler);
     }
 }
 
@@ -840,9 +865,9 @@ function orderTeamTemplatesByStandings(standingsRows) {
             if (!Array.isArray(row) || row.length < 2) return;
             const teamId = Number(row[0]);
             const position = Number(row[1]);
-            if (!Number.isFinite(teamId) || !Number.isFinite(position) || position <= 0) return;
+            if (position <= 0) return;
             const prev = positionByTeamId.get(teamId);
-            if (!Number.isFinite(prev) || position < prev) {
+            if (prev === undefined || position < prev) {
                 positionByTeamId.set(teamId, position);
             }
         });
@@ -851,17 +876,14 @@ function orderTeamTemplatesByStandings(standingsRows) {
     const decorated = templates.map((el, index) => {
         const staffSection = el.querySelector(".staff-section[data-teamid]");
         const teamId = staffSection ? Number(staffSection.dataset.teamid) : NaN;
-        const position = Number.isFinite(teamId) ? positionByTeamId.get(teamId) : undefined;
+        const position = positionByTeamId.get(teamId);
         return { el, index, teamId, position };
     });
 
     decorated.sort((a, b) => {
-        const aHas = Number.isFinite(a.position);
-        const bHas = Number.isFinite(b.position);
-        if (aHas && bHas) return a.position - b.position;
-        if (aHas) return -1;
-        if (bHas) return 1;
-        return a.index - b.index;
+        const aPos = a.position ?? 999;
+        const bPos = b.position ?? 999;
+        return aPos - bPos || a.index - b.index;
     });
 
     const frag = document.createDocumentFragment();
@@ -876,6 +898,7 @@ const messageHandlers = {
     },
     "Save loaded succesfully": (message) => {
         isSaveSelected = 1;
+        viewerLoaded = false;
         remove_drivers();
         removeStatsDrivers();
         listenersStaffGroups();
@@ -919,6 +942,7 @@ const messageHandlers = {
         loadJuniorTeamDrivers(message);
     },
     "Year fetched": (message) => {
+        latestSaveYear = Number(message);
         generateYearsMenu(message);
     },
     "Previous year teams standings fetched": (message) => {
@@ -987,12 +1011,18 @@ const messageHandlers = {
         load_parts_stats(message[0])
         load_parts_list(message[1])
         update_max_design(message[2])
+        if (message[3]) {
+            load_team_expertise(message[3])
+        }
     },
     "Game Year": (message) => {
         manage_game_year(message)
     },
     "Part values fetched": (message) => {
         load_one_part(message)
+    },
+    "Team expertise fetched": (message) => {
+        load_team_expertise(message)
     },
     "Cars fetched": (message) => {
         load_cars(message[0])
@@ -1003,10 +1033,22 @@ const messageHandlers = {
         load_custom_engines(message.slice(1))
     },
     "Mod data fetched": (message) => {
-        updateEditsWithModData(message)
+      seasonModData = message || {};
+      updateEditsWithModData(message)
+      syncAduoTpToggles(message?.aduo_tp_enabled);
+      syncMods2025Dependencies();
+      syncMods2026Dependencies();
+      syncMods2026ApplyAllButtonState();
+      if (latestSaveYear) {
+        generateYearsMenu(latestSaveYear);
+      }
     },
     "Mod compatibility": (message) => {
-        updateModBlocking(message)
+        updateMod2025Blocking(message)
+    },
+    "Mod 2026 compatibility": (message) => {
+        updateMod2026Blocking(message)
+        resetStaffIDChanges();
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
@@ -1023,8 +1065,17 @@ const messageHandlers = {
     "Record fetched": (message) => {
         loadRecordsList(message)
     },
+    "Team record fetched": (message) => {
+        loadTeamRecordsList(message)
+    },
     "Double points bug fixed": (message) => {
         //TODO CLICK ON THE FIRST EYAR OF yearMenu
+    },
+    "Season review data fetched": (message) => {
+        populateSeasonReview(message)
+    },
+    "Session results fetched": (message) => {
+        onSessionResultsFetched(message);
     }
 };
 
@@ -1159,8 +1210,7 @@ if (glowSpot && blockDiv) {
 
 export async function generateNews() {
     const patreonTier = await getUserTier();
-    const canGenerate = checkGenerableNews(patreonTier);
-    if (canGenerate === "no") return;
+    checkGenerableNews(patreonTier);
 
     // lanzar sin payload, el worker lee de DB
     new Command("generateNews", {}).execute();
@@ -1220,6 +1270,7 @@ function update_engine_allocations(message) {
         engine_map[team[0]] = team[1]
     })
     setEngineAllocations(engine_map)
+    window.__ENGINE_ALLOCATIONS__ = engine_map
 
     for (let key in engine_names) {
         if (key > 10) {
@@ -1228,11 +1279,14 @@ function update_engine_allocations(message) {
     }
 
     message[0].forEach(function (engine) {
-        if (engine[0] > 10) {
-            addEngineName(engine[0], engine[2])
+        const engineId = Number(engine?.[0]);
+        if (engineId > 10 || engineId === 10) {
+            addEngineName(engineId, engine[2])
         }
     })
+    window.__ENGINE_NAMES__ = { ...engine_names }
 
+    reloadTables()
 }
 
 
@@ -1327,6 +1381,8 @@ function manage_custom_team(nameColor) {
         const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
         command.execute();
 
+        document.querySelector(".lineup-team--cadillac").classList.remove("d-none")
+
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -1346,6 +1402,7 @@ function manage_custom_team(nameColor) {
     else {
         resizeWindowToHeight("10teams")
         custom_team = false
+        document.querySelector(".lineup-team--cadillac").classList.add("d-none")
         document.getElementById("customTeamTransfers").classList.add("d-none")
         document.getElementById("customTeamPerformance").classList.add("d-none")
         document.getElementById("customTeamDropdown").classList.add("d-none")
@@ -1396,7 +1453,7 @@ fileInput.addEventListener('change', (event) => {
     reader.readAsDataURL(file);
 });
 
-function replace_custom_team_logo(path) {
+export function replace_custom_team_logo(path) {
     //if not image selected, return
     if (!path) {
         return;
@@ -1416,16 +1473,6 @@ function replace_custom_team_logo(path) {
 
 
 
-
-function ajustScrollWrapper() {
-    var windowHeight = window.innerHeight - 80;
-    document.querySelector('.scroll-wrapper').style.height = windowHeight + 'px';
-}
-
-window.addEventListener('resize', ajustScrollWrapper);
-window.addEventListener('load', ajustScrollWrapper);
-
-
 document.querySelector(".gear-container").addEventListener("click", function () {
     let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
         keyboard: false
@@ -1441,16 +1488,40 @@ function manage_config(info, year_config = false) {
 
 function replace_all_teams(info) {
     let teams = info["teams"]
-    alphaTauriReplace(teams["alphatauri"])
-    alpineReplace(teams["alpine"])
-    alfaReplace(teams["alfa"])
-    update_logo("alpine", logos_configs[teams["alpine"]], teams["alpine"])
-    update_logo("alfa", logos_configs[teams["alfa"]], teams["alfa"])
-    update_logo("alphatauri", logos_configs[teams["alphatauri"]], teams["alphatauri"])
+    const alphatauri = teams["alphatauri"]
+    const alpine = teams["alpine"]
+    const alfa = teams["alfa"]
+    const redbull = teams["redbull"] || "redbull"
+    const aston = teams["aston"] || "aston"
+    const williams = teams["williams"] || "williams"
+    const haas = teams["haas"] || "haas"
 
+    alphaTauriReplace(alphatauri)
+    alpineReplace(alpine)
+    williamsReplace(williams)
+    haasReplace(haas)
+    alfaReplace(alfa)
+    redbullReplace(redbull)
+    astonReplace(aston)
+    update_logo("alpine", logos_configs[alpine], alpine)
+    update_logo("williams", logos_configs[williams], williams)
+    update_logo("haas", logos_configs[haas], haas)
+    update_logo("alfa", logos_configs[alfa], alfa)
+    update_logo("alphatauri", logos_configs[alphatauri], alphatauri)
+    update_logo("redbull", logos_configs[redbull], redbull)
+    update_logo("aston", logos_configs[aston], aston)
+
+    // Notify other screens (e.g. transfers lineups circle) that team names/logos changed.
+    document.dispatchEvent(new CustomEvent("teamsReplaced", { detail: { teams } }));
 }
 
 function manage_config_content(info, year_config = false) {
+    if (info["renaultEngine"] === "honda") {
+        setRenaultEnginePresentation("honda");
+    }
+    else {
+        setRenaultEnginePresentation("renault");
+    }
     replace_all_teams(info)
     if (!year_config) {
         let image = localStorage.getItem(`${saveName}_image`);
@@ -1472,11 +1543,21 @@ function manage_config_content(info, year_config = false) {
         else {
             document.getElementById("refurbishingToggle").checked = false
         }
+        if (info["freezeDevelopment"] === 1) {
+            document.getElementById("freezeDevelopmentToggle").checked = true
+        }
+        else {
+            document.getElementById("freezeDevelopmentToggle").checked = false
+        }
 
         document.querySelector(`.team-logo-container[data-teamid="${info["playerTeam"]}"]`).classList.add("active")
         update_difficulty_info(info["triggerList"])
         update_mentality_span(info["frozenMentality"])
         update_refurbish_span(info["refurbish"])
+        update_development_span(info["freezeDevelopment"])
+        if (forceEditorMinimapColorsToggle) {
+            forceEditorMinimapColorsToggle.checked = parseInt(info["forceEditorMinimapColors"] || 0, 10) === 1;
+        }
 
         if (turningPointsFrequencySlider) {
             let presetIndex = info?.turningPointsFrequencyPreset;
@@ -1486,6 +1567,59 @@ function manage_config_content(info, year_config = false) {
             turningPointsFrequencySlider.value = String(presetIndex);
             updateTurningPointsFrequencyUI();
         }
+    }
+}
+
+export function setRenaultEnginePresentation(engineMode) {
+    const engineMenuItem = document.querySelector(".renault-engine-menu-item");
+    const engineTitleText = document.querySelector(".renault-engine-title-text");
+    const renaultLogo = document.querySelector(".renault-engine-logo");
+
+    if (engineMode === "honda") {
+        if (engineMenuItem) {
+            engineMenuItem.textContent = "Honda";
+        }
+        if (engineTitleText) {
+            engineTitleText.textContent = "HONDA";
+        }
+        if (renaultLogo) {
+            renaultLogo.src = "../assets/images/logos/honda.png";
+            renaultLogo.alt = "Honda logo";
+        }
+    }
+    else {
+        if (engineMenuItem) {
+            engineMenuItem.textContent = "Renault";
+        }
+        if (engineTitleText) {
+            engineTitleText.textContent = "RENAULT";
+        }
+        if (renaultLogo) {
+            renaultLogo.src = "../assets/images/logos/renault.png";
+            renaultLogo.alt = "Renault logo";
+        }
+    }
+
+    const renaultEngineTitle = document.querySelector(".renault-engine-title");
+    if (renaultEngineTitle) {
+        renaultEngineTitle.classList.remove("engine-re", "engine-ho");
+        renaultEngineTitle.classList.add(engineMode === "honda" ? "engine-ho" : "engine-re");
+    }
+
+    if (renaultLogo) {
+        renaultLogo.style.display = "inline-block";
+    }
+
+}
+
+export function updateJenzerToDams(mode = "dams") {
+    if (mode === "dams") {
+        logos_disc[30] = '../assets/images/logos/dams.png'
+        combined_dict[30] = "DAMS (F3)"
+    }
+    else if (mode === "jenzer") {
+        logos_disc[30] = '../assets/images/logos/jenzer.png'
+        combined_dict[30] = "Jenzer Motorsport (F3)"
     }
 }
 
@@ -1530,300 +1664,18 @@ function update_difficulty_info(triggerList) {
 }
 
 
-function alphaTauriReplace(info) {
-    document.querySelector("#alphaTauriReplaceButton").querySelector("button span").textContent = names_configs[info]
-    document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value = info
-    combined_dict[8] = pretty_names[info]
-    abreviations_dict[8] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", { teamID: 8, newName: pretty_names[info] });
-    command.execute();
-    document.querySelectorAll(".at-teamname").forEach(function (elem) {
-        elem.dataset.teamshow = pretty_names[info]
-    })
-    document.querySelectorAll(".at-name").forEach(function (elem) {
-        //if it has the class complete, put names_configs[info], else out VCARB
-        let name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : names_configs[info];
-        if (elem.parentElement.classList.contains("car-title")) {
-            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            if (match) {
-                name = (info === "visarb" && !elem.classList.contains("complete")) ? "VCARB" : pretty_names[info];
-                elem.textContent = `${name} ${match[2]}`;
-            }
-        }
-        else{
-            elem.textContent = name
-        }
-        
-    })
-    if (info !== "alphatauri") {
-        document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                let newElem;
-                if (info === "porsche" || info === "toyota") {
-                    newElem = document.createElement("img");
-                    newElem.src = logos_configs[info];
-                } else {
-                    newElem = document.createElement("div");
-                }
-                newElem.className = elem.className;
-                newElem.classList.remove("alphataurilogo", "toyotalogo", "hugologo", "porschelogo", "visarblogo", "ferrarilogo", "brawnlogo");
-                newElem.classList.add(logos_classes_configs[info])
-                elem.replaceWith(newElem);
-            }
-            if (elem.classList.contains("secondary")) {
-                if (info !== "toyota") {
-                    elem.src = elem.src.slice(0, -4) + "2.png"
-                }
-            }
-
-        })
-        let alphaVarName = "--alphatauri-primary"
-        let newVarName = "--" + info + "-primary"
-        change_css_variables(alphaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("80", value)
-        alphaVarName = "--alphatauri-secondary"
-        newVarName = "--" + info + "-secondary"
-        change_css_variables(alphaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("81", value)
-        alphaVarName = "--alphatauri-primary-transparent"
-        newVarName = "--" + info + "-primary-transparent"
-        change_css_variables(alphaVarName, newVarName)
-        alphaVarName = "--alphatauri-secondary-transparent"
-        newVarName = "--" + info + "-secondary-transparent"
-        change_css_variables(alphaVarName, newVarName)
-    }
-    else {
-        document.querySelectorAll(".atlogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alphataurilogo")
-                elem.classList.remove("toyotalogo")
-                elem.classList.remove("hugologo")
-                elem.classList.remove("porschelogo")
-                elem.classList.remove("visarblogo")
-                elem.classList.remove("ferrarilogo")
-                elem.classList.remove("brawnlogo")
-                elem.classList.add("alphataurilogo")
-            }
-            if (elem.classList.contains("secondary")) {
-                elem.src = elem.src.slice(0, -4) + "2.png"
-            }
-        })
-        let alphaVarName = "--alphatauri-primary"
-        let newVarName = "--alphatauri-original"
-        change_css_variables(alphaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-original").trim();
-        edit_colors_dict("80", value)
-        alphaVarName = "--alphatauri-secondary"
-        newVarName = "--alphatauri-secondary-original"
-        change_css_variables(alphaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue("--alphatauri-secondary-original").trim();
-        edit_colors_dict("81", value)
-        alphaVarName = "--alphatauri-primary-transparent"
-        newVarName = "--alphatauri-primary-transparent-original"
-        change_css_variables(alphaVarName, newVarName)
-        alphaVarName = "--alphatauri-secondary-transparent"
-        newVarName = "--alphatauri-secondary-transparent-original"
-        change_css_variables(alphaVarName, newVarName)
-    }
-    document.querySelectorAll(".team-menu-alphatauri-replace").forEach(function (elem) {
-        let classes = elem.className.split(" ")
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
-                elem.classList.remove(cl)
-                elem.classList.add("changable-team-menu-" + info)
-            }
-        })
-    })
-}
-
-function alpineReplace(info) {
-    document.querySelector("#alpineReplaceButton").querySelector("button span").textContent = names_configs[info]
-    document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value = info
-    combined_dict[5] = pretty_names[info]
-    abreviations_dict[5] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", { teamID: 5, newName: pretty_names[info] });
-    command.execute();
-    document.querySelectorAll(".al-teamname").forEach(function (elem) {
-        elem.dataset.teamshow = pretty_names[info]
-    })
-    document.querySelectorAll(".alpine-name").forEach(function (elem) {
-        let name = names_configs[info]
-        if (elem.parentElement.classList.contains("car-title")) {
-            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            if (match) {
-                name = pretty_names[info]
-                elem.textContent = `${name} ${match[2]}`;
-            }
-        }
-        else{
-            elem.textContent = name
-        }
-    })
-    if (info !== "alpine") {
-        document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.classList.remove("alpinelogo")
-                elem.classList.remove("andrettilogo")
-                elem.classList.remove("renaultlogo")
-                elem.classList.remove("lotuslogo")
-                elem.classList.add(logos_classes_configs[info])
-            }
-            if (elem.classList.contains("secondary")) {
-                elem.src = elem.src.slice(0, -4) + "2.png"
-            }
-        })
-        let alpineVarName = "--alpine-primary"
-        let newVarName = "--" + info + "-primary"
-        change_css_variables(alpineVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("50", value)
-        alpineVarName = "--alpine-secondary"
-        newVarName = "--" + info + "-secondary"
-        change_css_variables(alpineVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("51", value)
-        alpineVarName = "--alpine-primary-transparent"
-        newVarName = "--" + info + "-primary-transparent"
-        change_css_variables(alpineVarName, newVarName)
-        alpineVarName = "--alpine-secondary-transparent"
-        newVarName = "--" + info + "-secondary-transparent"
-        change_css_variables(alpineVarName, newVarName)
-    }
-    else {
-        document.querySelectorAll(".alpinelogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alpinelogo")
-                elem.classList.remove("andrettilogo")
-                elem.classList.remove("renaultlogo")
-                elem.classList.remove("lotuslogo")
-                elem.classList.add("alpinelogo")
-            }
-            if (elem.classList.contains("secondary")) {
-                elem.src = elem.src.slice(0, -4) + "2.png"
-            }
-        })
-        let alpineVarName = "--alpine-primary"
-        let newVarName = "--alpine-original"
-        change_css_variables(alpineVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-original").trim();
-        edit_colors_dict("50", value)
-        alpineVarName = "--alpine-secondary"
-        newVarName = "--alpine-secondary-original"
-        change_css_variables(alpineVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue("--alpine-secondary-original").trim();
-        edit_colors_dict("51", value)
-        alpineVarName = "--alpine-primary-transparent"
-        newVarName = "--alpine-primary-transparent-original"
-        change_css_variables(alpineVarName, newVarName)
-        alpineVarName = "--alpine-secondary-transparent"
-        newVarName = "--alpine-secondary-transparent-original"
-        change_css_variables(alpineVarName, newVarName)
-    }
-    document.querySelectorAll(".team-menu-alpine-replace").forEach(function (elem) {
-        let classes = elem.className.split(" ")
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
-                elem.classList.remove(cl)
-                elem.classList.add("changable-team-menu-" + info)
-            }
-        })
-    })
-}
-
-function alfaReplace(info) {
-    document.querySelector("#alfaReplaceButton").querySelector("button span").textContent = names_configs[info]
-    document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value = info
-    combined_dict[9] = pretty_names[info]
-    abreviations_dict[9] = abreviations_for_replacements[info]
-    const command = new Command("updateCombinedDict", { teamID: 9, newName: pretty_names[info] });
-    command.execute();
-    document.querySelectorAll(".af-teamname").forEach(function (elem) {
-        elem.dataset.teamshow = pretty_names[info]
-    })
-    document.querySelectorAll(".alfa-name").forEach(function (elem) {
-        let name = names_configs[info]
-        if (elem.parentElement.classList.contains("car-title")) {
-            const match = elem.textContent.match(/^(.*?)\s+(\d+\s*-\s*#\d+)/);
-            if (match) {
-                name = pretty_names[info]
-                elem.textContent = `${name} ${match[2]}`;
-            }  
-        }
-        else{
-            elem.textContent = name
-        }
-    })
-    if (info !== "alfa") {
-        document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.classList.remove("alfaromeologo")
-                elem.classList.remove("audilogo")
-                elem.classList.remove("sauberlogo")
-                elem.classList.add(logos_classes_configs[info])
-            }
-        })
-        let alfaVarName = "--alfa-primary"
-        let newVarName = "--" + info + "-primary"
-        change_css_variables(alfaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("90", value)
-        alfaVarName = "--alfa-secondary"
-        newVarName = "--" + info + "-secondary"
-        change_css_variables(alfaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue(newVarName).trim();
-        edit_colors_dict("91", value)
-        alfaVarName = "--alfa-primary-transparent"
-        newVarName = "--" + info + "-primary-transparent"
-        change_css_variables(alfaVarName, newVarName)
-        alfaVarName = "--alfa-secondary-transparent"
-        newVarName = "--" + info + "-secondary-transparent"
-        change_css_variables(alfaVarName, newVarName)
-    }
-    else {
-        document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
-            if (!elem.classList.contains("non-changable")) {
-                elem.src = logos_configs[info]
-                elem.className = "alfalogo-replace alfalogo"
-            }
-        })
-        let alfaVarName = "--alfa-primary"
-        let newVarName = "--alfa-original"
-        change_css_variables(alfaVarName, newVarName)
-        let value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-original").trim();
-        edit_colors_dict("90", value)
-        alfaVarName = "--alfa-secondary"
-        newVarName = "--alfa-secondary-original"
-        change_css_variables(alfaVarName, newVarName)
-        value = getComputedStyle(document.documentElement).getPropertyValue("--alfa-secondary-original").trim();
-        edit_colors_dict("91", value)
-        alfaVarName = "--alfa-primary-transparent"
-        newVarName = "--alfa-primary-transparent-original"
-        change_css_variables(alfaVarName, newVarName)
-        alfaVarName = "--alfa-secondary-transparent"
-        newVarName = "--alfa-secondary-transparent-original"
-        change_css_variables(alfaVarName, newVarName)
-    }
-    document.querySelectorAll(".team-menu-alfa-replace").forEach(function (elem) {
-        let classes = elem.className.split(" ")
-        classes.forEach(function (cl) {
-            if (cl.includes("changable")) {
-                elem.classList.remove(cl)
-                elem.classList.add("changable-team-menu-" + info)
-            }
-        })
-    })
-}
-
 function change_css_variables(oldVar, newVar) {
     let root = document.documentElement;
     let newVal = getComputedStyle(root).getPropertyValue(newVar).trim();
     root.style.setProperty(oldVar, newVal);
 }
+
+const { alphaTauriReplace, alpineReplace, williamsReplace, haasReplace, alfaReplace, redbullReplace, astonReplace } = createTeamReplacers({
+    combined_dict,
+    abreviations_dict,
+    edit_colors_dict,
+    change_css_variables
+});
 
 function replace_modal_teams(version) {
     if (version === 2024) {
@@ -1852,10 +1704,25 @@ document.querySelectorAll(".team-change-button").forEach(function (elem) {
     })
 })
 
-document.querySelector("#configDetailsButton").addEventListener("click", function () {
+export function applyConfigFromEditorUI(overrides = {}) {
     let alphatauri = document.querySelector("#alphaTauriReplaceButton").querySelector("button").dataset.value
     let alpine = document.querySelector("#alpineReplaceButton").querySelector("button").dataset.value
+    let williams = document.querySelector("#williamsReplaceButton").querySelector("button").dataset.value
+    let haas = document.querySelector("#haasReplaceButton").querySelector("button").dataset.value
     let alfa = document.querySelector("#alfaReplaceButton").querySelector("button").dataset.value
+    let redbull = document.querySelector("#redbullReplaceButton").querySelector("button").dataset.value
+    let aston = document.querySelector("#astonReplaceButton").querySelector("button").dataset.value
+
+    if (overrides && typeof overrides === "object") {
+        if (typeof overrides.alphatauri === "string") alphatauri = overrides.alphatauri;
+        if (typeof overrides.alpine === "string") alpine = overrides.alpine;
+        if (typeof overrides.williams === "string") williams = overrides.williams;
+        if (typeof overrides.haas === "string") haas = overrides.haas;
+        if (typeof overrides.alfa === "string") alfa = overrides.alfa;
+        if (typeof overrides.redbull === "string") redbull = overrides.redbull;
+        if (typeof overrides.aston === "string") aston = overrides.aston;
+    }
+
     let mentalityFrozen = 0;
     if (document.getElementById("freezeMentalityToggle").checked) {
         mentalityFrozen = 1;
@@ -1863,6 +1730,14 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let refurbish = 0;
     if (document.getElementById("refurbishingToggle").checked) {
         refurbish = 1;
+    }
+    let freezeDevelopment = 0;
+    if (document.getElementById("freezeDevelopmentToggle").checked) {
+        freezeDevelopment = 1;
+    }
+    let forceEditorMinimapColors = 0;
+    if (forceEditorMinimapColorsToggle && forceEditorMinimapColorsToggle.checked) {
+        forceEditorMinimapColors = 1;
     }
     let difficulty = 0;
     let disabledList = {}
@@ -1875,9 +1750,15 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     let data = {
         alphatauri: alphatauri,
         alpine: alpine,
+        williams: williams,
+        haas: haas,
         alfa: alfa,
+        redbull: redbull,
+        aston: aston,
         frozenMentality: mentalityFrozen,
         refurbish: refurbish,
+        freezeDevelopment: freezeDevelopment,
+        forceEditorMinimapColors: forceEditorMinimapColors,
         disabled: disabledList,
         triggerList: triggerList,
         playerTeam: playerTeam
@@ -1898,17 +1779,48 @@ document.querySelector("#configDetailsButton").addEventListener("click", functio
     if (isSaveSelected === 1) {
         const command = new Command("configUpdate", data);
         command.execute();
-        let info = { teams: { alphatauri: alphatauri, alpine: alpine, alfa: alfa } }
+        let info = { teams: { alphatauri: alphatauri, alpine: alpine, williams: williams, haas: haas, alfa: alfa, redbull: redbull, aston: aston } }
         replace_all_teams(info)
         reloadTables()
+        reload_performance_graph()
+        reload_h2h_graphs()
         if (tempImageData) {
             localStorage.setItem(`${saveName}_image`, tempImageData);
         }
 
         replace_custom_team_logo(document.querySelector(".logo-preview").src)
+
+        if (!configCopy || typeof configCopy !== "object") {
+            configCopy = {};
+        }
+        if (!configCopy.teams || typeof configCopy.teams !== "object") {
+            configCopy.teams = {};
+        }
+        configCopy.teams.alphatauri = alphatauri;
+        configCopy.teams.alpine = alpine;
+        configCopy.teams.williams = williams;
+        configCopy.teams.haas = haas;
+        configCopy.teams.alfa = alfa;
+        configCopy.teams.redbull = redbull;
+        configCopy.teams.aston = aston;
+        configCopy.frozenMentality = mentalityFrozen;
+        configCopy.refurbish = refurbish;
+        configCopy.freezeDevelopment = freezeDevelopment;
+        configCopy.forceEditorMinimapColors = forceEditorMinimapColors;
+        configCopy.triggerList = triggerList;
+        configCopy.turningPointsFrequencyPreset = tpPresetIndex;
+        if (data.primaryColor) {
+            configCopy.primaryColor = data.primaryColor;
+            configCopy.secondaryColor = data.secondaryColor;
+        }
+        if (playerTeam !== -1) {
+            configCopy.playerTeam = Number(playerTeam);
+        }
     }
+}
 
-
+document.querySelector("#configDetailsButton").addEventListener("click", function () {
+    applyConfigFromEditorUI();
 })
 
 async function askFixDoublePointsBug(message){
@@ -2099,6 +2011,10 @@ h2hPill.addEventListener("click", function () {
 })
 
 viewPill.addEventListener("click", function () {
+    if (!viewerLoaded) {
+        viewerLoaded = true
+        document.getElementById("reviewpill").click();
+    }
     manageScripts("hide", "hide", "show", "hide", "hide", "hide", "hide", "hide", "hide", "hide")
     scriptSelected = 1
     check_selected()
@@ -2228,6 +2144,22 @@ function update_refurbish_span(value) {
     } else {
         span.className = "option-state default"
         span.textContent = "Default"
+    }
+}
+
+document.getElementById("freezeDevelopmentToggle").addEventListener("change", function () {
+    let value = this.checked;
+    update_development_span(value)
+});
+
+function update_development_span(value) {
+    let span = document.querySelector("#developmentSpan")
+    if (value) {
+        span.className = "option-state frozen"
+        span.textContent = "Frozen"
+    } else {
+        span.className = "option-state default"
+        span.textContent = "Active"
     }
 }
 
@@ -2402,6 +2334,8 @@ function manageNewsStatus(patreonTier) {
 
 function checkGenerableNews(patreonTier) {
     let canGenerate = "no";
+    newsAvailable.normal = false;
+    newsAvailable.turning = false;
     if (patreonTier.paidMember) {
         canGenerate = "yes";
         if (patreonTier.tier === "Insider" || patreonTier.tier === "Founder") {
@@ -2459,19 +2393,14 @@ init_colors_dict()
 document.addEventListener('DOMContentLoaded', async () => {
     const hostname = window.location.hostname;
     const isNightly = hostname.includes("nightly");
+    isNightlyHost = isNightly;
     versionNow = APP_VERSION;
+
+    syncNightlyIndicator();
 
     if (isNightly) {
         const favicon = document.querySelector('link[rel="icon"]'); //testing
         if (favicon) favicon.href = "../assets/images/logoNightly.png";
-
-        const logoImg = document.querySelector(".toolbar-logo");
-        if (logoImg) logoImg.src = "../assets/images/logoNightly.svg";
-        document.querySelector(".toolbar-title").classList.add("nightly");
-
-        const moonIcon = document.createElement("i");
-        moonIcon.className = "bi bi-moon-fill nightly-icon";
-        document.querySelector(".toolbar-title").appendChild(moonIcon);
 
         const tierInfo = await getUserTier();
         let restrictionMessage = null;
@@ -2516,6 +2445,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         versionPanel.classList.add("nightly");
     }
 
+    updateToolbarThemeLogo();
+    syncNightlyThemeVisibility();
+
     updateRateLimitsDisplay();
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
@@ -2544,6 +2476,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Modify car performance to your liking",
         "Fix game-breaking issues with ease",
         "No installation required, works in your browser",
+        "Honda, for the love of god, give Alonso a good engine for once"
     ];
 
     //reorder them randomly
@@ -2747,11 +2680,77 @@ function createMarqueeItem(name, tier) {
     return span;
 }
 
+function updateToolbarThemeLogo() {
+    const logoImg = document.querySelector(".toolbar-logo");
+    if (!logoImg) return;
+
+    Object.values(themeToolbarLogos).forEach((meta) => {
+        if (meta?.className) logoImg.classList.remove(meta.className);
+    });
+
+    if (!hasPatreonThemeAccess) {
+        logoImg.src = "../assets/images/logoVector.svg";
+        return;
+    }
+
+    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
+    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
+
+    const themeKey = Object.keys(themeToolbarLogos).find((key) => appliedTheme.includes(key.replace("-theme", "")));
+    if (themeKey) {
+        const meta = themeToolbarLogos[themeKey];
+        logoImg.src = meta.src;
+        if (meta.className) logoImg.classList.add(meta.className);
+        return;
+    }
+
+    logoImg.src = "../assets/images/logoVector.svg";
+}
+
+function syncNightlyIndicator() {
+    const titleEl = document.querySelector(".toolbar-title");
+    if (!titleEl) return;
+
+    const shouldShow = isNightlyHost;
+    titleEl.classList.toggle("nightly", shouldShow);
+
+    const existingIcon = titleEl.querySelector(".nightly-icon");
+    if (shouldShow) {
+        if (!existingIcon) {
+            const moonIcon = document.createElement("i");
+            moonIcon.className = "bi bi-moon-fill nightly-icon";
+            titleEl.appendChild(moonIcon);
+        }
+    } else {
+        if (existingIcon) existingIcon.remove();
+    }
+}
+
+function syncNightlyThemeVisibility() {
+    const nightlyCard = document.querySelector('.one-theme[data-theme="nightly-theme"]');
+    if (!nightlyCard) return;
+
+    const showNightlyTheme = isNightlyHost && hasPatreonThemeAccess;
+    nightlyCard.classList.toggle("d-none", !showNightlyTheme);
+
+    if (!showNightlyTheme && selectedTheme === "nightly-theme") {
+        selectedTheme = "default-theme";
+        localStorage.removeItem("theme");
+        document.body.className = "font default-theme";
+        init_colors_dict(selectedTheme);
+        updateToolbarThemeLogo();
+    }
+}
+
+
 document.querySelectorAll(".one-theme").forEach(function (elem) {
     elem.addEventListener("click", function () {
+        if (!hasPatreonThemeAccess) return;
+        if (elem.dataset.theme === "nightly-theme" && !isNightlyHost) return;
         selectedTheme = elem.dataset.theme
         document.querySelector(".one-theme.active").classList.remove("active")
         elem.classList.add("active")
+        changeTheme()
     })
 });
 
@@ -2759,18 +2758,46 @@ function changeTheme() {
     document.querySelector("body").className = `font ${selectedTheme}`
     localStorage.setItem("theme", selectedTheme)
     init_colors_dict(selectedTheme)
+    updateToolbarThemeLogo()
+    syncNightlyIndicator()
+    reload_performance_graph()
+    reload_h2h_graphs()
 
 }
 
 function loadTheme() {
     let theme = localStorage.getItem("theme")
-    selectedTheme = theme || "default-theme"
-    if (theme) {
-        document.querySelector("body").className = `font ${selectedTheme}`
-        document.querySelector(".one-theme.active").classList.remove("active")
-        document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`).classList.add("active")
+    const savedThemeButton = theme ? document.querySelector(`.one-theme[data-theme="${theme}"]`) : null;
+
+    if (!theme && isNightlyHost && hasPatreonThemeAccess) {
+        theme = "nightly-theme"
+    }
+
+    if (theme === "nightly-theme" && !isNightlyHost) {
+        theme = null;
+        localStorage.removeItem("theme");
+    }
+
+    selectedTheme = savedThemeButton ? theme : (theme === "nightly-theme" ? "nightly-theme" : "default-theme")
+    document.querySelector("body").className = `font ${selectedTheme}`
+
+    const activeTheme = document.querySelector(".one-theme.active")
+    if (activeTheme) {
+        activeTheme.classList.remove("active")
+    }
+
+    const currentThemeButton = document.querySelector(`.one-theme[data-theme="${selectedTheme}"]`)
+    if (currentThemeButton) {
+        currentThemeButton.classList.add("active")
+    }
+
+    if (theme && !savedThemeButton) {
+        localStorage.removeItem("theme")
     }
     init_colors_dict(selectedTheme)
+    updateToolbarThemeLogo()
+    syncNightlyIndicator()
+    syncNightlyThemeVisibility()
     reload_performance_graph()
     reload_h2h_graphs()
 }
@@ -2866,103 +2893,6 @@ function shouldShowPatchModal(storedVersion, versionNow) {
 
     return storedParts[0] < currentParts[0] || storedParts[1] < currentParts[1];
 }
-
-function updateModBlocking(data) {
-    if (data === "AlreadyEdited") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-    }
-    else if (data === "Start2024") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-
-        document.querySelector(".time-travel").classList.remove("disabled")
-        document.querySelector(".time-travel span").textContent = "Apply"
-    }
-    else if (data === "Direct2025" || data === "End2024") {
-        document.querySelector(".mod-blocking").classList.add("d-none")
-        document.querySelector(".changes-grid").classList.remove("d-none")
-
-        document.querySelector(".time-travel").classList.add("disabled")
-        document.querySelector(".time-travel span").textContent = "Disabled"
-        calendarEditMode = data;
-    }
-    else {
-        document.querySelector(".mod-blocking").classList.remove("d-none")
-        document.querySelector(".changes-grid").classList.add("d-none")
-    }
-}
-
-document.querySelector(".time-travel").addEventListener("click", function () {
-    const command = new Command("timeTravel", { dayNumber: 45657 });
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-line-ups").addEventListener("click", function () {
-    const command = new Command("changeLineUps", {});
-    command.execute();
-    document.querySelector(".ham-transfer").classList.remove("mefont")
-    document.querySelector(".sai-transfer").classList.remove("fefont")
-    document.querySelector(".ham-transfer").classList.add("fefont")
-    document.querySelector(".sai-transfer").classList.add("wifont")
-    document.querySelector(".ant-transfer").classList.add("mefont")
-    document.querySelector(".ant-ovr").classList.add("mefont")
-    document.querySelector(".bor-ovr").classList.remove("mcfont")
-    document.querySelector(".bor-ovr").classList.add("affont")
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-stats").addEventListener("click", function () {
-    const command = new Command("changeStats", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-cfd").addEventListener("click", function () {
-    const command = new Command("changeCfd", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".change-regulations").addEventListener("click", function () {
-    const command = new Command("changeRegulations", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-document.querySelector(".extra-drivers").addEventListener("click", function () {
-    const command = new Command("extraDrivers", {});
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-
-    document.querySelector(".change-line-ups").classList.remove("disabled")
-    document.querySelector(".change-line-ups span").textContent = "Apply"
-})
-
-document.querySelector(".change-calendar").addEventListener("click", function () {
-    const command = new Command("changeCalendar", { type: calendarEditMode });
-    command.execute();
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
-
-
-document.querySelector(".change-performance").addEventListener("click", function () {
-    const command = new Command("changePerformance", {});
-    command.execute();
-    document.querySelector(".mclaren-performance").innerText = "63.7%"
-    document.querySelector(".redbull-performance").innerText = "59.4%"
-    document.querySelector(".williams-performance").innerText = "56.8%"
-    this.classList.add("completed")
-    this.querySelector("span").textContent = "Applied"
-})
 
 document.querySelectorAll(".team-logo-container").forEach(function (elem) {
     elem.addEventListener("click", function () {
@@ -3128,7 +3058,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         let idx = values.findIndex(v => String(v) === raw);
         if (idx === -1) {
             const numMatch = raw.replace(/,/g, '').match(/-?\d+(\.\d+)?/); // Ajuste aquí también por si acaso
-            if (numMatch && values.every(v => !isNaN(parseFloat(v)))) {
+            if (numMatch) {
                 const num = parseFloat(numMatch[0]);
                 idx = values.findIndex(v => Number(v) === num);
             }
@@ -3167,7 +3097,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
-        if (isFinite(min) && isFinite(max) && max > min) {
+        if (max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
             return Math.round(Math.max(0, Math.min(100, p)));

@@ -254,5 +254,11 @@ export function manage_engine_change(teamID, engineId) {
     queryDB(`UPDATE Parts_TeamHistory SET EngineManufacturer = ? WHERE TeamID = ? AND SeasonID = ?`, [newEngineManufacturer, teamID, year], 'run');
   }
 
-  queryDB(`UPDATE Custom_Engine_Allocations SET engineId = ? WHERE teamId = ?`, [engineId, teamID], 'run');
+  const existingAlloc = queryDB(`SELECT COUNT(1) FROM Custom_Engine_Allocations WHERE teamId = ?`, [teamID], 'singleValue');
+  if (Number(existingAlloc) > 0) {
+    queryDB(`UPDATE Custom_Engine_Allocations SET engineId = ? WHERE teamId = ?`, [engineId, teamID], 'run');
+  }
+  else {
+    queryDB(`INSERT INTO Custom_Engine_Allocations (teamId, engineId) VALUES (?, ?)`, [teamID, engineId], 'run');
+  }
 }

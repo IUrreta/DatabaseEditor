@@ -30,12 +30,12 @@ function getEnumChange(id) {
 
 function parseIntSafe(val, fallback = 0) {
   const n = Number.parseInt(String(val).replace(/[^\d-]/g, ""), 10);
-  return Number.isFinite(n) ? n : fallback;
+  return n;
 }
 
 function formatMoney(val) {
   const n = Number(val);
-  return Number.isFinite(n) ? n.toLocaleString("en-US") : "0";
+  return n.toLocaleString("en-US");
 }
 
 function getSchemeName(id) {

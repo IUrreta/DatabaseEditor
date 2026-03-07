@@ -347,5 +347,22 @@
                                 "{{driver1}} and {{driver2}} face skepticism over F1 readiness",
                                 "Promising, but not proven: {{driver1}} and {{driver2}} still have work to do"
                             ]
+    },
+    {
+        "id": "aduo_engine",
+        "new_type": 109,
+        "turning_titles": [
+            "Will {{manufacturers}} benefit from the {{number_period}} ADUO window?",
+            "ADUO window opens: {{manufacturers}} eye performance boost",
+            "Finally {{manufacturers}} can make changes during the {{number_period}} ADUO window",
+            "ADUO window arrives: {{manufacturers}} prepare for potential upgrades",
+            "ADUO window opens: {{manufacturers}} ready to optimize performance",
+            "‘We’ve been waiting for this’ – {{manufacturers}} on the {{number_period}} ADUO window",
+            "Sources claim {{manufacturers}} had been preparing for the {{number_period}} ADUO window for months",
+            "{{manufacturers}} ready to make the most of the {{number_period}} ADUO window as it opens",
+            "ADUO window opens: {{manufacturers}} set to unleash performance improvements",
+            "How much will {{manufacturers}} gain from the {{number_period}} ADUO window? Insiders weigh in",
+            "‘It’s a great opportunity’ – {{manufacturers}} on the potential impact of the {{number_period}} ADUO window"
+        ]
     }
 ]

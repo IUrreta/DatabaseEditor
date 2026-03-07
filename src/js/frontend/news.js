@@ -6,7 +6,7 @@ import turningPointsTemplates from "../../data/news/turning_points_prompts_templ
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
-import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay } from "./renderer";
+import { generateNews, getSaveName, confirmModal, updateRateLimitsDisplay, new_update_notifications } from "./renderer";
 import { marked } from 'marked';
 import TurndownService from "turndown";
 import DOMPurify from "dompurify";
@@ -41,6 +41,44 @@ let editTitleInput = null;
 let saveArticleBtn = null;
 let cancelArticleBtn = null;
 let originalTitleText = '';
+let cachedNewsAvailable = { normal: false, turning: false };
+
+function isPaidNewsMember() {
+  return window.__USER_DATA__?.paidMember || false;
+}
+
+function canUseGenAiForNews(news) {
+  if (news?.type === "turning_point_aduo") {
+    return isPaidNewsMember();
+  }
+  return true;
+}
+
+function setAduoLockedHidden(el, hidden) {
+  if (!el) return;
+  if (hidden) {
+    el.classList.add('d-none');
+    el.dataset.aduoLocked = '1';
+  } else if (el.dataset.aduoLocked === '1') {
+    el.classList.remove('d-none');
+    delete el.dataset.aduoLocked;
+  }
+}
+
+function applyNewsModalGenAiLocks(news) {
+  const lockGenAi = news?.type === "turning_point_aduo" && !canUseGenAiForNews(news);
+  const regenerateButton = document.getElementById('regenerateArticle');
+  const regenerateWithContextButton = document.getElementById('regenerateWithContext');
+  const optionsContextContainer = document.getElementById('newsOptionsContext');
+
+  if (lockGenAi) {
+    setOptionsContextOpen(false);
+  }
+
+  setAduoLockedHidden(regenerateButton, lockGenAi);
+  setAduoLockedHidden(regenerateWithContextButton, lockGenAi);
+  setAduoLockedHidden(optionsContextContainer, lockGenAi);
+}
 
 const DEFAULT_NEWS_LANGUAGE = "English";
 const NEWS_LANGUAGE_STORAGE_KEY = "newsLanguage";
@@ -327,6 +365,7 @@ async function openNewsModalFlow(news, newsItem, newsList, opts = {}) {
   currentModalNews = news;
   currentModalExtraContext = extraContext;
   newsItem?.classList.add('with-transition', 'opened');
+  applyNewsModalGenAiLocks(news);
 
   const newsModal = new bootstrap.Modal(document.getElementById('newsModal'), {
     keyboard: false
@@ -521,6 +560,11 @@ async function generateAndRenderArticle(news, newsList, label = "Generating", fo
 
 function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbuttonContainer, newsAvailable) {
   let approveButton, randomButton, cancelButton;
+  const isAduoTurningPoint = news.type === "turning_point_aduo";
+  const isFreeTier = !window.__USER_DATA__?.paidMember
+  if (isFreeTier && news.hiddenByAvailability && !isAduoTurningPoint) {
+    return;
+  }
 
 
   if (news.turning_point_type === "original") {
@@ -560,7 +604,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
     randomButton = document.createElement('div');
     randomButton.classList.add('random-tp', 'tp-button');
     const randomIcon = document.createElement('i');
-    randomIcon.classList.add('bi', 'bi-question', 'tp-icon');
+    randomIcon.classList.add('bi', 'bi-shuffle', 'tp-icon');
     randomButton.appendChild(randomIcon);
     tpDiv.appendChild(randomButton);
 
@@ -638,6 +682,12 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         const commandEngines = new Command("enginesRefresh", {});
         commandEngines.execute();
       }
+      else if (news.type === "turning_point_aduo") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+        const commandPerformance = new Command("performanceRefresh", {});
+        commandPerformance.execute();
+      }
     });
 
 
@@ -692,7 +742,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
   }
 
 
-  if (!newsAvailable.turning) {
+  if (!newsAvailable.turning && !isAduoTurningPoint) {
     const showInsiderModal = async () => {
       await confirmModal({
         title: "Insider News Unavailable",
@@ -721,6 +771,7 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
     news.turning_point_type === 'original' ||
     news.turning_point_type === 'approved' ||
     news.turning_point_type === 'cancelled';
+  const isAduoTurningPoint = news.type === "turning_point_aduo";
   const newsItem = document.createElement('div');
   newsItem.classList.add('news-item', 'fade-in');
   newsItem.setAttribute('style', '--order: ' + (index + 1));
@@ -829,14 +880,14 @@ function createNewsItemElement(news, index, newsAvailable, newsList, maxDate, is
   newsBody.appendChild(readbuttonContainer);
 
   if (!news.nonReadable || news.nonReadable === false) { //first check - if the news is readable
-    if (newsAvailable.normal === true && !isTurning) { //second check - if normal news are available
-      readActions.appendChild(contextButton);
-      readActions.appendChild(readButton);
-      readbuttonContainer.appendChild(readActions);
-    }
+    const canUserRead =
+      (!isTurning && window.__USER_DATA__?.paidMember === true) ||
+      (isTurning && (window.__USER_DATA__?.tierNumber >= 2 || isAduoTurningPoint));
 
-    if (newsAvailable.turning === true && isTurning) { //second check - if insider news are available
-      readActions.appendChild(contextButton);
+    if (canUserRead) {
+      if (canUseGenAiForNews(news)) {
+        readActions.appendChild(contextButton);
+      }
       readActions.appendChild(readButton);
       readbuttonContainer.appendChild(readActions);
     }
@@ -899,17 +950,24 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
       news.turning_point_type === 'approved' ||
       news.turning_point_type === 'cancelled'
     );
+    const isAduoTurningPoint = news.type === "turning_point_aduo";
 
     const h = hashStr(news.stableKey);
-    if (!newsAvailable.turning && isTurning) {
-      news.hiddenByAvailability = (h % BUCKET_TURNING) !== 0;
-      news.hiddenReason = news.hiddenByAvailability ? 'turning' : null;
-    } else if (!newsAvailable.normal && !isTurning) {
-      news.hiddenByAvailability = (h % BUCKET_NORMAL) !== 0;
-      news.hiddenReason = news.hiddenByAvailability ? 'normal' : null;
+    const isFreeTier = !window.__USER_DATA__?.paidMember && !newsAvailable.normal && !newsAvailable.turning;
+    if (isFreeTier) {
+      news.hiddenByAvailability = !isAduoTurningPoint;
+      news.hiddenReason = news.hiddenByAvailability ? (isTurning ? 'turning' : 'normal') : null;
     } else {
-      news.hiddenByAvailability = false;
-      news.hiddenReason = null;
+      if (!newsAvailable.turning && isTurning) {
+        news.hiddenByAvailability = (h % BUCKET_TURNING) !== 0;
+        news.hiddenReason = news.hiddenByAvailability ? 'turning' : null;
+      } else if (!newsAvailable.normal && !isTurning) {
+        news.hiddenByAvailability = (h % BUCKET_NORMAL) !== 0;
+        news.hiddenReason = news.hiddenByAvailability ? 'normal' : null;
+      } else {
+        news.hiddenByAvailability = false;
+        news.hiddenReason = null;
+      }
     }
 
 
@@ -1398,9 +1456,76 @@ function buildContextualPrompt(data, config = {}) {
   return prompt;
 }
 
+const ADUO_ENGINE_STAT_LABELS = {
+  10: "Power",
+  6: "Fuel efficiency",
+  14: "Engine durability",
+  18: "ERS durability",
+  19: "Gearbox durability"
+};
+
+const ADUO_ENGINE_STAT_ORDER = [10, 6, 14, 18, 19];
+
+function describeAduoChange(pct) {
+  const v = Number(pct) || 0;
+  if (v > 0) {
+    if (v >= 7) return "significantly improved";
+    if (v >= 4) return "notably improved";
+    if (v >= 2) return "improved";
+    return "slightly improved";
+  }
+  if (v < 0) {
+    if (v <= -7) return "significantly worsened";
+    if (v <= -4) return "notably worsened";
+    if (v <= -2) return "worsened";
+    return "slightly worsened";
+  }
+  return "unchanged";
+}
+
+function buildAduoTemplateArticle(newData) {
+  const quarterString = newData?.data?.quarterString || "current";
+  const seasonYear = newData?.data?.season;
+  const engineImprovements = Array.isArray(newData?.data?.engineImprovements) ? newData.data.engineImprovements : [];
+
+  const headerBits = ["## ADUO window"];
+  if (seasonYear != null) headerBits.push(`(${quarterString} quarter, season ${seasonYear})`);
+  else headerBits.push(`(${quarterString} quarter)`);
+
+  if (!engineImprovements.length) {
+    return `${headerBits.join(" ")}\n\nNo manufacturer upgrade data is available for this window.\n\n---\n\n*Patreon members can generate a full AI-written article (with quotes and extra context) for this turning point.*`;
+  }
+
+  const blocks = engineImprovements.map((entry) => {
+    const name = entry?.name || "Unknown manufacturer";
+    const improvements = entry?.improvements || {};
+
+    const lines = ADUO_ENGINE_STAT_ORDER.map((statId) => {
+      const raw = improvements[statId] ?? improvements[String(statId)];
+      if (raw === undefined || raw === null) return null;
+      const label = ADUO_ENGINE_STAT_LABELS[statId] || `Stat ${statId}`;
+      return `- ${label}: ${describeAduoChange(raw)}`;
+    }).filter(Boolean);
+
+    return `**${name}**\n${lines.length ? lines.join("\n") : "- No detailed stat breakdown available."}`;
+  }).join("\n\n");
+
+  return `${headerBits.join(" ")}\n\nThis turning point summary lists what each engine manufacturer is expected to improve or worsen in this ADUO window.\n\n${blocks}\n\n---\n\n*Patreon members can generate a full AI-written article (with quotes and extra context) for this turning point.*`;
+}
+
 async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}) {
   const { force = false, extraContext = '' } = opts;
   const stableKey = newData.stableKey ?? newData.id ?? computeStableKey(newData);
+
+  const normalizedType = newData?.type?.startsWith("turning_point_outcome_")
+    ? newData.type.replace("turning_point_outcome_", "turning_point_")
+    : newData?.type;
+
+  if (normalizedType === "turning_point_aduo" && !canUseGenAiForNews(newData)) {
+    clearInterval(interval);
+    if (barProgressDiv) barProgressDiv.style.width = '100%';
+    return buildAduoTemplateArticle(newData);
+  }
 
   // 1) Si ya hay texto y NO forzamos, devolvemos el existente
   if (newData.text && !force) {
@@ -1437,6 +1562,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
     turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
     turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
+    turning_point_aduo: (nd) => contextualizeTurningPointAduo(nd, nd.turning_point_type),
   };
 
   // 3) Normaliza tipos "turning_point_outcome_*" -> "turning_point_*"
@@ -1485,7 +1611,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed.Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed. Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
       if (expectsJson) {
         finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
@@ -1522,6 +1648,12 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         role: "user",
         content: finalInstruction
       });
+
+      // Ensure {{language}} placeholders are always substituted in every prompt message
+      messages = messages.map(m => ({
+        ...m,
+        content: replaceLanguagePlaceholder(m.content, selectedLanguage)
+      }));
     }
 
     console.log("Final messages for AI:", messages);
@@ -1940,6 +2072,115 @@ async function contextualizeTurningPointEngineRegulation(newData, turningPointTy
   };
 }
 
+async function contextualizeTurningPointAduo(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 109);
+  let prompt = promptTemplateEntry?.prompt;
+  if (!prompt) {
+    console.warn("Missing turning point prompt template for ADUO (new_type 109).");
+    return;
+  }
+
+  const seasonYear = newData.data.season;
+  const manufacturers = newData.data.manufacturers || "several manufacturers";
+  const numberPeriod = newData.data.quarterString || "current";
+  const engineImprovements = Array.isArray(newData.data.engineImprovements) ? newData.data.engineImprovements : [];
+
+  const getBoostLabel = (pct) => {
+    if (pct >= 7) return "a huge boost";
+    if (pct >= 4) return "a big boost";
+    if (pct >= 2) return "a solid gain";
+    if (pct > 0) return "a small increase";
+    if (pct === 0) return "little to no change";
+    if (pct > -1) return "a slight step backwards";
+    return "a noticeable drop";
+  };
+
+  const getAvgChange = (improvements) => {
+    if (!improvements) return 0;
+    let sum = 0;
+    let count = 0;
+    for (const statId of Object.keys(improvements)) {
+      sum += Number(improvements[statId]) || 0;
+      count += 1;
+    }
+    return count ? (sum / count) : 0;
+  };
+
+  const getPowerChange = (improvements) => {
+    if (!improvements) return null;
+    if (improvements[10] !== undefined) return Number(improvements[10]) || 0;
+    if (improvements["10"] !== undefined) return Number(improvements["10"]) || 0;
+    return null;
+  };
+
+  const upgradesSummary = engineImprovements.length
+    ? engineImprovements.map(e => {
+      const name = e.name || "Unknown manufacturer";
+      const improvements = e.improvements || {};
+
+      const avg = getAvgChange(improvements);
+      const power = getPowerChange(improvements);
+
+      if (power === null) {
+        return `- ${name}: expected to make ${getBoostLabel(avg)} overall.`;
+      }
+
+      const powerLabel = getBoostLabel(power);
+      const avgLabel = getBoostLabel(avg);
+      if (powerLabel === avgLabel) {
+        return `- ${name}: expected to make ${powerLabel} overall, including in power.`;
+      }
+      return `- ${name}: expected to get ${powerLabel} in power, with ${avgLabel} across the rest of the package.`;
+    }).join("\n")
+    : "No manufacturers were clearly identified for upgrades in this ADUO window.";
+
+  prompt = prompt
+    .replace(/{{\s*manufacturers\s*}}/g, manufacturers)
+    .replace(/{{\s*number_period\s*}}/g, numberPeriod)
+    .replace(/{{\s*upgrade_summary\s*}}/g, upgradesSummary);
+
+  const engineAllocations = window.__ENGINE_ALLOCATIONS__;
+  const engineNames = window.__ENGINE_NAMES__;
+  if (engineAllocations && typeof engineAllocations === "object") {
+    const teamIds = Object.keys(engineAllocations)
+      .map((id) => Number(id))
+      .filter((id) => Number.isFinite(id))
+      // Hide "Team 32" when custom team is not enabled (renderer removes combined_dict[32] in that case).
+      .filter((id) => id !== 32 || (32 in combined_dict))
+      .sort((a, b) => a - b);
+
+    const lines = teamIds.map((teamId) => {
+      const engineId = Number(engineAllocations[String(teamId)]);
+      const teamName = combined_dict[teamId] || `Team ${teamId}`;
+      const engineName = engineNames?.[engineId] || (Number.isFinite(engineId) ? `Engine ${engineId}` : "Unknown engine");
+      return `- ${teamName}: ${engineName}`;
+    });
+
+    if (lines.length) {
+      prompt += `\n\nCurrent engine allocations:\n${lines.join("\n")}`;
+    }
+  }
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details:", err);
+    return;
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
+}
+
 async function contextualizeTurningPointYoungDrivers(newData, turningPointType) {
   const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 108);
   let prompt;
@@ -2330,7 +2571,7 @@ async function contextualizeNextSeasonGrid(newData) {
       `\n\n${title}\n`,
       ...Object.values(teams).map(team =>
         [
-          `\n**${team.name}**:\n`,
+          `\n\n**${team.name}**:\n\n`,
           team[driversKey].map(d => `- ${d.name}`).join('\n'),
         ].join('')
       )
@@ -2657,7 +2898,7 @@ async function contextualizeRaceResults(newData) {
     const second = top3[1];
     const third = top3[2];
     const driverOfTheDayPhrase = `
-      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}).\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}),` : ''}${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}).` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
     `;
     prompt += driverOfTheDayPhrase;
   }
@@ -2762,7 +3003,7 @@ async function contextualizeRaceReaction(newData) {
     const third = top3[2];
 
     const driverOfTheDayPhrase = `
-      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}) with ${first.share.toFixed(1)}% of the fan votes.\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}) with ${second.share.toFixed(1)}%,` : ''}\n${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}) with ${third.share.toFixed(1)}%.` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
+      \n\nThe Driver of the Day award went to ${first.name} (${combined_dict[first.teamId]}).\n${second ? `In second place was ${second.name} (${combined_dict[second.teamId]}),` : ''}${third ? ` followed by ${third.name} (${combined_dict[third.teamId]}).` : ''}\n\nWrite a paragraph analyzing why ${first.name.split(' ')[0]} might have received the award, and why the fans also voted for ${second ? second.name.split(' ')[0] : ''}${second && third ? ' and ' : ''}${third ? third.name.split(' ')[0] : ''}.
     `;
 
     prompt += driverOfTheDayPhrase;
@@ -2876,14 +3117,11 @@ async function contextualizeSeasonReview(newData) {
 
 
 async function askGenAI(messages, opts = {}) {
-  const aiModel = opts.model || "gpt-5-nano";
-
   const response = await fetch("/api/ask-openai", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       messages,
-      model: aiModel,
       max_tokens: opts.max_tokens || 4000
     })
   });
@@ -3096,7 +3334,6 @@ function manage_overlay(imageContainer, overlay, data, image) {
   let overlayDiv = null;
   const teamColorForId = (teamId, fallback = '#ffffff') => {
     const candidate = Number.parseInt(teamId, 10);
-    if (!Number.isFinite(candidate)) return fallback;
     return colors_dict?.[`${candidate}0`] ?? fallback;
   };
 
@@ -3206,7 +3443,7 @@ function manage_overlay(imageContainer, overlay, data, image) {
     overlayDiv.classList.add('reaction-overlay');
 
     const candidateTeamId = Number.parseInt(data?.driverTeamIdInTitle, 10);
-    const teamId = Number.isFinite(candidateTeamId) && candidateTeamId >= 1 && candidateTeamId <= 10
+    const teamId = candidateTeamId >= 1 && candidateTeamId <= 10
       ? candidateTeamId
       : (Math.floor(Math.random() * 10) + 1);
 
@@ -3440,11 +3677,6 @@ function manage_overlay(imageContainer, overlay, data, image) {
 }
 
 function getOrdinalSuffix(n) {
-  if (typeof n !== 'number' || isNaN(n) || !isFinite
-    (n)) {
-    console.error("Invalid input for getOrdinalSuffix:", n);
-    return n; // Return the original value if it's not a valid number
-  }
   let j = n % 10, k = n % 100;
   if (j == 1 && k != 11) {
     return n + "st";
@@ -4398,6 +4630,11 @@ export function updateNewsYearsButton(message) {
   const newsYearsButton = document.getElementById("newsSeasonButton");
   newsYearsMenu.innerHTML = '';
 
+  if (!Array.isArray(years) || years.length === 0) {
+    newsYearsButton.querySelector("span").innerText = "Season";
+    return;
+  }
+
   years.forEach((year) => {
     const item = document.createElement("a");
     item.classList.add("redesigned-dropdown-item");
@@ -4425,38 +4662,113 @@ async function addTurningPointContexts(prompt, date) {
 
   const newsWithId = Object.entries(news).map(([id, n]) => ({ id, ...n }));
   const turningPointsOutcomes = newsWithId.filter(n => n.id.startsWith('turning_point_outcome_') || n.id.includes('_world_champion'));
+  const aduoTurningPoints = newsWithId.filter(n => n.type === "turning_point_aduo");
 
-  if (turningPointsOutcomes.length > 0) {
+  if (turningPointsOutcomes.length > 0 || aduoTurningPoints.length > 0) {
     let number = 1;
-    let turningOutcomesText = ``;
-    turningOutcomesText += turningPointsOutcomes.map(tp => {
+    const lines = [];
+
+    const addLine = (text) => {
+      if (!text) return;
+      lines.push(`${number++}. ${text}`);
+    };
+
+    const formatList = (list) => {
+      if (!list.length) return "";
+      if (list.length === 1) return list[0];
+      if (list.length === 2) return `${list[0]} and ${list[1]}`;
+      return `${list.slice(0, -1).join(", ")} and ${list[list.length - 1]}`;
+    };
+
+    const getAduoEnginesSummary = (engineImprovements) => {
+      if (!Array.isArray(engineImprovements) || !engineImprovements.length) return null;
+
+      const getAvgChange = (improvements) => {
+        if (!improvements) return 0;
+        let sum = 0;
+        let count = 0;
+        for (const statId of Object.keys(improvements)) {
+          sum += Number(improvements[statId]) || 0;
+          count += 1;
+        }
+        return count ? (sum / count) : 0;
+      };
+
+      const getPowerChange = (improvements) => {
+        if (!improvements) return null;
+        if (improvements[10] !== undefined) return Number(improvements[10]) || 0;
+        if (improvements["10"] !== undefined) return Number(improvements["10"]) || 0;
+        return null;
+      };
+
+      const ranked = engineImprovements.map((e) => {
+        const improvements = e?.improvements || {};
+        const power = getPowerChange(improvements);
+        const score = power === null ? getAvgChange(improvements) : power;
+        return { name: e?.name || "Unknown manufacturer", score };
+      })
+        .filter((e) => Number.isFinite(e.score))
+        .sort((a, b) => b.score - a.score);
+
+      if (!ranked.length) return null;
+
+      const top = ranked.slice(0, 3);
+      const best = Number(top[0].score) || 0;
+
+      const labelFor = (score) => {
+        if (!Number.isFinite(best) || best <= 0) return "changed";
+        const ratio = score / best;
+        if (ratio >= 0.8) return "improved a lot";
+        if (ratio >= 0.4) return "improved a bit";
+        return "improved slightly";
+      };
+
+      const phrases = top.map((e, idx) => {
+        const label = labelFor(e.score);
+        if (idx === 0) return `${e.name} ${label}`;
+        return `${e.name} ${label.replace("improved ", "")}`;
+      });
+
+      return formatList(phrases);
+    };
+
+    for (const tp of turningPointsOutcomes) {
       const turningDate = tp.date;
       if ((tp.turning_point_type === "positive" || tp.id.includes('_world_champion')) && Number(turningDate) <= Number(date)) {
         if (tp.id.includes("investment")) {
-          return `${number++}. ${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`
+          addLine(`${tp.data.country} made an investment of ${tp.data.investmentAmount} million dollars into ${tp.data.teamName}, buying a ${tp.data.investmentShare}% of their racing division.`);
         }
         else if (tp.id.includes("technical_directive")) {
-          return `${number++}. The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`
+          addLine(`The FIA introduced a technical directive in relation to the ${tp.data.component} because of ${tp.data.reason}.`);
         }
         else if (tp.id.includes("dsq")) {
-          return `${number++}. After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`
+          addLine(`After the post-race technical inspection of the ${tp.data.country} GP, both cars from ${tp.data.team} were disqualified due to an ilegality with their ${tp.data.component}.`);
         }
         else if (tp.id.includes("substitution")) {
-          return `${number++}. The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`
+          addLine(`The race that was going to be held in ${tp.data.originalCountry} was cancelled due to ${tp.data.reason} and was substituted by a race in ${tp.data.substituteCountry}.`);
         }
         else if (tp.id.includes("transfer")) {
-          return `${number++}. ${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`;
+          addLine(`${tp.data.driver_out?.name} lost his seat at ${tp.data.team} and ${tp.data.driver_in?.name} has been signed to replace him.`);
         }
         else if (tp.id.includes("injury")) {
-          return `${number++}. ${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`;
+          addLine(`${tp.data.driver_affected?.name} suffered ${tp.data.condition?.condition} due to "${tp.data.condition?.reason}", causing him to miss ${tp.data.condition?.races_affected?.length || 1} race(s). ${tp.data.reserve_driver ? `He was replaced by ${tp.data.reserve_driver?.name}.` : ''}`);
         }
         else if (tp.id.includes("_world_champion")) {
-          return `${number++}. ${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP `;
+          addLine(`${tp.data.driver_name} (${combined_dict[tp.data.driver_team_id]}) won the ${tp.data.season_year} world championship at the ${tp.data.adjective} GP`);
         }
       }
-    }).join("\n");
-    if (turningOutcomesText) {
-      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${turningOutcomesText}`;
+    }
+
+    for (const tp of aduoTurningPoints) {
+      if (Number(tp.date) > Number(date)) continue;
+      const summary = getAduoEnginesSummary(tp?.data?.engineImprovements);
+      if (!summary) continue;
+      const quarterString = tp?.data?.quarterString ? `${tp.data.quarterString} quarter` : "this period";
+      addLine(`ADUO engine upgrades (${quarterString}): ${summary}.`);
+    }
+
+    if (lines.length) {
+      prompt += `\n\nHere are some other events that happened through the season. Talk about them if relevant to the article:\n${lines.join("\n")}`;
     }
   }
   return prompt;

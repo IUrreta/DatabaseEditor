@@ -24,3 +24,4 @@ test/
 AGENTS.md
 *.tsx
 .vercel
+scripts/
