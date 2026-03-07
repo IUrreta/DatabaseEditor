@@ -1,8 +1,10 @@
-import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors } from "./config";
+import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors, part_full_names } from "./config";
 import { Command } from "../backend/command";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import turningPointsTemplates from "../../data/news/turning_points_prompts_templates.json";
+import newsTitleTemplates from "../../data/news/news_titles_templates.json";
+import turningPointTitleTemplates from "../../data/news/turning_points_titles_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
@@ -24,6 +26,10 @@ const customNewsModalEl = document.getElementById('customNewsModal');
 const customNewsTypeButton = document.getElementById('customNewsTypeButton');
 const customNewsTypeMenu = document.getElementById('customNewsTypeMenu');
 const customNewsDateInput = document.getElementById('customNewsDateInput');
+const customNewsTemplateWrap = document.getElementById('customNewsTemplateWrap');
+const customNewsTemplateButton = document.getElementById('customNewsTemplateButton');
+const customNewsTemplateMenu = document.getElementById('customNewsTemplateMenu');
+const customNewsTemplateHelp = document.getElementById('customNewsTemplateHelp');
 const customNewsTitleInput = document.getElementById('customNewsTitleInput');
 const customNewsParams = document.getElementById('customNewsParams');
 const customNewsError = document.getElementById('customNewsError');
@@ -1552,6 +1558,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     race_reaction: contextualizeRaceReaction,
     next_season_grid: contextualizeNextSeasonGrid,
     feeder_series_review: contextualizeFeederSeriesReview,
+    custom_new: contextualizeCustomNews,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -1764,6 +1771,43 @@ function italicizeQuotes(md) {
     }
     return `*${match}*`;
   });
+}
+
+async function contextualizeCustomNews(newData) {
+  const seasonYear = Number(newData?.data?.season_year || currentSeason || 0);
+  const promptText = newData?.data?.prompt || "Write a custom Formula 1 article.";
+  const imageFile = newData?.data?.image || "";
+
+  let prompt =
+    `Write a Formula 1-style news article based on this custom request:\n${promptText}\n\n` +
+    `The story must stay coherent with the save context, current standings, teams, and driver situation.\n` +
+    `Do not mention raw filenames or that the story was AI-generated.`;
+
+  if (imageFile) {
+    prompt += `\n\nA supporting image has been selected for the article. Use it only as loose visual inspiration if it helps the tone.`;
+  }
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details for custom news:", err);
+    return {
+      instruction: prompt,
+      context: ""
+    };
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeTurningPointInjury(newData, turningPointType) {
@@ -3721,24 +3765,94 @@ document.querySelector("#reloadNews").addEventListener("click", async () => {
   generateNews();
 });
 
-const CUSTOM_NEWS_TYPE_DEFS = [
-  { value: "race_result", label: "Race result" },
-  { value: "quali_result", label: "Qualifying result" },
-  { value: "race_reaction", label: "Post-race reactions" },
-  { value: "fake_transfer", label: "Fake transfer rumor" },
-  { value: "big_transfer", label: "Big transfer confirmed" },
-  { value: "massive_exit", label: "Massive exit" },
-  { value: "massive_signing", label: "Massive signing" },
-  { value: "contract_renewal", label: "Contract renewal" },
-  { value: "silly_season_rumors", label: "Silly season rumors" },
-  { value: "team_comparison", label: "Team comparison" },
-  { value: "driver_comparison", label: "Driver comparison" },
-  { value: "season_review", label: "Season review" },
-  { value: "potential_champion", label: "Potential champion" },
-  { value: "world_champion", label: "World champion" },
-  { value: "next_season_grid", label: "Next season grid" },
-  { value: "feeder_series_review", label: "Feeder series review" },
+const CUSTOM_NEWS_TYPE_META = {
+  race_result: { label: "Race result", titleType: 2, group: "normal" },
+  quali_result: { label: "Qualifying result", titleType: 1, group: "normal" },
+  race_reaction: { label: "Post-race reactions", titleType: 16, group: "normal" },
+  fake_transfer: { label: "Fake transfer rumor", titleType: 7, group: "normal" },
+  big_transfer: { label: "Big transfer confirmed", titleType: 6, group: "normal" },
+  massive_exit: { label: "Massive exit", titleType: 17, group: "normal" },
+  massive_signing: { label: "Massive signing", titleType: 18, group: "normal" },
+  contract_renewal: { label: "Contract renewal", titleType: 10, group: "normal" },
+  silly_season_rumors: { label: "Silly season rumors", titleType: 4, group: "normal" },
+  team_comparison: { label: "Team comparison", group: "normal" },
+  driver_comparison: { label: "Driver comparison", titleType: 13, group: "normal" },
+  season_review: { label: "Season review", group: "normal" },
+  potential_champion: { label: "Potential champion", titleType: 8, group: "normal" },
+  world_champion: { label: "World champion", titleType: 9, group: "normal" },
+  next_season_grid: { label: "Next season grid", titleType: 19, group: "normal" },
+  feeder_series_review: { label: "Feeder series review", titleType: 20, group: "normal" },
+  turning_point_technical_directive: { label: "Technical directive", titleType: 100, turningPoint: true, group: "turning_point" },
+  turning_point_transfer: { label: "Mid-season transfer", titleType: 101, turningPoint: true, group: "turning_point" },
+  turning_point_investment: { label: "Investment", titleType: 102, turningPoint: true, group: "turning_point" },
+  turning_point_dsq: { label: "DSQ", titleType: 103, turningPoint: true, group: "turning_point" },
+  turning_point_race_substitution: { label: "Race substitution", titleType: 105, turningPoint: true, group: "turning_point" },
+  turning_point_injury: { label: "Injury or illness", titleType: 106, turningPoint: true, group: "turning_point" },
+  turning_point_engine_regulation: { label: "Engine regulation", titleType: 107, turningPoint: true, group: "turning_point" },
+  turning_point_young_drivers: { label: "Young drivers", titleType: 108, turningPoint: true, group: "turning_point" },
+  turning_point_aduo: { label: "ADUO", titleType: 109, turningPoint: true, group: "turning_point" },
+  custom_new: { label: "Custom article", group: "custom" }
+};
+
+const CUSTOM_NEWS_TYPE_DEFS = Object.entries(CUSTOM_NEWS_TYPE_META).map(([value, meta]) => ({
+  value,
+  label: meta.label,
+  group: meta.group || "normal"
+}));
+
+const CUSTOM_NEWS_INVESTMENT_COUNTRIES = [
+  "China",
+  "Saudi Arabia",
+  "United Arab Emirates",
+  "India",
+  "Russia",
+  "South Africa",
+  "Qatar",
+  "Bahrain",
+  "Singapore",
+  "Vietnam"
 ];
+
+const CUSTOM_NEWS_DSQ_COMPONENTS = [
+  "engine brake map",
+  "fuel flow",
+  "front wing",
+  "rear wing",
+  "diffuser",
+  "floor",
+  "brake ducts",
+  "suspension",
+  "gearbox",
+  "cooling system",
+  "hydraulics",
+  "clutch",
+  "plank wear"
+];
+
+const CUSTOM_NEWS_ENGINE_CHANGE_AREAS = [
+  "fuel flow monitoring",
+  "ERS deployment limits",
+  "MGU-K usage rules",
+  "cooling system allowances",
+  "gearbox durability limits",
+  "turbo efficiency limits",
+  "oil consumption rules",
+  "hybrid system architecture",
+  "engine architecture layout",
+  "combustion concept rules",
+  "turbocharger design limits",
+  "energy recovery system redesign",
+  "fuel system design rules",
+  "power unit packaging regulations"
+];
+
+const CUSTOM_NEWS_ADUO_QUARTERS = [
+  { value: "1", label: "1st quarter" },
+  { value: "2", label: "2nd quarter" },
+  { value: "3", label: "3rd quarter" }
+];
+
+const CUSTOM_NEWS_IMAGE_FILES = ['1_gar.webp', '1_media.webp', '1_pad.webp', '1_shot.webp', '10_gar.webp', '10_pad.webp', '102_pad.webp', '105_pad.webp', '107_pad.webp', '11_pad.webp', '116_pad.webp', '12_pad.webp', '13_pad.webp', '14_pad.webp', '142_pad.webp', '144_pad.webp', '15_pad.webp', '17_pad.webp', '18_pad.webp', '2_gar.webp', '2_media.webp', '2_pad.webp', '2_shot.webp', '23_pad.webp', '242_pad.webp', '245_pad.webp', '255_pad.webp', '279_pad.webp', '286_pad.webp', '3_gar.webp', '3_media.webp', '3_pad.webp', '3_shot.webp', '373_pad.webp', '376_pad.webp', '4_gar.webp', '4_media.webp', '4_shot.webp', '5_gar.webp', '5_media.webp', '5_shot.webp', '6_gar.webp', '6_pad.webp', '6_shot.webp', '7_shot.webp', '77_pad.webp', '8_gar.webp', '8_shot.webp', '81_pad.webp', '83_pad.webp', '87_pad.webp', '9_gar.webp', '95_pad.webp', 'af_factory.webp', 'af1.webp', 'af2.webp', 'al_factory.webp', 'al1.webp', 'al2.webp', 'as_factory.webp', 'as1.webp', 'as2.webp', 'at_factory.webp', 'at1.webp', 'at2.webp', 'aus.webp', 'aus_car.webp', 'aus_tra.webp', 'aut.webp', 'aut_car.webp', 'aut_tra.webp', 'aze.webp', 'aze_car.webp', 'aze_tra.webp', 'bah.webp', 'bah_car.webp', 'bah_inv.webp', 'bah_tra.webp', 'bel.webp', 'bel_car.webp', 'bel_tra.webp', 'bra.webp', 'bra_car.webp', 'bra_tra.webp', 'can.webp', 'can_car.webp', 'can_tra.webp', 'champ1.webp', 'champ2.webp', 'champ3.webp', 'champ4.webp', 'champ5.webp', 'chi.webp', 'chi_car.webp', 'chi_inv.webp', 'chi_tra.webp', 'con1.webp', 'con10.webp', 'con11.webp', 'con12.webp', 'con2.webp', 'con3.webp', 'con4.webp', 'con5.webp', 'con6.webp', 'con7.webp', 'con8.webp', 'con9.webp', 'ct_factory.webp', 'dsq_1.webp', 'dsq_2.webp', 'dsq_3.webp', 'dsq_4.webp', 'dsq_5.webp', 'dsq_6.webp', 'dsq_7.webp', 'dsq_8.webp', 'engine_1.webp', 'engine_10.webp', 'engine_2.webp', 'engine_3.webp', 'engine_4.webp', 'engine_5.webp', 'engine_6.webp', 'engine_7.webp', 'engine_8.webp', 'engine_9.webp', 'fe_factory.webp', 'fe1.webp', 'fe2.webp', 'fe3.webp', 'fe4.webp', 'fe5.webp', 'gbr.webp', 'gbr_car.webp', 'gbr_tra.webp', 'grid_1.webp', 'grid_2.webp', 'grid_3.webp', 'grid_4.webp', 'ha_factory.webp', 'ha1.webp', 'ha2.webp', 'hun.webp', 'hun_car.webp', 'hun_tra.webp', 'imo.webp', 'imo_car.webp', 'imo_tra.webp', 'ind_inv.webp', 'ita.webp', 'ita_car.webp', 'ita_tra.webp', 'jap.webp', 'jap_car.webp', 'jap_tra.webp', 'mc_factory.webp', 'mc1.webp', 'mc2.webp', 'me_factory.webp', 'me1.webp', 'me2.webp', 'me3.webp', 'me4.webp', 'mex.webp', 'mex_car.webp', 'mex_tra.webp', 'mia.webp', 'mia_car.webp', 'mia_tra.webp', 'mon.webp', 'mon_car.webp', 'mon_tra.webp', 'monaco_media.webp', 'ned.webp', 'ned_car.webp', 'ned_tra.webp', 'part_3_1.webp', 'part_3_2.webp', 'part_3_3.webp', 'part_4_1.webp', 'part_4_2.webp', 'part_4_3.webp', 'part_5_1.webp', 'part_5_2.webp', 'part_5_3.webp', 'part_6_1.webp', 'part_6_2.webp', 'part_6_3.webp', 'part_7_1.webp', 'part_7_2.webp', 'part_7_3.webp', 'part_8_1.webp', 'part_8_2.webp', 'part_8_3.webp', 'qat.webp', 'qat_car.webp', 'qat_inv.webp', 'qat_tra.webp', 'rb_factory.webp', 'rb1.webp', 'rb2.webp', 'rb3.webp', 'rb4.webp', 'rus_inv.webp', 'sau.webp', 'sau_car.webp', 'sau_inv.webp', 'sau_tra.webp', 'sgp.webp', 'sgp_car.webp', 'sgp_tra.webp', 'sin_inv.webp', 'sou_inv.webp', 'spa.webp', 'spa_car.webp', 'spa_tra.webp', 'uae.webp', 'uae_car.webp', 'uae_tra.webp', 'uni_inv.webp', 'usa.webp', 'usa_car.webp', 'usa_tra.webp', 'veg.webp', 'veg_car.webp', 'veg_tra.webp', 'vie_inv.webp', 'wi_factory.webp', 'wi1.webp', 'wi2.webp', 'wi3.webp', 'young_1.webp', 'young_2.webp', 'young_3.webp', 'young_4.webp', 'young_5.webp', 'young_6.webp', 'young_7.webp', 'young_8.webp', 'young_9.webp'];
 
 let customNewsModal = null;
 let customNewsOptionsCache = null;
@@ -3754,9 +3868,29 @@ function setCustomNewsError(msg) {
   }
 }
 
+function setCustomNewsTemplateHelp(message) {
+  if (customNewsTemplateHelp) {
+    customNewsTemplateHelp.textContent = message;
+  }
+}
+
+function getCustomNewsTitlePlaceholder(type = getCustomNewsSelectedType()) {
+  return type === "custom_new" ? "Write the article title" : "Automatic / default title";
+}
+
+function getCustomNewsImageSrc(imageFile) {
+  return imageFile ? `../assets/images/news/${imageFile}` : "";
+}
+
 function toIsoDate(date) {
   const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   return d.toISOString().slice(0, 10);
+}
+
+function setRedesignedDropdownOpen(dropdown, isOpen) {
+  if (!dropdown) return;
+  dropdown.classList.toggle("open", !!isOpen);
+  dropdown.setAttribute("aria-expanded", isOpen ? "true" : "false");
 }
 
 function bindRedesignedDropdownToggle(dropdown) {
@@ -3764,15 +3898,16 @@ function bindRedesignedDropdownToggle(dropdown) {
   dropdown._customDropdownBound = true;
 
   dropdown.addEventListener("click", function (e) {
+    if (dropdown.disabled) return;
     e.stopPropagation();
 
     document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
       if (openDropdown !== dropdown) {
-        openDropdown.classList.remove("open");
+        setRedesignedDropdownOpen(openDropdown, false);
       }
     });
 
-    dropdown.classList.toggle("open");
+    setRedesignedDropdownOpen(dropdown, !dropdown.classList.contains("open"));
   });
 }
 
@@ -3798,6 +3933,76 @@ function setRedesignedDropdownSelection(buttonEl, menuEl, value, label) {
 function getRedesignedDropdownValue(buttonEl) {
   const v = buttonEl?.dataset?.value;
   return v == null ? "" : String(v);
+}
+
+function getCustomNewsSelectedType() {
+  return getRedesignedDropdownValue(customNewsTypeButton);
+}
+
+function populateCustomNewsTypeDropdown({
+  buttonEl,
+  menuEl,
+  items,
+  selectedValue = "",
+  onSelect
+} = {}) {
+  if (!buttonEl || !menuEl) return;
+
+  menuEl.replaceChildren();
+
+  const sections = [
+    { key: "normal", label: "Normal articles" },
+    { key: "turning_point", label: "Turning points" },
+    { key: "custom", label: "Custom article" }
+  ];
+
+  const mkSectionTitle = (label) => {
+    const el = document.createElement("li");
+    el.className = "custom-news-dropdown-section-title bold-font";
+    el.textContent = label;
+    return el;
+  };
+
+  const mkItem = (item) => {
+    const a = document.createElement("a");
+    a.className = "redesigned-dropdown-item";
+    a.href = "#";
+    a.dataset.value = String(item.value ?? "");
+
+    const text = document.createElement("span");
+    text.textContent = String(item.label ?? "");
+
+    const icon = document.createElement("i");
+    icon.className = "bi bi-check unactive";
+
+    a.append(text, icon);
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setRedesignedDropdownSelection(buttonEl, menuEl, a.dataset.value, text.textContent);
+      setRedesignedDropdownOpen(buttonEl, false);
+      if (typeof onSelect === "function") onSelect(a.dataset.value);
+    });
+
+    return a;
+  };
+
+  sections.forEach(section => {
+    const sectionItems = (items || []).filter(item => (item.group || "normal") === section.key);
+    if (!sectionItems.length) return;
+
+    menuEl.appendChild(mkSectionTitle(section.label));
+    sectionItems.forEach(item => {
+      menuEl.appendChild(mkItem(item));
+    });
+  });
+
+  const selectedItem = (items || []).find(item => String(item.value ?? "") === String(selectedValue ?? ""));
+  if (selectedItem) {
+    setRedesignedDropdownSelection(buttonEl, menuEl, selectedItem.value, selectedItem.label);
+  } else {
+    setRedesignedDropdownSelection(buttonEl, menuEl, "", "Select type");
+  }
 }
 
 function populateRedesignedDropdown({
@@ -3837,7 +4042,7 @@ function populateRedesignedDropdown({
       e.stopPropagation();
 
       setRedesignedDropdownSelection(buttonEl, menuEl, a.dataset.value, text.textContent);
-      buttonEl.classList.remove("open");
+      setRedesignedDropdownOpen(buttonEl, false);
       if (typeof onSelect === "function") onSelect(a.dataset.value);
     });
 
@@ -3865,6 +4070,103 @@ function populateRedesignedDropdown({
   }
 }
 
+function resolveCustomNewsTitleType(type = getCustomNewsSelectedType()) {
+  if (type === "team_comparison") {
+    return getRedesignedDropdownValue(document.getElementById("customNewsCompTypeButton")) === "bad" ? 11 : 12;
+  }
+  if (type === "season_review") {
+    return Number(getRedesignedDropdownValue(document.getElementById("customNewsPartButton"))) === 3 ? 15 : 14;
+  }
+  return CUSTOM_NEWS_TYPE_META[type]?.titleType ?? null;
+}
+
+function getCustomNewsTitleTemplates(type = getCustomNewsSelectedType()) {
+  const meta = CUSTOM_NEWS_TYPE_META[type];
+  const titleType = resolveCustomNewsTitleType(type);
+  if (!meta || titleType == null) return [];
+
+  if (meta.turningPoint) {
+    const entry = turningPointTitleTemplates.find(t => t.new_type === titleType);
+    return Array.isArray(entry?.turning_titles) ? entry.turning_titles : [];
+  }
+
+  const entry = newsTitleTemplates.find(t => t.new_type === titleType);
+  return Array.isArray(entry?.titles) ? entry.titles : [];
+}
+
+function refreshCustomNewsTitleTemplates() {
+  if (!customNewsTemplateButton || !customNewsTemplateMenu) return;
+
+  const type = getCustomNewsSelectedType();
+  const templates = getCustomNewsTitleTemplates(type);
+  if (type === "custom_new") {
+    customNewsTemplateWrap?.classList.add("d-none");
+    customNewsTitleInput?.classList.remove("d-none");
+    if (customNewsTitleInput) {
+      customNewsTitleInput.placeholder = getCustomNewsTitlePlaceholder(type);
+    }
+    setCustomNewsTemplateHelp("Custom articles need a manual title.");
+    return;
+  }
+
+  customNewsTemplateWrap?.classList.remove("d-none");
+  customNewsTitleInput?.classList.add("d-none");
+  if (customNewsTitleInput) customNewsTitleInput.value = "";
+
+  customNewsTemplateButton.disabled = false;
+
+  populateRedesignedDropdown({
+    buttonEl: customNewsTemplateButton,
+    menuEl: customNewsTemplateMenu,
+    items: templates.map((template, index) => ({ value: String(index), label: template })),
+    getValue: item => item.value,
+    getLabel: item => item.label,
+    placeholderLabel: "Automatic / default title",
+    includeEmpty: true,
+    emptyLabel: "Automatic / default title",
+    selectedValue: getRedesignedDropdownValue(customNewsTemplateButton),
+    bindToggle: false
+  });
+
+  if (templates.length) {
+    const selectedTemplate = getRedesignedDropdownValue(customNewsTemplateButton);
+    setCustomNewsTemplateHelp(
+      selectedTemplate !== ""
+        ? "The selected template will be rendered with the final article data when you create the news."
+        : "Choose a saved title template or leave the automatic default title."
+    );
+  } else {
+    setRedesignedDropdownSelection(customNewsTemplateButton, customNewsTemplateMenu, "", "Automatic / default title");
+    customNewsTemplateButton.disabled = true;
+    setCustomNewsTemplateHelp("This type uses the automatic default title.");
+  }
+}
+
+function updateCustomNewsImagePreview() {
+  const imageFile = document.getElementById("customNewsImageValue")?.value || "";
+  document.querySelectorAll(".custom-news-image-card").forEach(card => {
+    card.classList.toggle("selected", card.dataset.value === imageFile);
+  });
+}
+
+function bindCustomNewsLiveRefresh() {
+  if (!customNewsModalEl || customNewsModalEl.dataset.customNewsRefreshBound === "1") return;
+  customNewsModalEl.dataset.customNewsRefreshBound = "1";
+
+  const refreshAll = () => {
+    refreshCustomNewsTitleTemplates();
+    updateCustomNewsImagePreview();
+  };
+
+  customNewsModalEl.addEventListener("input", refreshAll);
+  customNewsModalEl.addEventListener("change", refreshAll);
+  customNewsModalEl.addEventListener("click", (e) => {
+    if (e.target.closest(".redesigned-dropdown-item")) {
+      setTimeout(refreshAll, 0);
+    }
+  });
+}
+
 async function loadCustomNewsOptions() {
   if (customNewsOptionsCache) return customNewsOptionsCache;
   const resp = await new Command("getCustomNewsOptions", {}).promiseExecute();
@@ -3878,6 +4180,7 @@ function renderCustomNewsParams(type, options) {
   const teams = options?.teams || [];
   const races = options?.races || [];
   const drivers = options?.drivers || [];
+  const allDrivers = options?.allDrivers?.length ? options.allDrivers : drivers;
 
   customNewsParams.replaceChildren();
 
@@ -3898,13 +4201,26 @@ function renderCustomNewsParams(type, options) {
   const makeCol = (className) => createEl("div", className);
 
   const makeInput = ({ id, type = "text", placeholder = "", min = null, value = null } = {}) => {
-    const input = createEl("input", "form-control");
+    const input = createEl("input", "custom-news-input");
     input.id = id;
     input.type = type;
     if (placeholder) input.placeholder = placeholder;
     if (min != null) input.min = String(min);
     if (value != null) input.value = String(value);
     return input;
+  };
+
+  const makeTextarea = ({ id, placeholder = "" } = {}) => {
+    const textarea = createEl("textarea", "custom-news-input");
+    textarea.id = id;
+    textarea.placeholder = placeholder;
+    return textarea;
+  };
+
+  const makeInfo = (text) => {
+    const info = createEl("div", "custom-news-info");
+    info.textContent = text;
+    return info;
   };
 
   const makeDropdown = ({ buttonId, menuId, placeholder }) => {
@@ -4460,7 +4776,505 @@ function renderCustomNewsParams(type, options) {
     return;
   }
 
-  const noParams = createEl("div", "text-muted");
+  if (type === "turning_point_technical_directive") {
+    const row = makeRow();
+
+    const componentCol = makeCol("col-md-6");
+    componentCol.append(
+      makeLabel("customNewsComponentButton", "Component"),
+      makeDropdown({ buttonId: "customNewsComponentButton", menuId: "customNewsComponentMenu", placeholder: "Select component" }).wrap
+    );
+
+    const reasonCol = makeCol("col-md-6");
+    reasonCol.append(
+      makeLabel("customNewsReason", "Reason"),
+      makeInput({ id: "customNewsReason", placeholder: "e.g. improve safety" })
+    );
+
+    row.append(componentCol, reasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsComponentButton"),
+      menuEl: document.getElementById("customNewsComponentMenu"),
+      items: Object.entries(part_full_names)
+        .filter(([id]) => ["3", "4", "5", "6", "7", "8"].includes(String(id)))
+        .map(([id, label]) => ({ id, label })),
+      getValue: item => item.id,
+      getLabel: item => item.label,
+      placeholderLabel: "Select component",
+      includeEmpty: true,
+      emptyLabel: "Select component",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_transfer") {
+    const row = makeRow();
+
+    const teamCol = makeCol("col-md-4");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const driverOutCol = makeCol("col-md-4");
+    driverOutCol.append(
+      makeLabel("customNewsDriverOutButton", "Driver out"),
+      makeDropdown({ buttonId: "customNewsDriverOutButton", menuId: "customNewsDriverOutMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const driverInCol = makeCol("col-md-4");
+    driverInCol.append(
+      makeLabel("customNewsDriverInButton", "Driver in"),
+      makeDropdown({ buttonId: "customNewsDriverInButton", menuId: "customNewsDriverInMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const reserveCol = makeCol("col-md-6");
+    reserveCol.append(
+      makeLabel("customNewsReserveDriverButton", "Substitute driver (optional)"),
+      makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No substitute" }).wrap
+    );
+
+    row.append(teamCol, driverOutCol, driverInCol, reserveCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: item => item.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    ["Out", "In"].forEach(kind => {
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsDriver${kind}Button`),
+        menuEl: document.getElementById(`customNewsDriver${kind}Menu`),
+        items: allDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: "Select driver",
+        includeEmpty: true,
+        emptyLabel: "Select driver",
+        selectedValue: "",
+        bindToggle: true
+      });
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsReserveDriverButton"),
+      menuEl: document.getElementById("customNewsReserveDriverMenu"),
+      items: allDrivers,
+      getValue: item => item.id,
+      getLabel: driverLabel,
+      placeholderLabel: "No substitute",
+      includeEmpty: true,
+      emptyLabel: "No substitute",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_investment") {
+    const row = makeRow();
+
+    const teamCol = makeCol("col-md-6");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const countryCol = makeCol("col-md-6");
+    countryCol.append(
+      makeLabel("customNewsCountryButton", "Investor country"),
+      makeDropdown({ buttonId: "customNewsCountryButton", menuId: "customNewsCountryMenu", placeholder: "Select country" }).wrap
+    );
+
+    const amountCol = makeCol("col-md-6");
+    amountCol.append(
+      makeLabel("customNewsInvestmentAmount", "Investment amount (millions)"),
+      makeInput({ id: "customNewsInvestmentAmount", type: "number", min: 1, value: 60 })
+    );
+
+    const shareCol = makeCol("col-md-6");
+    shareCol.append(
+      makeLabel("customNewsInvestmentShare", "Share purchased (%)"),
+      makeInput({ id: "customNewsInvestmentShare", type: "number", min: 1, value: 20 })
+    );
+
+    row.append(teamCol, countryCol, amountCol, shareCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: item => item.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsCountryButton"),
+      menuEl: document.getElementById("customNewsCountryMenu"),
+      items: CUSTOM_NEWS_INVESTMENT_COUNTRIES.map(country => ({ value: country, label: country })),
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select country",
+      includeEmpty: true,
+      emptyLabel: "Select country",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_dsq") {
+    const row = makeRow();
+
+    const raceCol = makeCol("col-md-6");
+    raceCol.append(
+      makeLabel("customNewsRaceButton", "Race"),
+      makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
+    );
+
+    const teamCol = makeCol("col-md-6");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const componentCol = makeCol("col-12");
+    componentCol.append(
+      makeLabel("customNewsDsqComponentButton", "Component"),
+      makeDropdown({ buttonId: "customNewsDsqComponentButton", menuId: "customNewsDsqComponentMenu", placeholder: "Select component" }).wrap
+    );
+
+    row.append(raceCol, teamCol, componentCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: races,
+      getValue: item => item.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: item => item.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDsqComponentButton"),
+      menuEl: document.getElementById("customNewsDsqComponentMenu"),
+      items: CUSTOM_NEWS_DSQ_COMPONENTS.map(component => ({ value: component, label: component })),
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select component",
+      includeEmpty: true,
+      emptyLabel: "Select component",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_race_substitution") {
+    const row = makeRow();
+
+    const raceCol = makeCol("col-md-6");
+    raceCol.append(
+      makeLabel("customNewsRaceButton", "Original race"),
+      makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
+    );
+
+    const replacementCol = makeCol("col-md-6");
+    replacementCol.append(
+      makeLabel("customNewsReplacementTrackButton", "Replacement track"),
+      makeDropdown({ buttonId: "customNewsReplacementTrackButton", menuId: "customNewsReplacementTrackMenu", placeholder: "Select track" }).wrap
+    );
+
+    const reasonCol = makeCol("col-12");
+    reasonCol.append(
+      makeLabel("customNewsReason", "Reason"),
+      makeInput({ id: "customNewsReason", placeholder: "e.g. logistical challenges" })
+    );
+
+    row.append(raceCol, replacementCol, reasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: races,
+      getValue: item => item.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsReplacementTrackButton"),
+      menuEl: document.getElementById("customNewsReplacementTrackMenu"),
+      items: races,
+      getValue: item => item.trackId,
+      getLabel: item => countries_data?.[item?.code]?.country || item?.label || "",
+      placeholderLabel: "Select track",
+      includeEmpty: true,
+      emptyLabel: "Select track",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_injury") {
+    const row = makeRow();
+
+    const driverCol = makeCol("col-md-6");
+    driverCol.append(
+      makeLabel("customNewsDriverButton", "Affected driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const reserveCol = makeCol("col-md-6");
+    reserveCol.append(
+      makeLabel("customNewsReserveDriverButton", "Reserve driver (optional)"),
+      makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No reserve driver" }).wrap
+    );
+
+    const conditionCol = makeCol("col-md-6");
+    conditionCol.append(
+      makeLabel("customNewsInjuryCondition", "Condition"),
+      makeInput({ id: "customNewsInjuryCondition", placeholder: "e.g. a sprained wrist" })
+    );
+
+    const reasonCol = makeCol("col-md-6");
+    reasonCol.append(
+      makeLabel("customNewsReason", "Reason"),
+      makeInput({ id: "customNewsReason", placeholder: "e.g. a training accident" })
+    );
+
+    const racesAffectedCol = makeCol("col-md-6");
+    racesAffectedCol.append(
+      makeLabel("customNewsRacesAffected", "Races affected"),
+      makeInput({ id: "customNewsRacesAffected", type: "number", min: 1, value: 1 })
+    );
+
+    row.append(driverCol, reserveCol, conditionCol, reasonCol, racesAffectedCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: item => item.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsReserveDriverButton"),
+      menuEl: document.getElementById("customNewsReserveDriverMenu"),
+      items: allDrivers,
+      getValue: item => item.id,
+      getLabel: driverLabel,
+      placeholderLabel: "No reserve driver",
+      includeEmpty: true,
+      emptyLabel: "No reserve driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_engine_regulation") {
+    const row = makeRow();
+
+    const changeTypeCol = makeCol("col-md-6");
+    changeTypeCol.append(
+      makeLabel("customNewsChangeTypeButton", "Change type"),
+      makeDropdown({ buttonId: "customNewsChangeTypeButton", menuId: "customNewsChangeTypeMenu", placeholder: "Select type" }).wrap
+    );
+
+    const changeAreaCol = makeCol("col-md-6");
+    changeAreaCol.append(
+      makeLabel("customNewsChangeAreaButton", "Main change area"),
+      makeDropdown({ buttonId: "customNewsChangeAreaButton", menuId: "customNewsChangeAreaMenu", placeholder: "Select area" }).wrap
+    );
+
+    row.append(changeTypeCol, changeAreaCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsChangeTypeButton"),
+      menuEl: document.getElementById("customNewsChangeTypeMenu"),
+      items: [{ value: "minor", label: "Minor" }, { value: "major", label: "Major" }],
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select type",
+      includeEmpty: false,
+      selectedValue: "minor",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsChangeAreaButton"),
+      menuEl: document.getElementById("customNewsChangeAreaMenu"),
+      items: CUSTOM_NEWS_ENGINE_CHANGE_AREAS.map(area => ({ value: area, label: area })),
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select area",
+      includeEmpty: true,
+      emptyLabel: "Select area",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_young_drivers") {
+    const row = makeRow();
+    const infoCol = makeCol("col-12");
+    infoCol.append(makeInfo("Pick two or three prospects. Approving this turning point will boost the selected drivers."));
+    row.append(infoCol);
+
+    [1, 2, 3].forEach(i => {
+      const col = makeCol("col-md-4");
+      col.append(
+        makeLabel(`customNewsProspect${i}Button`, `Prospect ${i}${i === 3 ? " (optional)" : ""}`),
+        makeDropdown({ buttonId: `customNewsProspect${i}Button`, menuId: `customNewsProspect${i}Menu`, placeholder: i === 3 ? "Optional" : "Select driver" }).wrap
+      );
+      row.append(col);
+
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsProspect${i}Button`),
+        menuEl: document.getElementById(`customNewsProspect${i}Menu`),
+        items: allDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: i === 3 ? "Optional" : "Select driver",
+        includeEmpty: true,
+        emptyLabel: i === 3 ? "Optional" : "Select driver",
+        selectedValue: "",
+        bindToggle: true
+      });
+    });
+
+    customNewsParams.append(row);
+    return;
+  }
+
+  if (type === "turning_point_aduo") {
+    const row = makeRow();
+    const quarterCol = makeCol("col-md-6");
+    quarterCol.append(
+      makeLabel("customNewsAduoQuarterButton", "ADUO quarter"),
+      makeDropdown({ buttonId: "customNewsAduoQuarterButton", menuId: "customNewsAduoQuarterMenu", placeholder: "Select quarter" }).wrap
+    );
+    row.append(quarterCol);
+    const infoCol = makeCol("col-12");
+    infoCol.append(makeInfo("The manufacturers and upgrade package will be generated automatically from the current engine balance."));
+    row.append(infoCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsAduoQuarterButton"),
+      menuEl: document.getElementById("customNewsAduoQuarterMenu"),
+      items: CUSTOM_NEWS_ADUO_QUARTERS,
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select quarter",
+      includeEmpty: false,
+      selectedValue: "1",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "custom_new") {
+    const row = makeRow();
+
+    const galleryCol = makeCol("col-12");
+    galleryCol.append(makeLabel("customNewsImageGrid", "Picture"));
+
+    const imageValue = document.createElement("input");
+    imageValue.type = "hidden";
+    imageValue.id = "customNewsImageValue";
+    galleryCol.append(imageValue);
+
+    const imageGrid = createEl("div", "custom-news-image-grid");
+    imageGrid.id = "customNewsImageGrid";
+
+    CUSTOM_NEWS_IMAGE_FILES.forEach(file => {
+      const imageCard = document.createElement("button");
+      imageCard.type = "button";
+      imageCard.className = "custom-news-image-card";
+      imageCard.dataset.value = file;
+
+      const thumbnail = document.createElement("img");
+      thumbnail.src = getCustomNewsImageSrc(file);
+      thumbnail.alt = file;
+      thumbnail.loading = "lazy";
+
+      const caption = document.createElement("span");
+      caption.className = "custom-news-image-caption";
+      caption.textContent = file;
+
+      imageCard.append(thumbnail, caption);
+      imageCard.addEventListener("click", () => {
+        imageValue.value = file;
+        updateCustomNewsImagePreview();
+      });
+
+      imageGrid.appendChild(imageCard);
+    });
+
+    galleryCol.append(imageGrid);
+
+    const promptCol = makeCol("col-12");
+    promptCol.append(
+      makeLabel("customNewsPrompt", "Article prompt"),
+      makeTextarea({ id: "customNewsPrompt", placeholder: "Describe the story you want the AI to write. The article will still be grounded in the save context and current standings." })
+    );
+
+    const infoCol = makeCol("col-12");
+    infoCol.append(makeInfo("Custom articles are stored internally as custom_new entries. The title comes from the field above and the body is generated when you open the article."));
+
+    row.append(galleryCol, promptCol, infoCol);
+    customNewsParams.append(row);
+    updateCustomNewsImagePreview();
+    return;
+  }
+
+  const noParams = createEl("div", "custom-news-info");
   noParams.textContent = "No extra parameters for this type.";
   customNewsParams.append(noParams);
 }
@@ -4478,27 +5292,33 @@ async function openCustomNewsModal() {
   }
 
   const defaultType = CUSTOM_NEWS_TYPE_DEFS[0]?.value || "";
-  populateRedesignedDropdown({
+  populateCustomNewsTypeDropdown({
     buttonEl: customNewsTypeButton,
     menuEl: customNewsTypeMenu,
     items: CUSTOM_NEWS_TYPE_DEFS,
-    getValue: t => t.value,
-    getLabel: t => t.label,
-    placeholderLabel: "Select type",
-    includeEmpty: false,
     selectedValue: defaultType,
-    bindToggle: false,
     onSelect: (value) => {
       setCustomNewsError(null);
       renderCustomNewsParams(String(value), options);
+      refreshCustomNewsTitleTemplates();
     }
   });
 
   const defaultDate = options.currentDay ? excelToDate(options.currentDay) : new Date();
   if (customNewsDateInput) customNewsDateInput.value = toIsoDate(defaultDate);
   if (customNewsTitleInput) customNewsTitleInput.value = "";
+  if (customNewsTemplateButton) {
+    customNewsTemplateButton.disabled = false;
+    customNewsTemplateMenu?.replaceChildren();
+    setRedesignedDropdownSelection(customNewsTemplateButton, customNewsTemplateMenu, "", getCustomNewsTitlePlaceholder());
+    setRedesignedDropdownOpen(customNewsTemplateButton, false);
+  }
+  customNewsTemplateWrap?.classList.remove("d-none");
+  customNewsTitleInput?.classList.add("d-none");
 
   renderCustomNewsParams(getRedesignedDropdownValue(customNewsTypeButton), options);
+  refreshCustomNewsTitleTemplates();
+  bindCustomNewsLiveRefresh();
 
   customNewsModal.show();
 }
@@ -4507,13 +5327,16 @@ async function submitCustomNews() {
   if (!customNewsTypeButton) return;
   setCustomNewsError(null);
 
-  const type = getRedesignedDropdownValue(customNewsTypeButton);
+  const type = getCustomNewsSelectedType();
   if (!type) {
     setCustomNewsError("Select a type first.");
     return;
   }
   const dateIso = customNewsDateInput?.value || null;
   const title = customNewsTitleInput?.value || "";
+  const titleTemplateRaw = getRedesignedDropdownValue(customNewsTemplateButton);
+  const titleTemplateValue = titleTemplateRaw !== "__custom__" ? Number(titleTemplateRaw) : null;
+  const titleTemplateIndex = Number.isInteger(titleTemplateValue) ? titleTemplateValue : null;
 
   const params = {};
 
@@ -4527,6 +5350,16 @@ async function submitCustomNews() {
     const btn = document.getElementById(id);
     const raw = getRedesignedDropdownValue(btn);
     return raw || null;
+  };
+  const strFromInputId = (id) => {
+    const el = document.getElementById(id);
+    return el?.value?.trim?.() || null;
+  };
+  const numFromInputId = (id) => {
+    const el = document.getElementById(id);
+    if (!el || el.value === "") return null;
+    const n = Number(el.value);
+    return Number.isFinite(n) ? n : null;
   };
 
   const raceId = numFromButtonId("customNewsRaceButton");
@@ -4553,8 +5386,8 @@ async function submitCustomNews() {
   const compType = strFromButtonId("customNewsCompTypeButton");
   if (compType) params.compType = compType;
 
-  const dropEl = document.getElementById('customNewsDrop');
-  if (dropEl && dropEl.value !== "") params.drop = Number(dropEl.value);
+  const drop = numFromInputId('customNewsDrop');
+  if (drop != null) params.drop = drop;
 
   const driver1Id = numFromButtonId("customNewsDriver1Button");
   if (driver1Id != null && driver1Id > 0) params.driver1Id = driver1Id;
@@ -4565,11 +5398,11 @@ async function submitCustomNews() {
   const part = numFromButtonId("customNewsPartButton");
   if (part != null && part > 0) params.part = part;
 
-  const salaryEl = document.getElementById('customNewsSalary');
-  if (salaryEl && salaryEl.value !== "") params.salary = Number(salaryEl.value);
+  const salary = numFromInputId('customNewsSalary');
+  if (salary != null) params.salary = salary;
 
-  const endSeasonEl = document.getElementById('customNewsEndSeason');
-  if (endSeasonEl && endSeasonEl.value !== "") params.endSeason = Number(endSeasonEl.value);
+  const endSeason = numFromInputId('customNewsEndSeason');
+  if (endSeason != null) params.endSeason = endSeason;
 
   const happyDriverId = numFromButtonId("customNewsHappyDriverButton");
   if (happyDriverId != null && happyDriverId > 0) params.happyDriverId = happyDriverId;
@@ -4601,8 +5434,74 @@ async function submitCustomNews() {
     params.drivers = list;
   }
 
+  if (type === "turning_point_technical_directive") {
+    params.componentId = numFromButtonId("customNewsComponentButton");
+    params.reason = strFromInputId("customNewsReason");
+  }
+
+  if (type === "turning_point_transfer") {
+    params.driverOutId = numFromButtonId("customNewsDriverOutButton");
+    params.driverInId = numFromButtonId("customNewsDriverInButton");
+    params.reserveDriverId = numFromButtonId("customNewsReserveDriverButton");
+  }
+
+  if (type === "turning_point_investment") {
+    params.country = strFromButtonId("customNewsCountryButton");
+    params.investmentAmount = numFromInputId("customNewsInvestmentAmount");
+    params.investmentShare = numFromInputId("customNewsInvestmentShare");
+  }
+
+  if (type === "turning_point_dsq") {
+    params.component = strFromButtonId("customNewsDsqComponentButton");
+  }
+
+  if (type === "turning_point_race_substitution") {
+    params.newRaceTrackId = numFromButtonId("customNewsReplacementTrackButton");
+    params.reason = strFromInputId("customNewsReason");
+  }
+
+  if (type === "turning_point_injury") {
+    params.reserveDriverId = numFromButtonId("customNewsReserveDriverButton");
+    params.condition = strFromInputId("customNewsInjuryCondition");
+    params.reason = strFromInputId("customNewsReason");
+    params.racesAffected = numFromInputId("customNewsRacesAffected");
+  }
+
+  if (type === "turning_point_engine_regulation") {
+    params.changeType = strFromButtonId("customNewsChangeTypeButton");
+    params.changeArea = strFromButtonId("customNewsChangeAreaButton");
+  }
+
+  if (type === "turning_point_young_drivers") {
+    params.prospectDriverIds = [1, 2, 3]
+      .map(i => numFromButtonId(`customNewsProspect${i}Button`))
+      .filter(id => Number.isFinite(id) && id > 0);
+  }
+
+  if (type === "turning_point_aduo") {
+    params.quarter = numFromButtonId("customNewsAduoQuarterButton");
+  }
+
+  if (type === "custom_new") {
+    params.image = document.getElementById("customNewsImageValue")?.value || null;
+    params.prompt = strFromInputId("customNewsPrompt");
+
+    if (!title.trim()) {
+      setCustomNewsError("Custom articles need a title.");
+      return;
+    }
+    if (!params.image) {
+      setCustomNewsError("Select an image for the custom article.");
+      return;
+    }
+    if (!params.prompt) {
+      setCustomNewsError("Write the prompt for the custom article.");
+      return;
+    }
+  }
+
   try {
-    await new Command("createCustomNews", { type, title, dateIso, params }).promiseExecute();
+    await new Command("createCustomNews", { type, title, titleTemplateIndex, dateIso, params }).promiseExecute();
     customNewsModal?.hide();
     customNewsOptionsCache = null;
     generateNews();

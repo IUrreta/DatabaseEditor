@@ -1446,9 +1446,18 @@
                 <input type="date" class="custom-news-input" id="customNewsDateInput">
               </div>
               <div class="col-12">
-                <label class="form-label bold-font" for="customNewsTitleInput">Title</label>
-                <input type="text" class="custom-news-input" id="customNewsTitleInput"
-                  placeholder="Leave empty to auto-generate a title">
+                <label class="form-label bold-font" for="customNewsTemplateButton">Title</label>
+                <div class="dropdown-global" id="customNewsTemplateWrap">
+                  <button type="button" class="redesigned-dropdown bold-font" id="customNewsTemplateButton" aria-haspopup="true"
+                    aria-expanded="false" data-value="">
+                    <span class="dropdown-label">Automatic / default title</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu" id="customNewsTemplateMenu" style="font-family: Formula1;">
+                  </ul>
+                </div>
+                <input type="text" class="custom-news-input d-none mt-2" id="customNewsTitleInput" placeholder="Write the article title">
+                <div class="custom-news-help mt-2" id="customNewsTemplateHelp">Choose a saved title template or leave it on the automatic default title.</div>
               </div>
             </div>
             <div class="mt-3" id="customNewsParams"></div>
