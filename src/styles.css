@@ -13795,7 +13795,7 @@ body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
   flex-direction: column;
   /* width: 50%; */
   min-width: 63%;
-  margin-top: -90px;
+  margin-top: 100px;
   z-index: 1;
 }
 
@@ -13803,6 +13803,7 @@ body:has(#modpill.active) #mods2026View:not(.d-none) .mod-subtitle-letter {
   flex-direction: row;
   padding: 0 26px;
   height: 100%;
+  align-items: flex-start;
 }
 
 #mods2026View .changes-grid{
@@ -19401,6 +19402,19 @@ p.news-error-api-key {
 @media (max-height: 950px) {
   .session-results-row > div {
     padding: 2px 8px;
+  }
+
+  .changes-grid{
+    gap: 15px !important;
+  }
+
+  .recommended-downloads{
+    margin-top: -10px !important;
+    font-size: 14px !important;
+  }
+
+  .mod-name.title-2026{
+    margin-top: -50px !important;
   }
 }
 

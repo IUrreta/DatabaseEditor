@@ -1,3 +1,4 @@
+import { saveAs } from "file-saver";
 import { Command } from "../backend/command.js";
 
 const isLocalhost =
@@ -14,37 +15,84 @@ if (isLocalhost) {
   function createWindow() {
     windowEl = document.createElement("div");
     windowEl.className = "devtools-window";
-    windowEl.innerHTML = `
-      <div class="devtools-header">
-        <div class="devtools-title">Developer</div>
-        <button class="devtools-close" type="button" aria-label="Close">×</button>
-      </div>
-      <div class="devtools-body">
-        <button class="devtools-action" type="button">Set all drivers stats to 85</button>
-      </div>
-    `;
+
+    const headerEl = document.createElement("div");
+    headerEl.className = "devtools-header";
+
+    const titleEl = document.createElement("div");
+    titleEl.className = "devtools-title";
+    titleEl.textContent = "Developer";
+
+    const closeButton = document.createElement("button");
+    closeButton.className = "devtools-close";
+    closeButton.type = "button";
+    closeButton.setAttribute("aria-label", "Close");
+    closeButton.textContent = "\u00D7";
+
+    const bodyEl = document.createElement("div");
+    bodyEl.className = "devtools-body";
+
+    const statsButton = document.createElement("button");
+    statsButton.className = "devtools-action";
+    statsButton.type = "button";
+    statsButton.textContent = "Set all drivers stats to 85";
+
+    const downloadButton = document.createElement("button");
+    downloadButton.className = "devtools-action";
+    downloadButton.type = "button";
+    downloadButton.textContent = "Download database (.db)";
+
+    headerEl.appendChild(titleEl);
+    headerEl.appendChild(closeButton);
+    bodyEl.appendChild(statsButton);
+    bodyEl.appendChild(downloadButton);
+    windowEl.appendChild(headerEl);
+    windowEl.appendChild(bodyEl);
 
     document.body.appendChild(windowEl);
 
-    windowEl.querySelector(".devtools-close").addEventListener("click", () => {
+    closeButton.addEventListener("click", () => {
       closeWindow();
     });
 
-    windowEl.querySelector(".devtools-action").addEventListener("click", () => {
-      const btn = windowEl.querySelector(".devtools-action");
-      btn.disabled = true;
-      btn.textContent = "Working...";
+    statsButton.addEventListener("click", () => {
+      statsButton.disabled = true;
+      statsButton.textContent = "Working...";
 
-      const command = new Command("devSetAllDriversStats85", {});
-      command.execute();
+      new Command("devSetAllDriversStats85", {}).execute();
 
       setTimeout(() => {
-        btn.disabled = false;
-        btn.textContent = "Set all drivers stats to 85";
+        statsButton.disabled = false;
+        statsButton.textContent = "Set all drivers stats to 85";
       }, 1200);
     });
 
-    const headerEl = windowEl.querySelector(".devtools-header");
+    downloadButton.addEventListener("click", async () => {
+      downloadButton.disabled = true;
+      downloadButton.textContent = "Downloading...";
+
+      try {
+        const response = await new Command("devDownloadDatabase", {}).promiseExecute();
+        const filename = response?.content?.filename ?? "database.db";
+        const fileData = response?.content?.fileData;
+
+        if (!fileData) {
+          throw new Error("Missing database data");
+        }
+
+        saveAs(new Blob([fileData], { type: "application/vnd.sqlite3" }), filename);
+        downloadButton.textContent = "Downloaded";
+      } catch (error) {
+        console.error(error);
+        downloadButton.textContent = "Download failed";
+      }
+
+      setTimeout(() => {
+        downloadButton.disabled = false;
+        downloadButton.textContent = "Download database (.db)";
+      }, 1200);
+    });
+
     headerEl.addEventListener("pointerdown", (e) => {
       if (e.button !== 0) return;
       isDragging = true;

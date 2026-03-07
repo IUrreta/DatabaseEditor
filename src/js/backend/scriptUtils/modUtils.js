@@ -1464,13 +1464,89 @@ export function change2025Standings(mod = "2026") {
 export function fixesMod2026(){
     //if has trhe extra drivers
     let wasError = false;
+    let badStandings = false;
     const extraDrivers = queryDB(`SELECT value FROM Custom_2026_SeasonMod WHERE key = 'extra-drivers-2026'`, [], "singleValue");
     const isWrong = queryDB(`SELECT Gender FROM Staff_BasicData WHERE StaffID = 654`, [], "singleValue");
     if (extraDrivers === "1" && isWrong === 0) {
         queryDB(`UPDATE Staff_BasicData SET Gender = 1 WHERE StaffID = 654`, [], "run")
         wasError = true;
     }
-    return wasError;
+
+    //get all contracted drivers with teamids between 0 and 10 or 32 and posInTeam <= 2
+    const f1Drivers = queryDB(`SELECT StaffID, PosInTeam FROM Staff_Contracts WHERE (TeamID <= 10 OR TeamID = 32) AND PosInTeam <= 2 AND StaffID IN (SELECT StaffID FROM Staff_DriverData)`, [], "allRows");
+    //check that ALL of them are in Races_DriverStandings for currentSeason
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow");
+    const season = daySeason[1];
+    for (let driver of f1Drivers) {
+        const standing = queryDB(`SELECT 1 FROM Races_DriverStandings WHERE DriverID = ? AND SeasonID = ? AND RaceFormula = 1`, [driver[0], season], "singleRow");
+        if (!standing) {
+            console.log("Driver with StaffID:", driver[0], "is missing from Races_DriverStandings for season:", season);
+            wasError = true;
+            badStandings = true;
+        }
+    }
+
+    //check if the standings are correctly ordered by points desc and then by position asc (there cannot be any duplicate positions), if not, log the driverids that are in the wrong order
+    const standingsCheck = queryDB(`SELECT DriverID, Points, Position FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1 ORDER BY Position ASC`, [season], "allRows");
+    let lastPoints = Infinity;
+    let lastPosition = 0;
+    for (let standing of standingsCheck) {
+        const points = standing[1];
+        const position = standing[2];
+        const staffID = standing[0];
+        if (points > lastPoints || (points === lastPoints && position <= lastPosition)) {
+            console.log("Driver with StaffID:", staffID, "is in the wrong order in the standings. Points:", points, "Position:", position);
+            wasError = true;
+            badStandings = true;
+        }
+        lastPoints = points;
+        lastPosition = position;
+    }
+
+    let newStandingsDict = null;
+
+    if (badStandings) {
+        //order corretcly the driver standings by points desc and then by position asc, and update the position accordingly
+        const standings = queryDB(`SELECT DriverID, Points FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1 ORDER BY Points DESC`, [season], "allRows");
+        let position = 1;
+        //build a dictionary with driverid as key and points as valule, delete all from standingsa and season = current season and raceformula = 1, then insert them again with the correct position
+        let standingsDict = {};
+        standings.forEach((standing) => {
+            standingsDict[standing[0]] = standing[1];
+        });
+        queryDB(`DELETE FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1`, [season], 'run');
+        queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = NULL WHERE AssignedCarNumber IS NOT NULL`, [], 'run');
+        Object.entries(standingsDict).sort((a, b) => b[1] - a[1]).forEach(([driverId, points]) => {
+            //check if the driverID is in f1drivers, if not, skip
+            if (!f1Drivers.some(d => d[0] === Number(driverId))) {
+                return;
+            }
+            queryDB(`INSERT INTO Races_DriverStandings (SeasonID, DriverID, Points, Position, LastPointsChange, LastPositionChange, RaceFormula) VALUES (?, ?, ?, ?, 0, 0, 1)`, [season, driverId, points, position], 'run');
+            //set its assignedCarNumber based on PosInTeam in Staff_Contracts, if PosInTeam is 1, assignedCarNumber is 1, if PosInTeam is 2, assignedCarNumber is 2
+            let posInTeam = f1Drivers.find(d => d[0] === Number(driverId))[1];
+            queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ? WHERE StaffID = ?`, [posInTeam, driverId], 'run');
+            position++;
+        });
+        let newStandings = queryDB(`SELECT DriverID, Points, Position FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1 ORDER BY Position ASC`, [season], "allRows");
+        //create a dictionary with the new standings        
+        newStandingsDict = {};
+        newStandings.forEach((standing) => {
+            newStandingsDict[standing[2]] = {
+                points: standing[1],
+                driverId: standing[0]
+            };
+        });
+    }
+
+    let errorDict = {
+        "standings": badStandings,
+        "newStandings": newStandingsDict,
+        "extraDrivers": isWrong === 0,
+        "generalWasError": wasError
+    };
+
+
+    return errorDict;
 }
 
 function updateRecordsTo2026(){

@@ -195,7 +195,8 @@ const workerCommands = {
     }
 
     const wasError2026 = fixesMod2026();
-    if (wasError2026) {
+    console.log("Was error 2026:", wasError2026);
+    if (wasError2026.generalWasError) {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2026 DLC has been automatically fixed", unlocksDownload: true });
     }
 
@@ -379,6 +380,22 @@ const workerCommands = {
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
+  },
+  devDownloadDatabase: (data, postMessage) => {
+    const db = getDatabase();
+    const metadata = getMetadata();
+
+    if (!db || !metadata) {
+      throw new Error("No database loaded");
+    }
+
+    postMessage({
+      responseMessage: "Dev database downloaded",
+      content: {
+        filename: metadata.filename + ".db",
+        fileData: db.export()
+      }
+    });
   },
   editPerformance: (data, postMessage) => {
     let globals = getGlobals();
