@@ -1424,45 +1424,46 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
         <div class="modal-header custom-header">
-          <h4 class="modal-title bold-font">Create custom news</h4>
+          <h4 class="modal-title bold-font" id="customNewsModalTitle">Create custom news</h4>
         </div>
         <div class="modal-body custom-body">
-          <div id="customNewsForm">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label bold-font" for="customNewsTypeButton">Type</label>
-                <div class="dropdown-global">
-                  <button type="button" class="redesigned-dropdown bold-font" id="customNewsTypeButton" aria-haspopup="true"
-                    aria-expanded="false" data-value="">
-                    <span class="dropdown-label">Select type</span>
-                    <i class="redesigned-chevron"></i>
-                  </button>
-                  <ul class="redesigned-dropdown-menu" id="customNewsTypeMenu" style="font-family: Formula1;">
-                  </ul>
+            <div id="customNewsForm">
+              <div class="custom-news-row">
+                <div class="custom-news-stack" data-span="6">
+                  <span class="custom-news-label bold-font">Type</span>
+                  <div class="dropdown-global">
+                    <button type="button" class="redesigned-dropdown bold-font" id="customNewsTypeButton" aria-haspopup="true"
+                      aria-expanded="false" data-value="">
+                      <span class="dropdown-label">Select type</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu" id="customNewsTypeMenu" style="font-family: Formula1;">
+                    </ul>
+                  </div>
+                </div>
+                <div class="custom-news-stack" data-span="6">
+                  <span class="custom-news-label bold-font">Date</span>
+                  <input type="date" class="custom-news-input" id="customNewsDateInput">
                 </div>
               </div>
-              <div class="col-md-6">
-                <label class="form-label bold-font" for="customNewsDateInput">Date</label>
-                <input type="date" class="custom-news-input" id="customNewsDateInput">
-              </div>
-              <div class="col-12">
-                <label class="form-label bold-font" for="customNewsTemplateButton">Title</label>
-                <div class="dropdown-global" id="customNewsTemplateWrap">
-                  <button type="button" class="redesigned-dropdown bold-font" id="customNewsTemplateButton" aria-haspopup="true"
-                    aria-expanded="false" data-value="">
-                    <span class="dropdown-label">Automatic / default title</span>
-                    <i class="redesigned-chevron"></i>
-                  </button>
-                  <ul class="redesigned-dropdown-menu" id="customNewsTemplateMenu" style="font-family: Formula1;">
-                  </ul>
+              <div class="custom-news-row">
+                <div class="custom-news-stack" data-span="12">
+                  <span class="custom-news-label bold-font">Title</span>
+                  <div class="dropdown-global" id="customNewsTemplateWrap">
+                    <button type="button" class="redesigned-dropdown bold-font" id="customNewsTemplateButton" aria-haspopup="true"
+                      aria-expanded="false" data-value="">
+                      <span class="dropdown-label">Automatic / default title</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu" id="customNewsTemplateMenu" style="font-family: Formula1;">
+                    </ul>
+                  </div>
+                  <input type="text" class="custom-news-input custom-news-hidden custom-news-title-input" id="customNewsTitleInput" placeholder="Write the article title">
                 </div>
-                <input type="text" class="custom-news-input d-none mt-2" id="customNewsTitleInput" placeholder="Write the article title">
-                <div class="custom-news-help mt-2" id="customNewsTemplateHelp">Choose a saved title template or leave it on the automatic default title.</div>
               </div>
+              <div class="custom-news-params custom-news-params-top" id="customNewsParams"></div>
+              <div class="custom-news-error custom-news-hidden" id="customNewsError"></div>
             </div>
-            <div class="mt-3" id="customNewsParams"></div>
-            <div class="alert alert-danger d-none mt-3" id="customNewsError"></div>
-          </div>
         </div>
         <div class="modal-footer custom-footer">
           <button type="button" class="close-modal" data-bs-dismiss="modal" id="customNewsCancel">Cancel</button>
@@ -2216,17 +2217,6 @@
                   data-value="seasonreview">Season review</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="standingspill"
                   data-value="standings">Standings</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill"
-                  data-value="podiums">Podiums</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="dotdpill" data-value="dotd">Driver of
-                  the day</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill"
-                  data-value="champs">Championships</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill"
-                  data-value="points">Points</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
                 <div class="dropdown-submenu session-results-dropdown">
                   <a class="redesigned-dropdown-item session-results-root" style="cursor: pointer;"
                     data-value="sessionresults" data-no-check="1">
@@ -2240,6 +2230,18 @@
                       id="sessionResultsSessionMenu"></div>
                   </div>
                 </div>
+                <li class="custom-dropdown-section-title bold-font">Records</li>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill"
+                  data-value="podiums">Podiums</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="dotdpill" data-value="dotd">Driver of
+                  the day</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill"
+                  data-value="champs">Championships</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill"
+                  data-value="points">Points</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
               </ul>
             </div>
             <div class="dropdown-global">

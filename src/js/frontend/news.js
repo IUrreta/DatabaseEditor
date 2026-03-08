@@ -1,4 +1,4 @@
-import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors, part_full_names } from "./config";
+import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors, part_full_names, CUSTOM_NEWS_TYPE_META, CUSTOM_NEWS_INVESTMENT_COUNTRIES, CUSTOM_NEWS_DSQ_COMPONENTS, CUSTOM_NEWS_ENGINE_CHANGE_AREAS, CUSTOM_NEWS_ADUO_QUARTERS, CUSTOM_NEWS_IMAGE_FILES } from "./config";
 import { Command } from "../backend/command";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
@@ -3765,94 +3765,11 @@ document.querySelector("#reloadNews").addEventListener("click", async () => {
   generateNews();
 });
 
-const CUSTOM_NEWS_TYPE_META = {
-  race_result: { label: "Race result", titleType: 2, group: "normal" },
-  quali_result: { label: "Qualifying result", titleType: 1, group: "normal" },
-  race_reaction: { label: "Post-race reactions", titleType: 16, group: "normal" },
-  fake_transfer: { label: "Fake transfer rumor", titleType: 7, group: "normal" },
-  big_transfer: { label: "Big transfer confirmed", titleType: 6, group: "normal" },
-  massive_exit: { label: "Massive exit", titleType: 17, group: "normal" },
-  massive_signing: { label: "Massive signing", titleType: 18, group: "normal" },
-  contract_renewal: { label: "Contract renewal", titleType: 10, group: "normal" },
-  silly_season_rumors: { label: "Silly season rumors", titleType: 4, group: "normal" },
-  team_comparison: { label: "Team comparison", group: "normal" },
-  driver_comparison: { label: "Driver comparison", titleType: 13, group: "normal" },
-  season_review: { label: "Season review", group: "normal" },
-  potential_champion: { label: "Potential champion", titleType: 8, group: "normal" },
-  world_champion: { label: "World champion", titleType: 9, group: "normal" },
-  next_season_grid: { label: "Next season grid", titleType: 19, group: "normal" },
-  feeder_series_review: { label: "Feeder series review", titleType: 20, group: "normal" },
-  turning_point_technical_directive: { label: "Technical directive", titleType: 100, turningPoint: true, group: "turning_point" },
-  turning_point_transfer: { label: "Mid-season transfer", titleType: 101, turningPoint: true, group: "turning_point" },
-  turning_point_investment: { label: "Investment", titleType: 102, turningPoint: true, group: "turning_point" },
-  turning_point_dsq: { label: "DSQ", titleType: 103, turningPoint: true, group: "turning_point" },
-  turning_point_race_substitution: { label: "Race substitution", titleType: 105, turningPoint: true, group: "turning_point" },
-  turning_point_injury: { label: "Injury or illness", titleType: 106, turningPoint: true, group: "turning_point" },
-  turning_point_engine_regulation: { label: "Engine regulation", titleType: 107, turningPoint: true, group: "turning_point" },
-  turning_point_young_drivers: { label: "Young drivers", titleType: 108, turningPoint: true, group: "turning_point" },
-  turning_point_aduo: { label: "ADUO", titleType: 109, turningPoint: true, group: "turning_point" },
-  custom_new: { label: "Custom article", group: "custom" }
-};
-
 const CUSTOM_NEWS_TYPE_DEFS = Object.entries(CUSTOM_NEWS_TYPE_META).map(([value, meta]) => ({
   value,
   label: meta.label,
   group: meta.group || "normal"
 }));
-
-const CUSTOM_NEWS_INVESTMENT_COUNTRIES = [
-  "China",
-  "Saudi Arabia",
-  "United Arab Emirates",
-  "India",
-  "Russia",
-  "South Africa",
-  "Qatar",
-  "Bahrain",
-  "Singapore",
-  "Vietnam"
-];
-
-const CUSTOM_NEWS_DSQ_COMPONENTS = [
-  "engine brake map",
-  "fuel flow",
-  "front wing",
-  "rear wing",
-  "diffuser",
-  "floor",
-  "brake ducts",
-  "suspension",
-  "gearbox",
-  "cooling system",
-  "hydraulics",
-  "clutch",
-  "plank wear"
-];
-
-const CUSTOM_NEWS_ENGINE_CHANGE_AREAS = [
-  "fuel flow monitoring",
-  "ERS deployment limits",
-  "MGU-K usage rules",
-  "cooling system allowances",
-  "gearbox durability limits",
-  "turbo efficiency limits",
-  "oil consumption rules",
-  "hybrid system architecture",
-  "engine architecture layout",
-  "combustion concept rules",
-  "turbocharger design limits",
-  "energy recovery system redesign",
-  "fuel system design rules",
-  "power unit packaging regulations"
-];
-
-const CUSTOM_NEWS_ADUO_QUARTERS = [
-  { value: "1", label: "1st quarter" },
-  { value: "2", label: "2nd quarter" },
-  { value: "3", label: "3rd quarter" }
-];
-
-const CUSTOM_NEWS_IMAGE_FILES = ['1_gar.webp', '1_media.webp', '1_pad.webp', '1_shot.webp', '10_gar.webp', '10_pad.webp', '102_pad.webp', '105_pad.webp', '107_pad.webp', '11_pad.webp', '116_pad.webp', '12_pad.webp', '13_pad.webp', '14_pad.webp', '142_pad.webp', '144_pad.webp', '15_pad.webp', '17_pad.webp', '18_pad.webp', '2_gar.webp', '2_media.webp', '2_pad.webp', '2_shot.webp', '23_pad.webp', '242_pad.webp', '245_pad.webp', '255_pad.webp', '279_pad.webp', '286_pad.webp', '3_gar.webp', '3_media.webp', '3_pad.webp', '3_shot.webp', '373_pad.webp', '376_pad.webp', '4_gar.webp', '4_media.webp', '4_shot.webp', '5_gar.webp', '5_media.webp', '5_shot.webp', '6_gar.webp', '6_pad.webp', '6_shot.webp', '7_shot.webp', '77_pad.webp', '8_gar.webp', '8_shot.webp', '81_pad.webp', '83_pad.webp', '87_pad.webp', '9_gar.webp', '95_pad.webp', 'af_factory.webp', 'af1.webp', 'af2.webp', 'al_factory.webp', 'al1.webp', 'al2.webp', 'as_factory.webp', 'as1.webp', 'as2.webp', 'at_factory.webp', 'at1.webp', 'at2.webp', 'aus.webp', 'aus_car.webp', 'aus_tra.webp', 'aut.webp', 'aut_car.webp', 'aut_tra.webp', 'aze.webp', 'aze_car.webp', 'aze_tra.webp', 'bah.webp', 'bah_car.webp', 'bah_inv.webp', 'bah_tra.webp', 'bel.webp', 'bel_car.webp', 'bel_tra.webp', 'bra.webp', 'bra_car.webp', 'bra_tra.webp', 'can.webp', 'can_car.webp', 'can_tra.webp', 'champ1.webp', 'champ2.webp', 'champ3.webp', 'champ4.webp', 'champ5.webp', 'chi.webp', 'chi_car.webp', 'chi_inv.webp', 'chi_tra.webp', 'con1.webp', 'con10.webp', 'con11.webp', 'con12.webp', 'con2.webp', 'con3.webp', 'con4.webp', 'con5.webp', 'con6.webp', 'con7.webp', 'con8.webp', 'con9.webp', 'ct_factory.webp', 'dsq_1.webp', 'dsq_2.webp', 'dsq_3.webp', 'dsq_4.webp', 'dsq_5.webp', 'dsq_6.webp', 'dsq_7.webp', 'dsq_8.webp', 'engine_1.webp', 'engine_10.webp', 'engine_2.webp', 'engine_3.webp', 'engine_4.webp', 'engine_5.webp', 'engine_6.webp', 'engine_7.webp', 'engine_8.webp', 'engine_9.webp', 'fe_factory.webp', 'fe1.webp', 'fe2.webp', 'fe3.webp', 'fe4.webp', 'fe5.webp', 'gbr.webp', 'gbr_car.webp', 'gbr_tra.webp', 'grid_1.webp', 'grid_2.webp', 'grid_3.webp', 'grid_4.webp', 'ha_factory.webp', 'ha1.webp', 'ha2.webp', 'hun.webp', 'hun_car.webp', 'hun_tra.webp', 'imo.webp', 'imo_car.webp', 'imo_tra.webp', 'ind_inv.webp', 'ita.webp', 'ita_car.webp', 'ita_tra.webp', 'jap.webp', 'jap_car.webp', 'jap_tra.webp', 'mc_factory.webp', 'mc1.webp', 'mc2.webp', 'me_factory.webp', 'me1.webp', 'me2.webp', 'me3.webp', 'me4.webp', 'mex.webp', 'mex_car.webp', 'mex_tra.webp', 'mia.webp', 'mia_car.webp', 'mia_tra.webp', 'mon.webp', 'mon_car.webp', 'mon_tra.webp', 'monaco_media.webp', 'ned.webp', 'ned_car.webp', 'ned_tra.webp', 'part_3_1.webp', 'part_3_2.webp', 'part_3_3.webp', 'part_4_1.webp', 'part_4_2.webp', 'part_4_3.webp', 'part_5_1.webp', 'part_5_2.webp', 'part_5_3.webp', 'part_6_1.webp', 'part_6_2.webp', 'part_6_3.webp', 'part_7_1.webp', 'part_7_2.webp', 'part_7_3.webp', 'part_8_1.webp', 'part_8_2.webp', 'part_8_3.webp', 'qat.webp', 'qat_car.webp', 'qat_inv.webp', 'qat_tra.webp', 'rb_factory.webp', 'rb1.webp', 'rb2.webp', 'rb3.webp', 'rb4.webp', 'rus_inv.webp', 'sau.webp', 'sau_car.webp', 'sau_inv.webp', 'sau_tra.webp', 'sgp.webp', 'sgp_car.webp', 'sgp_tra.webp', 'sin_inv.webp', 'sou_inv.webp', 'spa.webp', 'spa_car.webp', 'spa_tra.webp', 'uae.webp', 'uae_car.webp', 'uae_tra.webp', 'uni_inv.webp', 'usa.webp', 'usa_car.webp', 'usa_tra.webp', 'veg.webp', 'veg_car.webp', 'veg_tra.webp', 'vie_inv.webp', 'wi_factory.webp', 'wi1.webp', 'wi2.webp', 'wi3.webp', 'young_1.webp', 'young_2.webp', 'young_3.webp', 'young_4.webp', 'young_5.webp', 'young_6.webp', 'young_7.webp', 'young_8.webp', 'young_9.webp'];
 
 let customNewsModal = null;
 let customNewsOptionsCache = null;
@@ -3861,16 +3778,10 @@ function setCustomNewsError(msg) {
   if (!customNewsError) return;
   if (msg) {
     customNewsError.textContent = msg;
-    customNewsError.classList.remove('d-none');
+    customNewsError.classList.remove('custom-news-hidden');
   } else {
     customNewsError.textContent = '';
-    customNewsError.classList.add('d-none');
-  }
-}
-
-function setCustomNewsTemplateHelp(message) {
-  if (customNewsTemplateHelp) {
-    customNewsTemplateHelp.textContent = message;
+    customNewsError.classList.add('custom-news-hidden');
   }
 }
 
@@ -3958,7 +3869,7 @@ function populateCustomNewsTypeDropdown({
 
   const mkSectionTitle = (label) => {
     const el = document.createElement("li");
-    el.className = "custom-news-dropdown-section-title bold-font";
+    el.className = "custom-dropdown-section-title bold-font";
     el.textContent = label;
     return el;
   };
@@ -4100,17 +4011,16 @@ function refreshCustomNewsTitleTemplates() {
   const type = getCustomNewsSelectedType();
   const templates = getCustomNewsTitleTemplates(type);
   if (type === "custom_new") {
-    customNewsTemplateWrap?.classList.add("d-none");
-    customNewsTitleInput?.classList.remove("d-none");
+    customNewsTemplateWrap?.classList.add("custom-news-hidden");
+    customNewsTitleInput?.classList.remove("custom-news-hidden");
     if (customNewsTitleInput) {
       customNewsTitleInput.placeholder = getCustomNewsTitlePlaceholder(type);
     }
-    setCustomNewsTemplateHelp("Custom articles need a manual title.");
     return;
   }
 
-  customNewsTemplateWrap?.classList.remove("d-none");
-  customNewsTitleInput?.classList.add("d-none");
+  customNewsTemplateWrap?.classList.remove("custom-news-hidden");
+  customNewsTitleInput?.classList.add("custom-news-hidden");
   if (customNewsTitleInput) customNewsTitleInput.value = "";
 
   customNewsTemplateButton.disabled = false;
@@ -4128,18 +4038,6 @@ function refreshCustomNewsTitleTemplates() {
     bindToggle: false
   });
 
-  if (templates.length) {
-    const selectedTemplate = getRedesignedDropdownValue(customNewsTemplateButton);
-    setCustomNewsTemplateHelp(
-      selectedTemplate !== ""
-        ? "The selected template will be rendered with the final article data when you create the news."
-        : "Choose a saved title template or leave the automatic default title."
-    );
-  } else {
-    setRedesignedDropdownSelection(customNewsTemplateButton, customNewsTemplateMenu, "", "Automatic / default title");
-    customNewsTemplateButton.disabled = true;
-    setCustomNewsTemplateHelp("This type uses the automatic default title.");
-  }
 }
 
 function updateCustomNewsImagePreview() {
@@ -4190,15 +4088,19 @@ function renderCustomNewsParams(type, options) {
     return el;
   };
 
-  const makeLabel = (htmlFor, text) => {
-    const label = createEl("label", "form-label bold-font");
-    label.htmlFor = htmlFor;
+  const makeLabel = (_targetId, text) => {
+    const label = createEl("span", "custom-news-label bold-font");
     label.textContent = text;
     return label;
   };
 
-  const makeRow = () => createEl("div", "row g-3");
-  const makeCol = (className) => createEl("div", className);
+  const makeRow = () => createEl("div", "custom-news-row");
+  const makeCol = (width = "full") => {
+    const col = createEl("div", "custom-news-stack");
+    const span = width === "quarter" ? 3 : width === "third" ? 4 : width === "half" ? 6 : 12;
+    col.dataset.span = String(span);
+    return col;
+  };
 
   const makeInput = ({ id, type = "text", placeholder = "", min = null, value = null } = {}) => {
     const input = createEl("input", "custom-news-input");
@@ -4254,7 +4156,7 @@ function renderCustomNewsParams(type, options) {
 
   if (type === "race_result" || type === "quali_result" || type === "potential_champion" || type === "world_champion") {
     const row = makeRow();
-    const col = makeCol("col-12");
+    const col = makeCol("full");
     const { wrap } = makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" });
     col.append(makeLabel("customNewsRaceButton", "Race"), wrap);
     row.append(col);
@@ -4278,19 +4180,19 @@ function renderCustomNewsParams(type, options) {
   if (type === "race_reaction") {
     const row = makeRow();
 
-    const raceCol = makeCol("col-12");
+    const raceCol = makeCol("full");
     raceCol.append(
       makeLabel("customNewsRaceButton", "Race"),
       makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
     );
 
-    const happyCol = makeCol("col-md-6");
+    const happyCol = makeCol("half");
     happyCol.append(
       makeLabel("customNewsHappyDriverButton", "Happy driver (optional)"),
       makeDropdown({ buttonId: "customNewsHappyDriverButton", menuId: "customNewsHappyDriverMenu", placeholder: "Random" }).wrap
     );
 
-    const unhappyCol = makeCol("col-md-6");
+    const unhappyCol = makeCol("half");
     unhappyCol.append(
       makeLabel("customNewsUnhappyDriverButton", "Unhappy driver (optional)"),
       makeDropdown({ buttonId: "customNewsUnhappyDriverButton", menuId: "customNewsUnhappyDriverMenu", placeholder: "Random" }).wrap
@@ -4391,7 +4293,7 @@ function renderCustomNewsParams(type, options) {
 
   if (type === "fake_transfer") {
     const row = makeRow();
-    const col = makeCol("col-12");
+    const col = makeCol("full");
     col.append(
       makeLabel("customNewsDriverButton", "Driver"),
       makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
@@ -4417,31 +4319,31 @@ function renderCustomNewsParams(type, options) {
   if (type === "big_transfer" || type === "massive_exit" || type === "massive_signing") {
     const row = makeRow();
 
-    const driverCol = makeCol("col-md-6");
+    const driverCol = makeCol("half");
     driverCol.append(
       makeLabel("customNewsDriverButton", "Driver"),
       makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
     );
 
-    const fromCol = makeCol("col-md-3");
+    const fromCol = makeCol("quarter");
     fromCol.append(
       makeLabel("customNewsFromTeamButton", "From team"),
       makeDropdown({ buttonId: "customNewsFromTeamButton", menuId: "customNewsFromTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const toCol = makeCol("col-md-3");
+    const toCol = makeCol("quarter");
     toCol.append(
       makeLabel("customNewsToTeamButton", "To team"),
       makeDropdown({ buttonId: "customNewsToTeamButton", menuId: "customNewsToTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const salaryCol = makeCol("col-md-6");
+    const salaryCol = makeCol("half");
     salaryCol.append(
       makeLabel("customNewsSalary", "Salary (optional)"),
       makeInput({ id: "customNewsSalary", type: "number", placeholder: "e.g. 2000000", min: 0 })
     );
 
-    const endSeasonCol = makeCol("col-md-6");
+    const endSeasonCol = makeCol("half");
     endSeasonCol.append(
       makeLabel("customNewsEndSeason", "Contract end season (optional)"),
       makeInput({ id: "customNewsEndSeason", type: "number", placeholder: "e.g. 2028", min: 0 })
@@ -4492,31 +4394,31 @@ function renderCustomNewsParams(type, options) {
   if (type === "contract_renewal") {
     const row = makeRow();
 
-    const driverCol = makeCol("col-md-6");
+    const driverCol = makeCol("half");
     driverCol.append(
       makeLabel("customNewsDriverButton", "Driver"),
       makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
     );
 
-    const renewalCol = makeCol("col-md-3");
+    const renewalCol = makeCol("quarter");
     renewalCol.append(
       makeLabel("customNewsRenewalTeamButton", "Renewal team"),
       makeDropdown({ buttonId: "customNewsRenewalTeamButton", menuId: "customNewsRenewalTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const currentCol = makeCol("col-md-3");
+    const currentCol = makeCol("quarter");
     currentCol.append(
       makeLabel("customNewsCurrentTeamButton", "Current team"),
       makeDropdown({ buttonId: "customNewsCurrentTeamButton", menuId: "customNewsCurrentTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const salaryCol = makeCol("col-md-6");
+    const salaryCol = makeCol("half");
     salaryCol.append(
       makeLabel("customNewsSalary", "Salary (optional)"),
       makeInput({ id: "customNewsSalary", type: "number", placeholder: "e.g. 2000000", min: 0 })
     );
 
-    const endSeasonCol = makeCol("col-md-6");
+    const endSeasonCol = makeCol("half");
     endSeasonCol.append(
       makeLabel("customNewsEndSeason", "Contract end season (optional)"),
       makeInput({ id: "customNewsEndSeason", type: "number", placeholder: "e.g. 2028", min: 0 })
@@ -4566,14 +4468,8 @@ function renderCustomNewsParams(type, options) {
 
   if (type === "silly_season_rumors") {
     const row = makeRow();
-    const msgCol = makeCol("col-12");
-    const msg = createEl("div", "text-muted");
-    msg.textContent = "Pick 3 drivers and their most likely destination teams.";
-    msgCol.append(msg);
-    row.append(msgCol);
-
     [1, 2, 3].forEach(i => {
-      const driverCol = makeCol("col-md-6");
+      const driverCol = makeCol("half");
       driverCol.append(
         makeLabel(`customNewsSillyDriver${i}Button`, `Driver ${i}`),
         makeDropdown({
@@ -4583,7 +4479,7 @@ function renderCustomNewsParams(type, options) {
         }).wrap
       );
 
-      const teamCol = makeCol("col-md-6");
+      const teamCol = makeCol("half");
       teamCol.append(
         makeLabel(`customNewsSillyTeam${i}Button`, `Destination team ${i}`),
         makeDropdown({
@@ -4593,19 +4489,7 @@ function renderCustomNewsParams(type, options) {
         }).wrap
       );
 
-      const salaryCol = makeCol("col-md-6");
-      salaryCol.append(
-        makeLabel(`customNewsSillySalary${i}`, `Salary ${i} (optional)`),
-        makeInput({ id: `customNewsSillySalary${i}`, type: "number", placeholder: "e.g. 2000000", min: 0 })
-      );
-
-      const endSeasonCol = makeCol("col-md-6");
-      endSeasonCol.append(
-        makeLabel(`customNewsSillyEndSeason${i}`, `Contract end season ${i} (optional)`),
-        makeInput({ id: `customNewsSillyEndSeason${i}`, type: "number", placeholder: "e.g. 2028", min: 0 })
-      );
-
-      row.append(driverCol, teamCol, salaryCol, endSeasonCol);
+      row.append(driverCol, teamCol);
     });
 
     customNewsParams.append(row);
@@ -4642,19 +4526,19 @@ function renderCustomNewsParams(type, options) {
   if (type === "team_comparison") {
     const row = makeRow();
 
-    const teamCol = makeCol("col-md-6");
+    const teamCol = makeCol("half");
     teamCol.append(
       makeLabel("customNewsTeamButton", "Team"),
       makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const compCol = makeCol("col-md-3");
+    const compCol = makeCol("quarter");
     compCol.append(
       makeLabel("customNewsCompTypeButton", "Comparison"),
       makeDropdown({ buttonId: "customNewsCompTypeButton", menuId: "customNewsCompTypeMenu", placeholder: "Select" }).wrap
     );
 
-    const dropCol = makeCol("col-md-3");
+    const dropCol = makeCol("quarter");
     dropCol.append(
       makeLabel("customNewsDrop", "Points diff (optional)"),
       makeInput({ id: "customNewsDrop", type: "number", value: 0 })
@@ -4692,19 +4576,19 @@ function renderCustomNewsParams(type, options) {
   if (type === "driver_comparison") {
     const row = makeRow();
 
-    const teamCol = makeCol("col-md-4");
+    const teamCol = makeCol("third");
     teamCol.append(
       makeLabel("customNewsTeamButton", "Team"),
       makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const driver1Col = makeCol("col-md-4");
+    const driver1Col = makeCol("third");
     driver1Col.append(
       makeLabel("customNewsDriver1Button", "Driver 1"),
       makeDropdown({ buttonId: "customNewsDriver1Button", menuId: "customNewsDriver1Menu", placeholder: "Select driver" }).wrap
     );
 
-    const driver2Col = makeCol("col-md-4");
+    const driver2Col = makeCol("third");
     driver2Col.append(
       makeLabel("customNewsDriver2Button", "Driver 2"),
       makeDropdown({ buttonId: "customNewsDriver2Button", menuId: "customNewsDriver2Menu", placeholder: "Select driver" }).wrap
@@ -4754,7 +4638,7 @@ function renderCustomNewsParams(type, options) {
 
   if (type === "season_review") {
     const row = makeRow();
-    const col = makeCol("col-md-6");
+    const col = makeCol("half");
     col.append(
       makeLabel("customNewsPartButton", "Season review part"),
       makeDropdown({ buttonId: "customNewsPartButton", menuId: "customNewsPartMenu", placeholder: "Select part" }).wrap
@@ -4779,13 +4663,13 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_technical_directive") {
     const row = makeRow();
 
-    const componentCol = makeCol("col-md-6");
+    const componentCol = makeCol("half");
     componentCol.append(
       makeLabel("customNewsComponentButton", "Component"),
       makeDropdown({ buttonId: "customNewsComponentButton", menuId: "customNewsComponentMenu", placeholder: "Select component" }).wrap
     );
 
-    const reasonCol = makeCol("col-md-6");
+    const reasonCol = makeCol("half");
     reasonCol.append(
       makeLabel("customNewsReason", "Reason"),
       makeInput({ id: "customNewsReason", placeholder: "e.g. improve safety" })
@@ -4814,25 +4698,25 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_transfer") {
     const row = makeRow();
 
-    const teamCol = makeCol("col-md-4");
+    const teamCol = makeCol("third");
     teamCol.append(
       makeLabel("customNewsTeamButton", "Team"),
       makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const driverOutCol = makeCol("col-md-4");
+    const driverOutCol = makeCol("third");
     driverOutCol.append(
       makeLabel("customNewsDriverOutButton", "Driver out"),
       makeDropdown({ buttonId: "customNewsDriverOutButton", menuId: "customNewsDriverOutMenu", placeholder: "Select driver" }).wrap
     );
 
-    const driverInCol = makeCol("col-md-4");
+    const driverInCol = makeCol("third");
     driverInCol.append(
       makeLabel("customNewsDriverInButton", "Driver in"),
       makeDropdown({ buttonId: "customNewsDriverInButton", menuId: "customNewsDriverInMenu", placeholder: "Select driver" }).wrap
     );
 
-    const reserveCol = makeCol("col-md-6");
+    const reserveCol = makeCol("half");
     reserveCol.append(
       makeLabel("customNewsReserveDriverButton", "Substitute driver (optional)"),
       makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No substitute" }).wrap
@@ -4885,25 +4769,25 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_investment") {
     const row = makeRow();
 
-    const teamCol = makeCol("col-md-6");
+    const teamCol = makeCol("half");
     teamCol.append(
       makeLabel("customNewsTeamButton", "Team"),
       makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const countryCol = makeCol("col-md-6");
+    const countryCol = makeCol("half");
     countryCol.append(
       makeLabel("customNewsCountryButton", "Investor country"),
       makeDropdown({ buttonId: "customNewsCountryButton", menuId: "customNewsCountryMenu", placeholder: "Select country" }).wrap
     );
 
-    const amountCol = makeCol("col-md-6");
+    const amountCol = makeCol("half");
     amountCol.append(
       makeLabel("customNewsInvestmentAmount", "Investment amount (millions)"),
       makeInput({ id: "customNewsInvestmentAmount", type: "number", min: 1, value: 60 })
     );
 
-    const shareCol = makeCol("col-md-6");
+    const shareCol = makeCol("half");
     shareCol.append(
       makeLabel("customNewsInvestmentShare", "Share purchased (%)"),
       makeInput({ id: "customNewsInvestmentShare", type: "number", min: 1, value: 20 })
@@ -4942,19 +4826,19 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_dsq") {
     const row = makeRow();
 
-    const raceCol = makeCol("col-md-6");
+    const raceCol = makeCol("half");
     raceCol.append(
       makeLabel("customNewsRaceButton", "Race"),
       makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
     );
 
-    const teamCol = makeCol("col-md-6");
+    const teamCol = makeCol("half");
     teamCol.append(
       makeLabel("customNewsTeamButton", "Team"),
       makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
     );
 
-    const componentCol = makeCol("col-12");
+    const componentCol = makeCol("full");
     componentCol.append(
       makeLabel("customNewsDsqComponentButton", "Component"),
       makeDropdown({ buttonId: "customNewsDsqComponentButton", menuId: "customNewsDsqComponentMenu", placeholder: "Select component" }).wrap
@@ -5005,19 +4889,19 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_race_substitution") {
     const row = makeRow();
 
-    const raceCol = makeCol("col-md-6");
+    const raceCol = makeCol("half");
     raceCol.append(
       makeLabel("customNewsRaceButton", "Original race"),
       makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
     );
 
-    const replacementCol = makeCol("col-md-6");
+    const replacementCol = makeCol("half");
     replacementCol.append(
       makeLabel("customNewsReplacementTrackButton", "Replacement track"),
       makeDropdown({ buttonId: "customNewsReplacementTrackButton", menuId: "customNewsReplacementTrackMenu", placeholder: "Select track" }).wrap
     );
 
-    const reasonCol = makeCol("col-12");
+    const reasonCol = makeCol("full");
     reasonCol.append(
       makeLabel("customNewsReason", "Reason"),
       makeInput({ id: "customNewsReason", placeholder: "e.g. logistical challenges" })
@@ -5056,31 +4940,31 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_injury") {
     const row = makeRow();
 
-    const driverCol = makeCol("col-md-6");
+    const driverCol = makeCol("half");
     driverCol.append(
       makeLabel("customNewsDriverButton", "Affected driver"),
       makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
     );
 
-    const reserveCol = makeCol("col-md-6");
+    const reserveCol = makeCol("half");
     reserveCol.append(
       makeLabel("customNewsReserveDriverButton", "Reserve driver (optional)"),
       makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No reserve driver" }).wrap
     );
 
-    const conditionCol = makeCol("col-md-6");
+    const conditionCol = makeCol("half");
     conditionCol.append(
       makeLabel("customNewsInjuryCondition", "Condition"),
       makeInput({ id: "customNewsInjuryCondition", placeholder: "e.g. a sprained wrist" })
     );
 
-    const reasonCol = makeCol("col-md-6");
+    const reasonCol = makeCol("half");
     reasonCol.append(
       makeLabel("customNewsReason", "Reason"),
       makeInput({ id: "customNewsReason", placeholder: "e.g. a training accident" })
     );
 
-    const racesAffectedCol = makeCol("col-md-6");
+    const racesAffectedCol = makeCol("half");
     racesAffectedCol.append(
       makeLabel("customNewsRacesAffected", "Races affected"),
       makeInput({ id: "customNewsRacesAffected", type: "number", min: 1, value: 1 })
@@ -5119,13 +5003,13 @@ function renderCustomNewsParams(type, options) {
   if (type === "turning_point_engine_regulation") {
     const row = makeRow();
 
-    const changeTypeCol = makeCol("col-md-6");
+    const changeTypeCol = makeCol("half");
     changeTypeCol.append(
       makeLabel("customNewsChangeTypeButton", "Change type"),
       makeDropdown({ buttonId: "customNewsChangeTypeButton", menuId: "customNewsChangeTypeMenu", placeholder: "Select type" }).wrap
     );
 
-    const changeAreaCol = makeCol("col-md-6");
+    const changeAreaCol = makeCol("half");
     changeAreaCol.append(
       makeLabel("customNewsChangeAreaButton", "Main change area"),
       makeDropdown({ buttonId: "customNewsChangeAreaButton", menuId: "customNewsChangeAreaMenu", placeholder: "Select area" }).wrap
@@ -5162,12 +5046,12 @@ function renderCustomNewsParams(type, options) {
 
   if (type === "turning_point_young_drivers") {
     const row = makeRow();
-    const infoCol = makeCol("col-12");
+    const infoCol = makeCol("full");
     infoCol.append(makeInfo("Pick two or three prospects. Approving this turning point will boost the selected drivers."));
     row.append(infoCol);
 
     [1, 2, 3].forEach(i => {
-      const col = makeCol("col-md-4");
+      const col = makeCol("third");
       col.append(
         makeLabel(`customNewsProspect${i}Button`, `Prospect ${i}${i === 3 ? " (optional)" : ""}`),
         makeDropdown({ buttonId: `customNewsProspect${i}Button`, menuId: `customNewsProspect${i}Menu`, placeholder: i === 3 ? "Optional" : "Select driver" }).wrap
@@ -5194,13 +5078,13 @@ function renderCustomNewsParams(type, options) {
 
   if (type === "turning_point_aduo") {
     const row = makeRow();
-    const quarterCol = makeCol("col-md-6");
+    const quarterCol = makeCol("half");
     quarterCol.append(
       makeLabel("customNewsAduoQuarterButton", "ADUO quarter"),
       makeDropdown({ buttonId: "customNewsAduoQuarterButton", menuId: "customNewsAduoQuarterMenu", placeholder: "Select quarter" }).wrap
     );
     row.append(quarterCol);
-    const infoCol = makeCol("col-12");
+    const infoCol = makeCol("full");
     infoCol.append(makeInfo("The manufacturers and upgrade package will be generated automatically from the current engine balance."));
     row.append(infoCol);
     customNewsParams.append(row);
@@ -5222,7 +5106,7 @@ function renderCustomNewsParams(type, options) {
   if (type === "custom_new") {
     const row = makeRow();
 
-    const galleryCol = makeCol("col-12");
+    const galleryCol = makeCol("full");
     galleryCol.append(makeLabel("customNewsImageGrid", "Picture"));
 
     const imageValue = document.createElement("input");
@@ -5244,11 +5128,7 @@ function renderCustomNewsParams(type, options) {
       thumbnail.alt = file;
       thumbnail.loading = "lazy";
 
-      const caption = document.createElement("span");
-      caption.className = "custom-news-image-caption";
-      caption.textContent = file;
-
-      imageCard.append(thumbnail, caption);
+      imageCard.append(thumbnail);
       imageCard.addEventListener("click", () => {
         imageValue.value = file;
         updateCustomNewsImagePreview();
@@ -5259,14 +5139,12 @@ function renderCustomNewsParams(type, options) {
 
     galleryCol.append(imageGrid);
 
-    const promptCol = makeCol("col-12");
+    const promptCol = makeCol("full");
+    const infoCol = makeCol("full");
     promptCol.append(
       makeLabel("customNewsPrompt", "Article prompt"),
       makeTextarea({ id: "customNewsPrompt", placeholder: "Describe the story you want the AI to write. The article will still be grounded in the save context and current standings." })
     );
-
-    const infoCol = makeCol("col-12");
-    infoCol.append(makeInfo("Custom articles are stored internally as custom_new entries. The title comes from the field above and the body is generated when you open the article."));
 
     row.append(galleryCol, promptCol, infoCol);
     customNewsParams.append(row);
@@ -5313,8 +5191,8 @@ async function openCustomNewsModal() {
     setRedesignedDropdownSelection(customNewsTemplateButton, customNewsTemplateMenu, "", getCustomNewsTitlePlaceholder());
     setRedesignedDropdownOpen(customNewsTemplateButton, false);
   }
-  customNewsTemplateWrap?.classList.remove("d-none");
-  customNewsTitleInput?.classList.add("d-none");
+  customNewsTemplateWrap?.classList.remove("custom-news-hidden");
+  customNewsTitleInput?.classList.add("custom-news-hidden");
 
   renderCustomNewsParams(getRedesignedDropdownValue(customNewsTypeButton), options);
   refreshCustomNewsTitleTemplates();
