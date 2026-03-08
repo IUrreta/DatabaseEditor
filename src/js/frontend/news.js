@@ -2188,7 +2188,6 @@ async function contextualizeTurningPointAduo(newData, turningPointType) {
   if (engineAllocations && typeof engineAllocations === "object") {
     const teamIds = Object.keys(engineAllocations)
       .map((id) => Number(id))
-      .filter((id) => Number.isFinite(id))
       // Hide "Team 32" when custom team is not enabled (renderer removes combined_dict[32] in that case).
       .filter((id) => id !== 32 || (32 in combined_dict))
       .sort((a, b) => a - b);
@@ -2196,7 +2195,7 @@ async function contextualizeTurningPointAduo(newData, turningPointType) {
     const lines = teamIds.map((teamId) => {
       const engineId = Number(engineAllocations[String(teamId)]);
       const teamName = combined_dict[teamId] || `Team ${teamId}`;
-      const engineName = engineNames?.[engineId] || (Number.isFinite(engineId) ? `Engine ${engineId}` : "Unknown engine");
+      const engineName = engineNames?.[engineId] || `Engine ${engineId}`;
       return `- ${teamName}: ${engineName}`;
     });
 
@@ -4250,7 +4249,7 @@ function renderCustomNewsParams(type, options) {
       bindToggle: true,
       onSelect: async (raceIdValue) => {
         const raceId = Number(raceIdValue);
-        if (!Number.isFinite(raceId) || raceId <= 0) {
+        if (!raceId || raceId <= 0) {
           resetRaceReactionDrivers();
           return;
         }
@@ -5221,8 +5220,8 @@ async function submitCustomNews() {
   const numFromButtonId = (id) => {
     const btn = document.getElementById(id);
     const raw = getRedesignedDropdownValue(btn);
-    const n = Number(raw);
-    return Number.isFinite(n) ? n : null;
+    if (raw === "" || raw == null) return null;
+    return Number(raw);
   };
   const strFromButtonId = (id) => {
     const btn = document.getElementById(id);
@@ -5236,8 +5235,7 @@ async function submitCustomNews() {
   const numFromInputId = (id) => {
     const el = document.getElementById(id);
     if (!el || el.value === "") return null;
-    const n = Number(el.value);
-    return Number.isFinite(n) ? n : null;
+    return Number(el.value);
   };
 
   const raceId = numFromButtonId("customNewsRaceButton");
@@ -5298,12 +5296,12 @@ async function submitCustomNews() {
         driverId: (() => {
           const v = getRedesignedDropdownValue(dBtn);
           const n = Number(v);
-          return Number.isFinite(n) && n > 0 ? n : null;
+          return n > 0 ? n : null;
         })(),
         potentialTeam: (() => {
           const v = getRedesignedDropdownValue(tBtn);
           const n = Number(v);
-          return Number.isFinite(n) && n > 0 ? n : null;
+          return n > 0 ? n : null;
         })(),
         salary: sEl && sEl.value !== "" ? Number(sEl.value) : null,
         endSeason: eEl && eEl.value !== "" ? Number(eEl.value) : null
@@ -5353,7 +5351,7 @@ async function submitCustomNews() {
   if (type === "turning_point_young_drivers") {
     params.prospectDriverIds = [1, 2, 3]
       .map(i => numFromButtonId(`customNewsProspect${i}Button`))
-      .filter(id => Number.isFinite(id) && id > 0);
+      .filter(id => id > 0);
   }
 
   if (type === "turning_point_aduo") {
@@ -5484,7 +5482,6 @@ async function addTurningPointContexts(prompt, date) {
         const score = power === null ? getAvgChange(improvements) : power;
         return { name: e?.name || "Unknown manufacturer", score };
       })
-        .filter((e) => Number.isFinite(e.score))
         .sort((a, b) => b.score - a.score);
 
       if (!ranked.length) return null;
@@ -5493,7 +5490,7 @@ async function addTurningPointContexts(prompt, date) {
       const best = Number(top[0].score) || 0;
 
       const labelFor = (score) => {
-        if (!Number.isFinite(best) || best <= 0) return "changed";
+        if (best <= 0) return "changed";
         const ratio = score / best;
         if (ratio >= 0.8) return "improved a lot";
         if (ratio >= 0.4) return "improved a bit";

@@ -361,8 +361,8 @@ function applyAduoEffect(turningPointData) {
     const readStat = (stats, statId) => {
         if (!stats) return null;
         const raw = stats[statId] !== undefined ? stats[statId] : stats[String(statId)];
-        const num = Number(raw);
-        return Number.isFinite(num) ? num : null;
+        if (raw === undefined || raw === null) return null;
+        return Number(raw);
     };
 
     snapshotEnginePowerProgression(
@@ -1428,7 +1428,7 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
         const getUpgradeTuningForEngine = (stat10) => {
             const best = Number(bestStat10);
             const current = Number(stat10);
-            if (!Number.isFinite(best) || best <= 0 || !Number.isFinite(current)) {
+            if (best <= 0) {
                 return { minBonusPct: 0, multiplier: 1 };
             }
             const behindPct = ((best - current) / best) * 100;
@@ -2889,10 +2889,10 @@ export function createCustomNewsEntry(input = {}) {
     const now = Date.now();
     const id = type === "custom_new" ? `custom_new_${now}` : `custom_${type}_${now}`;
     const stableKey = id;
-    const selectedTemplateIndex = Number.isFinite(Number(titleTemplateIndex)) ? Number(titleTemplateIndex) : null;
+    const selectedTemplateIndex = titleTemplateIndex != null ? Number(titleTemplateIndex) : null;
 
     const dateFromIso = isoToExcelDay(dateIso);
-    let date = Number.isFinite(dateFromIso) ? dateFromIso : currentDay;
+    let date = dateFromIso != null ? dateFromIso : currentDay;
     const currentMonth = excelToDate(date).getMonth() + 1;
 
     let data = null;
@@ -2902,7 +2902,7 @@ export function createCustomNewsEntry(input = {}) {
 
     if (type === "race_result") {
         const raceId = Number(params?.raceId);
-        if (!Number.isFinite(raceId) || raceId <= 0) throw new Error("Missing raceId");
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
         const results = getOneRaceResults(raceId);
         if (!results?.length) throw new Error("No race results found for that race");
 
@@ -2926,7 +2926,7 @@ export function createCustomNewsEntry(input = {}) {
             seasonYear: seasonYear,
         };
 
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             const d = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
             date = Number(d);
         }
@@ -2941,7 +2941,7 @@ export function createCustomNewsEntry(input = {}) {
     }
     else if (type === "quali_result") {
         const raceId = Number(params?.raceId);
-        if (!Number.isFinite(raceId) || raceId <= 0) throw new Error("Missing raceId");
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
         const results = getOneQualifyingResults(raceId);
         if (!results?.length) throw new Error("No qualifying results found for that race");
 
@@ -2965,7 +2965,7 @@ export function createCustomNewsEntry(input = {}) {
             seasonYear: seasonYear,
         };
 
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             const d = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue') - 1;
             date = Number(d);
         }
@@ -2980,7 +2980,7 @@ export function createCustomNewsEntry(input = {}) {
     }
     else if (type === "race_reaction") {
         const raceId = Number(params?.raceId);
-        if (!Number.isFinite(raceId) || raceId <= 0) throw new Error("Missing raceId");
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
         const results = getOneRaceResults(raceId);
         if (!results?.length) throw new Error("No race results found for that race");
 
@@ -3024,7 +3024,7 @@ export function createCustomNewsEntry(input = {}) {
             finalTitle = renderNormalTitleTemplate(data, 16, selectedTemplateIndex) || generateTitle(data, 16);
         }
 
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             const d = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
             date = Number(d) + 1;
         }
@@ -3039,7 +3039,7 @@ export function createCustomNewsEntry(input = {}) {
     }
     else if (type === "fake_transfer") {
         const driverId = Number(params?.driverId);
-        if (!Number.isFinite(driverId) || driverId <= 0) throw new Error("Missing driverId");
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
         const d = getDriverAndTeamForCustomNews(driverId);
         data = {
             drivers: [{
@@ -3062,9 +3062,9 @@ export function createCustomNewsEntry(input = {}) {
         const toTeamId = Number(params?.toTeamId);
         const salary = params?.salary != null ? Number(params.salary) : null;
         const endSeason = params?.endSeason != null ? Number(params.endSeason) : null;
-        if (!Number.isFinite(driverId) || driverId <= 0) throw new Error("Missing driverId");
-        if (!Number.isFinite(fromTeamId) || fromTeamId <= 0) throw new Error("Missing fromTeamId");
-        if (!Number.isFinite(toTeamId) || toTeamId <= 0) throw new Error("Missing toTeamId");
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        if (!fromTeamId || fromTeamId <= 0) throw new Error("Missing fromTeamId");
+        if (!toTeamId || toTeamId <= 0) throw new Error("Missing toTeamId");
 
         const d = getDriverAndTeamForCustomNews(driverId);
         const team1 = combined_dict[fromTeamId] || `Team ${fromTeamId}`;
@@ -3097,9 +3097,9 @@ export function createCustomNewsEntry(input = {}) {
         const currentTeamId = Number(params?.currentTeamId);
         const salary = params?.salary != null ? Number(params.salary) : null;
         const endSeason = params?.endSeason != null ? Number(params.endSeason) : null;
-        if (!Number.isFinite(driverId) || driverId <= 0) throw new Error("Missing driverId");
-        if (!Number.isFinite(renewalTeamId) || renewalTeamId <= 0) throw new Error("Missing renewalTeamId");
-        if (!Number.isFinite(currentTeamId) || currentTeamId <= 0) throw new Error("Missing currentTeamId");
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        if (!renewalTeamId || renewalTeamId <= 0) throw new Error("Missing renewalTeamId");
+        if (!currentTeamId || currentTeamId <= 0) throw new Error("Missing currentTeamId");
 
         const d = getDriverAndTeamForCustomNews(driverId);
         data = {
@@ -3124,7 +3124,7 @@ export function createCustomNewsEntry(input = {}) {
         const items = Array.isArray(params?.drivers) ? params.drivers : [];
         const drivers = items.slice(0, 6).map(it => {
             const driverId = Number(it?.driverId);
-            if (!Number.isFinite(driverId) || driverId <= 0) return null;
+            if (!driverId || driverId <= 0) return null;
             const d = getDriverAndTeamForCustomNews(driverId);
             const potentialTeam = it?.potentialTeam != null ? Number(it.potentialTeam) : null;
             const salary = it?.salary != null ? Number(it.salary) : null;
@@ -3134,9 +3134,9 @@ export function createCustomNewsEntry(input = {}) {
                 name: d.name,
                 team: d.teamName,
                 teamId: d.teamId,
-                potentialTeam: Number.isFinite(potentialTeam) ? potentialTeam : null,
-                potentialSalary: Number.isFinite(salary) ? salary : null,
-                potentialYearEnd: Number.isFinite(endSeason) ? endSeason : null
+                potentialTeam,
+                potentialSalary: salary,
+                potentialYearEnd: endSeason
             };
         }).filter(Boolean);
 
@@ -3155,7 +3155,7 @@ export function createCustomNewsEntry(input = {}) {
             finalTitle = renderNormalTitleTemplate(titleData, 4, selectedTemplateIndex) || generateTitle(titleData, 4);
         }
 
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             date = dateToExcel(new Date(seasonYear, 7, 10));
         }
 
@@ -3167,7 +3167,7 @@ export function createCustomNewsEntry(input = {}) {
         const teamId = Number(params?.teamId);
         const compType = params?.compType === "bad" ? "bad" : "good";
         const drop = params?.drop != null ? Number(params.drop) : 0;
-        if (!Number.isFinite(teamId) || teamId <= 0) throw new Error("Missing teamId");
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
 
         data = {
             team: { teamId, drop },
@@ -3188,9 +3188,9 @@ export function createCustomNewsEntry(input = {}) {
         const teamId = Number(params?.teamId);
         const driver1Id = Number(params?.driver1Id);
         const driver2Id = Number(params?.driver2Id);
-        if (!Number.isFinite(teamId) || teamId <= 0) throw new Error("Missing teamId");
-        if (!Number.isFinite(driver1Id) || driver1Id <= 0) throw new Error("Missing driver1Id");
-        if (!Number.isFinite(driver2Id) || driver2Id <= 0) throw new Error("Missing driver2Id");
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+        if (!driver1Id || driver1Id <= 0) throw new Error("Missing driver1Id");
+        if (!driver2Id || driver2Id <= 0) throw new Error("Missing driver2Id");
 
         const d1 = getDriverAndTeamForCustomNews(driver1Id);
         const d2 = getDriverAndTeamForCustomNews(driver2Id);
@@ -3247,7 +3247,7 @@ export function createCustomNewsEntry(input = {}) {
     }
     else if (type === "potential_champion" || type === "world_champion") {
         const raceId = Number(params?.raceId);
-        if (!Number.isFinite(raceId) || raceId <= 0) throw new Error("Missing raceId");
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
 
         const seasonResults = fetchSeasonResults(seasonYear, true);
         const standings = type === "potential_champion"
@@ -3292,7 +3292,7 @@ export function createCustomNewsEntry(input = {}) {
         overlay = null;
         image = getImagePath(leader.teamId, (type === "potential_champion" ? code?.toLowerCase() : code), "champion");
 
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             const baseDay = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
             date = type === "potential_champion" ? (Number(baseDay) - 2) : (Number(baseDay) + 1);
         }
@@ -3356,7 +3356,7 @@ export function createCustomNewsEntry(input = {}) {
         if (!finalTitle) finalTitle = renderNormalTitleTemplate({ season_year: nextYear }, 19, selectedTemplateIndex) || generateTitle({ season_year: nextYear }, 19);
         overlay = "next-season-grid";
         image = getImagePath(null, null, "grid");
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             date = dateToExcel(new Date(seasonYear, 11, 15));
         }
     }
@@ -3441,13 +3441,13 @@ export function createCustomNewsEntry(input = {}) {
         const driverOutId = Number(params?.driverOutId);
         const driverInId = Number(params?.driverInId);
         const reserveDriverId = params?.reserveDriverId != null ? Number(params.reserveDriverId) : null;
-        if (!Number.isFinite(teamId) || teamId <= 0) throw new Error("Missing teamId");
-        if (!Number.isFinite(driverOutId) || driverOutId <= 0) throw new Error("Missing driverOutId");
-        if (!Number.isFinite(driverInId) || driverInId <= 0) throw new Error("Missing driverInId");
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+        if (!driverOutId || driverOutId <= 0) throw new Error("Missing driverOutId");
+        if (!driverInId || driverInId <= 0) throw new Error("Missing driverInId");
 
         const driverOut = getDriverAndTeamForCustomNews(driverOutId);
         const driverIn = getDriverAndTeamForCustomNews(driverInId);
-        const reserveDriver = Number.isFinite(reserveDriverId) && reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
+        const reserveDriver = reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
 
         data = {
             team: combined_dict[teamId] || `Team ${teamId}`,
@@ -3471,10 +3471,10 @@ export function createCustomNewsEntry(input = {}) {
         const country = String(params?.country || "").trim();
         const investmentAmount = Number(params?.investmentAmount);
         const investmentShare = Number(params?.investmentShare);
-        if (!Number.isFinite(teamId) || teamId <= 0) throw new Error("Missing teamId");
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
         if (!country) throw new Error("Missing country");
-        if (!Number.isFinite(investmentAmount) || investmentAmount <= 0) throw new Error("Missing investmentAmount");
-        if (!Number.isFinite(investmentShare) || investmentShare <= 0) throw new Error("Missing investmentShare");
+        if (!investmentAmount || investmentAmount <= 0) throw new Error("Missing investmentAmount");
+        if (!investmentShare || investmentShare <= 0) throw new Error("Missing investmentShare");
 
         data = {
             country,
@@ -3497,8 +3497,8 @@ export function createCustomNewsEntry(input = {}) {
         const raceId = Number(params?.raceId);
         const teamId = Number(params?.teamId);
         const component = String(params?.component || "").trim();
-        if (!Number.isFinite(raceId) || raceId <= 0) throw new Error("Missing raceId");
-        if (!Number.isFinite(teamId) || teamId <= 0) throw new Error("Missing teamId");
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
         if (!component) throw new Error("Missing component");
 
         const driversInRace = queryDB(
@@ -3541,7 +3541,7 @@ export function createCustomNewsEntry(input = {}) {
         }
 
         image = getImagePath(null, null, "dsq");
-        if (!Number.isFinite(dateFromIso)) {
+        if (dateFromIso == null) {
             const raceDay = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
             date = Number(raceDay) + 2;
         }
@@ -3550,8 +3550,8 @@ export function createCustomNewsEntry(input = {}) {
         const raceId = Number(params?.raceId);
         const newRaceTrackId = Number(params?.newRaceTrackId);
         const reason = String(params?.reason || "").trim() || "calendar restructuring";
-        if (!Number.isFinite(raceId) || raceId <= 0) throw new Error("Missing raceId");
-        if (!Number.isFinite(newRaceTrackId) || newRaceTrackId <= 0) throw new Error("Missing newRaceTrackId");
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        if (!newRaceTrackId || newRaceTrackId <= 0) throw new Error("Missing newRaceTrackId");
 
         const raceRow = queryDB(`SELECT TrackID, Day FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
         if (!raceRow) throw new Error("Selected race was not found");
@@ -3583,10 +3583,10 @@ export function createCustomNewsEntry(input = {}) {
         const conditionText = String(params?.condition || "").trim() || "an illness";
         const reason = String(params?.reason || "").trim() || "a medical issue";
         const racesAffectedCount = Math.max(1, Number(params?.racesAffected) || 1);
-        if (!Number.isFinite(driverId) || driverId <= 0) throw new Error("Missing driverId");
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
 
         const driver = getDriverAndTeamForCustomNews(driverId);
-        const reserveDriver = Number.isFinite(reserveDriverId) && reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
+        const reserveDriver = reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
         const racesAffected = queryDB(
             `SELECT RaceID, Day, TrackID
              FROM Races
@@ -3728,7 +3728,7 @@ export function createCustomNewsEntry(input = {}) {
         image = getImagePath(null, "engine", "engine");
     }
     else if (type === "turning_point_young_drivers") {
-        const ids = Array.isArray(params?.prospectDriverIds) ? params.prospectDriverIds.map(id => Number(id)).filter(id => Number.isFinite(id) && id > 0) : [];
+        const ids = Array.isArray(params?.prospectDriverIds) ? params.prospectDriverIds.map(id => Number(id)).filter(id => id > 0) : [];
         if (ids.length < 2) throw new Error("Pick at least two prospects");
 
         const prospects = ids.map(driverId => {

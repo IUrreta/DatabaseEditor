@@ -818,6 +818,16 @@ i.bi-file-text:hover {
   align-items: center;
 }
 
+.stats-add-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#addStaffButton {
+  white-space: nowrap;
+}
+
 .title-buttons-right {
   position: absolute;
   right: 0;
@@ -1479,6 +1489,7 @@ input[type="checkbox"]:focus {
 #teamContractMenu::-webkit-scrollbar,
 #raceMenu::-webkit-scrollbar,
 #raceProbMenu::-webkit-scrollbar,
+#nationalityMenu::-webkit-scrollbar,
 .prob-viewer-data::-webkit-scrollbar,
 #patchNotesBody::-webkit-scrollbar,
 .parts-list::-webkit-scrollbar,
@@ -1508,6 +1519,7 @@ input[type="checkbox"]:focus {
 #teamContractMenu::-webkit-scrollbar-thumb,
 #raceMenu::-webkit-scrollbar-thumb,
 #raceProbMenu::-webkit-scrollbar-thumb,
+#nationalityMenu::-webkit-scrollbar-thumb,
 .prob-viewer-data::-webkit-scrollbar-thumb,
 #patchNotesBody::-webkit-scrollbar-thumb,
 .parts-list::-webkit-scrollbar-thumb,
@@ -1538,6 +1550,7 @@ input[type="checkbox"]:focus {
 #teamContractMenu::-webkit-scrollbar-thumb:hover,
 #raceMenu::-webkit-scrollbar-thumb:hover,
 #raceProbMenu::-webkit-scrollbar-thumb:hover,
+#nationalityMenu::-webkit-scrollbar-thumb:hover,
 .prob-viewer-data::-webkit-scrollbar-thumb:hover,
 #patchNotesBody::-webkit-scrollbar-thumb:hover,
 .parts-list::-webkit-scrollbar-thumb:hover,
@@ -2008,6 +2021,63 @@ input.comparing-tag {
   z-index: 3;
 }
 
+.nationality-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: transparent;
+  max-width: 200px;
+}
+
+.nationality-dropdown:disabled {
+  opacity: 0.75;
+  cursor: default;
+}
+
+.nationality-dropdown .flag-text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: left;
+}
+
+#nationalityMenu {
+  max-height: 320px;
+  overflow: auto;
+  max-width: 200px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--white-general) transparent;
+}
+
+.redesigned-dropdown-item.nationality-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: flex-start;
+  width: 100%;
+  max-width: 100%;
+}
+
+.nationality-item span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nationality-item img {
+  width: 22px;
+  height: 14px;
+  border-radius: 3px;
+  object-fit: cover;
+}
+
 
 .driver-info-driver-flag {
   width: 44px;
@@ -2116,6 +2186,21 @@ input.comparing-tag {
   background-color: var(--new-primary-transparent);
   color: var(--new-primary);
   transform: scale(0.97);
+}
+
+.draft-staff-type-dropdown {
+  min-width: 190px;
+  height: 32px;
+  font-size: 14px;
+  padding: 0 14px;
+}
+
+#genderSwapButton.compact {
+  height: 32px;
+  min-width: 104px;
+  font-size: 14px;
+  padding: 0 12px;
+  white-space: nowrap;
 }
 
 .api-key-section .separator {

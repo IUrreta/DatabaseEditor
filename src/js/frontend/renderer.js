@@ -24,7 +24,7 @@ import { load_calendar } from './calendar';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers, loadNumbers
+    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyDraftCountryLocale
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -82,6 +82,24 @@ const saveFileButton = document.getElementById('saveFileButton');
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
 initSeasonMods();
+
+document.addEventListener("random-staff-requested", function (event) {
+    const data = event.detail || {};
+    const command = new Command("fetchRandomStaffDraft", data);
+    command.execute();
+});
+
+document.addEventListener("random-forename-requested", function (event) {
+    const data = event.detail || {};
+    const command = new Command("fetchRandomDraftForename", data);
+    command.execute();
+});
+
+document.addEventListener("draft-nationality-selected", function (event) {
+    const data = event.detail || {};
+    const command = new Command("fetchCountryLocaleForCode", data);
+    command.execute();
+});
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -493,6 +511,11 @@ function updatePatreonUI(tier) {
 
 
 function editModeHandler() {
+    if (isDraftProfileSelected()) {
+        new_update_notifications("Draft creation is not implemented yet. For now, this button only generates editable random values.", "error");
+        return;
+    }
+
     let stats = "";
     document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " ";
@@ -924,6 +947,15 @@ const messageHandlers = {
         place_staff_editStats(message);
         initFreeDriversElems();
         initStatsDrivers();
+    },
+    "Random staff draft fetched": (message) => {
+        loadRandomStaffDraft(message);
+    },
+    "Random draft forename fetched": (message) => {
+        applyDraftForenameUpdate(message);
+    },
+    "Draft country locale fetched": (message) => {
+        applyDraftCountryLocale(message);
     },
     "Calendar fetched": (message) => {
         load_calendar(message)

@@ -2761,6 +2761,12 @@
                   Directors</a>
               </ul>
             </div>
+            <div class="stats-add-controls">
+              <div id="addStaffButton" class="button-with-icon">
+                <i class="bi bi-person-plus"></i>
+                <span class="button-text">Add driver/staff</span>
+              </div>
+            </div>
             <div class="filter-container">
               <i class="bi bi-filter-circle filter-icon" id="filterIcon"></i>
               <div class="category-filters">
@@ -2830,12 +2836,21 @@
                       <span class="name-editor bold-font" id="driverStatsTitle"></span>
                       <div class="custom-separator"></div>
                       <span class="code-editor bold-font" id="driverCode"></span>
+                      <div id="genderSwapButton" class="button-with-icon compact d-none">
+                        <i class="bi bi-gender-male"></i>
+                        <span class="button-text">Male</span>
+                      </div>
                       <i class="bi bi-pencil-fill" id="editNameButton"></i>
                     </div>
                     <div class="flag-and-team">
-                      <div class="image-and-text">
-                        <img src="../assets/images/australia.png" class="driver-info-driver-flag" id="driverFlag">
-                        <span class="info-text flag-text">Placeholder</span>
+                      <div class="dropdown-global" id="nationalityDropdown">
+                        <button type="button" class="redesigned-dropdown bold-font nationality-dropdown"
+                          id="nationalityButton" aria-haspopup="true" aria-expanded="false" disabled>
+                          <img src="../assets/images/australia.png" class="driver-info-driver-flag" id="driverFlag">
+                          <span class="info-text flag-text">Placeholder</span>
+                          <i class="redesigned-chevron"></i>
+                        </button>
+                        <ul class="redesigned-dropdown-menu" id="nationalityMenu" style="font-family: Formula1;"></ul>
                       </div>
                       <div class="custom-separator"></div>
                       <div class="image-and-text">
@@ -2915,7 +2930,23 @@
                       <div class="title-and-stats">
                         <div class="attributes-title bold-font"
                           style="display: flex; justify-content: space-between; align-items: center;">
-                          <span>Driver Attributes</span>
+                          <div style="display:flex; align-items:center; gap:10px;">
+                            <span id="attributesTitleText">Driver Attributes</span>
+                            <div class="dropdown-global d-none" id="draftStaffTypeControl">
+                              <button type="button" class="redesigned-dropdown bold-font draft-staff-type-dropdown"
+                                id="addStaffTypeDropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="dropdown-label">Drivers</span>
+                                <i class="redesigned-chevron"></i>
+                              </button>
+                              <ul class="redesigned-dropdown-menu" id="addStaffTypeMenu" style="font-family: Formula1;">
+                                <a class="redesigned-dropdown-item" data-staff-type="0">Drivers</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="1">Technical Chiefs</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="2">Race Engineers</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="3">H. of Aerodynamics</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="4">Sporting Directors</a>
+                              </ul>
+                            </div>
+                          </div>
                           <div id="compareButton" class="button-with-icon">
                             <i class="bi bi-arrow-left-right"></i>
                             <span class="button-text">Compare</span>

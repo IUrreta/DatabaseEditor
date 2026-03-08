@@ -63,6 +63,7 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
+import { fetchCountryLocaleForCode, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -364,6 +365,36 @@ const workerCommands = {
       noti_msg: `Succesfully edited ${data.driver}'s stats`,
       isEditCommand: true,
       unlocksDownload: true
+    });
+  },
+  fetchRandomStaffDraft: (data, postMessage) => {
+    const yearData = checkYearSave();
+    const draft = fetchRandomStaffDraft(data.typeStaff, yearData[0]);
+
+    postMessage({
+      responseMessage: "Random staff draft fetched",
+      content: draft
+    });
+  },
+  fetchRandomDraftForename: (data, postMessage) => {
+    const res = fetchRandomDraftForename(data.gender, data.staffNameLocale);
+    postMessage({
+      responseMessage: "Random draft forename fetched",
+      content: {
+        ...res,
+        draftId: data.draftId,
+        gender: data.gender
+      }
+    });
+  },
+  fetchCountryLocaleForCode: (data, postMessage) => {
+    const res = fetchCountryLocaleForCode(data.code);
+    postMessage({
+      responseMessage: "Draft country locale fetched",
+      content: {
+        ...res,
+        draftId: data.draftId
+      }
     });
   },
   devSetAllDriversStats85: (data, postMessage) => {
