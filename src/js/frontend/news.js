@@ -3932,14 +3932,46 @@ function populateRedesignedDropdown({
 
   if (bindToggle) bindRedesignedDropdownToggle(buttonEl);
 
+  const isDriverDropdownItem = (item) => {
+    if (!item || typeof item !== "object") return false;
+    const hasDriverId = item.driverId != null || item.id != null;
+    return hasDriverId && typeof item.name === "string";
+  };
+
+  const buildDriverDropdownContent = (item, label) => {
+    const wrap = document.createElement("div");
+    wrap.className = "custom-news-driver-option";
+
+    const logoTeamId = Number(item?.displayTeamId ?? item?.teamId);
+    const logoSrc = logoTeamId > 0 ? logos_disc?.[logoTeamId] : null;
+    if (logoSrc) {
+      const logo = document.createElement("img");
+      logo.className = "custom-news-driver-option-logo";
+      logo.src = logoSrc;
+      logo.alt = item?.displayTeamName || item?.teamName || `Team ${logoTeamId}`;
+      wrap.appendChild(logo);
+    }
+
+    const text = document.createElement("span");
+    text.className = "custom-news-driver-option-text";
+    text.textContent = String(label ?? item?.name ?? "");
+    wrap.appendChild(text);
+
+    return wrap;
+  };
+
   const mkItem = (value, label) => {
     const a = document.createElement("a");
     a.className = "redesigned-dropdown-item";
     a.href = "#";
     a.dataset.value = value == null ? "" : String(value);
 
-    const text = document.createElement("span");
+    let text = document.createElement("span");
     text.textContent = String(label ?? "");
+    const sourceItem = (items || []).find(it => String(getValue(it)) === a.dataset.value);
+    if (isDriverDropdownItem(sourceItem)) {
+      text = buildDriverDropdownContent(sourceItem, label);
+    }
 
     const icon = document.createElement("i");
     icon.className = "bi bi-check unactive";
@@ -4076,8 +4108,72 @@ function renderCustomNewsParams(type, options) {
 
   const teams = options?.teams || [];
   const races = options?.races || [];
-  const drivers = options?.drivers || [];
-  const allDrivers = options?.allDrivers?.length ? options.allDrivers : drivers;
+  const rawOfficialDrivers = options?.drivers || [];
+  const rawAllDrivers = options?.allDrivers?.length ? options.allDrivers : rawOfficialDrivers;
+  const engines = options?.engines || [];
+  const isF1TeamId = (teamId) => (teamId >= 1 && teamId <= 10) || teamId === 32;
+  const isJuniorTeamId = (teamId) => teamId >= 11 && teamId <= 31;
+  const normalizeDriverOption = (driver) => {
+    const driverId = Number(driver?.id ?? driver?.driverId);
+    const teamId = Number(driver?.teamId);
+    const resolvedTeamId = teamId > 0 ? teamId : null;
+    const resolvedTeamName = resolvedTeamId
+      ? (combined_dict[resolvedTeamId] || driver?.teamName || `Team ${resolvedTeamId}`)
+      : (driver?.teamName || "Free Agent");
+    return {
+      ...driver,
+      id: driverId,
+      driverId: driver?.driverId != null ? Number(driver.driverId) : driverId,
+      teamId: resolvedTeamId,
+      displayTeamId: resolvedTeamId,
+      teamName: resolvedTeamName,
+      displayTeamName: resolvedTeamName
+    };
+  };
+  const getDriverPriority = (driver, preferredOfficialIds = new Set()) => {
+    const driverId = Number(driver?.id ?? driver?.driverId);
+    const teamId = Number(driver?.teamId ?? driver?.displayTeamId);
+    if (preferredOfficialIds.has(driverId) && isF1TeamId(teamId)) return 4;
+    if (isF1TeamId(teamId)) return 3;
+    if (isJuniorTeamId(teamId)) return 2;
+    if (teamId > 0) return 1;
+    return 0;
+  };
+  const dedupeDriverOptions = (list, preferredOfficialIds = new Set()) => {
+    const byId = new Map();
+    const orderedIds = [];
+
+    (Array.isArray(list) ? list : []).forEach((driver) => {
+      const normalized = normalizeDriverOption(driver);
+      const driverId = Number(normalized?.id);
+      if (!(driverId > 0)) return;
+
+      if (!byId.has(driverId)) {
+        byId.set(driverId, normalized);
+        orderedIds.push(driverId);
+        return;
+      }
+
+      const current = byId.get(driverId);
+      const currentPriority = getDriverPriority(current, preferredOfficialIds);
+      const nextPriority = getDriverPriority(normalized, preferredOfficialIds);
+      if (nextPriority > currentPriority || (nextPriority === currentPriority && current?.teamId == null && normalized?.teamId != null)) {
+        byId.set(driverId, normalized);
+      }
+    });
+
+    return orderedIds.map((driverId) => byId.get(driverId)).filter(Boolean);
+  };
+
+  const dedupedOfficialDrivers = dedupeDriverOptions(rawOfficialDrivers);
+  const officialDriverIds = new Set(dedupedOfficialDrivers.map(driver => Number(driver?.id)).filter(id => id > 0));
+  const allDrivers = dedupeDriverOptions(rawAllDrivers, officialDriverIds);
+  const driversById = new Map(allDrivers.map(driver => [Number(driver?.id), driver]));
+  const officialDrivers = dedupedOfficialDrivers.map(driver => driversById.get(Number(driver?.id)) || driver);
+  const drivers = officialDrivers;
+  const f1OfficialDrivers = officialDrivers.filter(driver => isF1TeamId(Number(driver?.teamId)));
+  const nonOfficialDrivers = allDrivers.filter(driver => !officialDriverIds.has(Number(driver?.id)));
+  const completedRaces = races.filter(race => Number(race?.state) === 2);
 
   customNewsParams.replaceChildren();
 
@@ -4101,12 +4197,14 @@ function renderCustomNewsParams(type, options) {
     return col;
   };
 
-  const makeInput = ({ id, type = "text", placeholder = "", min = null, value = null } = {}) => {
+  const makeInput = ({ id, type = "text", placeholder = "", min = null, max = null, step = null, value = null } = {}) => {
     const input = createEl("input", "custom-news-input");
     input.id = id;
     input.type = type;
     if (placeholder) input.placeholder = placeholder;
     if (min != null) input.min = String(min);
+    if (max != null) input.max = String(max);
+    if (step != null) input.step = String(step);
     if (value != null) input.value = String(value);
     return input;
   };
@@ -4122,6 +4220,107 @@ function renderCustomNewsParams(type, options) {
     const info = createEl("div", "custom-news-info");
     info.textContent = text;
     return info;
+  };
+
+  const makeHint = (text) => {
+    const hint = createEl("div", "custom-news-help");
+    hint.textContent = text;
+    return hint;
+  };
+
+  const makeSwitch = ({ id, label, checked = false } = {}) => {
+    const wrap = createEl("div", "form-check form-switch custom-news-switch");
+    const input = document.createElement("input");
+    input.className = "form-check-input custom-toggle";
+    input.type = "checkbox";
+    input.role = "switch";
+    input.id = id;
+    input.checked = !!checked;
+
+    const labelEl = document.createElement("label");
+    labelEl.className = "form-check-label";
+    labelEl.htmlFor = id;
+    labelEl.textContent = label;
+
+    wrap.append(input, labelEl);
+    return { wrap, input, labelEl };
+  };
+
+  const makeCheckbox = ({ id, label, checked = false } = {}) => {
+    const wrap = createEl("label", "custom-news-checkbox");
+    wrap.htmlFor = id;
+
+    const input = document.createElement("input");
+    input.className = "form-check-input";
+    input.type = "checkbox";
+    input.id = id;
+    input.checked = !!checked;
+
+    const text = createEl("span", "custom-news-checkbox-label");
+    text.textContent = label;
+
+    wrap.append(input, text);
+    return { wrap, input, text };
+  };
+
+  const clampNumber = (value, min = null, max = null) => {
+    let nextValue = Number(value);
+    if (Number.isNaN(nextValue)) nextValue = 0;
+    if (min != null) nextValue = Math.max(Number(min), nextValue);
+    if (max != null) nextValue = Math.min(Number(max), nextValue);
+    return nextValue;
+  };
+
+  const formatNumberValue = (value, step = 1) => {
+    const decimals = (String(step).split(".")[1] || "").length;
+    const numericValue = Number(value) || 0;
+    return decimals > 0 ? numericValue.toFixed(decimals) : String(Math.round(numericValue));
+  };
+
+  const makeNumberControl = ({ id, value = 0, min = null, max = null, step = 1, placeholder = "" } = {}) => {
+    const wrap = createEl("div", "custom-news-number-control");
+
+    const minus = document.createElement("button");
+    minus.type = "button";
+    minus.className = "bi bi-dash new-augment-button custom-news-step-button";
+
+    const input = makeInput({ id, type: "number", placeholder, min, max, step });
+    input.classList.add("custom-news-number-input");
+    input.value = formatNumberValue(clampNumber(value, min, max), step);
+
+    const plus = document.createElement("button");
+    plus.type = "button";
+    plus.className = "bi bi-plus new-augment-button custom-news-step-button";
+
+    const applyDelta = (delta) => {
+      const currentValue = input.value === "" ? 0 : Number(input.value);
+      const nextValue = clampNumber((Number.isNaN(currentValue) ? 0 : currentValue) + delta, min, max);
+      input.value = formatNumberValue(nextValue, step);
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+
+    minus.addEventListener("click", () => {
+      if (input.disabled) return;
+      applyDelta(-step);
+    });
+    plus.addEventListener("click", () => {
+      if (input.disabled) return;
+      applyDelta(step);
+    });
+    input.addEventListener("change", () => {
+      if (input.value === "") return;
+      input.value = formatNumberValue(clampNumber(input.value, min, max), step);
+    });
+
+    const setDisabled = (disabled) => {
+      input.disabled = !!disabled;
+      wrap.classList.toggle("disabled", !!disabled);
+      minus.disabled = !!disabled;
+      plus.disabled = !!disabled;
+    };
+
+    wrap.append(minus, input, plus);
+    return { wrap, input, setDisabled };
   };
 
   const makeDropdown = ({ buttonId, menuId, placeholder }) => {
@@ -4151,7 +4350,16 @@ function renderCustomNewsParams(type, options) {
 
   const teamLabel = (t) => t?.name ?? "";
   const raceLabel = (r) => `${r?.label ?? ""}${r?.state === 2 ? " (Done)" : ""}`;
-  const driverLabel = (d) => `${d?.name ?? ""} (${d?.teamName ?? ""})`;
+  const driverLabel = (d) => `${d?.name ?? ""}`;
+  const getTeamDrivers = (teamId) => officialDrivers.filter(driver => Number(driver?.teamId) === Number(teamId));
+  const getDriversOutsideTeam = (teamId) => allDrivers.filter(driver => Number(driver?.teamId) !== Number(teamId));
+  const getSwitchModeLabel = (checked) => checked ? "Manual values" : "Random values";
+  const setDropdownDisabled = (buttonEl, disabled) => {
+    if (!buttonEl) return;
+    buttonEl.disabled = !!disabled;
+    buttonEl.classList.toggle("disabled", !!disabled);
+    if (disabled) setRedesignedDropdownOpen(buttonEl, false);
+  };
 
   if (type === "race_result" || type === "quali_result" || type === "potential_champion" || type === "world_champion") {
     const row = makeRow();
@@ -4164,7 +4372,7 @@ function renderCustomNewsParams(type, options) {
     populateRedesignedDropdown({
       buttonEl: document.getElementById("customNewsRaceButton"),
       menuEl: document.getElementById("customNewsRaceMenu"),
-      items: races,
+      items: completedRaces,
       getValue: r => r.id,
       getLabel: raceLabel,
       placeholderLabel: "Select race",
@@ -4205,7 +4413,7 @@ function renderCustomNewsParams(type, options) {
     const unhappyBtn = document.getElementById("customNewsUnhappyDriverButton");
     const unhappyMenu = document.getElementById("customNewsUnhappyDriverMenu");
 
-    const raceDriverLabel = (d) => `${d?.pos}. ${d?.name} (${d?.teamName})`;
+    const raceDriverLabel = (d) => `${d?.pos}. ${d?.name}`;
 
     const resetRaceReactionDrivers = () => {
       populateRedesignedDropdown({
@@ -4239,7 +4447,7 @@ function renderCustomNewsParams(type, options) {
     populateRedesignedDropdown({
       buttonEl: document.getElementById("customNewsRaceButton"),
       menuEl: document.getElementById("customNewsRaceMenu"),
-      items: races,
+      items: completedRaces,
       getValue: r => r.id,
       getLabel: raceLabel,
       placeholderLabel: "Select race",
@@ -4674,7 +4882,20 @@ function renderCustomNewsParams(type, options) {
       makeInput({ id: "customNewsReason", placeholder: "e.g. improve safety" })
     );
 
-    row.append(componentCol, reasonCol);
+    const modeCol = makeCol("half");
+    modeCol.append(
+      makeLabel("customNewsEffectModeButton", "Effect style"),
+      makeDropdown({ buttonId: "customNewsEffectModeButton", menuId: "customNewsEffectModeMenu", placeholder: "Select style" }).wrap
+    );
+
+    const amountCol = makeCol("quarter");
+    const tdAmountControl = makeNumberControl({ id: "customNewsEffectAmount", value: 5, min: 0.5, max: 15, step: 0.5 });
+    amountCol.append(
+      makeLabel("customNewsEffectAmount", "Max swing(%)"),
+      tdAmountControl.wrap
+    );
+
+    row.append(componentCol, reasonCol, modeCol, amountCol);
     customNewsParams.append(row);
 
     populateRedesignedDropdown({
@@ -4689,6 +4910,21 @@ function renderCustomNewsParams(type, options) {
       includeEmpty: true,
       emptyLabel: "Select component",
       selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsEffectModeButton"),
+      menuEl: document.getElementById("customNewsEffectModeMenu"),
+      items: [
+        { value: "spread", label: "Spread grid" },
+        { value: "compact", label: "Compact grid" },
+        { value: "random", label: "Random" }
+      ],
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select style",
+      includeEmpty: false,
+      selectedValue: "spread",
       bindToggle: true
     });
     return;
@@ -4717,15 +4953,82 @@ function renderCustomNewsParams(type, options) {
 
     const reserveCol = makeCol("half");
     reserveCol.append(
-      makeLabel("customNewsReserveDriverButton", "Substitute driver (optional)"),
+      makeLabel("customNewsReserveDriverButton", "Substitute driver for driver in"),
       makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No substitute" }).wrap
     );
 
     row.append(teamCol, driverOutCol, driverInCol, reserveCol);
     customNewsParams.append(row);
 
+    const teamButton = document.getElementById("customNewsTeamButton");
+    const driverOutButton = document.getElementById("customNewsDriverOutButton");
+    const driverOutMenu = document.getElementById("customNewsDriverOutMenu");
+    const driverInButton = document.getElementById("customNewsDriverInButton");
+    const driverInMenu = document.getElementById("customNewsDriverInMenu");
+    const reserveButton = document.getElementById("customNewsReserveDriverButton");
+    const reserveMenu = document.getElementById("customNewsReserveDriverMenu");
+
+    const syncTransferReserveDropdown = (driverInIdValue) => {
+      const driverInId = Number(driverInIdValue);
+      const isOfficialSeatDriver = officialDriverIds.has(driverInId);
+      const reserveLabel = isOfficialSeatDriver ? "No substitute" : "Only available for drivers with an F1 seat";
+
+      populateRedesignedDropdown({
+        buttonEl: reserveButton,
+        menuEl: reserveMenu,
+        items: isOfficialSeatDriver ? nonOfficialDrivers : [],
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: reserveLabel,
+        includeEmpty: true,
+        emptyLabel: reserveLabel,
+        selectedValue: isOfficialSeatDriver ? getRedesignedDropdownValue(reserveButton) : "",
+        bindToggle: true
+      });
+      setDropdownDisabled(reserveButton, !isOfficialSeatDriver);
+    };
+
+    const syncTransferDriverDropdowns = (teamIdValue) => {
+      const selectedTeamId = Number(teamIdValue);
+      const selectedTeamDrivers = selectedTeamId > 0 ? getTeamDrivers(selectedTeamId) : [];
+      const externalDrivers = selectedTeamId > 0 ? getDriversOutsideTeam(selectedTeamId) : [];
+      const teamFirstLabel = selectedTeamId > 0 ? "Select driver" : "Select team first";
+
+      populateRedesignedDropdown({
+        buttonEl: driverOutButton,
+        menuEl: driverOutMenu,
+        items: selectedTeamDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: teamFirstLabel,
+        includeEmpty: true,
+        emptyLabel: teamFirstLabel,
+        selectedValue: getRedesignedDropdownValue(driverOutButton),
+        bindToggle: true
+      });
+      populateRedesignedDropdown({
+        buttonEl: driverInButton,
+        menuEl: driverInMenu,
+        items: externalDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: teamFirstLabel,
+        includeEmpty: true,
+        emptyLabel: teamFirstLabel,
+        selectedValue: getRedesignedDropdownValue(driverInButton),
+        bindToggle: true,
+        onSelect: syncTransferReserveDropdown
+      });
+
+      if (selectedTeamId > 0) {
+        syncTransferReserveDropdown(getRedesignedDropdownValue(driverInButton));
+      } else {
+        syncTransferReserveDropdown("");
+      }
+    };
+
     populateRedesignedDropdown({
-      buttonEl: document.getElementById("customNewsTeamButton"),
+      buttonEl: teamButton,
       menuEl: document.getElementById("customNewsTeamMenu"),
       items: teams,
       getValue: item => item.id,
@@ -4734,34 +5037,10 @@ function renderCustomNewsParams(type, options) {
       includeEmpty: true,
       emptyLabel: "Select team",
       selectedValue: "",
-      bindToggle: true
+      bindToggle: true,
+      onSelect: syncTransferDriverDropdowns
     });
-    ["Out", "In"].forEach(kind => {
-      populateRedesignedDropdown({
-        buttonEl: document.getElementById(`customNewsDriver${kind}Button`),
-        menuEl: document.getElementById(`customNewsDriver${kind}Menu`),
-        items: allDrivers,
-        getValue: item => item.id,
-        getLabel: driverLabel,
-        placeholderLabel: "Select driver",
-        includeEmpty: true,
-        emptyLabel: "Select driver",
-        selectedValue: "",
-        bindToggle: true
-      });
-    });
-    populateRedesignedDropdown({
-      buttonEl: document.getElementById("customNewsReserveDriverButton"),
-      menuEl: document.getElementById("customNewsReserveDriverMenu"),
-      items: allDrivers,
-      getValue: item => item.id,
-      getLabel: driverLabel,
-      placeholderLabel: "No substitute",
-      includeEmpty: true,
-      emptyLabel: "No substitute",
-      selectedValue: "",
-      bindToggle: true
-    });
+    syncTransferDriverDropdowns("");
     return;
   }
 
@@ -4849,7 +5128,7 @@ function renderCustomNewsParams(type, options) {
     populateRedesignedDropdown({
       buttonEl: document.getElementById("customNewsRaceButton"),
       menuEl: document.getElementById("customNewsRaceMenu"),
-      items: races,
+      items: completedRaces,
       getValue: item => item.id,
       getLabel: raceLabel,
       placeholderLabel: "Select race",
@@ -4900,7 +5179,7 @@ function renderCustomNewsParams(type, options) {
       makeDropdown({ buttonId: "customNewsReplacementTrackButton", menuId: "customNewsReplacementTrackMenu", placeholder: "Select track" }).wrap
     );
 
-    const reasonCol = makeCol("full");
+    const reasonCol = makeCol("half");
     reasonCol.append(
       makeLabel("customNewsReason", "Reason"),
       makeInput({ id: "customNewsReason", placeholder: "e.g. logistical challenges" })
@@ -4972,30 +5251,40 @@ function renderCustomNewsParams(type, options) {
     row.append(driverCol, reserveCol, conditionCol, reasonCol, racesAffectedCol);
     customNewsParams.append(row);
 
+    const affectedDriverButton = document.getElementById("customNewsDriverButton");
+    const reserveDriverButton = document.getElementById("customNewsReserveDriverButton");
+    const reserveDriverMenu = document.getElementById("customNewsReserveDriverMenu");
+    const syncInjuryReserveDropdown = (driverIdValue) => {
+      const blockedIds = new Set([Number(driverIdValue)].filter(id => id > 0));
+      const filteredDrivers = nonOfficialDrivers.filter(driver => !blockedIds.has(Number(driver?.id)));
+      populateRedesignedDropdown({
+        buttonEl: reserveDriverButton,
+        menuEl: reserveDriverMenu,
+        items: filteredDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: "No reserve driver",
+        includeEmpty: true,
+        emptyLabel: "No reserve driver",
+        selectedValue: getRedesignedDropdownValue(reserveDriverButton),
+        bindToggle: true
+      });
+    };
+
     populateRedesignedDropdown({
-      buttonEl: document.getElementById("customNewsDriverButton"),
+      buttonEl: affectedDriverButton,
       menuEl: document.getElementById("customNewsDriverMenu"),
-      items: drivers,
+      items: f1OfficialDrivers,
       getValue: item => item.id,
       getLabel: driverLabel,
       placeholderLabel: "Select driver",
       includeEmpty: true,
       emptyLabel: "Select driver",
       selectedValue: "",
-      bindToggle: true
+      bindToggle: true,
+      onSelect: syncInjuryReserveDropdown
     });
-    populateRedesignedDropdown({
-      buttonEl: document.getElementById("customNewsReserveDriverButton"),
-      menuEl: document.getElementById("customNewsReserveDriverMenu"),
-      items: allDrivers,
-      getValue: item => item.id,
-      getLabel: driverLabel,
-      placeholderLabel: "No reserve driver",
-      includeEmpty: true,
-      emptyLabel: "No reserve driver",
-      selectedValue: "",
-      bindToggle: true
-    });
+    syncInjuryReserveDropdown("");
     return;
   }
 
@@ -5014,7 +5303,14 @@ function renderCustomNewsParams(type, options) {
       makeDropdown({ buttonId: "customNewsChangeAreaButton", menuId: "customNewsChangeAreaMenu", placeholder: "Select area" }).wrap
     );
 
-    row.append(changeTypeCol, changeAreaCol);
+    const modeCol = makeCol("full");
+    const engineModeSwitch = makeSwitch({ id: "customNewsEngineRegulationManualSwitch", label: getSwitchModeLabel(false), checked: false });
+    modeCol.append(makeLabel("customNewsEngineRegulationManualSwitch", "Change mode"), engineModeSwitch.wrap);
+
+    const infoCol = makeCol("full");
+    infoCol.append(makeInfo("Set a rough percentage change per manufacturer or leave it on random."));
+
+    row.append(changeTypeCol, changeAreaCol, modeCol, infoCol);
     customNewsParams.append(row);
 
     populateRedesignedDropdown({
@@ -5040,6 +5336,40 @@ function renderCustomNewsParams(type, options) {
       selectedValue: "",
       bindToggle: true
     });
+
+    if (engines.length) {
+      const enginesRow = makeRow();
+      const engineControls = [];
+
+      engines.forEach((engine) => {
+        const engineCol = makeCol("quarter");
+        engineCol.classList.add("custom-news-engine-change");
+        engineCol.dataset.engineId = String(engine.id);
+
+        const deltaInputId = `customNewsEngineDelta${engine.id}`;
+        const deltaControl = makeNumberControl({ id: deltaInputId, value: 0, min: -20, max: 20, step: 0.5 });
+
+        engineCol.append(
+          makeLabel(deltaInputId, `${engine.name}`),
+          makeHint("Rough change (%)"),
+          deltaControl.wrap
+        );
+
+        enginesRow.append(engineCol);
+        engineControls.push(deltaControl);
+      });
+
+      customNewsParams.append(enginesRow);
+
+      const syncEngineControls = () => {
+        const isManual = engineModeSwitch.input.checked;
+        engineModeSwitch.labelEl.textContent = getSwitchModeLabel(isManual);
+        engineControls.forEach(control => control.setDisabled(!isManual));
+      };
+
+      engineModeSwitch.input.addEventListener("change", syncEngineControls);
+      syncEngineControls();
+    }
     return;
   }
 
@@ -5060,7 +5390,7 @@ function renderCustomNewsParams(type, options) {
       populateRedesignedDropdown({
         buttonEl: document.getElementById(`customNewsProspect${i}Button`),
         menuEl: document.getElementById(`customNewsProspect${i}Menu`),
-        items: allDrivers,
+        items: officialDrivers,
         getValue: item => item.id,
         getLabel: driverLabel,
         placeholderLabel: i === 3 ? "Optional" : "Select driver",
@@ -5082,10 +5412,11 @@ function renderCustomNewsParams(type, options) {
       makeLabel("customNewsAduoQuarterButton", "ADUO quarter"),
       makeDropdown({ buttonId: "customNewsAduoQuarterButton", menuId: "customNewsAduoQuarterMenu", placeholder: "Select quarter" }).wrap
     );
-    row.append(quarterCol);
-    const infoCol = makeCol("full");
-    infoCol.append(makeInfo("The manufacturers and upgrade package will be generated automatically from the current engine balance."));
-    row.append(infoCol);
+    const modeCol = makeCol("half");
+    const aduoModeSwitch = makeSwitch({ id: "customNewsAduoManualSwitch", label: getSwitchModeLabel(false), checked: false });
+    modeCol.append(makeLabel("customNewsAduoManualSwitch", "Change mode"), aduoModeSwitch.wrap);
+
+    row.append(quarterCol, modeCol);
     customNewsParams.append(row);
 
     populateRedesignedDropdown({
@@ -5099,6 +5430,45 @@ function renderCustomNewsParams(type, options) {
       selectedValue: "1",
       bindToggle: true
     });
+
+    if (engines.length) {
+      const enginesRow = makeRow();
+      const aduoControls = [];
+
+      engines.forEach((engine) => {
+        const engineCol = makeCol("quarter");
+        engineCol.classList.add("custom-news-aduo-engine-change");
+        engineCol.dataset.engineId = String(engine.id);
+
+        const engineCheck = makeCheckbox({ id: `customNewsAduoEnabled${engine.id}`, label: `${engine.name}`, checked: true });
+        const deltaInputId = `customNewsAduoDelta${engine.id}`;
+        const deltaControl = makeNumberControl({ id: deltaInputId, value: 3, min: -12, max: 12, step: 0.5 });
+
+        engineCol.append(
+          engineCheck.wrap,
+          makeHint("Rough change (%)"),
+          deltaControl.wrap
+        );
+
+        enginesRow.append(engineCol);
+        aduoControls.push({ control: deltaControl, checkbox: engineCheck.input });
+      });
+
+      customNewsParams.append(enginesRow);
+
+      const syncAduoControls = () => {
+        const isManual = aduoModeSwitch.input.checked;
+        aduoModeSwitch.labelEl.textContent = getSwitchModeLabel(isManual);
+        aduoControls.forEach(({ control, checkbox }) => control.setDisabled(!isManual || !checkbox.checked));
+      };
+
+      aduoControls.forEach(({ checkbox }) => {
+        checkbox.addEventListener("change", syncAduoControls);
+      });
+
+      aduoModeSwitch.input.addEventListener("change", syncAduoControls);
+      syncAduoControls();
+    }
     return;
   }
 
@@ -5313,6 +5683,8 @@ async function submitCustomNews() {
   if (type === "turning_point_technical_directive") {
     params.componentId = numFromButtonId("customNewsComponentButton");
     params.reason = strFromInputId("customNewsReason");
+    params.effectMode = strFromButtonId("customNewsEffectModeButton");
+    params.effectAmount = numFromInputId("customNewsEffectAmount");
   }
 
   if (type === "turning_point_transfer") {
@@ -5346,6 +5718,14 @@ async function submitCustomNews() {
   if (type === "turning_point_engine_regulation") {
     params.changeType = strFromButtonId("customNewsChangeTypeButton");
     params.changeArea = strFromButtonId("customNewsChangeAreaButton");
+    params.manualMode = !!document.getElementById("customNewsEngineRegulationManualSwitch")?.checked;
+    params.engineChanges = Array.from(document.querySelectorAll(".custom-news-engine-change")).map((engineEl) => {
+      const engineId = Number(engineEl.dataset.engineId);
+      return {
+        engineId,
+        value: numFromInputId(`customNewsEngineDelta${engineId}`)
+      };
+    });
   }
 
   if (type === "turning_point_young_drivers") {
@@ -5356,6 +5736,15 @@ async function submitCustomNews() {
 
   if (type === "turning_point_aduo") {
     params.quarter = numFromButtonId("customNewsAduoQuarterButton");
+    params.manualMode = !!document.getElementById("customNewsAduoManualSwitch")?.checked;
+    params.engineChanges = Array.from(document.querySelectorAll(".custom-news-aduo-engine-change")).map((engineEl) => {
+      const engineId = Number(engineEl.dataset.engineId);
+      return {
+        engineId,
+        enabled: !!document.getElementById(`customNewsAduoEnabled${engineId}`)?.checked,
+        value: numFromInputId(`customNewsAduoDelta${engineId}`)
+      };
+    });
   }
 
   if (type === "custom_new") {
@@ -5380,6 +5769,10 @@ async function submitCustomNews() {
     await new Command("createCustomNews", { type, title, titleTemplateIndex, dateIso, params }).promiseExecute();
     customNewsModal?.hide();
     customNewsOptionsCache = null;
+
+    const newsGrid = document.querySelector(".news-grid");
+    newsGrid.innerHTML = '';
+
     generateNews();
   } catch (e) {
     console.error(e);

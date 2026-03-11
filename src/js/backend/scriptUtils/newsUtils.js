@@ -2799,7 +2799,87 @@ export function getCustomNewsOptions() {
         };
     });
 
-    return { seasonYear, currentDay, teams, races, drivers, allDrivers };
+    const engines = (fetchEngines()?.[0] || []).map(([engineId, _, engineName]) => ({
+        id: Number(engineId),
+        name: String(engineName || `Engine ${engineId}`)
+    }));
+
+    return { seasonYear, currentDay, teams, races, drivers, allDrivers, engines };
+}
+
+function getOfficialF1DriverIdsForCustomNews(teamId = null) {
+    const params = [];
+    let sql = `
+        SELECT con.StaffID
+        FROM Staff_Contracts con
+        JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+        WHERE con.ContractType = 0
+          AND con.PosInTeam <= 2
+    `;
+
+    if (teamId != null) {
+        sql += ` AND con.TeamID = ?`;
+        params.push(Number(teamId));
+    }
+
+    return (queryDB(sql, params, 'allRows') || []).map(row => Number(row[0]));
+}
+
+function assertOfficialF1DriverForCustomNews(driverId, label = "Driver") {
+    const exists = queryDB(
+        `SELECT 1
+         FROM Staff_Contracts con
+         JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+         WHERE con.StaffID = ?
+           AND con.ContractType = 0
+           AND con.PosInTeam <= 2
+         LIMIT 1`,
+        [Number(driverId)],
+        'singleValue'
+    );
+    if (!exists) {
+        throw new Error(`${label} must be a current Formula 1 driver`);
+    }
+}
+
+function isOfficialF1DriverForCustomNews(driverId) {
+    const exists = queryDB(
+        `SELECT 1
+         FROM Staff_Contracts con
+         JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+         WHERE con.StaffID = ?
+           AND con.ContractType = 0
+           AND con.PosInTeam <= 2
+         LIMIT 1`,
+        [Number(driverId)],
+        'singleValue'
+    );
+    return !!exists;
+}
+
+function assertActiveDriverForCustomNews(driverId, label = "Driver") {
+    const exists = queryDB(
+        `SELECT 1
+         FROM Staff_BasicData bas
+         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+         LEFT JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+         WHERE bas.StaffID = ?
+           AND bas.FirstName != 'Placeholder'
+           AND IFNULL(gd.Retired, 0) = 0
+         LIMIT 1`,
+        [Number(driverId)],
+        'singleValue'
+    );
+    if (!exists) {
+        throw new Error(`${label} must be an active driver`);
+    }
+}
+
+function assertCompletedRaceForCustomNews(raceId, label = "Race") {
+    const raceState = queryDB(`SELECT State FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+    if (Number(raceState) !== 2) {
+        throw new Error(`${label} must already have taken place`);
+    }
 }
 
 export function getRaceDriversForCustomNews(raceId) {
@@ -2876,6 +2956,100 @@ function renderTurningPointTitleTemplate(data, new_type, turningPointType, templ
     return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap?.[new_type]?.[key] || '');
 }
 
+function assertCustomTurningPointPayload(type, data) {
+    if (!type?.startsWith("turning_point_")) return;
+    if (!data || typeof data !== "object") {
+        throw new Error(`Incomplete turning point data for ${type}`);
+    }
+
+    const requireNumber = (value, label) => {
+        if (!Number.isFinite(Number(value))) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+    const requireText = (value, label) => {
+        if (typeof value !== "string" || !value.trim()) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+    const requireObject = (value, label) => {
+        if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length === 0) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+    const requireArray = (value, label) => {
+        if (!Array.isArray(value) || value.length === 0) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+
+    if (type === "turning_point_technical_directive") {
+        requireNumber(data.componentId, "componentId");
+        requireObject(data.effectOnEachteam, "effectOnEachteam");
+        return;
+    }
+
+    if (type === "turning_point_transfer") {
+        requireNumber(data.teamId, "teamId");
+        requireNumber(data.driver_out?.id, "driver_out.id");
+        requireNumber(data.driver_in?.id, "driver_in.id");
+        return;
+    }
+
+    if (type === "turning_point_investment") {
+        requireNumber(data.teamId, "teamId");
+        requireNumber(data.investmentAmount, "investmentAmount");
+        requireNumber(data.investmentShare, "investmentShare");
+        requireText(data.country, "country");
+        return;
+    }
+
+    if (type === "turning_point_dsq") {
+        requireNumber(data.race_id, "race_id");
+        requireNumber(data.teamId, "teamId");
+        requireText(data.component, "component");
+        return;
+    }
+
+    if (type === "turning_point_race_substitution") {
+        requireNumber(data.raceId, "raceId");
+        requireNumber(data.newRaceTrackId, "newRaceTrackId");
+        requireNumber(data.newRaceDay, "newRaceDay");
+        return;
+    }
+
+    if (type === "turning_point_injury") {
+        requireNumber(data.driver_affected?.id, "driver_affected.id");
+        requireNumber(data.condition?.end_date, "condition.end_date");
+        requireNumber(data.reserve_driver?.id, "reserve_driver.id");
+        requireArray(data.condition?.races_affected, "condition.races_affected");
+        return;
+    }
+
+    if (type === "turning_point_engine_regulation") {
+        requireObject(data.engineData, "engineData");
+        return;
+    }
+
+    if (type === "turning_point_young_drivers") {
+        requireArray(data.prospects, "prospects");
+        data.prospects.forEach((prospect, index) => {
+            requireNumber(prospect?.driverId, `prospects[${index}].driverId`);
+        });
+        return;
+    }
+
+    if (type === "turning_point_aduo") {
+        requireNumber(data.quarter, "quarter");
+        requireArray(data.engineImprovements, "engineImprovements");
+        data.engineImprovements.forEach((engineChange, index) => {
+            requireNumber(engineChange?.engineId, `engineImprovements[${index}].engineId`);
+            requireText(engineChange?.name, `engineImprovements[${index}].name`);
+            requireObject(engineChange?.improvements, `engineImprovements[${index}].improvements`);
+        });
+    }
+}
+
 export function createCustomNewsEntry(input = {}) {
     const { type, title, titleTemplateIndex, dateIso, params } = input || {};
     if (!type || typeof type !== "string") {
@@ -2903,6 +3077,7 @@ export function createCustomNewsEntry(input = {}) {
     if (type === "race_result") {
         const raceId = Number(params?.raceId);
         if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
         const results = getOneRaceResults(raceId);
         if (!results?.length) throw new Error("No race results found for that race");
 
@@ -2942,6 +3117,7 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "quali_result") {
         const raceId = Number(params?.raceId);
         if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
         const results = getOneQualifyingResults(raceId);
         if (!results?.length) throw new Error("No qualifying results found for that race");
 
@@ -2981,6 +3157,7 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "race_reaction") {
         const raceId = Number(params?.raceId);
         if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
         const results = getOneRaceResults(raceId);
         if (!results?.length) throw new Error("No race results found for that race");
 
@@ -3040,6 +3217,7 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "fake_transfer") {
         const driverId = Number(params?.driverId);
         if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        assertOfficialF1DriverForCustomNews(driverId);
         const d = getDriverAndTeamForCustomNews(driverId);
         data = {
             drivers: [{
@@ -3065,6 +3243,7 @@ export function createCustomNewsEntry(input = {}) {
         if (!driverId || driverId <= 0) throw new Error("Missing driverId");
         if (!fromTeamId || fromTeamId <= 0) throw new Error("Missing fromTeamId");
         if (!toTeamId || toTeamId <= 0) throw new Error("Missing toTeamId");
+        assertOfficialF1DriverForCustomNews(driverId);
 
         const d = getDriverAndTeamForCustomNews(driverId);
         const team1 = combined_dict[fromTeamId] || `Team ${fromTeamId}`;
@@ -3100,6 +3279,7 @@ export function createCustomNewsEntry(input = {}) {
         if (!driverId || driverId <= 0) throw new Error("Missing driverId");
         if (!renewalTeamId || renewalTeamId <= 0) throw new Error("Missing renewalTeamId");
         if (!currentTeamId || currentTeamId <= 0) throw new Error("Missing currentTeamId");
+        assertOfficialF1DriverForCustomNews(driverId);
 
         const d = getDriverAndTeamForCustomNews(driverId);
         data = {
@@ -3125,6 +3305,7 @@ export function createCustomNewsEntry(input = {}) {
         const drivers = items.slice(0, 6).map(it => {
             const driverId = Number(it?.driverId);
             if (!driverId || driverId <= 0) return null;
+            assertOfficialF1DriverForCustomNews(driverId);
             const d = getDriverAndTeamForCustomNews(driverId);
             const potentialTeam = it?.potentialTeam != null ? Number(it.potentialTeam) : null;
             const salary = it?.salary != null ? Number(it.salary) : null;
@@ -3191,6 +3372,8 @@ export function createCustomNewsEntry(input = {}) {
         if (!teamId || teamId <= 0) throw new Error("Missing teamId");
         if (!driver1Id || driver1Id <= 0) throw new Error("Missing driver1Id");
         if (!driver2Id || driver2Id <= 0) throw new Error("Missing driver2Id");
+        assertOfficialF1DriverForCustomNews(driver1Id, "Driver 1");
+        assertOfficialF1DriverForCustomNews(driver2Id, "Driver 2");
 
         const d1 = getDriverAndTeamForCustomNews(driver1Id);
         const d2 = getDriverAndTeamForCustomNews(driver2Id);
@@ -3248,6 +3431,7 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "potential_champion" || type === "world_champion") {
         const raceId = Number(params?.raceId);
         if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
 
         const seasonResults = fetchSeasonResults(seasonYear, true);
         const standings = type === "potential_champion"
@@ -3398,32 +3582,79 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "turning_point_technical_directive") {
         const componentId = Number(params?.componentId);
         const reason = String(params?.reason || "").trim() || "improve safety";
+        const requestedEffectMode = String(params?.effectMode || "").trim().toLowerCase();
+        const effectMode = ["random", "spread", "compact"].includes(requestedEffectMode) ? requestedEffectMode : null;
+        const requestedEffectAmount = Number(params?.effectAmount);
         if (![3, 4, 5, 6, 7, 8].includes(componentId)) throw new Error("Missing componentId");
 
         const globals = getGlobals();
         const teamIds = globals?.isCreateATeam ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-        const performance = getPerformanceAllTeams(date, null, globals?.isCreateATeam);
-        const vals = teamIds.map(id => Number(performance?.[id] || 0));
-        const mean = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
-        const maxAbs = Math.max(...vals.map(v => Math.abs(v - mean)), 1);
-        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
         const effectOnEachteam = {};
+        const capsByPart = {
+            3: 7.5,
+            4: 4,
+            5: 4,
+            6: 4,
+            7: 7,
+            8: 5
+        };
+        const cap = requestedEffectAmount > 0 ? requestedEffectAmount : (capsByPart[componentId] || 5);
+        const modeRoll = Math.random();
+        const resolvedEffectMode = effectMode || (modeRoll < 0.30 ? "random" : modeRoll < 0.40 ? "compact" : "spread");
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-        for (const teamId of teamIds) {
-            const score = Number(performance?.[teamId] || mean);
-            const normalized = (score - mean) / maxAbs;
-            const noise = (Math.random() * 0.4) - 0.2;
-            effectOnEachteam[teamId] = {
-                performanceGainLoss: clamp((-normalized * 5) + noise, -7.5, 7.5).toFixed(2),
-                teamName: combined_dict[teamId] || `Team ${teamId}`,
-                teamId
-            };
+        if (resolvedEffectMode === "random") {
+            for (const teamId of teamIds) {
+                effectOnEachteam[teamId] = {
+                    performanceGainLoss: ((Math.random() * 2 * cap) - cap).toFixed(2),
+                    teamName: combined_dict[teamId] || `Team ${teamId}`,
+                    teamId
+                };
+            }
+        } else {
+            const performance = getPerformanceAllTeams(date, null, globals?.isCreateATeam);
+            const championship = queryDB(
+                `SELECT TeamID, Points
+                 FROM Races_TeamStandings
+                 WHERE SeasonID = ? AND RaceFormula = 1`,
+                [seasonYear],
+                'allRows'
+            );
+            const constructorsPoints = {};
+            for (const row of championship) {
+                constructorsPoints[Number(row[0])] = Number(row[1]) || 0;
+            }
+
+            const vals = teamIds.map(id => Number(performance?.[id] || 0));
+            const mean = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+            const maxAbs = Math.max(...vals.map(v => Math.abs(v - mean)), 1);
+            const maxPts = Math.max(...teamIds.map(id => constructorsPoints[id] || 0), 1);
+            const effectiveCap = !effectMode && resolvedEffectMode === "spread" ? (cap * 1.45) : cap;
+            const direction = resolvedEffectMode === "compact" ? -1 : 1;
+            const rawEffects = teamIds.map((teamId) => {
+                const normalizedPerformance = (Number(performance?.[teamId] || mean) - mean) / maxAbs;
+                const normalizedPoints = ((constructorsPoints[teamId] || 0) / maxPts) - 0.5;
+                let effect = (normalizedPerformance * 0.8 + normalizedPoints * 0.2) * effectiveCap * direction;
+                effect += (Math.random() * 0.3) - 0.15;
+                return { teamId, effect };
+            });
+            const averageEffect = rawEffects.length ? rawEffects.reduce((sum, item) => sum + item.effect, 0) / rawEffects.length : 0;
+
+            for (const { teamId, effect } of rawEffects) {
+                effectOnEachteam[teamId] = {
+                    performanceGainLoss: clamp(effect - averageEffect, -effectiveCap, effectiveCap).toFixed(2),
+                    teamName: combined_dict[teamId] || `Team ${teamId}`,
+                    teamId
+                };
+            }
         }
 
         data = {
             component: String(part_full_names[componentId] || "Unknown component").toLowerCase(),
             componentId,
             effectOnEachteam,
+            effectMode: resolvedEffectMode,
+            effectAmount: cap,
             month: currentMonth,
             reason,
             season: seasonYear
@@ -3444,6 +3675,29 @@ export function createCustomNewsEntry(input = {}) {
         if (!teamId || teamId <= 0) throw new Error("Missing teamId");
         if (!driverOutId || driverOutId <= 0) throw new Error("Missing driverOutId");
         if (!driverInId || driverInId <= 0) throw new Error("Missing driverInId");
+        assertOfficialF1DriverForCustomNews(driverOutId, "Driver out");
+        assertActiveDriverForCustomNews(driverInId, "Driver in");
+        if (reserveDriverId > 0) assertActiveDriverForCustomNews(reserveDriverId, "Substitute driver");
+
+        const selectedTeamDriverIds = new Set(getOfficialF1DriverIdsForCustomNews(teamId));
+        if (!selectedTeamDriverIds.has(driverOutId)) {
+            throw new Error("Driver out must belong to the selected team");
+        }
+        if (selectedTeamDriverIds.has(driverInId)) {
+            throw new Error("Driver in must come from outside the selected team");
+        }
+        const driverInHasOfficialSeat = isOfficialF1DriverForCustomNews(driverInId);
+        if (!driverInHasOfficialSeat && reserveDriverId > 0) {
+            throw new Error("A substitute driver is only allowed when driver in comes from an official F1 seat");
+        }
+        if (reserveDriverId > 0) {
+            if (isOfficialF1DriverForCustomNews(reserveDriverId)) {
+                throw new Error("Substitute driver cannot come from another official F1 seat");
+            }
+            if (selectedTeamDriverIds.has(reserveDriverId)) {
+                throw new Error("Substitute driver must come from outside the selected team");
+            }
+        }
 
         const driverOut = getDriverAndTeamForCustomNews(driverOutId);
         const driverIn = getDriverAndTeamForCustomNews(driverInId);
@@ -3500,6 +3754,7 @@ export function createCustomNewsEntry(input = {}) {
         if (!raceId || raceId <= 0) throw new Error("Missing raceId");
         if (!teamId || teamId <= 0) throw new Error("Missing teamId");
         if (!component) throw new Error("Missing component");
+        assertCompletedRaceForCustomNews(raceId);
 
         const driversInRace = queryDB(
             `SELECT bas.FirstName, bas.LastName, res.TeamID, res.Points, bas.StaffID, res.FinishingPos
@@ -3584,6 +3839,13 @@ export function createCustomNewsEntry(input = {}) {
         const reason = String(params?.reason || "").trim() || "a medical issue";
         const racesAffectedCount = Math.max(1, Number(params?.racesAffected) || 1);
         if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        assertOfficialF1DriverForCustomNews(driverId, "Affected driver");
+        if (reserveDriverId > 0) {
+            assertActiveDriverForCustomNews(reserveDriverId, "Reserve driver");
+            if (isOfficialF1DriverForCustomNews(reserveDriverId)) {
+                throw new Error("Reserve driver cannot come from another official F1 seat");
+            }
+        }
 
         const driver = getDriverAndTeamForCustomNews(driverId);
         const reserveDriver = reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
@@ -3648,6 +3910,9 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "turning_point_engine_regulation") {
         const changeType = String(params?.changeType || "minor").trim() || "minor";
         const mainChangeArea = String(params?.changeArea || "").trim() || (changeType === "major" ? "hybrid system architecture" : "fuel flow monitoring");
+        const requestedEngineChanges = Array.isArray(params?.engineChanges) ? params.engineChanges : [];
+        const useManualEngineChanges = !!params?.manualMode;
+        const manualChangesByEngine = {};
         const engines = queryDB(`SELECT * FROM Custom_Engines_list`, [], "allRows");
         const engineStats = queryDB(`SELECT * FROM Custom_Engines_stats`, [], "allRows");
         const variability = changeType === "major" ? 0.28 : 0.13;
@@ -3671,9 +3936,20 @@ export function createCustomNewsEntry(input = {}) {
             else currentStats[engineId][partStat] = unitValue;
         }
 
+        for (const change of requestedEngineChanges) {
+            const engineId = String(Number(change?.engineId));
+            if (!engineId || engineId === "NaN") continue;
+            const requestedValue = Number(change?.value);
+            manualChangesByEngine[engineId] = Number.isFinite(requestedValue) ? requestedValue : 0;
+        }
+
         for (const [engineId, stats] of Object.entries(currentStats)) {
+            const hasManualChange = useManualEngineChanges && Object.prototype.hasOwnProperty.call(manualChangesByEngine, engineId);
+            const requestedPct = hasManualChange ? Number(manualChangesByEngine[engineId]) : null;
             const biasRoll = Math.random();
-            const bias = changeType === "major" ? (biasRoll < 0.45 ? 1 : biasRoll < 0.90 ? -1 : 0) : (biasRoll < 0.35 ? 1 : biasRoll < 0.70 ? -1 : 0);
+            const bias = hasManualChange
+                ? (requestedPct > 0 ? 1 : requestedPct < 0 ? -1 : 0)
+                : (changeType === "major" ? (biasRoll < 0.45 ? 1 : biasRoll < 0.90 ? -1 : 0) : (biasRoll < 0.35 ? 1 : biasRoll < 0.70 ? -1 : 0));
             engineBias[engineId] = bias;
             let sumPct = 0;
             let count = 0;
@@ -3684,11 +3960,13 @@ export function createCustomNewsEntry(input = {}) {
                     engineData[engineId][statId] = Number(currentValue);
                     continue;
                 }
-                const delta = bias === 1
-                    ? (1 + (Math.random() * variability))
-                    : bias === -1
-                        ? (1 - (Math.random() * variability))
-                        : (1 + ((Math.random() * 2 * variability) - variability));
+                const delta = hasManualChange
+                    ? (1 + (clampValue(requestedPct + ((Math.random() * 2.4) - 1.2), -40, 40) / 100))
+                    : bias === 1
+                        ? (1 + (Math.random() * variability))
+                        : bias === -1
+                            ? (1 - (Math.random() * variability))
+                            : (1 + ((Math.random() * 2 * variability) - variability));
                 const next = Math.max(0, Math.min(100, Math.round(Number(currentValue) * delta)));
                 engineData[engineId][statId] = next;
                 if (Number(currentValue) > 0) {
@@ -3708,9 +3986,11 @@ export function createCustomNewsEntry(input = {}) {
             changeType,
             mainChangeArea,
             variability,
+            manualMode: useManualEngineChanges,
             engineData,
             engineBias,
             engineImpact,
+            requestedEngineChanges: useManualEngineChanges ? manualChangesByEngine : {},
             winners: winnerNames,
             losers: loserNames,
             neutrals: neutralNames,
@@ -3730,6 +4010,7 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "turning_point_young_drivers") {
         const ids = Array.isArray(params?.prospectDriverIds) ? params.prospectDriverIds.map(id => Number(id)).filter(id => id > 0) : [];
         if (ids.length < 2) throw new Error("Pick at least two prospects");
+        ids.forEach((driverId, index) => assertOfficialF1DriverForCustomNews(driverId, `Prospect ${index + 1}`));
 
         const prospects = ids.map(driverId => {
             const driver = getDriverAndTeamForCustomNews(driverId);
@@ -3767,12 +4048,30 @@ export function createCustomNewsEntry(input = {}) {
     else if (type === "turning_point_aduo") {
         const quarter = Math.max(1, Math.min(3, Number(params?.quarter) || 1));
         const quarterString = quarter === 1 ? "1st" : quarter === 2 ? "2nd" : "3rd";
+        const useManualEstimate = !!params?.manualMode;
+        const requestedEngineChanges = Array.isArray(params?.engineChanges) ? params.engineChanges : [];
+        const requestedEstimateByEngine = {};
+        const selectedEngineIds = new Set();
         const enginesData = fetchEngines()?.[0] || [];
         const getPower = (engineRow) => {
             const stats = engineRow?.[1] || {};
             const raw = stats[10] !== undefined ? stats[10] : stats["10"];
             return raw == null ? null : Number(raw);
         };
+
+        for (const change of requestedEngineChanges) {
+            const engineId = String(Number(change?.engineId));
+            if (!engineId || engineId === "NaN") continue;
+            if (change?.enabled) {
+                selectedEngineIds.add(engineId);
+            }
+            const requestedValue = Number(change?.value);
+            requestedEstimateByEngine[engineId] = Number.isFinite(requestedValue) ? requestedValue : 0;
+        }
+
+        if (!selectedEngineIds.size) {
+            throw new Error("Select at least one engine for this ADUO period");
+        }
 
         let bestEngine = null;
         let bestPower = -Infinity;
@@ -3788,14 +4087,24 @@ export function createCustomNewsEntry(input = {}) {
         const threshold = bestPower * 0.92;
         const engineImprovements = enginesData
             .filter(engineRow => {
+                const engineId = String(engineRow?.[0]);
+                if (!selectedEngineIds.has(engineId)) return false;
                 const power = getPower(engineRow);
-                return power != null && power < threshold;
+                return power != null;
             })
             .map(engineRow => {
                 const stats = engineRow?.[1] || {};
                 const improvements = {};
                 for (const statId of Object.keys(stats)) {
-                    improvements[statId] = Math.round((1 + (Math.random() * 6)) * 100) / 100;
+                    if (useManualEstimate) {
+                        const engineId = String(engineRow[0]);
+                        const requestedEstimate = Object.prototype.hasOwnProperty.call(requestedEstimateByEngine, engineId)
+                            ? Number(requestedEstimateByEngine[engineId])
+                            : 0;
+                        improvements[statId] = Math.round(clampValue(requestedEstimate + ((Math.random() * 2) - 1), -20, 20) * 100) / 100;
+                    } else {
+                        improvements[statId] = Math.round((1 + (Math.random() * 6)) * 100) / 100;
+                    }
                 }
                 return {
                     engineId: engineRow[0],
@@ -3812,6 +4121,8 @@ export function createCustomNewsEntry(input = {}) {
             leader: { engineId: bestEngine?.[0], name: bestEngine?.[2], stat10: bestPower },
             thresholdStat10: threshold,
             engineImprovements,
+            estimateMode: useManualEstimate ? "manual" : "random",
+            requestedEngineChanges: useManualEstimate ? requestedEstimateByEngine : {},
             quarterString,
             manufacturers: engineImprovements.map(entry => entry.name).join(", ").replace(/, ([^,]*)$/, " and $1")
         };
@@ -3841,6 +4152,9 @@ export function createCustomNewsEntry(input = {}) {
     else {
         throw new Error(`Unsupported custom news type: ${type}`);
     }
+
+    //for testing purposes 
+    assertCustomTurningPointPayload(type, data);
 
     return {
         id,
