@@ -1185,51 +1185,111 @@ export function apply2026EnginePerformanceChanges() {
 
 export function insertStaff2026() {
     let tables = ["Staff_BasicData", "Staff_State", "Staff_DriverData", "Staff_GameData"];
+
     tables.forEach((table) => {
         if (tables2026[table] && Array.isArray(tables2026[table])) {
             tables2026[table].forEach((entry) => {
-                let columns = Object.keys(entry).join(", ");
+                const entryKeys = Object.keys(entry);
+
+                let columns = entryKeys.join(", ");
                 let values = Object.values(entry);
 
-                // Generate placeholders for values
                 let placeholders = values.map(() => "?").join(", ");
+                let sqlValues = [...values];
 
-                // Filter null values for SQL
-                let sqlValues = values.map(value => value === null ? null : value);
-                //check if the entry already exists in the table to avoid duplicates
                 let primaryKeyColumn = "StaffID";
                 let staffID = entry[primaryKeyColumn];
-                const existingEntry = queryDB(`SELECT 1 FROM ${table} WHERE ${primaryKeyColumn} = ?`, [staffID], "singleRow");
+
+                const existingEntry = queryDB(
+                    `SELECT 1 FROM ${table} WHERE ${primaryKeyColumn} = ?`,
+                    [staffID],
+                    "singleRow"
+                );
+
                 if (!existingEntry || staffIDChanges[staffID]) {
-                    // Table names cannot be parameterized, but values can
                     if (staffIDChanges[staffID]) {
-                        sqlValues[sqlValues.findIndex((_, index) => Object.keys(entry)[index] === primaryKeyColumn)] = staffIDChanges[staffID];
+                        const pkIndex = entryKeys.findIndex(key => key === primaryKeyColumn);
+                        sqlValues[pkIndex] = staffIDChanges[staffID];
                     }
-                    queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
-                }
-                else {
-                    let isGeneratedForCustomTeam = queryDB(`SELECT IsGeneratedForCustomTeam FROM Staff_BasicData WHERE StaffID = ?`, [staffID], "singleValue");
-                    //update existing entry with new data
+
+                    // En Staff_DriverData, forzar estos campos a NULL en INSERT
+                    if (table === "Staff_DriverData") {
+                        const assignedCarIndex = entryKeys.findIndex(key => key === "AssignedCarNumber");
+                        const feederAssignedCarIndex = entryKeys.findIndex(key => key === "FeederSeriesAssignedCarNumber");
+
+                        if (assignedCarIndex !== -1) {
+                            sqlValues[assignedCarIndex] = null;
+                        }
+                        if (feederAssignedCarIndex !== -1) {
+                            sqlValues[feederAssignedCarIndex] = null;
+                        }
+                    }
+
+                    queryDB(
+                        `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`,
+                        sqlValues,
+                        "run"
+                    );
+                } else {
+                    let isGeneratedForCustomTeam = queryDB(
+                        `SELECT IsGeneratedForCustomTeam FROM Staff_BasicData WHERE StaffID = ?`,
+                        [staffID],
+                        "singleValue"
+                    );
+
                     if (isGeneratedForCustomTeam !== 1) {
-                        let setClause = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => `${key} = ?`).join(", ");
-                        let updateValues = Object.keys(entry).filter(key => key !== primaryKeyColumn).map(key => entry[key]);
+                        // En UPDATE, excluir estas columnas de Staff_DriverData
+                        let keysToUpdate = entryKeys.filter(key => key !== primaryKeyColumn);
+
+                        if (table === "Staff_DriverData") {
+                            keysToUpdate = keysToUpdate.filter(
+                                key => key !== "AssignedCarNumber" &&
+                                       key !== "FeederSeriesAssignedCarNumber"
+                            );
+                        }
+
+                        let setClause = keysToUpdate.map(key => `${key} = ?`).join(", ");
+                        let updateValues = keysToUpdate.map(key => entry[key]);
                         updateValues.push(entry[primaryKeyColumn]);
-                        queryDB(`UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?`, updateValues, 'run');
-                    }
-                    else{
-                        //push the satffID into staffIDChanges 
+
+                        queryDB(
+                            `UPDATE ${table} SET ${setClause} WHERE ${primaryKeyColumn} = ?`,
+                            updateValues,
+                            "run"
+                        );
+                    } else {
                         let staffID = entry[primaryKeyColumn];
                         staffIDChanges[staffID] = newStaffIDCounter;
-                        //do the insert with the new staff ID
-                        sqlValues[sqlValues.findIndex((_, index) => Object.keys(entry)[index] === primaryKeyColumn)] = staffIDChanges[staffID];
-                        queryDB(`INSERT INTO ${table} (${columns}) VALUES (${placeholders})`, sqlValues, 'run');
+
+                        const pkIndex = entryKeys.findIndex(key => key === primaryKeyColumn);
+                        sqlValues[pkIndex] = staffIDChanges[staffID];
+
+                        // También aquí, si es Staff_DriverData, forzar NULL en INSERT
+                        if (table === "Staff_DriverData") {
+                            const assignedCarIndex = entryKeys.findIndex(key => key === "AssignedCarNumber");
+                            const feederAssignedCarIndex = entryKeys.findIndex(key => key === "FeederSeriesAssignedCarNumber");
+
+                            if (assignedCarIndex !== -1) {
+                                sqlValues[assignedCarIndex] = null;
+                            }
+                            if (feederAssignedCarIndex !== -1) {
+                                sqlValues[feederAssignedCarIndex] = null;
+                            }
+                        }
+
+                        queryDB(
+                            `INSERT INTO ${table} (${columns}) VALUES (${placeholders})`,
+                            sqlValues,
+                            "run"
+                        );
+
                         newStaffIDCounter++;
                     }
                 }
-
             });
         }
     });
+
     updateSeasonModTable("extra-drivers-2026", 1, "2026");
 }
 
@@ -1317,6 +1377,18 @@ export function changeLineUps2026() {
     else {
         wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
     }
+
+    //get all StaffID from Staff_DriverData
+    const driverIDs = queryDB(`SELECT StaffID FROM Staff_DriverData`, [], "allRows")
+    //for each driver, get its AssignedCarNumber and FeederSeriesAssignedCarNumber from tables2026.Staff_DriverData and update the corresponding driver in the database with those values
+    driverIDs.forEach((driverID) => {
+        const driverData = tables2026.Staff_DriverData.find(driver => driver.StaffID === driverID[0]);
+        if (driverData) {
+            const { AssignedCarNumber, FeederSeriesAssignedCarNumber } = driverData;
+            queryDB(`UPDATE Staff_DriverData SET AssignedCarNumber = ?, FeederSeriesAssignedCarNumber = ? WHERE StaffID = ?`, [AssignedCarNumber, FeederSeriesAssignedCarNumber, driverID[0]], 'run');
+        }
+    });
+
     // fixStandings("2025");
 
 }
@@ -1464,13 +1536,23 @@ export function change2025Standings(mod = "2026") {
 export function fixesMod2026(){
     //if has trhe extra drivers
     let wasError = false;
+    let badStandings = false;
     const extraDrivers = queryDB(`SELECT value FROM Custom_2026_SeasonMod WHERE key = 'extra-drivers-2026'`, [], "singleValue");
     const isWrong = queryDB(`SELECT Gender FROM Staff_BasicData WHERE StaffID = 654`, [], "singleValue");
     if (extraDrivers === "1" && isWrong === 0) {
         queryDB(`UPDATE Staff_BasicData SET Gender = 1 WHERE StaffID = 654`, [], "run")
         wasError = true;
     }
-    return wasError;
+
+    let errorDict = {
+        "standings": badStandings,
+        "newStandings": null,
+        "extraDrivers": isWrong === 0,
+        "generalWasError": wasError
+    };
+
+
+    return errorDict;
 }
 
 function updateRecordsTo2026(){

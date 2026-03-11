@@ -24,7 +24,7 @@ import { load_calendar } from './calendar';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers, loadNumbers
+    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyDraftCountryLocale
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -82,6 +82,24 @@ const saveFileButton = document.getElementById('saveFileButton');
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
 initSeasonMods();
+
+document.addEventListener("random-staff-requested", function (event) {
+    const data = event.detail || {};
+    const command = new Command("fetchRandomStaffDraft", data);
+    command.execute();
+});
+
+document.addEventListener("random-forename-requested", function (event) {
+    const data = event.detail || {};
+    const command = new Command("fetchRandomDraftForename", data);
+    command.execute();
+});
+
+document.addEventListener("draft-nationality-selected", function (event) {
+    const data = event.detail || {};
+    const command = new Command("fetchCountryLocaleForCode", data);
+    command.execute();
+});
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -346,7 +364,7 @@ async function handleLogout() {
         if (response.ok) {
             console.log("Logout successful");
 
-            updatePatreonUI({ isLoggedIn: false, tier: 'Free' });
+            updatePatreonUI({ isLoggedIn: false, tier: 'Free', tierNumber: 0, whitelisted: false, paidMember: false });
 
             window.location.reload();
         }
@@ -357,7 +375,7 @@ async function handleLogout() {
 
 /**
  * Retrieves the user's Patreon tier from the cookie.
- * @returns {Promise<{paidMember: boolean, tier: string, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
+ * @returns {Promise<{paidMember: boolean, tier: string, tierNumber?: number, whitelisted: boolean, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
  */
 export async function getUserTier() {
     try {
@@ -370,6 +388,7 @@ export async function getUserTier() {
             paidMember: data.paidMember,
             tier: data.tier,
             tierNumber: data.tierNumber,
+            whitelisted: !!data.whitelisted,
             isLoggedIn: data.isLoggedIn,
         };
         window.__USER_DATA__ = windowData;
@@ -377,7 +396,7 @@ export async function getUserTier() {
         return windowData;
     } catch (error) {
         console.error("Failed to check auth status", error);
-        return { paidMember: false, tier: 'Free', isLoggedIn: false };
+        return { paidMember: false, tier: 'Free', whitelisted: false, isLoggedIn: false };
     }
 }
 
@@ -449,6 +468,8 @@ function updatePatreonUI(tier) {
     hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
 
+    console.log("Updating Patreon UI with tier:", tier);
+
     if (tier.paidMember) {
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
@@ -466,6 +487,12 @@ function updatePatreonUI(tier) {
         syncNightlyIndicator();
     }
     syncNightlyThemeVisibility();
+
+    const hasCreateNewsAccess = tier?.tierNumber === 3 || tier?.tier === "Founder" || !!tier?.whitelisted;
+    if (!hasCreateNewsAccess){
+        //remove the button from the DOM entirely
+        document.querySelector("#createCustomNews")?.remove();
+    }
 
     if (tier.isLoggedIn) {
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
@@ -493,6 +520,11 @@ function updatePatreonUI(tier) {
 
 
 function editModeHandler() {
+    if (isDraftProfileSelected()) {
+        new_update_notifications("Draft creation is not implemented yet. For now, this button only generates editable random values.", "error");
+        return;
+    }
+
     let stats = "";
     document.querySelectorAll(".elegible").forEach(function (elem) {
         stats += elem.value + " ";
@@ -924,6 +956,15 @@ const messageHandlers = {
         place_staff_editStats(message);
         initFreeDriversElems();
         initStatsDrivers();
+    },
+    "Random staff draft fetched": (message) => {
+        loadRandomStaffDraft(message);
+    },
+    "Random draft forename fetched": (message) => {
+        applyDraftForenameUpdate(message);
+    },
+    "Draft country locale fetched": (message) => {
+        applyDraftCountryLocale(message);
     },
     "Calendar fetched": (message) => {
         load_calendar(message)
@@ -2476,7 +2517,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Modify car performance to your liking",
         "Fix game-breaking issues with ease",
         "No installation required, works in your browser",
-        "Honda, for the love of god, give Alonso a good engine for once"
+        "Honda, for the love of god, give Alonso a good engine for once",
+        "In memory of Aloy"
     ];
 
     //reorder them randomly

@@ -384,6 +384,90 @@ export const countries_data = {
     "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai", "track": "Shanghai International Circuit" }
 };
 
+// custom news
+export const CUSTOM_NEWS_TYPE_META = {
+    race_result: { label: "Race result", titleType: 2, group: "normal" },
+    quali_result: { label: "Qualifying result", titleType: 1, group: "normal" },
+    race_reaction: { label: "Post-race reactions", titleType: 16, group: "normal" },
+    fake_transfer: { label: "Transfer rumor", titleType: 7, group: "normal" },
+    big_transfer: { label: "Big transfer confirmed", titleType: 6, group: "normal" },
+    massive_exit: { label: "Massive exit", titleType: 17, group: "normal" },
+    massive_signing: { label: "Massive signing", titleType: 18, group: "normal" },
+    contract_renewal: { label: "Contract renewal", titleType: 10, group: "normal" },
+    silly_season_rumors: { label: "Silly season rumors", titleType: 4, group: "normal" },
+    team_comparison: { label: "Team comparison", group: "normal" },
+    driver_comparison: { label: "Driver comparison", titleType: 13, group: "normal" },
+    season_review: { label: "Season review", group: "normal" },
+    potential_champion: { label: "Potential champion", titleType: 8, group: "normal" },
+    world_champion: { label: "World champion", titleType: 9, group: "normal" },
+    next_season_grid: { label: "Next season grid", titleType: 19, group: "normal" },
+    feeder_series_review: { label: "Feeder series review", titleType: 20, group: "normal" },
+    turning_point_technical_directive: { label: "Technical directive", titleType: 100, turningPoint: true, group: "turning_point" },
+    turning_point_transfer: { label: "Mid-season transfer", titleType: 101, turningPoint: true, group: "turning_point" },
+    turning_point_investment: { label: "Investment", titleType: 102, turningPoint: true, group: "turning_point" },
+    turning_point_dsq: { label: "DSQ", titleType: 103, turningPoint: true, group: "turning_point" },
+    turning_point_race_substitution: { label: "Race substitution", titleType: 105, turningPoint: true, group: "turning_point" },
+    turning_point_injury: { label: "Injury or illness", titleType: 106, turningPoint: true, group: "turning_point" },
+    turning_point_engine_regulation: { label: "Engine regulation", titleType: 107, turningPoint: true, group: "turning_point" },
+    turning_point_young_drivers: { label: "Young drivers", titleType: 108, turningPoint: true, group: "turning_point" },
+    turning_point_aduo: { label: "ADUO", titleType: 109, turningPoint: true, group: "turning_point" },
+    custom_new: { label: "Custom article", group: "custom" }
+};
+
+export const CUSTOM_NEWS_INVESTMENT_COUNTRIES = [
+    "China",
+    "Saudi Arabia",
+    "United Arab Emirates",
+    "India",
+    "Russia",
+    "South Africa",
+    "Qatar",
+    "Bahrain",
+    "Singapore",
+    "Vietnam"
+];
+
+export const CUSTOM_NEWS_DSQ_COMPONENTS = [
+    "engine brake map",
+    "fuel flow",
+    "front wing",
+    "rear wing",
+    "diffuser",
+    "floor",
+    "brake ducts",
+    "suspension",
+    "gearbox",
+    "cooling system",
+    "hydraulics",
+    "clutch",
+    "plank wear"
+];
+
+export const CUSTOM_NEWS_ENGINE_CHANGE_AREAS = [
+    "fuel flow monitoring",
+    "ERS deployment limits",
+    "MGU-K usage rules",
+    "cooling system allowances",
+    "gearbox durability limits",
+    "turbo efficiency limits",
+    "oil consumption rules",
+    "hybrid system architecture",
+    "engine architecture layout",
+    "combustion concept rules",
+    "turbocharger design limits",
+    "energy recovery system redesign",
+    "fuel system design rules",
+    "power unit packaging regulations"
+];
+
+export const CUSTOM_NEWS_ADUO_QUARTERS = [
+    { value: "1", label: "1st quarter" },
+    { value: "2", label: "2nd quarter" },
+    { value: "3", label: "3rd quarter" }
+];
+
+export const CUSTOM_NEWS_IMAGE_FILES = ['1_gar.webp', '1_media.webp', '1_pad.webp', '1_shot.webp', '10_gar.webp', '10_pad.webp', '102_pad.webp', '105_pad.webp', '107_pad.webp', '11_pad.webp', '116_pad.webp', '12_pad.webp', '13_pad.webp', '14_pad.webp', '142_pad.webp', '144_pad.webp', '15_pad.webp', '17_pad.webp', '18_pad.webp', '2_gar.webp', '2_media.webp', '2_pad.webp', '2_shot.webp', '23_pad.webp', '242_pad.webp', '245_pad.webp', '255_pad.webp', '279_pad.webp', '286_pad.webp', '3_gar.webp', '3_media.webp', '3_pad.webp', '3_shot.webp', '373_pad.webp', '376_pad.webp', '4_gar.webp', '4_media.webp', '4_shot.webp', '5_gar.webp', '5_media.webp', '5_shot.webp', '6_gar.webp', '6_pad.webp', '6_shot.webp', '7_shot.webp', '77_pad.webp', '8_gar.webp', '8_shot.webp', '81_pad.webp', '83_pad.webp', '87_pad.webp', '9_gar.webp', '95_pad.webp', 'af_factory.webp', 'af1.webp', 'af2.webp', 'al_factory.webp', 'al1.webp', 'al2.webp', 'as_factory.webp', 'as1.webp', 'as2.webp', 'at_factory.webp', 'at1.webp', 'at2.webp', 'aus.webp', 'aus_car.webp', 'aus_tra.webp', 'aut.webp', 'aut_car.webp', 'aut_tra.webp', 'aze.webp', 'aze_car.webp', 'aze_tra.webp', 'bah.webp', 'bah_car.webp', 'bah_inv.webp', 'bah_tra.webp', 'bel.webp', 'bel_car.webp', 'bel_tra.webp', 'bra.webp', 'bra_car.webp', 'bra_tra.webp', 'can.webp', 'can_car.webp', 'can_tra.webp', 'champ1.webp', 'champ2.webp', 'champ3.webp', 'champ4.webp', 'champ5.webp', 'chi.webp', 'chi_car.webp', 'chi_inv.webp', 'chi_tra.webp', 'con1.webp', 'con10.webp', 'con11.webp', 'con12.webp', 'con2.webp', 'con3.webp', 'con4.webp', 'con5.webp', 'con6.webp', 'con7.webp', 'con8.webp', 'con9.webp', 'ct_factory.webp', 'dsq_1.webp', 'dsq_2.webp', 'dsq_3.webp', 'dsq_4.webp', 'dsq_5.webp', 'dsq_6.webp', 'dsq_7.webp', 'dsq_8.webp', 'engine_1.webp', 'engine_10.webp', 'engine_2.webp', 'engine_3.webp', 'engine_4.webp', 'engine_5.webp', 'engine_6.webp', 'engine_7.webp', 'engine_8.webp', 'engine_9.webp', 'fe_factory.webp', 'fe1.webp', 'fe2.webp', 'fe3.webp', 'fe4.webp', 'fe5.webp', 'gbr.webp', 'gbr_car.webp', 'gbr_tra.webp', 'grid_1.webp', 'grid_2.webp', 'grid_3.webp', 'grid_4.webp', 'ha_factory.webp', 'ha1.webp', 'ha2.webp', 'hun.webp', 'hun_car.webp', 'hun_tra.webp', 'imo.webp', 'imo_car.webp', 'imo_tra.webp', 'ind_inv.webp', 'ita.webp', 'ita_car.webp', 'ita_tra.webp', 'jap.webp', 'jap_car.webp', 'jap_tra.webp', 'mc_factory.webp', 'mc1.webp', 'mc2.webp', 'me_factory.webp', 'me1.webp', 'me2.webp', 'me3.webp', 'me4.webp', 'mex.webp', 'mex_car.webp', 'mex_tra.webp', 'mia.webp', 'mia_car.webp', 'mia_tra.webp', 'mon.webp', 'mon_car.webp', 'mon_tra.webp', 'monaco_media.webp', 'ned.webp', 'ned_car.webp', 'ned_tra.webp', 'part_3_1.webp', 'part_3_2.webp', 'part_3_3.webp', 'part_4_1.webp', 'part_4_2.webp', 'part_4_3.webp', 'part_5_1.webp', 'part_5_2.webp', 'part_5_3.webp', 'part_6_1.webp', 'part_6_2.webp', 'part_6_3.webp', 'part_7_1.webp', 'part_7_2.webp', 'part_7_3.webp', 'part_8_1.webp', 'part_8_2.webp', 'part_8_3.webp', 'qat.webp', 'qat_car.webp', 'qat_inv.webp', 'qat_tra.webp', 'rb_factory.webp', 'rb1.webp', 'rb2.webp', 'rb3.webp', 'rb4.webp', 'rus_inv.webp', 'sau.webp', 'sau_car.webp', 'sau_inv.webp', 'sau_tra.webp', 'sgp.webp', 'sgp_car.webp', 'sgp_tra.webp', 'sin_inv.webp', 'sou_inv.webp', 'spa.webp', 'spa_car.webp', 'spa_tra.webp', 'uae.webp', 'uae_car.webp', 'uae_tra.webp', 'uni_inv.webp', 'usa.webp', 'usa_car.webp', 'usa_tra.webp', 'veg.webp', 'veg_car.webp', 'veg_tra.webp', 'vie_inv.webp', 'wi_factory.webp', 'wi1.webp', 'wi2.webp', 'wi3.webp', 'young_1.webp', 'young_2.webp', 'young_3.webp', 'young_4.webp', 'young_5.webp', 'young_6.webp', 'young_7.webp', 'young_8.webp', 'young_9.webp'];
+
 export function getParamMap(data) {
     return {
         1: {

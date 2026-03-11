@@ -1,8 +1,10 @@
-import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors } from "./config";
+import { team_dict, combined_dict, races_names, names_full, countries_data, logos_disc, lightColors, part_full_names, CUSTOM_NEWS_TYPE_META, CUSTOM_NEWS_INVESTMENT_COUNTRIES, CUSTOM_NEWS_DSQ_COMPONENTS, CUSTOM_NEWS_ENGINE_CHANGE_AREAS, CUSTOM_NEWS_ADUO_QUARTERS, CUSTOM_NEWS_IMAGE_FILES } from "./config";
 import { Command } from "../backend/command";
 import { getCircuitInfo } from "../backend/scriptUtils/newsUtils";
 import newsPromptsTemaplates from "../../data/news/news_prompts_templates.json";
 import turningPointsTemplates from "../../data/news/turning_points_prompts_templates.json";
+import newsTitleTemplates from "../../data/news/news_titles_templates.json";
+import turningPointTitleTemplates from "../../data/news/turning_points_titles_templates.json";
 import { currentSeason } from "./transfers";
 import { colors_dict } from "./head2head";
 import { excelToDate } from "../backend/scriptUtils/eidtStatsUtils";
@@ -19,6 +21,19 @@ const newsOptionsBtn = document.querySelector('.news-options');
 const copyArticleBtn = document.getElementById('copyArticle');
 const deleteArticleBtn = document.getElementById('deleteArticle');
 const editArticleBtn = document.getElementById('editArticle');
+const createCustomNewsBtn = document.getElementById('createCustomNews');
+const customNewsModalEl = document.getElementById('customNewsModal');
+const customNewsTypeButton = document.getElementById('customNewsTypeButton');
+const customNewsTypeMenu = document.getElementById('customNewsTypeMenu');
+const customNewsDateInput = document.getElementById('customNewsDateInput');
+const customNewsTemplateWrap = document.getElementById('customNewsTemplateWrap');
+const customNewsTemplateButton = document.getElementById('customNewsTemplateButton');
+const customNewsTemplateMenu = document.getElementById('customNewsTemplateMenu');
+const customNewsTemplateHelp = document.getElementById('customNewsTemplateHelp');
+const customNewsTitleInput = document.getElementById('customNewsTitleInput');
+const customNewsParams = document.getElementById('customNewsParams');
+const customNewsError = document.getElementById('customNewsError');
+const customNewsCreateBtn = document.getElementById('customNewsCreateBtn');
 
 let interval2 = null;
 let cleaning = false;
@@ -976,10 +991,12 @@ export async function place_news(newsAndTurningPoints, newsAvailable) {
   if (!isCurrentSeason && isCurrentSeason !== undefined) { //if it's undefined it should go to else
     document.querySelector("#reloadNews").classList.add("d-none");
     document.querySelector("#regenerateArticle").classList.add("d-none");
+    document.querySelector("#createCustomNews")?.classList.add("d-none");
   }
   else {
     document.querySelector("#reloadNews").classList.remove("d-none");
     document.querySelector("#regenerateArticle").classList.remove("d-none");
+    document.querySelector("#createCustomNews")?.classList.remove("d-none");
   }
 }
 
@@ -1541,6 +1558,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     race_reaction: contextualizeRaceReaction,
     next_season_grid: contextualizeNextSeasonGrid,
     feeder_series_review: contextualizeFeederSeriesReview,
+    custom_new: contextualizeCustomNews,
 
     // Turning points: outcome_ y no-outcome comparten handler
     turning_point_dsq: (nd) => contextualizeDSQ(nd, nd.turning_point_type),
@@ -1753,6 +1771,43 @@ function italicizeQuotes(md) {
     }
     return `*${match}*`;
   });
+}
+
+async function contextualizeCustomNews(newData) {
+  const seasonYear = Number(newData?.data?.season_year || currentSeason || 0);
+  const promptText = newData?.data?.prompt || "Write a custom Formula 1 article.";
+  const imageFile = newData?.data?.image || "";
+
+  let prompt =
+    `Write a Formula 1-style news article based on this custom request:\n${promptText}\n\n` +
+    `The story must stay coherent with the save context, current standings, teams, and driver situation.\n` +
+    `Do not mention raw filenames or that the story was AI-generated.`;
+
+  if (imageFile) {
+    prompt += `\n\nA supporting image has been selected for the article. Use it only as loose visual inspiration if it helps the tone.`;
+  }
+
+  const command = new Command("fullChampionshipDetailsRequest", {
+    season: seasonYear,
+  });
+
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching full championship details for custom news:", err);
+    return {
+      instruction: prompt,
+      context: ""
+    };
+  }
+
+  const contextData = buildContextualPrompt(resp.content, { seasonYear });
+
+  return {
+    instruction: prompt,
+    context: contextData
+  };
 }
 
 async function contextualizeTurningPointInjury(newData, turningPointType) {
@@ -2133,7 +2188,6 @@ async function contextualizeTurningPointAduo(newData, turningPointType) {
   if (engineAllocations && typeof engineAllocations === "object") {
     const teamIds = Object.keys(engineAllocations)
       .map((id) => Number(id))
-      .filter((id) => Number.isFinite(id))
       // Hide "Team 32" when custom team is not enabled (renderer removes combined_dict[32] in that case).
       .filter((id) => id !== 32 || (32 in combined_dict))
       .sort((a, b) => a - b);
@@ -2141,7 +2195,7 @@ async function contextualizeTurningPointAduo(newData, turningPointType) {
     const lines = teamIds.map((teamId) => {
       const engineId = Number(engineAllocations[String(teamId)]);
       const teamName = combined_dict[teamId] || `Team ${teamId}`;
-      const engineName = engineNames?.[engineId] || (Number.isFinite(engineId) ? `Engine ${engineId}` : "Unknown engine");
+      const engineName = engineNames?.[engineId] || `Engine ${engineId}`;
       return `- ${teamName}: ${engineName}`;
     });
 
@@ -2774,7 +2828,7 @@ async function contextualizeQualiResults(newData) {
     .replace(/{{\s*circuit\s*}}/g, circuit);
 
 
-  const raceId = newData.id.split("_")[2];
+  const raceId = newData?.data?.raceId ?? Number.parseInt(newData?.id?.split("_")?.[2], 10);
 
   const command = new Command("qualiDetailsRequest", {
     raceid: raceId,
@@ -2844,7 +2898,7 @@ async function contextualizeRaceResults(newData) {
     .replace(/{{\s*season_year\s*}}/g, seasonYear)
     .replace(/{{\s*circuit\s*}}/g, circuit);
 
-  const raceId = newData.id.split("_")[2];
+  const raceId = newData?.data?.raceId ?? Number.parseInt(newData?.id?.split("_")?.[2], 10);
   const command = new Command("raceDetailsRequest", {
     raceid: raceId,
   }
@@ -3008,8 +3062,10 @@ async function contextualizeRaceReaction(newData) {
 
 async function contextualizeFeederSeriesReview(newData) {
   let seasonYear = newData.data.season_year;
-  let f2_champion = newData.data.f2_champion.name;
-  let f3_champion = newData.data.f3_champion.name;
+  const f2ChampionData = newData.data.f2_champion;
+  const f3ChampionData = newData.data.f3_champion;
+  let f2_champion = (typeof f2ChampionData === "string") ? f2ChampionData : f2ChampionData?.name;
+  let f3_champion = (typeof f3ChampionData === "string") ? f3ChampionData : f3ChampionData?.name;
   let prompt = newsPromptsTemaplates.find(t => t.new_type === 20).prompt;
   prompt = prompt.replace(/{{\s*season_year\s*}}/g, seasonYear)
     .replace(/{{\s*f2_champion\s*}}/g, f2_champion)
@@ -3708,6 +3764,2034 @@ document.querySelector("#reloadNews").addEventListener("click", async () => {
   generateNews();
 });
 
+const CUSTOM_NEWS_TYPE_DEFS = Object.entries(CUSTOM_NEWS_TYPE_META).map(([value, meta]) => ({
+  value,
+  label: meta.label,
+  group: meta.group || "normal"
+}));
+
+let customNewsModal = null;
+let customNewsOptionsCache = null;
+
+function setCustomNewsError(msg) {
+  if (!customNewsError) return;
+  if (msg) {
+    customNewsError.textContent = msg;
+    customNewsError.classList.remove('custom-news-hidden');
+  } else {
+    customNewsError.textContent = '';
+    customNewsError.classList.add('custom-news-hidden');
+  }
+}
+
+function getCustomNewsTitlePlaceholder(type = getCustomNewsSelectedType()) {
+  return type === "custom_new" ? "Write the article title" : "Automatic / default title";
+}
+
+function getCustomNewsImageSrc(imageFile) {
+  return imageFile ? `../assets/images/news/${imageFile}` : "";
+}
+
+function toIsoDate(date) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  return d.toISOString().slice(0, 10);
+}
+
+function setRedesignedDropdownOpen(dropdown, isOpen) {
+  if (!dropdown) return;
+  dropdown.classList.toggle("open", !!isOpen);
+  dropdown.setAttribute("aria-expanded", isOpen ? "true" : "false");
+}
+
+function bindRedesignedDropdownToggle(dropdown) {
+  if (!dropdown || dropdown._customDropdownBound) return;
+  dropdown._customDropdownBound = true;
+
+  dropdown.addEventListener("click", function (e) {
+    if (dropdown.disabled) return;
+    e.stopPropagation();
+
+    document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
+      if (openDropdown !== dropdown) {
+        setRedesignedDropdownOpen(openDropdown, false);
+      }
+    });
+
+    setRedesignedDropdownOpen(dropdown, !dropdown.classList.contains("open"));
+  });
+}
+
+function getDropdownLabelSpan(buttonEl) {
+  return buttonEl?.querySelector(".dropdown-label") || buttonEl?.querySelector("span") || null;
+}
+
+function setRedesignedDropdownSelection(buttonEl, menuEl, value, label) {
+  if (!buttonEl) return;
+  buttonEl.dataset.value = value == null ? "" : String(value);
+
+  const span = getDropdownLabelSpan(buttonEl);
+  if (span) span.textContent = label != null ? String(label) : "";
+
+  if (menuEl) {
+    menuEl.querySelectorAll(".redesigned-dropdown-item").forEach(item => {
+      const isSelected = item.dataset.value === String(value ?? "");
+      item.querySelector("i")?.classList.toggle("unactive", !isSelected);
+    });
+  }
+}
+
+function getRedesignedDropdownValue(buttonEl) {
+  const v = buttonEl?.dataset?.value;
+  return v == null ? "" : String(v);
+}
+
+function getCustomNewsSelectedType() {
+  return getRedesignedDropdownValue(customNewsTypeButton);
+}
+
+function populateCustomNewsTypeDropdown({
+  buttonEl,
+  menuEl,
+  items,
+  selectedValue = "",
+  onSelect
+} = {}) {
+  if (!buttonEl || !menuEl) return;
+
+  menuEl.replaceChildren();
+
+  const sections = [
+    { key: "normal", label: "Normal articles" },
+    { key: "turning_point", label: "Turning points" },
+    { key: "custom", label: "Custom article" }
+  ];
+
+  const mkSectionTitle = (label) => {
+    const el = document.createElement("li");
+    el.className = "custom-dropdown-section-title bold-font";
+    el.textContent = label;
+    return el;
+  };
+
+  const mkItem = (item) => {
+    const a = document.createElement("a");
+    a.className = "redesigned-dropdown-item";
+    a.href = "#";
+    a.dataset.value = String(item.value ?? "");
+
+    const text = document.createElement("span");
+    text.textContent = String(item.label ?? "");
+
+    const icon = document.createElement("i");
+    icon.className = "bi bi-check unactive";
+
+    a.append(text, icon);
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setRedesignedDropdownSelection(buttonEl, menuEl, a.dataset.value, text.textContent);
+      setRedesignedDropdownOpen(buttonEl, false);
+      if (typeof onSelect === "function") onSelect(a.dataset.value);
+    });
+
+    return a;
+  };
+
+  sections.forEach(section => {
+    const sectionItems = (items || []).filter(item => (item.group || "normal") === section.key);
+    if (!sectionItems.length) return;
+
+    menuEl.appendChild(mkSectionTitle(section.label));
+    sectionItems.forEach(item => {
+      menuEl.appendChild(mkItem(item));
+    });
+  });
+
+  const selectedItem = (items || []).find(item => String(item.value ?? "") === String(selectedValue ?? ""));
+  if (selectedItem) {
+    setRedesignedDropdownSelection(buttonEl, menuEl, selectedItem.value, selectedItem.label);
+  } else {
+    setRedesignedDropdownSelection(buttonEl, menuEl, "", "Select type");
+  }
+}
+
+function populateRedesignedDropdown({
+  buttonEl,
+  menuEl,
+  items,
+  getValue,
+  getLabel,
+  placeholderLabel = "Select...",
+  includeEmpty = false,
+  emptyLabel = "Select...",
+  selectedValue = "",
+  bindToggle = true,
+  onSelect
+} = {}) {
+  if (!buttonEl || !menuEl) return;
+
+  if (bindToggle) bindRedesignedDropdownToggle(buttonEl);
+
+  const isDriverDropdownItem = (item) => {
+    if (!item || typeof item !== "object") return false;
+    const hasDriverId = item.driverId != null || item.id != null;
+    return hasDriverId && typeof item.name === "string";
+  };
+
+  const buildDriverDropdownContent = (item, label) => {
+    const wrap = document.createElement("div");
+    wrap.className = "custom-news-driver-option";
+
+    const logoTeamId = Number(item?.displayTeamId ?? item?.teamId);
+    const logoSrc = logoTeamId > 0 ? logos_disc?.[logoTeamId] : null;
+    if (logoSrc) {
+      const logo = document.createElement("img");
+      logo.className = "custom-news-driver-option-logo";
+      logo.src = logoSrc;
+      logo.alt = item?.displayTeamName || item?.teamName || `Team ${logoTeamId}`;
+      wrap.appendChild(logo);
+    }
+
+    const text = document.createElement("span");
+    text.className = "custom-news-driver-option-text";
+    text.textContent = String(label ?? item?.name ?? "");
+    wrap.appendChild(text);
+
+    return wrap;
+  };
+
+  const mkItem = (value, label) => {
+    const a = document.createElement("a");
+    a.className = "redesigned-dropdown-item";
+    a.href = "#";
+    a.dataset.value = value == null ? "" : String(value);
+
+    let text = document.createElement("span");
+    text.textContent = String(label ?? "");
+    const sourceItem = (items || []).find(it => String(getValue(it)) === a.dataset.value);
+    if (isDriverDropdownItem(sourceItem)) {
+      text = buildDriverDropdownContent(sourceItem, label);
+    }
+
+    const icon = document.createElement("i");
+    icon.className = "bi bi-check unactive";
+
+    a.appendChild(text);
+    a.appendChild(icon);
+
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      setRedesignedDropdownSelection(buttonEl, menuEl, a.dataset.value, text.textContent);
+      setRedesignedDropdownOpen(buttonEl, false);
+      if (typeof onSelect === "function") onSelect(a.dataset.value);
+    });
+
+    return a;
+  };
+
+  menuEl.replaceChildren();
+
+  if (includeEmpty) {
+    menuEl.appendChild(mkItem("", emptyLabel));
+  }
+
+  (items || []).forEach(it => {
+    menuEl.appendChild(mkItem(getValue(it), getLabel(it)));
+  });
+
+  const selectedStr = selectedValue == null ? "" : String(selectedValue);
+  const selectedItem = Array.from(menuEl.querySelectorAll(".redesigned-dropdown-item"))
+    .find(a => a.dataset.value === selectedStr);
+
+  if (selectedItem) {
+    setRedesignedDropdownSelection(buttonEl, menuEl, selectedItem.dataset.value, selectedItem.querySelector("span")?.textContent);
+  } else {
+    setRedesignedDropdownSelection(buttonEl, menuEl, "", placeholderLabel);
+  }
+}
+
+function resolveCustomNewsTitleType(type = getCustomNewsSelectedType()) {
+  if (type === "team_comparison") {
+    return getRedesignedDropdownValue(document.getElementById("customNewsCompTypeButton")) === "bad" ? 11 : 12;
+  }
+  if (type === "season_review") {
+    return Number(getRedesignedDropdownValue(document.getElementById("customNewsPartButton"))) === 3 ? 15 : 14;
+  }
+  return CUSTOM_NEWS_TYPE_META[type]?.titleType ?? null;
+}
+
+function getCustomNewsTitleTemplates(type = getCustomNewsSelectedType()) {
+  const meta = CUSTOM_NEWS_TYPE_META[type];
+  const titleType = resolveCustomNewsTitleType(type);
+  if (!meta || titleType == null) return [];
+
+  if (meta.turningPoint) {
+    const entry = turningPointTitleTemplates.find(t => t.new_type === titleType);
+    return Array.isArray(entry?.turning_titles) ? entry.turning_titles : [];
+  }
+
+  const entry = newsTitleTemplates.find(t => t.new_type === titleType);
+  return Array.isArray(entry?.titles) ? entry.titles : [];
+}
+
+function refreshCustomNewsTitleTemplates() {
+  if (!customNewsTemplateButton || !customNewsTemplateMenu) return;
+
+  const type = getCustomNewsSelectedType();
+  const templates = getCustomNewsTitleTemplates(type);
+  if (type === "custom_new") {
+    customNewsTemplateWrap?.classList.add("custom-news-hidden");
+    customNewsTitleInput?.classList.remove("custom-news-hidden");
+    if (customNewsTitleInput) {
+      customNewsTitleInput.placeholder = getCustomNewsTitlePlaceholder(type);
+    }
+    return;
+  }
+
+  customNewsTemplateWrap?.classList.remove("custom-news-hidden");
+  customNewsTitleInput?.classList.add("custom-news-hidden");
+  if (customNewsTitleInput) customNewsTitleInput.value = "";
+
+  customNewsTemplateButton.disabled = false;
+
+  populateRedesignedDropdown({
+    buttonEl: customNewsTemplateButton,
+    menuEl: customNewsTemplateMenu,
+    items: templates.map((template, index) => ({ value: String(index), label: template })),
+    getValue: item => item.value,
+    getLabel: item => item.label,
+    placeholderLabel: "Automatic / default title",
+    includeEmpty: true,
+    emptyLabel: "Automatic / default title",
+    selectedValue: getRedesignedDropdownValue(customNewsTemplateButton),
+    bindToggle: false
+  });
+
+}
+
+function updateCustomNewsImagePreview() {
+  const imageFile = document.getElementById("customNewsImageValue")?.value || "";
+  document.querySelectorAll(".custom-news-image-card").forEach(card => {
+    card.classList.toggle("selected", card.dataset.value === imageFile);
+  });
+}
+
+function bindCustomNewsLiveRefresh() {
+  if (!customNewsModalEl || customNewsModalEl.dataset.customNewsRefreshBound === "1") return;
+  customNewsModalEl.dataset.customNewsRefreshBound = "1";
+
+  const refreshAll = () => {
+    refreshCustomNewsTitleTemplates();
+    updateCustomNewsImagePreview();
+  };
+
+  customNewsModalEl.addEventListener("input", refreshAll);
+  customNewsModalEl.addEventListener("change", refreshAll);
+  customNewsModalEl.addEventListener("click", (e) => {
+    if (e.target.closest(".redesigned-dropdown-item")) {
+      setTimeout(refreshAll, 0);
+    }
+  });
+}
+
+async function loadCustomNewsOptions() {
+  if (customNewsOptionsCache) return customNewsOptionsCache;
+  const resp = await new Command("getCustomNewsOptions", {}).promiseExecute();
+  customNewsOptionsCache = resp.content || null;
+  return customNewsOptionsCache;
+}
+
+function renderCustomNewsParams(type, options) {
+  if (!customNewsParams) return;
+
+  const teams = options?.teams || [];
+  const races = options?.races || [];
+  const rawOfficialDrivers = options?.drivers || [];
+  const rawAllDrivers = options?.allDrivers?.length ? options.allDrivers : rawOfficialDrivers;
+  const engines = options?.engines || [];
+  const isF1TeamId = (teamId) => (teamId >= 1 && teamId <= 10) || teamId === 32;
+  const isJuniorTeamId = (teamId) => teamId >= 11 && teamId <= 31;
+  const normalizeDriverOption = (driver) => {
+    const driverId = Number(driver?.id ?? driver?.driverId);
+    const teamId = Number(driver?.teamId);
+    const resolvedTeamId = teamId > 0 ? teamId : null;
+    const resolvedTeamName = resolvedTeamId
+      ? (combined_dict[resolvedTeamId] || driver?.teamName || `Team ${resolvedTeamId}`)
+      : (driver?.teamName || "Free Agent");
+    return {
+      ...driver,
+      id: driverId,
+      driverId: driver?.driverId != null ? Number(driver.driverId) : driverId,
+      teamId: resolvedTeamId,
+      displayTeamId: resolvedTeamId,
+      teamName: resolvedTeamName,
+      displayTeamName: resolvedTeamName
+    };
+  };
+  const getDriverPriority = (driver, preferredOfficialIds = new Set()) => {
+    const driverId = Number(driver?.id ?? driver?.driverId);
+    const teamId = Number(driver?.teamId ?? driver?.displayTeamId);
+    if (preferredOfficialIds.has(driverId) && isF1TeamId(teamId)) return 4;
+    if (isF1TeamId(teamId)) return 3;
+    if (isJuniorTeamId(teamId)) return 2;
+    if (teamId > 0) return 1;
+    return 0;
+  };
+  const dedupeDriverOptions = (list, preferredOfficialIds = new Set()) => {
+    const byId = new Map();
+    const orderedIds = [];
+
+    (Array.isArray(list) ? list : []).forEach((driver) => {
+      const normalized = normalizeDriverOption(driver);
+      const driverId = Number(normalized?.id);
+      if (!(driverId > 0)) return;
+
+      if (!byId.has(driverId)) {
+        byId.set(driverId, normalized);
+        orderedIds.push(driverId);
+        return;
+      }
+
+      const current = byId.get(driverId);
+      const currentPriority = getDriverPriority(current, preferredOfficialIds);
+      const nextPriority = getDriverPriority(normalized, preferredOfficialIds);
+      if (nextPriority > currentPriority || (nextPriority === currentPriority && current?.teamId == null && normalized?.teamId != null)) {
+        byId.set(driverId, normalized);
+      }
+    });
+
+    return orderedIds.map((driverId) => byId.get(driverId)).filter(Boolean);
+  };
+
+  const dedupedOfficialDrivers = dedupeDriverOptions(rawOfficialDrivers);
+  const officialDriverIds = new Set(dedupedOfficialDrivers.map(driver => Number(driver?.id)).filter(id => id > 0));
+  const allDrivers = dedupeDriverOptions(rawAllDrivers, officialDriverIds);
+  const driversById = new Map(allDrivers.map(driver => [Number(driver?.id), driver]));
+  const officialDrivers = dedupedOfficialDrivers.map(driver => driversById.get(Number(driver?.id)) || driver);
+  const drivers = officialDrivers;
+  const f1OfficialDrivers = officialDrivers.filter(driver => isF1TeamId(Number(driver?.teamId)));
+  const nonOfficialDrivers = allDrivers.filter(driver => !officialDriverIds.has(Number(driver?.id)));
+  const completedRaces = races.filter(race => Number(race?.state) === 2);
+
+  customNewsParams.replaceChildren();
+
+  const createEl = (tag, className) => {
+    const el = document.createElement(tag);
+    if (className) el.className = className;
+    return el;
+  };
+
+  const makeLabel = (_targetId, text) => {
+    const label = createEl("span", "custom-news-label bold-font");
+    label.textContent = text;
+    return label;
+  };
+
+  const makeRow = () => createEl("div", "custom-news-row");
+  const makeCol = (width = "full") => {
+    const col = createEl("div", "custom-news-stack");
+    const span = width === "quarter" ? 3 : width === "third" ? 4 : width === "half" ? 6 : 12;
+    col.dataset.span = String(span);
+    return col;
+  };
+
+  const makeInput = ({ id, type = "text", placeholder = "", min = null, max = null, step = null, value = null } = {}) => {
+    const input = createEl("input", "custom-news-input");
+    input.id = id;
+    input.type = type;
+    if (placeholder) input.placeholder = placeholder;
+    if (min != null) input.min = String(min);
+    if (max != null) input.max = String(max);
+    if (step != null) input.step = String(step);
+    if (value != null) input.value = String(value);
+    return input;
+  };
+
+  const makeTextarea = ({ id, placeholder = "" } = {}) => {
+    const textarea = createEl("textarea", "custom-news-input");
+    textarea.id = id;
+    textarea.placeholder = placeholder;
+    return textarea;
+  };
+
+  const makeInfo = (text) => {
+    const info = createEl("div", "custom-news-info");
+    info.textContent = text;
+    return info;
+  };
+
+  const makeHint = (text) => {
+    const hint = createEl("div", "custom-news-help");
+    hint.textContent = text;
+    return hint;
+  };
+
+  const makeSwitch = ({ id, label, checked = false } = {}) => {
+    const wrap = createEl("div", "form-check form-switch custom-news-switch");
+    const input = document.createElement("input");
+    input.className = "form-check-input custom-toggle";
+    input.type = "checkbox";
+    input.role = "switch";
+    input.id = id;
+    input.checked = !!checked;
+
+    const labelEl = document.createElement("label");
+    labelEl.className = "form-check-label";
+    labelEl.htmlFor = id;
+    labelEl.textContent = label;
+
+    wrap.append(input, labelEl);
+    return { wrap, input, labelEl };
+  };
+
+  const makeCheckbox = ({ id, label, checked = false } = {}) => {
+    const wrap = createEl("label", "custom-news-checkbox");
+    wrap.htmlFor = id;
+
+    const input = document.createElement("input");
+    input.className = "form-check-input";
+    input.type = "checkbox";
+    input.id = id;
+    input.checked = !!checked;
+
+    const text = createEl("span", "custom-news-checkbox-label");
+    text.textContent = label;
+
+    wrap.append(input, text);
+    return { wrap, input, text };
+  };
+
+  const clampNumber = (value, min = null, max = null) => {
+    let nextValue = Number(value);
+    if (Number.isNaN(nextValue)) nextValue = 0;
+    if (min != null) nextValue = Math.max(Number(min), nextValue);
+    if (max != null) nextValue = Math.min(Number(max), nextValue);
+    return nextValue;
+  };
+
+  const formatNumberValue = (value, step = 1) => {
+    const decimals = (String(step).split(".")[1] || "").length;
+    const numericValue = Number(value) || 0;
+    return decimals > 0 ? numericValue.toFixed(decimals) : String(Math.round(numericValue));
+  };
+
+  const makeNumberControl = ({ id, value = 0, min = null, max = null, step = 1, placeholder = "" } = {}) => {
+    const wrap = createEl("div", "custom-news-number-control");
+
+    const minus = document.createElement("button");
+    minus.type = "button";
+    minus.className = "bi bi-dash new-augment-button custom-news-step-button";
+
+    const input = makeInput({ id, type: "number", placeholder, min, max, step });
+    input.classList.add("custom-news-number-input");
+    input.value = formatNumberValue(clampNumber(value, min, max), step);
+
+    const plus = document.createElement("button");
+    plus.type = "button";
+    plus.className = "bi bi-plus new-augment-button custom-news-step-button";
+
+    const applyDelta = (delta) => {
+      const currentValue = input.value === "" ? 0 : Number(input.value);
+      const nextValue = clampNumber((Number.isNaN(currentValue) ? 0 : currentValue) + delta, min, max);
+      input.value = formatNumberValue(nextValue, step);
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    };
+
+    minus.addEventListener("click", () => {
+      if (input.disabled) return;
+      applyDelta(-step);
+    });
+    plus.addEventListener("click", () => {
+      if (input.disabled) return;
+      applyDelta(step);
+    });
+    input.addEventListener("change", () => {
+      if (input.value === "") return;
+      input.value = formatNumberValue(clampNumber(input.value, min, max), step);
+    });
+
+    const setDisabled = (disabled) => {
+      input.disabled = !!disabled;
+      wrap.classList.toggle("disabled", !!disabled);
+      minus.disabled = !!disabled;
+      plus.disabled = !!disabled;
+    };
+
+    wrap.append(minus, input, plus);
+    return { wrap, input, setDisabled };
+  };
+
+  const makeDropdown = ({ buttonId, menuId, placeholder }) => {
+    const wrap = createEl("div", "dropdown-global");
+
+    const button = createEl("button", "redesigned-dropdown bold-font");
+    button.type = "button";
+    button.id = buttonId;
+    button.setAttribute("aria-haspopup", "true");
+    button.setAttribute("aria-expanded", "false");
+    button.dataset.value = "";
+
+    const labelSpan = createEl("span", "dropdown-label");
+    labelSpan.textContent = placeholder;
+
+    const chevron = createEl("i", "redesigned-chevron");
+
+    button.append(labelSpan, chevron);
+
+    const menu = createEl("ul", "redesigned-dropdown-menu");
+    menu.id = menuId;
+    menu.style.fontFamily = "Formula1";
+
+    wrap.append(button, menu);
+    return { wrap, button, menu };
+  };
+
+  const teamLabel = (t) => t?.name ?? "";
+  const raceLabel = (r) => `${r?.label ?? ""}${r?.state === 2 ? " (Done)" : ""}`;
+  const driverLabel = (d) => `${d?.name ?? ""}`;
+  const getTeamDrivers = (teamId) => officialDrivers.filter(driver => Number(driver?.teamId) === Number(teamId));
+  const getDriversOutsideTeam = (teamId) => allDrivers.filter(driver => Number(driver?.teamId) !== Number(teamId));
+  const getSwitchModeLabel = (checked) => checked ? "Manual values" : "Random values";
+  const setDropdownDisabled = (buttonEl, disabled) => {
+    if (!buttonEl) return;
+    buttonEl.disabled = !!disabled;
+    buttonEl.classList.toggle("disabled", !!disabled);
+    if (disabled) setRedesignedDropdownOpen(buttonEl, false);
+  };
+
+  if (type === "race_result" || type === "quali_result" || type === "potential_champion" || type === "world_champion") {
+    const row = makeRow();
+    const col = makeCol("full");
+    const { wrap } = makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" });
+    col.append(makeLabel("customNewsRaceButton", "Race"), wrap);
+    row.append(col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: completedRaces,
+      getValue: r => r.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "race_reaction") {
+    const row = makeRow();
+
+    const raceCol = makeCol("full");
+    raceCol.append(
+      makeLabel("customNewsRaceButton", "Race"),
+      makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
+    );
+
+    const happyCol = makeCol("half");
+    happyCol.append(
+      makeLabel("customNewsHappyDriverButton", "Happy driver (optional)"),
+      makeDropdown({ buttonId: "customNewsHappyDriverButton", menuId: "customNewsHappyDriverMenu", placeholder: "Random" }).wrap
+    );
+
+    const unhappyCol = makeCol("half");
+    unhappyCol.append(
+      makeLabel("customNewsUnhappyDriverButton", "Unhappy driver (optional)"),
+      makeDropdown({ buttonId: "customNewsUnhappyDriverButton", menuId: "customNewsUnhappyDriverMenu", placeholder: "Random" }).wrap
+    );
+
+    row.append(raceCol, happyCol, unhappyCol);
+    customNewsParams.append(row);
+
+    const happyBtn = document.getElementById("customNewsHappyDriverButton");
+    const happyMenu = document.getElementById("customNewsHappyDriverMenu");
+    const unhappyBtn = document.getElementById("customNewsUnhappyDriverButton");
+    const unhappyMenu = document.getElementById("customNewsUnhappyDriverMenu");
+
+    const raceDriverLabel = (d) => `${d?.pos}. ${d?.name}`;
+
+    const resetRaceReactionDrivers = () => {
+      populateRedesignedDropdown({
+        buttonEl: happyBtn,
+        menuEl: happyMenu,
+        items: [],
+        getValue: d => d.driverId,
+        getLabel: raceDriverLabel,
+        placeholderLabel: "Random",
+        includeEmpty: true,
+        emptyLabel: "Random",
+        selectedValue: "",
+        bindToggle: true
+      });
+      populateRedesignedDropdown({
+        buttonEl: unhappyBtn,
+        menuEl: unhappyMenu,
+        items: [],
+        getValue: d => d.driverId,
+        getLabel: raceDriverLabel,
+        placeholderLabel: "Random",
+        includeEmpty: true,
+        emptyLabel: "Random",
+        selectedValue: "",
+        bindToggle: true
+      });
+    };
+
+    resetRaceReactionDrivers();
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: completedRaces,
+      getValue: r => r.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true,
+      onSelect: async (raceIdValue) => {
+        const raceId = Number(raceIdValue);
+        if (!raceId || raceId <= 0) {
+          resetRaceReactionDrivers();
+          return;
+        }
+
+        try {
+          const resp = await new Command("customNewsRaceDrivers", { raceId }).promiseExecute();
+          const list = Array.isArray(resp.content) ? resp.content : [];
+
+          populateRedesignedDropdown({
+            buttonEl: happyBtn,
+            menuEl: happyMenu,
+            items: list,
+            getValue: d => d.driverId,
+            getLabel: raceDriverLabel,
+            placeholderLabel: "Random",
+            includeEmpty: true,
+            emptyLabel: "Random",
+            selectedValue: "",
+            bindToggle: true
+          });
+          populateRedesignedDropdown({
+            buttonEl: unhappyBtn,
+            menuEl: unhappyMenu,
+            items: list,
+            getValue: d => d.driverId,
+            getLabel: raceDriverLabel,
+            placeholderLabel: "Random",
+            includeEmpty: true,
+            emptyLabel: "Random",
+            selectedValue: "",
+            bindToggle: true
+          });
+        } catch (e) {
+          console.error("Failed to load race drivers:", e);
+        }
+      }
+    });
+    return;
+  }
+
+  if (type === "fake_transfer") {
+    const row = makeRow();
+    const col = makeCol("full");
+    col.append(
+      makeLabel("customNewsDriverButton", "Driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+    row.append(col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "big_transfer" || type === "massive_exit" || type === "massive_signing") {
+    const row = makeRow();
+
+    const driverCol = makeCol("half");
+    driverCol.append(
+      makeLabel("customNewsDriverButton", "Driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const fromCol = makeCol("quarter");
+    fromCol.append(
+      makeLabel("customNewsFromTeamButton", "From team"),
+      makeDropdown({ buttonId: "customNewsFromTeamButton", menuId: "customNewsFromTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const toCol = makeCol("quarter");
+    toCol.append(
+      makeLabel("customNewsToTeamButton", "To team"),
+      makeDropdown({ buttonId: "customNewsToTeamButton", menuId: "customNewsToTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const salaryCol = makeCol("half");
+    salaryCol.append(
+      makeLabel("customNewsSalary", "Salary (optional)"),
+      makeInput({ id: "customNewsSalary", type: "number", placeholder: "e.g. 2000000", min: 0 })
+    );
+
+    const endSeasonCol = makeCol("half");
+    endSeasonCol.append(
+      makeLabel("customNewsEndSeason", "Contract end season (optional)"),
+      makeInput({ id: "customNewsEndSeason", type: "number", placeholder: "e.g. 2028", min: 0 })
+    );
+
+    row.append(driverCol, fromCol, toCol, salaryCol, endSeasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsFromTeamButton"),
+      menuEl: document.getElementById("customNewsFromTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsToTeamButton"),
+      menuEl: document.getElementById("customNewsToTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "contract_renewal") {
+    const row = makeRow();
+
+    const driverCol = makeCol("half");
+    driverCol.append(
+      makeLabel("customNewsDriverButton", "Driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const renewalCol = makeCol("quarter");
+    renewalCol.append(
+      makeLabel("customNewsRenewalTeamButton", "Renewal team"),
+      makeDropdown({ buttonId: "customNewsRenewalTeamButton", menuId: "customNewsRenewalTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const currentCol = makeCol("quarter");
+    currentCol.append(
+      makeLabel("customNewsCurrentTeamButton", "Current team"),
+      makeDropdown({ buttonId: "customNewsCurrentTeamButton", menuId: "customNewsCurrentTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const salaryCol = makeCol("half");
+    salaryCol.append(
+      makeLabel("customNewsSalary", "Salary (optional)"),
+      makeInput({ id: "customNewsSalary", type: "number", placeholder: "e.g. 2000000", min: 0 })
+    );
+
+    const endSeasonCol = makeCol("half");
+    endSeasonCol.append(
+      makeLabel("customNewsEndSeason", "Contract end season (optional)"),
+      makeInput({ id: "customNewsEndSeason", type: "number", placeholder: "e.g. 2028", min: 0 })
+    );
+
+    row.append(driverCol, renewalCol, currentCol, salaryCol, endSeasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriverButton"),
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRenewalTeamButton"),
+      menuEl: document.getElementById("customNewsRenewalTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsCurrentTeamButton"),
+      menuEl: document.getElementById("customNewsCurrentTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "silly_season_rumors") {
+    const row = makeRow();
+    [1, 2, 3].forEach(i => {
+      const driverCol = makeCol("half");
+      driverCol.append(
+        makeLabel(`customNewsSillyDriver${i}Button`, `Driver ${i}`),
+        makeDropdown({
+          buttonId: `customNewsSillyDriver${i}Button`,
+          menuId: `customNewsSillyDriver${i}Menu`,
+          placeholder: "Select driver"
+        }).wrap
+      );
+
+      const teamCol = makeCol("half");
+      teamCol.append(
+        makeLabel(`customNewsSillyTeam${i}Button`, `Destination team ${i}`),
+        makeDropdown({
+          buttonId: `customNewsSillyTeam${i}Button`,
+          menuId: `customNewsSillyTeam${i}Menu`,
+          placeholder: "Select team"
+        }).wrap
+      );
+
+      row.append(driverCol, teamCol);
+    });
+
+    customNewsParams.append(row);
+
+    [1, 2, 3].forEach(i => {
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsSillyDriver${i}Button`),
+        menuEl: document.getElementById(`customNewsSillyDriver${i}Menu`),
+        items: drivers,
+        getValue: d => d.id,
+        getLabel: driverLabel,
+        placeholderLabel: "Select driver",
+        includeEmpty: true,
+        emptyLabel: "Select driver",
+        selectedValue: "",
+        bindToggle: true
+      });
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsSillyTeam${i}Button`),
+        menuEl: document.getElementById(`customNewsSillyTeam${i}Menu`),
+        items: teams,
+        getValue: t => t.id,
+        getLabel: teamLabel,
+        placeholderLabel: "Select team",
+        includeEmpty: true,
+        emptyLabel: "Select team",
+        selectedValue: "",
+        bindToggle: true
+      });
+    });
+    return;
+  }
+
+  if (type === "team_comparison") {
+    const row = makeRow();
+
+    const teamCol = makeCol("half");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const compCol = makeCol("quarter");
+    compCol.append(
+      makeLabel("customNewsCompTypeButton", "Comparison"),
+      makeDropdown({ buttonId: "customNewsCompTypeButton", menuId: "customNewsCompTypeMenu", placeholder: "Select" }).wrap
+    );
+
+    const dropCol = makeCol("quarter");
+    dropCol.append(
+      makeLabel("customNewsDrop", "Points diff (optional)"),
+      makeInput({ id: "customNewsDrop", type: "number", value: 0 })
+    );
+
+    row.append(teamCol, compCol, dropCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsCompTypeButton"),
+      menuEl: document.getElementById("customNewsCompTypeMenu"),
+      items: [{ value: "good", label: "Good" }, { value: "bad", label: "Bad" }],
+      getValue: t => t.value,
+      getLabel: t => t.label,
+      placeholderLabel: "Select",
+      includeEmpty: false,
+      selectedValue: "good",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "driver_comparison") {
+    const row = makeRow();
+
+    const teamCol = makeCol("third");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const driver1Col = makeCol("third");
+    driver1Col.append(
+      makeLabel("customNewsDriver1Button", "Driver 1"),
+      makeDropdown({ buttonId: "customNewsDriver1Button", menuId: "customNewsDriver1Menu", placeholder: "Select driver" }).wrap
+    );
+
+    const driver2Col = makeCol("third");
+    driver2Col.append(
+      makeLabel("customNewsDriver2Button", "Driver 2"),
+      makeDropdown({ buttonId: "customNewsDriver2Button", menuId: "customNewsDriver2Menu", placeholder: "Select driver" }).wrap
+    );
+
+    row.append(teamCol, driver1Col, driver2Col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: t => t.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriver1Button"),
+      menuEl: document.getElementById("customNewsDriver1Menu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDriver2Button"),
+      menuEl: document.getElementById("customNewsDriver2Menu"),
+      items: drivers,
+      getValue: d => d.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "season_review") {
+    const row = makeRow();
+    const col = makeCol("half");
+    col.append(
+      makeLabel("customNewsPartButton", "Season review part"),
+      makeDropdown({ buttonId: "customNewsPartButton", menuId: "customNewsPartMenu", placeholder: "Select part" }).wrap
+    );
+    row.append(col);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsPartButton"),
+      menuEl: document.getElementById("customNewsPartMenu"),
+      items: [{ value: "1", label: "Part 1" }, { value: "2", label: "Part 2" }, { value: "3", label: "Part 3" }],
+      getValue: t => t.value,
+      getLabel: t => t.label,
+      placeholderLabel: "Select part",
+      includeEmpty: false,
+      selectedValue: "1",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_technical_directive") {
+    const row = makeRow();
+
+    const componentCol = makeCol("half");
+    componentCol.append(
+      makeLabel("customNewsComponentButton", "Component"),
+      makeDropdown({ buttonId: "customNewsComponentButton", menuId: "customNewsComponentMenu", placeholder: "Select component" }).wrap
+    );
+
+    const reasonCol = makeCol("half");
+    reasonCol.append(
+      makeLabel("customNewsReason", "Reason"),
+      makeInput({ id: "customNewsReason", placeholder: "e.g. improve safety" })
+    );
+
+    const modeCol = makeCol("half");
+    modeCol.append(
+      makeLabel("customNewsEffectModeButton", "Effect style"),
+      makeDropdown({ buttonId: "customNewsEffectModeButton", menuId: "customNewsEffectModeMenu", placeholder: "Select style" }).wrap
+    );
+
+    const amountCol = makeCol("quarter");
+    const tdAmountControl = makeNumberControl({ id: "customNewsEffectAmount", value: 5, min: 0.5, max: 15, step: 0.5 });
+    amountCol.append(
+      makeLabel("customNewsEffectAmount", "Max swing(%)"),
+      tdAmountControl.wrap
+    );
+
+    row.append(componentCol, reasonCol, modeCol, amountCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsComponentButton"),
+      menuEl: document.getElementById("customNewsComponentMenu"),
+      items: Object.entries(part_full_names)
+        .filter(([id]) => ["3", "4", "5", "6", "7", "8"].includes(String(id)))
+        .map(([id, label]) => ({ id, label })),
+      getValue: item => item.id,
+      getLabel: item => item.label,
+      placeholderLabel: "Select component",
+      includeEmpty: true,
+      emptyLabel: "Select component",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsEffectModeButton"),
+      menuEl: document.getElementById("customNewsEffectModeMenu"),
+      items: [
+        { value: "spread", label: "Spread grid" },
+        { value: "compact", label: "Compact grid" },
+        { value: "random", label: "Random" }
+      ],
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select style",
+      includeEmpty: false,
+      selectedValue: "spread",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_transfer") {
+    const row = makeRow();
+
+    const teamCol = makeCol("third");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const driverOutCol = makeCol("third");
+    driverOutCol.append(
+      makeLabel("customNewsDriverOutButton", "Driver out"),
+      makeDropdown({ buttonId: "customNewsDriverOutButton", menuId: "customNewsDriverOutMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const driverInCol = makeCol("third");
+    driverInCol.append(
+      makeLabel("customNewsDriverInButton", "Driver in"),
+      makeDropdown({ buttonId: "customNewsDriverInButton", menuId: "customNewsDriverInMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const reserveCol = makeCol("half");
+    reserveCol.append(
+      makeLabel("customNewsReserveDriverButton", "Substitute driver for driver in"),
+      makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No substitute" }).wrap
+    );
+
+    row.append(teamCol, driverOutCol, driverInCol, reserveCol);
+    customNewsParams.append(row);
+
+    const teamButton = document.getElementById("customNewsTeamButton");
+    const driverOutButton = document.getElementById("customNewsDriverOutButton");
+    const driverOutMenu = document.getElementById("customNewsDriverOutMenu");
+    const driverInButton = document.getElementById("customNewsDriverInButton");
+    const driverInMenu = document.getElementById("customNewsDriverInMenu");
+    const reserveButton = document.getElementById("customNewsReserveDriverButton");
+    const reserveMenu = document.getElementById("customNewsReserveDriverMenu");
+
+    const syncTransferReserveDropdown = (driverInIdValue) => {
+      const driverInId = Number(driverInIdValue);
+      const isOfficialSeatDriver = officialDriverIds.has(driverInId);
+      const reserveLabel = isOfficialSeatDriver ? "No substitute" : "Only available for drivers with an F1 seat";
+
+      populateRedesignedDropdown({
+        buttonEl: reserveButton,
+        menuEl: reserveMenu,
+        items: isOfficialSeatDriver ? nonOfficialDrivers : [],
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: reserveLabel,
+        includeEmpty: true,
+        emptyLabel: reserveLabel,
+        selectedValue: isOfficialSeatDriver ? getRedesignedDropdownValue(reserveButton) : "",
+        bindToggle: true
+      });
+      setDropdownDisabled(reserveButton, !isOfficialSeatDriver);
+    };
+
+    const syncTransferDriverDropdowns = (teamIdValue) => {
+      const selectedTeamId = Number(teamIdValue);
+      const selectedTeamDrivers = selectedTeamId > 0 ? getTeamDrivers(selectedTeamId) : [];
+      const externalDrivers = selectedTeamId > 0 ? getDriversOutsideTeam(selectedTeamId) : [];
+      const teamFirstLabel = selectedTeamId > 0 ? "Select driver" : "Select team first";
+
+      populateRedesignedDropdown({
+        buttonEl: driverOutButton,
+        menuEl: driverOutMenu,
+        items: selectedTeamDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: teamFirstLabel,
+        includeEmpty: true,
+        emptyLabel: teamFirstLabel,
+        selectedValue: getRedesignedDropdownValue(driverOutButton),
+        bindToggle: true
+      });
+      populateRedesignedDropdown({
+        buttonEl: driverInButton,
+        menuEl: driverInMenu,
+        items: externalDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: teamFirstLabel,
+        includeEmpty: true,
+        emptyLabel: teamFirstLabel,
+        selectedValue: getRedesignedDropdownValue(driverInButton),
+        bindToggle: true,
+        onSelect: syncTransferReserveDropdown
+      });
+
+      if (selectedTeamId > 0) {
+        syncTransferReserveDropdown(getRedesignedDropdownValue(driverInButton));
+      } else {
+        syncTransferReserveDropdown("");
+      }
+    };
+
+    populateRedesignedDropdown({
+      buttonEl: teamButton,
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: item => item.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true,
+      onSelect: syncTransferDriverDropdowns
+    });
+    syncTransferDriverDropdowns("");
+    return;
+  }
+
+  if (type === "turning_point_investment") {
+    const row = makeRow();
+
+    const teamCol = makeCol("half");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const countryCol = makeCol("half");
+    countryCol.append(
+      makeLabel("customNewsCountryButton", "Investor country"),
+      makeDropdown({ buttonId: "customNewsCountryButton", menuId: "customNewsCountryMenu", placeholder: "Select country" }).wrap
+    );
+
+    const amountCol = makeCol("half");
+    amountCol.append(
+      makeLabel("customNewsInvestmentAmount", "Investment amount (millions)"),
+      makeInput({ id: "customNewsInvestmentAmount", type: "number", min: 1, value: 60 })
+    );
+
+    const shareCol = makeCol("half");
+    shareCol.append(
+      makeLabel("customNewsInvestmentShare", "Share purchased (%)"),
+      makeInput({ id: "customNewsInvestmentShare", type: "number", min: 1, value: 20 })
+    );
+
+    row.append(teamCol, countryCol, amountCol, shareCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: item => item.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsCountryButton"),
+      menuEl: document.getElementById("customNewsCountryMenu"),
+      items: CUSTOM_NEWS_INVESTMENT_COUNTRIES.map(country => ({ value: country, label: country })),
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select country",
+      includeEmpty: true,
+      emptyLabel: "Select country",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_dsq") {
+    const row = makeRow();
+
+    const raceCol = makeCol("half");
+    raceCol.append(
+      makeLabel("customNewsRaceButton", "Race"),
+      makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
+    );
+
+    const teamCol = makeCol("half");
+    teamCol.append(
+      makeLabel("customNewsTeamButton", "Team"),
+      makeDropdown({ buttonId: "customNewsTeamButton", menuId: "customNewsTeamMenu", placeholder: "Select team" }).wrap
+    );
+
+    const componentCol = makeCol("full");
+    componentCol.append(
+      makeLabel("customNewsDsqComponentButton", "Component"),
+      makeDropdown({ buttonId: "customNewsDsqComponentButton", menuId: "customNewsDsqComponentMenu", placeholder: "Select component" }).wrap
+    );
+
+    row.append(raceCol, teamCol, componentCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: completedRaces,
+      getValue: item => item.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsTeamButton"),
+      menuEl: document.getElementById("customNewsTeamMenu"),
+      items: teams,
+      getValue: item => item.id,
+      getLabel: teamLabel,
+      placeholderLabel: "Select team",
+      includeEmpty: true,
+      emptyLabel: "Select team",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsDsqComponentButton"),
+      menuEl: document.getElementById("customNewsDsqComponentMenu"),
+      items: CUSTOM_NEWS_DSQ_COMPONENTS.map(component => ({ value: component, label: component })),
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select component",
+      includeEmpty: true,
+      emptyLabel: "Select component",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_race_substitution") {
+    const row = makeRow();
+
+    const raceCol = makeCol("half");
+    raceCol.append(
+      makeLabel("customNewsRaceButton", "Original race"),
+      makeDropdown({ buttonId: "customNewsRaceButton", menuId: "customNewsRaceMenu", placeholder: "Select race" }).wrap
+    );
+
+    const replacementCol = makeCol("half");
+    replacementCol.append(
+      makeLabel("customNewsReplacementTrackButton", "Replacement track"),
+      makeDropdown({ buttonId: "customNewsReplacementTrackButton", menuId: "customNewsReplacementTrackMenu", placeholder: "Select track" }).wrap
+    );
+
+    const reasonCol = makeCol("half");
+    reasonCol.append(
+      makeLabel("customNewsReason", "Reason"),
+      makeInput({ id: "customNewsReason", placeholder: "e.g. logistical challenges" })
+    );
+
+    row.append(raceCol, replacementCol, reasonCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsRaceButton"),
+      menuEl: document.getElementById("customNewsRaceMenu"),
+      items: races,
+      getValue: item => item.id,
+      getLabel: raceLabel,
+      placeholderLabel: "Select race",
+      includeEmpty: true,
+      emptyLabel: "Select race",
+      selectedValue: "",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsReplacementTrackButton"),
+      menuEl: document.getElementById("customNewsReplacementTrackMenu"),
+      items: races,
+      getValue: item => item.trackId,
+      getLabel: item => countries_data?.[item?.code]?.country || item?.label || "",
+      placeholderLabel: "Select track",
+      includeEmpty: true,
+      emptyLabel: "Select track",
+      selectedValue: "",
+      bindToggle: true
+    });
+    return;
+  }
+
+  if (type === "turning_point_injury") {
+    const row = makeRow();
+
+    const driverCol = makeCol("half");
+    driverCol.append(
+      makeLabel("customNewsDriverButton", "Affected driver"),
+      makeDropdown({ buttonId: "customNewsDriverButton", menuId: "customNewsDriverMenu", placeholder: "Select driver" }).wrap
+    );
+
+    const reserveCol = makeCol("half");
+    reserveCol.append(
+      makeLabel("customNewsReserveDriverButton", "Reserve driver (optional)"),
+      makeDropdown({ buttonId: "customNewsReserveDriverButton", menuId: "customNewsReserveDriverMenu", placeholder: "No reserve driver" }).wrap
+    );
+
+    const conditionCol = makeCol("half");
+    conditionCol.append(
+      makeLabel("customNewsInjuryCondition", "Condition"),
+      makeInput({ id: "customNewsInjuryCondition", placeholder: "e.g. a sprained wrist" })
+    );
+
+    const reasonCol = makeCol("half");
+    reasonCol.append(
+      makeLabel("customNewsReason", "Reason"),
+      makeInput({ id: "customNewsReason", placeholder: "e.g. a training accident" })
+    );
+
+    const racesAffectedCol = makeCol("half");
+    racesAffectedCol.append(
+      makeLabel("customNewsRacesAffected", "Races affected"),
+      makeInput({ id: "customNewsRacesAffected", type: "number", min: 1, value: 1 })
+    );
+
+    row.append(driverCol, reserveCol, conditionCol, reasonCol, racesAffectedCol);
+    customNewsParams.append(row);
+
+    const affectedDriverButton = document.getElementById("customNewsDriverButton");
+    const reserveDriverButton = document.getElementById("customNewsReserveDriverButton");
+    const reserveDriverMenu = document.getElementById("customNewsReserveDriverMenu");
+    const syncInjuryReserveDropdown = (driverIdValue) => {
+      const blockedIds = new Set([Number(driverIdValue)].filter(id => id > 0));
+      const filteredDrivers = nonOfficialDrivers.filter(driver => !blockedIds.has(Number(driver?.id)));
+      populateRedesignedDropdown({
+        buttonEl: reserveDriverButton,
+        menuEl: reserveDriverMenu,
+        items: filteredDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: "No reserve driver",
+        includeEmpty: true,
+        emptyLabel: "No reserve driver",
+        selectedValue: getRedesignedDropdownValue(reserveDriverButton),
+        bindToggle: true
+      });
+    };
+
+    populateRedesignedDropdown({
+      buttonEl: affectedDriverButton,
+      menuEl: document.getElementById("customNewsDriverMenu"),
+      items: f1OfficialDrivers,
+      getValue: item => item.id,
+      getLabel: driverLabel,
+      placeholderLabel: "Select driver",
+      includeEmpty: true,
+      emptyLabel: "Select driver",
+      selectedValue: "",
+      bindToggle: true,
+      onSelect: syncInjuryReserveDropdown
+    });
+    syncInjuryReserveDropdown("");
+    return;
+  }
+
+  if (type === "turning_point_engine_regulation") {
+    const row = makeRow();
+
+    const changeTypeCol = makeCol("half");
+    changeTypeCol.append(
+      makeLabel("customNewsChangeTypeButton", "Change type"),
+      makeDropdown({ buttonId: "customNewsChangeTypeButton", menuId: "customNewsChangeTypeMenu", placeholder: "Select type" }).wrap
+    );
+
+    const changeAreaCol = makeCol("half");
+    changeAreaCol.append(
+      makeLabel("customNewsChangeAreaButton", "Main change area"),
+      makeDropdown({ buttonId: "customNewsChangeAreaButton", menuId: "customNewsChangeAreaMenu", placeholder: "Select area" }).wrap
+    );
+
+    const modeCol = makeCol("full");
+    const engineModeSwitch = makeSwitch({ id: "customNewsEngineRegulationManualSwitch", label: getSwitchModeLabel(false), checked: false });
+    modeCol.append(makeLabel("customNewsEngineRegulationManualSwitch", "Change mode"), engineModeSwitch.wrap);
+
+    const infoCol = makeCol("full");
+    infoCol.append(makeInfo("Set a rough percentage change per manufacturer or leave it on random."));
+
+    row.append(changeTypeCol, changeAreaCol, modeCol, infoCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsChangeTypeButton"),
+      menuEl: document.getElementById("customNewsChangeTypeMenu"),
+      items: [{ value: "minor", label: "Minor" }, { value: "major", label: "Major" }],
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select type",
+      includeEmpty: false,
+      selectedValue: "minor",
+      bindToggle: true
+    });
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsChangeAreaButton"),
+      menuEl: document.getElementById("customNewsChangeAreaMenu"),
+      items: CUSTOM_NEWS_ENGINE_CHANGE_AREAS.map(area => ({ value: area, label: area })),
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select area",
+      includeEmpty: true,
+      emptyLabel: "Select area",
+      selectedValue: "",
+      bindToggle: true
+    });
+
+    if (engines.length) {
+      const enginesRow = makeRow();
+      const engineControls = [];
+
+      engines.forEach((engine) => {
+        const engineCol = makeCol("quarter");
+        engineCol.classList.add("custom-news-engine-change");
+        engineCol.dataset.engineId = String(engine.id);
+
+        const deltaInputId = `customNewsEngineDelta${engine.id}`;
+        const deltaControl = makeNumberControl({ id: deltaInputId, value: 0, min: -20, max: 20, step: 0.5 });
+
+        engineCol.append(
+          makeLabel(deltaInputId, `${engine.name}`),
+          makeHint("Rough change (%)"),
+          deltaControl.wrap
+        );
+
+        enginesRow.append(engineCol);
+        engineControls.push(deltaControl);
+      });
+
+      customNewsParams.append(enginesRow);
+
+      const syncEngineControls = () => {
+        const isManual = engineModeSwitch.input.checked;
+        engineModeSwitch.labelEl.textContent = getSwitchModeLabel(isManual);
+        engineControls.forEach(control => control.setDisabled(!isManual));
+      };
+
+      engineModeSwitch.input.addEventListener("change", syncEngineControls);
+      syncEngineControls();
+    }
+    return;
+  }
+
+  if (type === "turning_point_young_drivers") {
+    const row = makeRow();
+    const infoCol = makeCol("full");
+    infoCol.append(makeInfo("Pick two or three prospects. Approving this turning point will boost the selected drivers."));
+    row.append(infoCol);
+
+    [1, 2, 3].forEach(i => {
+      const col = makeCol("third");
+      col.append(
+        makeLabel(`customNewsProspect${i}Button`, `Prospect ${i}${i === 3 ? " (optional)" : ""}`),
+        makeDropdown({ buttonId: `customNewsProspect${i}Button`, menuId: `customNewsProspect${i}Menu`, placeholder: i === 3 ? "Optional" : "Select driver" }).wrap
+      );
+      row.append(col);
+
+      populateRedesignedDropdown({
+        buttonEl: document.getElementById(`customNewsProspect${i}Button`),
+        menuEl: document.getElementById(`customNewsProspect${i}Menu`),
+        items: officialDrivers,
+        getValue: item => item.id,
+        getLabel: driverLabel,
+        placeholderLabel: i === 3 ? "Optional" : "Select driver",
+        includeEmpty: true,
+        emptyLabel: i === 3 ? "Optional" : "Select driver",
+        selectedValue: "",
+        bindToggle: true
+      });
+    });
+
+    customNewsParams.append(row);
+    return;
+  }
+
+  if (type === "turning_point_aduo") {
+    const row = makeRow();
+    const quarterCol = makeCol("half");
+    quarterCol.append(
+      makeLabel("customNewsAduoQuarterButton", "ADUO quarter"),
+      makeDropdown({ buttonId: "customNewsAduoQuarterButton", menuId: "customNewsAduoQuarterMenu", placeholder: "Select quarter" }).wrap
+    );
+    const modeCol = makeCol("half");
+    const aduoModeSwitch = makeSwitch({ id: "customNewsAduoManualSwitch", label: getSwitchModeLabel(false), checked: false });
+    modeCol.append(makeLabel("customNewsAduoManualSwitch", "Change mode"), aduoModeSwitch.wrap);
+
+    row.append(quarterCol, modeCol);
+    customNewsParams.append(row);
+
+    populateRedesignedDropdown({
+      buttonEl: document.getElementById("customNewsAduoQuarterButton"),
+      menuEl: document.getElementById("customNewsAduoQuarterMenu"),
+      items: CUSTOM_NEWS_ADUO_QUARTERS,
+      getValue: item => item.value,
+      getLabel: item => item.label,
+      placeholderLabel: "Select quarter",
+      includeEmpty: false,
+      selectedValue: "1",
+      bindToggle: true
+    });
+
+    if (engines.length) {
+      const enginesRow = makeRow();
+      const aduoControls = [];
+
+      engines.forEach((engine) => {
+        const engineCol = makeCol("quarter");
+        engineCol.classList.add("custom-news-aduo-engine-change");
+        engineCol.dataset.engineId = String(engine.id);
+
+        const engineCheck = makeCheckbox({ id: `customNewsAduoEnabled${engine.id}`, label: `${engine.name}`, checked: true });
+        const deltaInputId = `customNewsAduoDelta${engine.id}`;
+        const deltaControl = makeNumberControl({ id: deltaInputId, value: 3, min: -12, max: 12, step: 0.5 });
+
+        engineCol.append(
+          engineCheck.wrap,
+          makeHint("Rough change (%)"),
+          deltaControl.wrap
+        );
+
+        enginesRow.append(engineCol);
+        aduoControls.push({ control: deltaControl, checkbox: engineCheck.input });
+      });
+
+      customNewsParams.append(enginesRow);
+
+      const syncAduoControls = () => {
+        const isManual = aduoModeSwitch.input.checked;
+        aduoModeSwitch.labelEl.textContent = getSwitchModeLabel(isManual);
+        aduoControls.forEach(({ control, checkbox }) => control.setDisabled(!isManual || !checkbox.checked));
+      };
+
+      aduoControls.forEach(({ checkbox }) => {
+        checkbox.addEventListener("change", syncAduoControls);
+      });
+
+      aduoModeSwitch.input.addEventListener("change", syncAduoControls);
+      syncAduoControls();
+    }
+    return;
+  }
+
+  if (type === "custom_new") {
+    const row = makeRow();
+
+    const galleryCol = makeCol("full");
+    galleryCol.append(makeLabel("customNewsImageGrid", "Picture"));
+
+    const imageValue = document.createElement("input");
+    imageValue.type = "hidden";
+    imageValue.id = "customNewsImageValue";
+    galleryCol.append(imageValue);
+
+    const imageGrid = createEl("div", "custom-news-image-grid");
+    imageGrid.id = "customNewsImageGrid";
+
+    CUSTOM_NEWS_IMAGE_FILES.forEach(file => {
+      const imageCard = document.createElement("button");
+      imageCard.type = "button";
+      imageCard.className = "custom-news-image-card";
+      imageCard.dataset.value = file;
+
+      const thumbnail = document.createElement("img");
+      thumbnail.src = getCustomNewsImageSrc(file);
+      thumbnail.alt = file;
+      thumbnail.loading = "lazy";
+
+      imageCard.append(thumbnail);
+      imageCard.addEventListener("click", () => {
+        imageValue.value = file;
+        updateCustomNewsImagePreview();
+      });
+
+      imageGrid.appendChild(imageCard);
+    });
+
+    galleryCol.append(imageGrid);
+
+    const promptCol = makeCol("full");
+    const infoCol = makeCol("full");
+    promptCol.append(
+      makeLabel("customNewsPrompt", "Article prompt"),
+      makeTextarea({ id: "customNewsPrompt", placeholder: "Describe the story you want the AI to write. The article will still be grounded in the save context and current standings." })
+    );
+
+    row.append(galleryCol, promptCol, infoCol);
+    customNewsParams.append(row);
+    updateCustomNewsImagePreview();
+    return;
+  }
+
+  const noParams = createEl("div", "custom-news-info");
+  noParams.textContent = "No extra parameters for this type.";
+  customNewsParams.append(noParams);
+}
+
+async function openCustomNewsModal() {
+  if (!customNewsModalEl || !customNewsTypeButton || !customNewsTypeMenu || !customNewsCreateBtn) return;
+  if (!customNewsModal) customNewsModal = new bootstrap.Modal(customNewsModalEl);
+
+  setCustomNewsError(null);
+
+  const options = await loadCustomNewsOptions();
+  if (!options) {
+    setCustomNewsError("Failed to load custom news options.");
+    return;
+  }
+
+  const defaultType = CUSTOM_NEWS_TYPE_DEFS[0]?.value || "";
+  populateCustomNewsTypeDropdown({
+    buttonEl: customNewsTypeButton,
+    menuEl: customNewsTypeMenu,
+    items: CUSTOM_NEWS_TYPE_DEFS,
+    selectedValue: defaultType,
+    onSelect: (value) => {
+      setCustomNewsError(null);
+      renderCustomNewsParams(String(value), options);
+      refreshCustomNewsTitleTemplates();
+    }
+  });
+
+  const defaultDate = options.currentDay ? excelToDate(options.currentDay) : new Date();
+  if (customNewsDateInput) customNewsDateInput.value = toIsoDate(defaultDate);
+  if (customNewsTitleInput) customNewsTitleInput.value = "";
+  if (customNewsTemplateButton) {
+    customNewsTemplateButton.disabled = false;
+    customNewsTemplateMenu?.replaceChildren();
+    setRedesignedDropdownSelection(customNewsTemplateButton, customNewsTemplateMenu, "", getCustomNewsTitlePlaceholder());
+    setRedesignedDropdownOpen(customNewsTemplateButton, false);
+  }
+  customNewsTemplateWrap?.classList.remove("custom-news-hidden");
+  customNewsTitleInput?.classList.add("custom-news-hidden");
+
+  renderCustomNewsParams(getRedesignedDropdownValue(customNewsTypeButton), options);
+  refreshCustomNewsTitleTemplates();
+  bindCustomNewsLiveRefresh();
+
+  customNewsModal.show();
+}
+
+async function submitCustomNews() {
+  if (!customNewsTypeButton) return;
+  setCustomNewsError(null);
+
+  const type = getCustomNewsSelectedType();
+  if (!type) {
+    setCustomNewsError("Select a type first.");
+    return;
+  }
+  const dateIso = customNewsDateInput?.value || null;
+  const title = customNewsTitleInput?.value || "";
+  const titleTemplateRaw = getRedesignedDropdownValue(customNewsTemplateButton);
+  const titleTemplateValue = titleTemplateRaw !== "__custom__" ? Number(titleTemplateRaw) : null;
+  const titleTemplateIndex = Number.isInteger(titleTemplateValue) ? titleTemplateValue : null;
+
+  const params = {};
+
+  const numFromButtonId = (id) => {
+    const btn = document.getElementById(id);
+    const raw = getRedesignedDropdownValue(btn);
+    if (raw === "" || raw == null) return null;
+    return Number(raw);
+  };
+  const strFromButtonId = (id) => {
+    const btn = document.getElementById(id);
+    const raw = getRedesignedDropdownValue(btn);
+    return raw || null;
+  };
+  const strFromInputId = (id) => {
+    const el = document.getElementById(id);
+    return el?.value?.trim?.() || null;
+  };
+  const numFromInputId = (id) => {
+    const el = document.getElementById(id);
+    if (!el || el.value === "") return null;
+    return Number(el.value);
+  };
+
+  const raceId = numFromButtonId("customNewsRaceButton");
+  if (raceId != null && raceId > 0) params.raceId = raceId;
+
+  const driverId = numFromButtonId("customNewsDriverButton");
+  if (driverId != null && driverId > 0) params.driverId = driverId;
+
+  const fromTeamId = numFromButtonId("customNewsFromTeamButton");
+  if (fromTeamId != null && fromTeamId > 0) params.fromTeamId = fromTeamId;
+
+  const toTeamId = numFromButtonId("customNewsToTeamButton");
+  if (toTeamId != null && toTeamId > 0) params.toTeamId = toTeamId;
+
+  const renewalTeamId = numFromButtonId("customNewsRenewalTeamButton");
+  if (renewalTeamId != null && renewalTeamId > 0) params.renewalTeamId = renewalTeamId;
+
+  const currentTeamId = numFromButtonId("customNewsCurrentTeamButton");
+  if (currentTeamId != null && currentTeamId > 0) params.currentTeamId = currentTeamId;
+
+  const teamId = numFromButtonId("customNewsTeamButton");
+  if (teamId != null && teamId > 0) params.teamId = teamId;
+
+  const compType = strFromButtonId("customNewsCompTypeButton");
+  if (compType) params.compType = compType;
+
+  const drop = numFromInputId('customNewsDrop');
+  if (drop != null) params.drop = drop;
+
+  const driver1Id = numFromButtonId("customNewsDriver1Button");
+  if (driver1Id != null && driver1Id > 0) params.driver1Id = driver1Id;
+
+  const driver2Id = numFromButtonId("customNewsDriver2Button");
+  if (driver2Id != null && driver2Id > 0) params.driver2Id = driver2Id;
+
+  const part = numFromButtonId("customNewsPartButton");
+  if (part != null && part > 0) params.part = part;
+
+  const salary = numFromInputId('customNewsSalary');
+  if (salary != null) params.salary = salary;
+
+  const endSeason = numFromInputId('customNewsEndSeason');
+  if (endSeason != null) params.endSeason = endSeason;
+
+  const happyDriverId = numFromButtonId("customNewsHappyDriverButton");
+  if (happyDriverId != null && happyDriverId > 0) params.happyDriverId = happyDriverId;
+
+  const unhappyDriverId = numFromButtonId("customNewsUnhappyDriverButton");
+  if (unhappyDriverId != null && unhappyDriverId > 0) params.unhappyDriverId = unhappyDriverId;
+
+  if (type === "silly_season_rumors") {
+    const list = [1, 2, 3].map(i => {
+      const dBtn = document.getElementById(`customNewsSillyDriver${i}Button`);
+      const tBtn = document.getElementById(`customNewsSillyTeam${i}Button`);
+      const sEl = document.getElementById(`customNewsSillySalary${i}`);
+      const eEl = document.getElementById(`customNewsSillyEndSeason${i}`);
+      return {
+        driverId: (() => {
+          const v = getRedesignedDropdownValue(dBtn);
+          const n = Number(v);
+          return n > 0 ? n : null;
+        })(),
+        potentialTeam: (() => {
+          const v = getRedesignedDropdownValue(tBtn);
+          const n = Number(v);
+          return n > 0 ? n : null;
+        })(),
+        salary: sEl && sEl.value !== "" ? Number(sEl.value) : null,
+        endSeason: eEl && eEl.value !== "" ? Number(eEl.value) : null
+      };
+    });
+    params.drivers = list;
+  }
+
+  if (type === "turning_point_technical_directive") {
+    params.componentId = numFromButtonId("customNewsComponentButton");
+    params.reason = strFromInputId("customNewsReason");
+    params.effectMode = strFromButtonId("customNewsEffectModeButton");
+    params.effectAmount = numFromInputId("customNewsEffectAmount");
+  }
+
+  if (type === "turning_point_transfer") {
+    params.driverOutId = numFromButtonId("customNewsDriverOutButton");
+    params.driverInId = numFromButtonId("customNewsDriverInButton");
+    params.reserveDriverId = numFromButtonId("customNewsReserveDriverButton");
+  }
+
+  if (type === "turning_point_investment") {
+    params.country = strFromButtonId("customNewsCountryButton");
+    params.investmentAmount = numFromInputId("customNewsInvestmentAmount");
+    params.investmentShare = numFromInputId("customNewsInvestmentShare");
+  }
+
+  if (type === "turning_point_dsq") {
+    params.component = strFromButtonId("customNewsDsqComponentButton");
+  }
+
+  if (type === "turning_point_race_substitution") {
+    params.newRaceTrackId = numFromButtonId("customNewsReplacementTrackButton");
+    params.reason = strFromInputId("customNewsReason");
+  }
+
+  if (type === "turning_point_injury") {
+    params.reserveDriverId = numFromButtonId("customNewsReserveDriverButton");
+    params.condition = strFromInputId("customNewsInjuryCondition");
+    params.reason = strFromInputId("customNewsReason");
+    params.racesAffected = numFromInputId("customNewsRacesAffected");
+  }
+
+  if (type === "turning_point_engine_regulation") {
+    params.changeType = strFromButtonId("customNewsChangeTypeButton");
+    params.changeArea = strFromButtonId("customNewsChangeAreaButton");
+    params.manualMode = !!document.getElementById("customNewsEngineRegulationManualSwitch")?.checked;
+    params.engineChanges = Array.from(document.querySelectorAll(".custom-news-engine-change")).map((engineEl) => {
+      const engineId = Number(engineEl.dataset.engineId);
+      return {
+        engineId,
+        value: numFromInputId(`customNewsEngineDelta${engineId}`)
+      };
+    });
+  }
+
+  if (type === "turning_point_young_drivers") {
+    params.prospectDriverIds = [1, 2, 3]
+      .map(i => numFromButtonId(`customNewsProspect${i}Button`))
+      .filter(id => id > 0);
+  }
+
+  if (type === "turning_point_aduo") {
+    params.quarter = numFromButtonId("customNewsAduoQuarterButton");
+    params.manualMode = !!document.getElementById("customNewsAduoManualSwitch")?.checked;
+    params.engineChanges = Array.from(document.querySelectorAll(".custom-news-aduo-engine-change")).map((engineEl) => {
+      const engineId = Number(engineEl.dataset.engineId);
+      return {
+        engineId,
+        enabled: !!document.getElementById(`customNewsAduoEnabled${engineId}`)?.checked,
+        value: numFromInputId(`customNewsAduoDelta${engineId}`)
+      };
+    });
+  }
+
+  if (type === "custom_new") {
+    params.image = document.getElementById("customNewsImageValue")?.value || null;
+    params.prompt = strFromInputId("customNewsPrompt");
+
+    if (!title.trim()) {
+      setCustomNewsError("Custom articles need a title.");
+      return;
+    }
+    if (!params.image) {
+      setCustomNewsError("Select an image for the custom article.");
+      return;
+    }
+    if (!params.prompt) {
+      setCustomNewsError("Write the prompt for the custom article.");
+      return;
+    }
+  }
+
+  try {
+    await new Command("createCustomNews", { type, title, titleTemplateIndex, dateIso, params }).promiseExecute();
+    customNewsModal?.hide();
+    customNewsOptionsCache = null;
+
+    const newsGrid = document.querySelector(".news-grid");
+    newsGrid.innerHTML = '';
+
+    generateNews();
+  } catch (e) {
+    console.error(e);
+    setCustomNewsError(e?.message || "Failed to create custom news.");
+  }
+}
+
+createCustomNewsBtn?.addEventListener("click", async () => {
+  try {
+    await openCustomNewsModal();
+  } catch (e) {
+    console.error(e);
+  }
+});
+
+customNewsCreateBtn?.addEventListener("click", async () => {
+  await submitCustomNews();
+});
+
 export function updateNewsYearsButton(message) {
   let years = message.yearsAvailable;
   const newsYearsMenu = document.getElementById("newsSeasonMenu");
@@ -3791,7 +5875,6 @@ async function addTurningPointContexts(prompt, date) {
         const score = power === null ? getAvgChange(improvements) : power;
         return { name: e?.name || "Unknown manufacturer", score };
       })
-        .filter((e) => Number.isFinite(e.score))
         .sort((a, b) => b.score - a.score);
 
       if (!ranked.length) return null;
@@ -3800,7 +5883,7 @@ async function addTurningPointContexts(prompt, date) {
       const best = Number(top[0].score) || 0;
 
       const labelFor = (score) => {
-        if (!Number.isFinite(best) || best <= 0) return "changed";
+        if (best <= 0) return "changed";
         const ratio = score / best;
         if (ratio >= 0.8) return "improved a lot";
         if (ratio >= 0.4) return "improved a bit";

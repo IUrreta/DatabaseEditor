@@ -165,6 +165,16 @@ export function generate_news(savednews, turningPointState) {
     ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
     ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
 
+    // Include saved news entries that are not produced by the current generation logic (e.g. custom-created entries).
+    // Otherwise, those entries would exist in the DB but not appear in the current-season view.
+    const seenIds = new Set(newsList.map(n => n?.id).filter(Boolean));
+    for (const [id, n] of Object.entries(savednews || {})) {
+        if (!id || seenIds.has(id) || !n) continue;
+        if (n.type && typeof n.type === "string" && n.type.startsWith("turning_point_outcome")) continue;
+        newsList.push({ id, ...n });
+        seenIds.add(id);
+    }
+
     //order by date descending
     newsList.sort((a, b) => b.date - a.date);
 
@@ -351,8 +361,8 @@ function applyAduoEffect(turningPointData) {
     const readStat = (stats, statId) => {
         if (!stats) return null;
         const raw = stats[statId] !== undefined ? stats[statId] : stats[String(statId)];
-        const num = Number(raw);
-        return Number.isFinite(num) ? num : null;
+        if (raw === undefined || raw === null) return null;
+        return Number(raw);
     };
 
     snapshotEnginePowerProgression(
@@ -1418,7 +1428,7 @@ function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPoin
         const getUpgradeTuningForEngine = (stat10) => {
             const best = Number(bestStat10);
             const current = Number(stat10);
-            if (!Number.isFinite(best) || best <= 0 || !Number.isFinite(current)) {
+            if (best <= 0) {
                 return { minBonusPct: 0, multiplier: 1 };
             }
             const behindPct = ((best - current) / best) * 100;
@@ -2715,6 +2725,1451 @@ export function getCircuitInfo(raceId) {
     return countries_data[code] || code;
 }
 
+export function getCustomNewsOptions() {
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const currentDay = Number(daySeason?.[0] ?? 0);
+    const seasonYear = Number(daySeason?.[1] ?? 0);
+
+    const races = queryDB(
+        `SELECT RaceID, TrackID, Day, State, WeekendType
+         FROM Races
+         WHERE SeasonID = ?
+         ORDER BY RaceID`,
+        [seasonYear],
+        'allRows'
+    ).map(([raceId, trackId, day, state, weekendType]) => {
+        const code = races_names?.[Number(trackId)];
+        const info = code ? countries_data?.[code] : null;
+        const jsDate = excelToDate(Number(day));
+        const iso = new Date(jsDate.getFullYear(), jsDate.getMonth(), jsDate.getDate()).toISOString().slice(0, 10);
+        return {
+            id: Number(raceId),
+            trackId: Number(trackId),
+            day: Number(day),
+            state: Number(state),
+            weekendType: Number(weekendType),
+            code: code || null,
+            label: info?.adjective ? `${seasonYear} ${info.adjective} GP` : (code ? `${seasonYear} ${code} GP` : `Race ${raceId}`),
+            dateIso: iso
+        };
+    });
+
+    const isCreateATeam = !!getGlobals()?.isCreateATeam;
+    const teamIds = isCreateATeam ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const teams = teamIds.map(id => ({ id, name: combined_dict[id] || `Team ${id}` }));
+
+    const drivers = queryDB(
+        `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+         FROM Staff_BasicData bas
+         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+         JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
+         WHERE con.ContractType = 0
+           AND con.PosInTeam <= 2
+           AND bas.FirstName != 'Placeholder'`,
+        [],
+        'allRows'
+    ).map(row => {
+        const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+        return {
+            id: Number(driverId),
+            name: news_insert_space(nameFormatted),
+            teamId: Number(teamId),
+            teamName: combined_dict[teamId] || `Team ${teamId}`
+        };
+    });
+
+    const allDrivers = queryDB(
+        `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID
+         FROM Staff_BasicData bas
+         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+         LEFT JOIN Staff_Contracts con ON bas.StaffID = con.StaffID AND con.ContractType = 0
+         LEFT JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+         WHERE bas.FirstName != 'Placeholder'
+           AND IFNULL(gd.Retired, 0) = 0`,
+        [],
+        'allRows'
+    ).map(row => {
+        const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+        const teamNum = Number(teamId) || 0;
+        return {
+            id: Number(driverId),
+            name: news_insert_space(nameFormatted),
+            teamId: teamNum || null,
+            teamName: teamNum ? (combined_dict[teamNum] || `Team ${teamNum}`) : "Free Agent"
+        };
+    });
+
+    const engines = (fetchEngines()?.[0] || []).map(([engineId, _, engineName]) => ({
+        id: Number(engineId),
+        name: String(engineName || `Engine ${engineId}`)
+    }));
+
+    return { seasonYear, currentDay, teams, races, drivers, allDrivers, engines };
+}
+
+function getOfficialF1DriverIdsForCustomNews(teamId = null) {
+    const params = [];
+    let sql = `
+        SELECT con.StaffID
+        FROM Staff_Contracts con
+        JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+        WHERE con.ContractType = 0
+          AND con.PosInTeam <= 2
+    `;
+
+    if (teamId != null) {
+        sql += ` AND con.TeamID = ?`;
+        params.push(Number(teamId));
+    }
+
+    return (queryDB(sql, params, 'allRows') || []).map(row => Number(row[0]));
+}
+
+function assertOfficialF1DriverForCustomNews(driverId, label = "Driver") {
+    const exists = queryDB(
+        `SELECT 1
+         FROM Staff_Contracts con
+         JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+         WHERE con.StaffID = ?
+           AND con.ContractType = 0
+           AND con.PosInTeam <= 2
+         LIMIT 1`,
+        [Number(driverId)],
+        'singleValue'
+    );
+    if (!exists) {
+        throw new Error(`${label} must be a current Formula 1 driver`);
+    }
+}
+
+function isOfficialF1DriverForCustomNews(driverId) {
+    const exists = queryDB(
+        `SELECT 1
+         FROM Staff_Contracts con
+         JOIN Staff_DriverData dri ON con.StaffID = dri.StaffID
+         WHERE con.StaffID = ?
+           AND con.ContractType = 0
+           AND con.PosInTeam <= 2
+         LIMIT 1`,
+        [Number(driverId)],
+        'singleValue'
+    );
+    return !!exists;
+}
+
+function assertActiveDriverForCustomNews(driverId, label = "Driver") {
+    const exists = queryDB(
+        `SELECT 1
+         FROM Staff_BasicData bas
+         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+         LEFT JOIN Staff_GameData gd ON bas.StaffID = gd.StaffID
+         WHERE bas.StaffID = ?
+           AND bas.FirstName != 'Placeholder'
+           AND IFNULL(gd.Retired, 0) = 0
+         LIMIT 1`,
+        [Number(driverId)],
+        'singleValue'
+    );
+    if (!exists) {
+        throw new Error(`${label} must be an active driver`);
+    }
+}
+
+function assertCompletedRaceForCustomNews(raceId, label = "Race") {
+    const raceState = queryDB(`SELECT State FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+    if (Number(raceState) !== 2) {
+        throw new Error(`${label} must already have taken place`);
+    }
+}
+
+export function getRaceDriversForCustomNews(raceId) {
+    const results = getOneRaceResults(raceId) || [];
+    return results.map(row => {
+        const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+        return {
+            driverId: Number(driverId),
+            name: news_insert_space(nameFormatted),
+            teamId: Number(teamId),
+            teamName: combined_dict[teamId] || `Team ${teamId}`,
+            pos: Number(row[4])
+        };
+    });
+}
+
+function isoToExcelDay(iso) {
+    if (!iso || typeof iso !== "string") return null;
+    const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return null;
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    return dateToExcel(d);
+}
+
+function getDriverAndTeamForCustomNews(driverId) {
+    const row = queryDB(
+        `SELECT bas.FirstName, bas.LastName, bas.StaffID, con.TeamID
+         FROM Staff_BasicData bas
+         JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+         LEFT JOIN Staff_Contracts con ON bas.StaffID = con.StaffID AND con.ContractType = 0
+         WHERE bas.StaffID = ?
+         LIMIT 1`,
+        [driverId],
+        'singleRow'
+    );
+    const [nameFormatted, id, teamId] = formatNamesSimple(row || ["Unknown", "Driver", driverId, 0]);
+    return {
+        driverId: Number(id),
+        name: news_insert_space(nameFormatted),
+        teamId: Number(teamId || 0),
+        teamName: Number(teamId || 0) > 0 ? (combined_dict[teamId] || `Team ${teamId}`) : "Free Agent"
+    };
+}
+
+function renderNormalTitleTemplate(data, new_type, templateIndex) {
+    const templateObj = newsTitleTemplates.find(t => t.new_type === new_type);
+    const titles = Array.isArray(templateObj?.titles) ? templateObj.titles : [];
+    const tpl = titles[templateIndex];
+    if (!tpl) return null;
+
+    const prepared = { ...(data || {}) };
+    if (prepared.raceId) {
+        const raceInfo = getCircuitInfo(prepared.raceId);
+        prepared.circuit = raceInfo?.circuit;
+        prepared.country = raceInfo?.country;
+        prepared.adjective = raceInfo?.adjective;
+    }
+
+    const paramMap = getParamMap(prepared);
+    return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap?.[new_type]?.[key] || '');
+}
+
+function renderTurningPointTitleTemplate(data, new_type, turningPointType, templateIndex) {
+    const templateObj = turningPointsTitleTemplates.find(t => t.new_type === new_type);
+    let titles = [];
+    if (turningPointType === "positive") titles = templateObj?.positive_titles || [];
+    else if (turningPointType === "negative") titles = templateObj?.negative_titles || [];
+    else titles = templateObj?.turning_titles || [];
+
+    const tpl = titles[templateIndex];
+    if (!tpl) return null;
+
+    const paramMap = getParamMap(data || {});
+    return tpl.replace(/{{\s*(\w+)\s*}}/g, (_, key) => paramMap?.[new_type]?.[key] || '');
+}
+
+function assertCustomTurningPointPayload(type, data) {
+    if (!type?.startsWith("turning_point_")) return;
+    if (!data || typeof data !== "object") {
+        throw new Error(`Incomplete turning point data for ${type}`);
+    }
+
+    const requireNumber = (value, label) => {
+        if (!Number.isFinite(Number(value))) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+    const requireText = (value, label) => {
+        if (typeof value !== "string" || !value.trim()) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+    const requireObject = (value, label) => {
+        if (!value || typeof value !== "object" || Array.isArray(value) || Object.keys(value).length === 0) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+    const requireArray = (value, label) => {
+        if (!Array.isArray(value) || value.length === 0) {
+            throw new Error(`Missing ${label} for ${type}`);
+        }
+    };
+
+    if (type === "turning_point_technical_directive") {
+        requireNumber(data.componentId, "componentId");
+        requireObject(data.effectOnEachteam, "effectOnEachteam");
+        return;
+    }
+
+    if (type === "turning_point_transfer") {
+        requireNumber(data.teamId, "teamId");
+        requireNumber(data.driver_out?.id, "driver_out.id");
+        requireNumber(data.driver_in?.id, "driver_in.id");
+        return;
+    }
+
+    if (type === "turning_point_investment") {
+        requireNumber(data.teamId, "teamId");
+        requireNumber(data.investmentAmount, "investmentAmount");
+        requireNumber(data.investmentShare, "investmentShare");
+        requireText(data.country, "country");
+        return;
+    }
+
+    if (type === "turning_point_dsq") {
+        requireNumber(data.race_id, "race_id");
+        requireNumber(data.teamId, "teamId");
+        requireText(data.component, "component");
+        return;
+    }
+
+    if (type === "turning_point_race_substitution") {
+        requireNumber(data.raceId, "raceId");
+        requireNumber(data.newRaceTrackId, "newRaceTrackId");
+        requireNumber(data.newRaceDay, "newRaceDay");
+        return;
+    }
+
+    if (type === "turning_point_injury") {
+        requireNumber(data.driver_affected?.id, "driver_affected.id");
+        requireNumber(data.condition?.end_date, "condition.end_date");
+        requireNumber(data.reserve_driver?.id, "reserve_driver.id");
+        requireArray(data.condition?.races_affected, "condition.races_affected");
+        return;
+    }
+
+    if (type === "turning_point_engine_regulation") {
+        requireObject(data.engineData, "engineData");
+        return;
+    }
+
+    if (type === "turning_point_young_drivers") {
+        requireArray(data.prospects, "prospects");
+        data.prospects.forEach((prospect, index) => {
+            requireNumber(prospect?.driverId, `prospects[${index}].driverId`);
+        });
+        return;
+    }
+
+    if (type === "turning_point_aduo") {
+        requireNumber(data.quarter, "quarter");
+        requireArray(data.engineImprovements, "engineImprovements");
+        data.engineImprovements.forEach((engineChange, index) => {
+            requireNumber(engineChange?.engineId, `engineImprovements[${index}].engineId`);
+            requireText(engineChange?.name, `engineImprovements[${index}].name`);
+            requireObject(engineChange?.improvements, `engineImprovements[${index}].improvements`);
+        });
+    }
+}
+
+export function createCustomNewsEntry(input = {}) {
+    const { type, title, titleTemplateIndex, dateIso, params } = input || {};
+    if (!type || typeof type !== "string") {
+        throw new Error("Missing custom news type");
+    }
+
+    const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    const seasonYear = Number(daySeason?.[1] ?? 0);
+    const currentDay = Number(daySeason?.[0] ?? 0);
+
+    const now = Date.now();
+    const id = type === "custom_new" ? `custom_new_${now}` : `custom_${type}_${now}`;
+    const stableKey = id;
+    const selectedTemplateIndex = titleTemplateIndex != null ? Number(titleTemplateIndex) : null;
+
+    const dateFromIso = isoToExcelDay(dateIso);
+    let date = dateFromIso != null ? dateFromIso : currentDay;
+    const currentMonth = excelToDate(date).getMonth() + 1;
+
+    let data = null;
+    let overlay = null;
+    let image = null;
+    let finalTitle = (typeof title === "string" && title.trim()) ? title.trim() : null;
+
+    if (type === "race_result") {
+        const raceId = Number(params?.raceId);
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
+        const results = getOneRaceResults(raceId);
+        if (!results?.length) throw new Error("No race results found for that race");
+
+        const formatted = results.map(row => {
+            const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+            return { name: news_insert_space(nameFormatted), driverId, teamId, pos: row[4] };
+        });
+
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
+        data = {
+            raceId,
+            first: formatted[0].name,
+            second: formatted[1].name,
+            third: formatted[2].name,
+            firstTeam: formatted[0].teamId,
+            secondTeam: formatted[1].teamId,
+            thirdTeam: formatted[2].teamId,
+            trackId: trackId,
+            seasonYear: seasonYear,
+        };
+
+        if (dateFromIso == null) {
+            const d = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+            date = Number(d);
+        }
+
+        if (!finalTitle) {
+            finalTitle = renderNormalTitleTemplate({ raceId, seasonYear, winnerName: formatted[0].name }, 2, selectedTemplateIndex)
+                || generateTitle({ raceId, seasonYear, winnerName: formatted[0].name }, 2);
+        }
+
+        overlay = "race-overlay";
+        image = getImagePath(formatted[0].teamId, code, "raceQuali");
+    }
+    else if (type === "quali_result") {
+        const raceId = Number(params?.raceId);
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
+        const results = getOneQualifyingResults(raceId);
+        if (!results?.length) throw new Error("No qualifying results found for that race");
+
+        const formatted = results.map(row => {
+            const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+            return { name: news_insert_space(nameFormatted), driverId, teamId, pos: row[4], fastestLap: row[5] };
+        });
+
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
+        const code = races_names[parseInt(trackId)];
+
+        data = {
+            raceId,
+            first: formatted[0].name,
+            second: formatted[1].name,
+            third: formatted[2].name,
+            firstTeam: formatted[0].teamId,
+            secondTeam: formatted[1].teamId,
+            thirdTeam: formatted[2].teamId,
+            trackId: trackId,
+            seasonYear: seasonYear,
+        };
+
+        if (dateFromIso == null) {
+            const d = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue') - 1;
+            date = Number(d);
+        }
+
+        if (!finalTitle) {
+            finalTitle = renderNormalTitleTemplate({ raceId, seasonYear, pole_driver: formatted[0].name }, 1, selectedTemplateIndex)
+                || generateTitle({ raceId, seasonYear, pole_driver: formatted[0].name }, 1);
+        }
+
+        overlay = "quali-overlay";
+        image = getImagePath(formatted[0].teamId, `${code}_car`, "raceQuali");
+    }
+    else if (type === "race_reaction") {
+        const raceId = Number(params?.raceId);
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
+        const results = getOneRaceResults(raceId);
+        if (!results?.length) throw new Error("No race results found for that race");
+
+        const formatted = results.map(row => {
+            const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+            return {
+                name: news_insert_space(nameFormatted),
+                driverId: Number(driverId),
+                teamId: Number(teamId),
+                teamName: combined_dict[teamId],
+                pos: Number(row[4]),
+                rating: getDriverOverall(driverId)
+            };
+        });
+
+        const pickById = (idVal) => formatted.find(d => Number(d.driverId) === Number(idVal)) || null;
+        const chosenHappy = params?.happyDriverId ? pickById(params.happyDriverId) : null;
+        const chosenUnhappy = params?.unhappyDriverId ? pickById(params.unhappyDriverId) : null;
+
+        const unhappyDrivers = formatted.filter(r => r.rating >= 88 && r.pos > 6);
+        const happyDrivers = formatted.filter(r => r.pos <= 4);
+        const randomUnHappyDriver = chosenUnhappy || randomPick(unhappyDrivers.length ? unhappyDrivers : formatted);
+        const randomHappyDriver = chosenHappy || randomPick(happyDrivers.length ? happyDrivers : formatted);
+
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
+        const code = races_names[parseInt(trackId)].toLowerCase();
+
+        data = {
+            raceId,
+            allHappyDrivers: happyDrivers,
+            allUnhappyDrivers: unhappyDrivers,
+            randomHappyDriver,
+            happyTeam: randomHappyDriver.teamName,
+            unhappyTeam: randomUnHappyDriver.teamName,
+            randomUnHappyDriver,
+            seasonYear,
+            trackId: trackId
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderNormalTitleTemplate(data, 16, selectedTemplateIndex) || generateTitle(data, 16);
+        }
+
+        if (dateFromIso == null) {
+            const d = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+            date = Number(d) + 1;
+        }
+
+        let driverTeamIdInTitle = null;
+        if (finalTitle.includes(randomUnHappyDriver.name)) driverTeamIdInTitle = randomUnHappyDriver.teamId;
+        else if (finalTitle.includes(randomHappyDriver.name)) driverTeamIdInTitle = randomHappyDriver.teamId;
+        if (driverTeamIdInTitle != null) data.driverTeamIdInTitle = driverTeamIdInTitle;
+
+        overlay = "reaction-overlay";
+        image = getImagePath(driverTeamIdInTitle, code, "reaction");
+    }
+    else if (type === "fake_transfer") {
+        const driverId = Number(params?.driverId);
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        assertOfficialF1DriverForCustomNews(driverId);
+        const d = getDriverAndTeamForCustomNews(driverId);
+        data = {
+            drivers: [{
+                name: d.name,
+                driverId: d.driverId,
+                team: d.teamName,
+                teamId: d.teamId
+            }]
+        };
+        if (!finalTitle) {
+            finalTitle = renderNormalTitleTemplate({ driver1: d.name, team1: d.teamName }, 7, selectedTemplateIndex)
+                || generateTitle({ driver1: d.name, team1: d.teamName }, 7);
+        }
+        overlay = "fake-transfer-overlay";
+        image = getImagePath(d.teamId, d.driverId, "transfer");
+    }
+    else if (type === "big_transfer" || type === "massive_exit" || type === "massive_signing") {
+        const driverId = Number(params?.driverId);
+        const fromTeamId = Number(params?.fromTeamId);
+        const toTeamId = Number(params?.toTeamId);
+        const salary = params?.salary != null ? Number(params.salary) : null;
+        const endSeason = params?.endSeason != null ? Number(params.endSeason) : null;
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        if (!fromTeamId || fromTeamId <= 0) throw new Error("Missing fromTeamId");
+        if (!toTeamId || toTeamId <= 0) throw new Error("Missing toTeamId");
+        assertOfficialF1DriverForCustomNews(driverId);
+
+        const d = getDriverAndTeamForCustomNews(driverId);
+        const team1 = combined_dict[fromTeamId] || `Team ${fromTeamId}`;
+        const team2 = combined_dict[toTeamId] || `Team ${toTeamId}`;
+
+        data = {
+            driver1: d.name,
+            driverId: d.driverId,
+            team1: team1,
+            team2: team2,
+            team1Id: fromTeamId,
+            team2Id: toTeamId,
+            salary: salary,
+            endSeason: endSeason,
+            season_year: seasonYear
+        };
+
+        if (!finalTitle) {
+            const titleType = type === "big_transfer" ? 6 : (type === "massive_exit" ? 17 : 18);
+            finalTitle = renderNormalTitleTemplate(data, titleType, selectedTemplateIndex) || generateTitle(data, titleType);
+        }
+
+        overlay = type === "massive_exit" ? "massive-exit-overlay" : "massive-signing-overlay";
+        const imageTeamId = type === "massive_exit" ? fromTeamId : toTeamId;
+        image = getImagePath(imageTeamId, d.driverId, "transfer");
+    }
+    else if (type === "contract_renewal") {
+        const driverId = Number(params?.driverId);
+        const renewalTeamId = Number(params?.renewalTeamId);
+        const currentTeamId = Number(params?.currentTeamId);
+        const salary = params?.salary != null ? Number(params.salary) : null;
+        const endSeason = params?.endSeason != null ? Number(params.endSeason) : null;
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        if (!renewalTeamId || renewalTeamId <= 0) throw new Error("Missing renewalTeamId");
+        if (!currentTeamId || currentTeamId <= 0) throw new Error("Missing currentTeamId");
+        assertOfficialF1DriverForCustomNews(driverId);
+
+        const d = getDriverAndTeamForCustomNews(driverId);
+        data = {
+            driver1: d.name,
+            driverId: d.driverId,
+            team1: combined_dict[renewalTeamId] || `Team ${renewalTeamId}`,
+            team2: combined_dict[currentTeamId] || `Team ${currentTeamId}`,
+            team1Id: renewalTeamId,
+            team2Id: currentTeamId,
+            salary: salary,
+            endSeason: endSeason
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderNormalTitleTemplate(data, 10, selectedTemplateIndex) || generateTitle(data, 10);
+        }
+
+        overlay = "contract-renewal-overlay";
+        image = getImagePath(renewalTeamId, d.driverId, "transfer");
+    }
+    else if (type === "silly_season_rumors") {
+        const items = Array.isArray(params?.drivers) ? params.drivers : [];
+        const drivers = items.slice(0, 6).map(it => {
+            const driverId = Number(it?.driverId);
+            if (!driverId || driverId <= 0) return null;
+            assertOfficialF1DriverForCustomNews(driverId);
+            const d = getDriverAndTeamForCustomNews(driverId);
+            const potentialTeam = it?.potentialTeam != null ? Number(it.potentialTeam) : null;
+            const salary = it?.salary != null ? Number(it.salary) : null;
+            const endSeason = it?.endSeason != null ? Number(it.endSeason) : null;
+            return {
+                driverId: d.driverId,
+                name: d.name,
+                team: d.teamName,
+                teamId: d.teamId,
+                potentialTeam,
+                potentialSalary: salary,
+                potentialYearEnd: endSeason
+            };
+        }).filter(Boolean);
+
+        if (drivers.length < 3) throw new Error("Pick at least 3 drivers");
+
+        if (!finalTitle) {
+            const titleData = {
+                driver1: drivers[0].name,
+                driver2: drivers[1].name,
+                driver3: drivers[2].name,
+                team1: drivers[0].potentialTeam ? (combined_dict[drivers[0].potentialTeam] || "") : "",
+                team2: drivers[1].potentialTeam ? (combined_dict[drivers[1].potentialTeam] || "") : "",
+                team3: drivers[2].potentialTeam ? (combined_dict[drivers[2].potentialTeam] || "") : "",
+                season: seasonYear
+            };
+            finalTitle = renderNormalTitleTemplate(titleData, 4, selectedTemplateIndex) || generateTitle(titleData, 4);
+        }
+
+        if (dateFromIso == null) {
+            date = dateToExcel(new Date(seasonYear, 7, 10));
+        }
+
+        data = { drivers };
+        overlay = "silly-season-overlay";
+        image = getImagePath(drivers[0].teamId, drivers[0].driverId, "transfer_generic");
+    }
+    else if (type === "team_comparison") {
+        const teamId = Number(params?.teamId);
+        const compType = params?.compType === "bad" ? "bad" : "good";
+        const drop = params?.drop != null ? Number(params.drop) : 0;
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+
+        data = {
+            team: { teamId, drop },
+            season: seasonYear,
+            compType
+        };
+
+        if (!finalTitle) {
+            const titleType = compType === "good" ? 12 : 11;
+            const titleData = { teamId: combined_dict[teamId] || `Team ${teamId}`, season: seasonYear };
+            finalTitle = renderNormalTitleTemplate(titleData, titleType, selectedTemplateIndex) || generateTitle(titleData, titleType);
+        }
+
+        image = getImagePath(teamId, teamId, "teamComparison");
+        overlay = null;
+    }
+    else if (type === "driver_comparison") {
+        const teamId = Number(params?.teamId);
+        const driver1Id = Number(params?.driver1Id);
+        const driver2Id = Number(params?.driver2Id);
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+        if (!driver1Id || driver1Id <= 0) throw new Error("Missing driver1Id");
+        if (!driver2Id || driver2Id <= 0) throw new Error("Missing driver2Id");
+        assertOfficialF1DriverForCustomNews(driver1Id, "Driver 1");
+        assertOfficialF1DriverForCustomNews(driver2Id, "Driver 2");
+
+        const d1 = getDriverAndTeamForCustomNews(driver1Id);
+        const d2 = getDriverAndTeamForCustomNews(driver2Id);
+        const teamName = combined_dict[teamId] || `Team ${teamId}`;
+
+        data = {
+            teamId,
+            teamName,
+            drivers: [{ name: d1.name, driverId: d1.driverId }, { name: d2.name, driverId: d2.driverId }],
+            season: seasonYear
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderNormalTitleTemplate({ team: teamName, driver1: d1.name, driver2: d2.name }, 13, selectedTemplateIndex)
+                || generateTitle({ team: teamName, driver1: d1.name, driver2: d2.name }, 13);
+        }
+
+        overlay = "driver-comparison-overlay";
+        image = null;
+    }
+    else if (type === "season_review") {
+        const part = Number(params?.part);
+        if (![1, 2, 3].includes(part)) throw new Error("Invalid season review part");
+
+        const nRaces = queryDB(`SELECT COUNT(*) FROM Races WHERE SeasonID = ?`, [seasonYear], 'singleValue');
+        const racesInterval = nRaces / 3;
+        const firstRaceSeasonId = queryDB(`SELECT MIN(RaceID) FROM Races WHERE SeasonID = ?`, [seasonYear], 'singleValue');
+        const seasonResults = fetchSeasonResults(seasonYear);
+        const raceIdInPoint = firstRaceSeasonId + Math.floor(racesInterval * part) - 1;
+
+        const { driverStandings, teamStandings } = rebuildStandingsUntil(seasonResults, raceIdInPoint);
+        const firstDriver = driverStandings[0];
+        const secondDriver = driverStandings[1];
+        const firstTeam = teamStandings[0];
+        const secondTeam = teamStandings[1];
+
+        data = {
+            season: seasonYear,
+            part,
+            firstDriver,
+            secondDriver,
+            firstTeam,
+            secondTeam
+        };
+
+        if (!finalTitle) {
+            const titleId = part === 3 ? 15 : 14;
+            const titleData = { season: seasonYear, part, driver1: firstDriver?.name, driver2: secondDriver?.name };
+            finalTitle = renderNormalTitleTemplate(titleData, titleId, selectedTemplateIndex) || generateTitle(titleData, titleId);
+        }
+
+        image = getImagePath(firstTeam ? firstTeam.id : 1, firstDriver ? firstDriver.id : 1, "season_review");
+        overlay = null;
+    }
+    else if (type === "potential_champion" || type === "world_champion") {
+        const raceId = Number(params?.raceId);
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        assertCompletedRaceForCustomNews(raceId);
+
+        const seasonResults = fetchSeasonResults(seasonYear, true);
+        const standings = type === "potential_champion"
+            ? rebuildStandingsUntil(seasonResults, raceId - 1, true)
+            : rebuildStandingsUntil(seasonResults, raceId, true);
+
+        const leader = standings?.driverStandings?.[0];
+        const rival = standings?.driverStandings?.[1];
+        if (!leader || !rival) throw new Error("Not enough standings data for this race");
+
+        const raceInfo = getCircuitInfo(raceId);
+        const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+        const code = races_names[Number(trackId)];
+
+        data = {
+            raceId,
+            season_year: seasonYear,
+            driver_id: leader.driverId,
+            driver_team_id: leader.teamId,
+            driver_name: leader.name,
+            driver_points: leader.points,
+            rival_driver_id: rival.driverId,
+            rival_driver_name: rival.name,
+            rival_points: rival.points,
+            circuit_name: raceInfo.circuit,
+            country_name: raceInfo.country,
+            adjective: raceInfo.adjective
+        };
+
+        if (!finalTitle) {
+            const titleData = {
+                driver_name: leader.name,
+                circuit: raceInfo.circuit,
+                country: raceInfo.country,
+                adjective: raceInfo.adjective,
+                season_year: seasonYear
+            };
+            const titleType = type === "potential_champion" ? 8 : 9;
+            finalTitle = renderNormalTitleTemplate(titleData, titleType, selectedTemplateIndex) || generateTitle(titleData, titleType);
+        }
+
+        overlay = null;
+        image = getImagePath(leader.teamId, (type === "potential_champion" ? code?.toLowerCase() : code), "champion");
+
+        if (dateFromIso == null) {
+            const baseDay = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+            date = type === "potential_champion" ? (Number(baseDay) - 2) : (Number(baseDay) + 1);
+        }
+    }
+    else if (type === "next_season_grid") {
+        const globals = getGlobals();
+        let teamIds = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        if (globals?.isCreateATeam) teamIds.push(32);
+        let teamsDict = {};
+        teamIds.forEach(teamId => {
+            const teamName = combined_dict[teamId] || "Unknown Team";
+            let teamInfo = {
+                name: teamName,
+                teamId: teamId,
+                driversNextSeason: [],
+                driversThisSeason: []
+            };
+            const driversThisSeason = queryDB(
+                `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
+                 FROM Staff_BasicData bas
+                 JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+                 JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
+                 WHERE con.TeamID = ?
+                   AND con.PosInTeam <= 2
+                   AND con.ContractType = 0`,
+                [teamId],
+                'allRows'
+            );
+            const driversNextSeason = queryDB(
+                `SELECT bas.FirstName, bas.LastName, dri.StaffID, con.TeamID, con.ContractType
+                 FROM Staff_BasicData bas
+                 JOIN Staff_DriverData dri ON bas.StaffID = dri.StaffID
+                 JOIN Staff_Contracts con ON bas.StaffID = con.StaffID
+                 WHERE con.TeamID = ?
+                   AND con.PosInTeam <= 2
+                   AND con.ContractType IN (0,3)`,
+                [teamId],
+                'allRows'
+            );
+            driversNextSeason.forEach(d => {
+                const name = formatNamesSimple(d);
+                const contractType = d[4];
+                teamInfo.driversNextSeason.push({
+                    name: news_insert_space(name[0]),
+                    driverId: name[1],
+                    isForNextSeason: contractType === 3
+                });
+            });
+            driversThisSeason.forEach(d => {
+                const name = formatNamesSimple(d);
+                teamInfo.driversThisSeason.push({
+                    name: news_insert_space(name[0]),
+                    driverId: name[1]
+                });
+            });
+            teamsDict[teamId] = teamInfo;
+        });
+
+        const nextYear = seasonYear + 1;
+        data = { season_year: nextYear, teams: teamsDict };
+        if (!finalTitle) finalTitle = renderNormalTitleTemplate({ season_year: nextYear }, 19, selectedTemplateIndex) || generateTitle({ season_year: nextYear }, 19);
+        overlay = "next-season-grid";
+        image = getImagePath(null, null, "grid");
+        if (dateFromIso == null) {
+            date = dateToExcel(new Date(seasonYear, 11, 15));
+        }
+    }
+    else if (type === "feeder_series_review") {
+        const f2 = queryDB(
+            `SELECT bas.FirstName, bas.LastName, rds.DriverID, 1
+             FROM Races_DriverStandings rds
+             JOIN Staff_BasicData bas ON rds.DriverID = bas.StaffID
+             WHERE rds.SeasonID = ? AND rds.RaceFormula = 2 AND rds.Position = 1
+             LIMIT 1`,
+            [seasonYear],
+            "singleRow"
+        );
+        const f3 = queryDB(
+            `SELECT bas.FirstName, bas.LastName, rds.DriverID, 1
+             FROM Races_DriverStandings rds
+             JOIN Staff_BasicData bas ON rds.DriverID = bas.StaffID
+             WHERE rds.SeasonID = ? AND rds.RaceFormula = 3 AND rds.Position = 1
+             LIMIT 1`,
+            [seasonYear],
+            "singleRow"
+        );
+
+        const [f2Name, f2Id] = formatNamesSimple(f2 || ["Unknown", "Driver", 0]);
+        const [f3Name, f3Id] = formatNamesSimple(f3 || ["Unknown", "Driver", 0]);
+
+        data = {
+            f2_champion: { name: news_insert_space(f2Name), driverId: f2Id },
+            f3_champion: { name: news_insert_space(f3Name), driverId: f3Id },
+            season_year: seasonYear
+        };
+        if (!finalTitle) {
+            const titleData = { season_year: seasonYear, f2_champion: data.f2_champion.name, f3_champion: data.f3_champion.name };
+            finalTitle = renderNormalTitleTemplate(titleData, 20, selectedTemplateIndex) || generateTitle(titleData, 20);
+        }
+        overlay = null;
+        image = getImagePath(null, null, "young");
+    }
+    else if (type === "turning_point_technical_directive") {
+        const componentId = Number(params?.componentId);
+        const reason = String(params?.reason || "").trim() || "improve safety";
+        const requestedEffectMode = String(params?.effectMode || "").trim().toLowerCase();
+        const effectMode = ["random", "spread", "compact"].includes(requestedEffectMode) ? requestedEffectMode : null;
+        const requestedEffectAmount = Number(params?.effectAmount);
+        if (![3, 4, 5, 6, 7, 8].includes(componentId)) throw new Error("Missing componentId");
+
+        const globals = getGlobals();
+        const teamIds = globals?.isCreateATeam ? [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 32] : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        const effectOnEachteam = {};
+        const capsByPart = {
+            3: 7.5,
+            4: 4,
+            5: 4,
+            6: 4,
+            7: 7,
+            8: 5
+        };
+        const cap = requestedEffectAmount > 0 ? requestedEffectAmount : (capsByPart[componentId] || 5);
+        const modeRoll = Math.random();
+        const resolvedEffectMode = effectMode || (modeRoll < 0.30 ? "random" : modeRoll < 0.40 ? "compact" : "spread");
+        const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+
+        if (resolvedEffectMode === "random") {
+            for (const teamId of teamIds) {
+                effectOnEachteam[teamId] = {
+                    performanceGainLoss: ((Math.random() * 2 * cap) - cap).toFixed(2),
+                    teamName: combined_dict[teamId] || `Team ${teamId}`,
+                    teamId
+                };
+            }
+        } else {
+            const performance = getPerformanceAllTeams(date, null, globals?.isCreateATeam);
+            const championship = queryDB(
+                `SELECT TeamID, Points
+                 FROM Races_TeamStandings
+                 WHERE SeasonID = ? AND RaceFormula = 1`,
+                [seasonYear],
+                'allRows'
+            );
+            const constructorsPoints = {};
+            for (const row of championship) {
+                constructorsPoints[Number(row[0])] = Number(row[1]) || 0;
+            }
+
+            const vals = teamIds.map(id => Number(performance?.[id] || 0));
+            const mean = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : 0;
+            const maxAbs = Math.max(...vals.map(v => Math.abs(v - mean)), 1);
+            const maxPts = Math.max(...teamIds.map(id => constructorsPoints[id] || 0), 1);
+            const effectiveCap = !effectMode && resolvedEffectMode === "spread" ? (cap * 1.45) : cap;
+            const direction = resolvedEffectMode === "compact" ? -1 : 1;
+            const rawEffects = teamIds.map((teamId) => {
+                const normalizedPerformance = (Number(performance?.[teamId] || mean) - mean) / maxAbs;
+                const normalizedPoints = ((constructorsPoints[teamId] || 0) / maxPts) - 0.5;
+                let effect = (normalizedPerformance * 0.8 + normalizedPoints * 0.2) * effectiveCap * direction;
+                effect += (Math.random() * 0.3) - 0.15;
+                return { teamId, effect };
+            });
+            const averageEffect = rawEffects.length ? rawEffects.reduce((sum, item) => sum + item.effect, 0) / rawEffects.length : 0;
+
+            for (const { teamId, effect } of rawEffects) {
+                effectOnEachteam[teamId] = {
+                    performanceGainLoss: clamp(effect - averageEffect, -effectiveCap, effectiveCap).toFixed(2),
+                    teamName: combined_dict[teamId] || `Team ${teamId}`,
+                    teamId
+                };
+            }
+        }
+
+        data = {
+            component: String(part_full_names[componentId] || "Unknown component").toLowerCase(),
+            componentId,
+            effectOnEachteam,
+            effectMode: resolvedEffectMode,
+            effectAmount: cap,
+            month: currentMonth,
+            reason,
+            season: seasonYear
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 100, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 100, "original");
+        }
+
+        image = getImagePath(null, componentId, "technical");
+    }
+    else if (type === "turning_point_transfer") {
+        const teamId = Number(params?.teamId);
+        const driverOutId = Number(params?.driverOutId);
+        const driverInId = Number(params?.driverInId);
+        const reserveDriverId = params?.reserveDriverId != null ? Number(params.reserveDriverId) : null;
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+        if (!driverOutId || driverOutId <= 0) throw new Error("Missing driverOutId");
+        if (!driverInId || driverInId <= 0) throw new Error("Missing driverInId");
+        assertOfficialF1DriverForCustomNews(driverOutId, "Driver out");
+        assertActiveDriverForCustomNews(driverInId, "Driver in");
+        if (reserveDriverId > 0) assertActiveDriverForCustomNews(reserveDriverId, "Substitute driver");
+
+        const selectedTeamDriverIds = new Set(getOfficialF1DriverIdsForCustomNews(teamId));
+        if (!selectedTeamDriverIds.has(driverOutId)) {
+            throw new Error("Driver out must belong to the selected team");
+        }
+        if (selectedTeamDriverIds.has(driverInId)) {
+            throw new Error("Driver in must come from outside the selected team");
+        }
+        const driverInHasOfficialSeat = isOfficialF1DriverForCustomNews(driverInId);
+        if (!driverInHasOfficialSeat && reserveDriverId > 0) {
+            throw new Error("A substitute driver is only allowed when driver in comes from an official F1 seat");
+        }
+        if (reserveDriverId > 0) {
+            if (isOfficialF1DriverForCustomNews(reserveDriverId)) {
+                throw new Error("Substitute driver cannot come from another official F1 seat");
+            }
+            if (selectedTeamDriverIds.has(reserveDriverId)) {
+                throw new Error("Substitute driver must come from outside the selected team");
+            }
+        }
+
+        const driverOut = getDriverAndTeamForCustomNews(driverOutId);
+        const driverIn = getDriverAndTeamForCustomNews(driverInId);
+        const reserveDriver = reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
+
+        data = {
+            team: combined_dict[teamId] || `Team ${teamId}`,
+            teamId,
+            driver_out: { id: driverOut.driverId, name: driverOut.name, teamId },
+            driver_in: { id: driverIn.driverId, name: driverIn.name, teamId: driverIn.teamId || null },
+            driver_substitute: reserveDriver ? { id: reserveDriver.driverId, name: reserveDriver.name, teamId: reserveDriver.teamId || null } : null,
+            month: currentMonth,
+            season: seasonYear
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 101, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 101, "original");
+        }
+
+        image = getImagePath(null, driverOut.driverId, "transfer");
+    }
+    else if (type === "turning_point_investment") {
+        const teamId = Number(params?.teamId);
+        const country = String(params?.country || "").trim();
+        const investmentAmount = Number(params?.investmentAmount);
+        const investmentShare = Number(params?.investmentShare);
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+        if (!country) throw new Error("Missing country");
+        if (!investmentAmount || investmentAmount <= 0) throw new Error("Missing investmentAmount");
+        if (!investmentShare || investmentShare <= 0) throw new Error("Missing investmentShare");
+
+        data = {
+            country,
+            teamId,
+            teamName: combined_dict[teamId] || `Team ${teamId}`,
+            investmentAmount,
+            investmentShare,
+            season: seasonYear,
+            month: currentMonth,
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 102, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 102, "original");
+        }
+
+        image = getImagePath(null, country.slice(0, 3).toLowerCase(), "investment");
+    }
+    else if (type === "turning_point_dsq") {
+        const raceId = Number(params?.raceId);
+        const teamId = Number(params?.teamId);
+        const component = String(params?.component || "").trim();
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        if (!teamId || teamId <= 0) throw new Error("Missing teamId");
+        if (!component) throw new Error("Missing component");
+        assertCompletedRaceForCustomNews(raceId);
+
+        const driversInRace = queryDB(
+            `SELECT bas.FirstName, bas.LastName, res.TeamID, res.Points, bas.StaffID, res.FinishingPos
+             FROM Races_Results res
+             JOIN Staff_BasicData bas ON res.DriverID = bas.StaffID
+             WHERE res.RaceID = ? AND res.TeamID = ?`,
+            [raceId, teamId],
+            'allRows'
+        );
+        if (!driversInRace.length) throw new Error("No drivers found for that team in the selected race");
+
+        const formatRaceDriver = (row) => {
+            const [nameFormatted] = formatNamesSimple(row);
+            return {
+                name: news_insert_space(nameFormatted),
+                points: Number(row[3]) || 0,
+                position: Number(row[5]) || 0,
+                driverId: Number(row[4]) || 0
+            };
+        };
+
+        const raceInfo = getCircuitInfo(raceId);
+        data = {
+            team: combined_dict[teamId] || `Team ${teamId}`,
+            adjective: raceInfo?.adjective || "",
+            circuit: raceInfo?.circuit || "",
+            country: raceInfo?.country || "",
+            race_id: raceId,
+            component,
+            teamId,
+            currentSeason: seasonYear,
+            driver_1: formatRaceDriver(driversInRace[0]),
+            driver_2: driversInRace[1] ? formatRaceDriver(driversInRace[1]) : formatRaceDriver(driversInRace[0])
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 103, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 103, "original");
+        }
+
+        image = getImagePath(null, null, "dsq");
+        if (dateFromIso == null) {
+            const raceDay = queryDB(`SELECT Day FROM Races WHERE RaceID = ?`, [raceId], 'singleValue');
+            date = Number(raceDay) + 2;
+        }
+    }
+    else if (type === "turning_point_race_substitution") {
+        const raceId = Number(params?.raceId);
+        const newRaceTrackId = Number(params?.newRaceTrackId);
+        const reason = String(params?.reason || "").trim() || "calendar restructuring";
+        if (!raceId || raceId <= 0) throw new Error("Missing raceId");
+        if (!newRaceTrackId || newRaceTrackId <= 0) throw new Error("Missing newRaceTrackId");
+
+        const raceRow = queryDB(`SELECT TrackID, Day FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
+        if (!raceRow) throw new Error("Selected race was not found");
+
+        const originalTrackId = Number(raceRow[0]);
+        data = {
+            originalCountry: countries_data[races_names[originalTrackId]]?.adjective || "Unknown Country",
+            substituteCountry: countries_data[races_names[newRaceTrackId]]?.country || "Unknown Country",
+            reason,
+            originalTrackId,
+            newRaceTrackId,
+            newRaceDay: Number(raceRow[1]),
+            raceId,
+            month: currentMonth,
+            season: seasonYear,
+            typeOfSubstitution: originalTrackId === newRaceTrackId ? "same_track" : "different_race"
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 105, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 105, "original");
+        }
+
+        image = getImagePath(null, String(races_names[originalTrackId] || "").toLowerCase(), "race_substitution");
+    }
+    else if (type === "turning_point_injury") {
+        const driverId = Number(params?.driverId);
+        const reserveDriverId = params?.reserveDriverId != null ? Number(params.reserveDriverId) : null;
+        const conditionText = String(params?.condition || "").trim() || "an illness";
+        const reason = String(params?.reason || "").trim() || "a medical issue";
+        const racesAffectedCount = Math.max(1, Number(params?.racesAffected) || 1);
+        if (!driverId || driverId <= 0) throw new Error("Missing driverId");
+        assertOfficialF1DriverForCustomNews(driverId, "Affected driver");
+        if (reserveDriverId > 0) {
+            assertActiveDriverForCustomNews(reserveDriverId, "Reserve driver");
+            if (isOfficialF1DriverForCustomNews(reserveDriverId)) {
+                throw new Error("Reserve driver cannot come from another official F1 seat");
+            }
+        }
+
+        const driver = getDriverAndTeamForCustomNews(driverId);
+        const reserveDriver = reserveDriverId > 0 ? getDriverAndTeamForCustomNews(reserveDriverId) : null;
+        const racesAffected = queryDB(
+            `SELECT RaceID, Day, TrackID
+             FROM Races
+             WHERE SeasonID = ? AND Day >= ?
+             ORDER BY Day ASC
+             LIMIT ?`,
+            [seasonYear, date, racesAffectedCount],
+            'allRows'
+        );
+
+        const lastRaceDay = racesAffected.length ? Number(racesAffected[racesAffected.length - 1][1]) : date;
+        const expectedReturnRace = queryDB(
+            `SELECT RaceID, TrackID
+             FROM Races
+             WHERE SeasonID = ? AND Day > ?
+             ORDER BY Day ASC
+             LIMIT 1`,
+            [seasonYear, lastRaceDay],
+            'singleRow'
+        );
+
+        data = {
+            team: driver.teamName,
+            teamId: driver.teamId,
+            driver_affected: { id: driver.driverId, name: driver.name, teamId: driver.teamId },
+            condition: {
+                type: "custom",
+                condition: conditionText,
+                reason,
+                start_date: date,
+                end_date: lastRaceDay,
+                next_race_min_enforced: true,
+                races_affected: racesAffected.map(([affectedRaceId, affectedDay, affectedTrackId]) => ({
+                    raceId: Number(affectedRaceId),
+                    country: countries_data[races_names[Number(affectedTrackId)]]?.country,
+                    day: Number(affectedDay)
+                })),
+                expectedReturnRaceId: expectedReturnRace ? Number(expectedReturnRace[0]) : null,
+                expectedReturnCountry: expectedReturnRace ? (countries_data[races_names[Number(expectedReturnRace[1])]]?.country || "") : ""
+            },
+            reserve_driver: reserveDriver ? {
+                id: reserveDriver.driverId,
+                name: reserveDriver.name,
+                teamId: reserveDriver.teamId || null,
+                isFreeAgent: !reserveDriver.teamId,
+                futureTeamId: driver.teamId
+            } : null,
+            month: currentMonth,
+            season: seasonYear
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 106, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 106, "original");
+        }
+
+        image = getImagePath(null, driver.driverId, "injury");
+    }
+    else if (type === "turning_point_engine_regulation") {
+        const changeType = String(params?.changeType || "minor").trim() || "minor";
+        const mainChangeArea = String(params?.changeArea || "").trim() || (changeType === "major" ? "hybrid system architecture" : "fuel flow monitoring");
+        const requestedEngineChanges = Array.isArray(params?.engineChanges) ? params.engineChanges : [];
+        const useManualEngineChanges = !!params?.manualMode;
+        const manualChangesByEngine = {};
+        const engines = queryDB(`SELECT * FROM Custom_Engines_list`, [], "allRows");
+        const engineStats = queryDB(`SELECT * FROM Custom_Engines_stats`, [], "allRows");
+        const variability = changeType === "major" ? 0.28 : 0.13;
+        const engineData = {};
+        const engineBias = {};
+        const engineImpact = {};
+        const winnerNames = [];
+        const loserNames = [];
+        const neutralNames = [];
+        const currentStats = {};
+
+        for (const row of engineStats) {
+            const engineId = String(row[0]);
+            const designId = Number(row[1]);
+            const partStat = Number(row[2]);
+            const unitValue = Number(row[3]);
+            if (!currentStats[engineId]) currentStats[engineId] = {};
+            const engineNum = Number(engineId);
+            if (partStat === 15 && designId === engineNum + 1) currentStats[engineId][18] = unitValue;
+            else if (partStat === 15 && designId === engineNum + 2) currentStats[engineId][19] = unitValue;
+            else currentStats[engineId][partStat] = unitValue;
+        }
+
+        for (const change of requestedEngineChanges) {
+            const engineId = String(Number(change?.engineId));
+            if (!engineId || engineId === "NaN") continue;
+            const requestedValue = Number(change?.value);
+            manualChangesByEngine[engineId] = Number.isFinite(requestedValue) ? requestedValue : 0;
+        }
+
+        for (const [engineId, stats] of Object.entries(currentStats)) {
+            const hasManualChange = useManualEngineChanges && Object.prototype.hasOwnProperty.call(manualChangesByEngine, engineId);
+            const requestedPct = hasManualChange ? Number(manualChangesByEngine[engineId]) : null;
+            const biasRoll = Math.random();
+            const bias = hasManualChange
+                ? (requestedPct > 0 ? 1 : requestedPct < 0 ? -1 : 0)
+                : (changeType === "major" ? (biasRoll < 0.45 ? 1 : biasRoll < 0.90 ? -1 : 0) : (biasRoll < 0.35 ? 1 : biasRoll < 0.70 ? -1 : 0));
+            engineBias[engineId] = bias;
+            let sumPct = 0;
+            let count = 0;
+            engineData[engineId] = {};
+
+            for (const [statId, currentValue] of Object.entries(stats)) {
+                if (Number(statId) === 11 || Number(statId) === 12) {
+                    engineData[engineId][statId] = Number(currentValue);
+                    continue;
+                }
+                const delta = hasManualChange
+                    ? (1 + (clampValue(requestedPct + ((Math.random() * 2.4) - 1.2), -40, 40) / 100))
+                    : bias === 1
+                        ? (1 + (Math.random() * variability))
+                        : bias === -1
+                            ? (1 - (Math.random() * variability))
+                            : (1 + ((Math.random() * 2 * variability) - variability));
+                const next = Math.max(0, Math.min(100, Math.round(Number(currentValue) * delta)));
+                engineData[engineId][statId] = next;
+                if (Number(currentValue) > 0) {
+                    sumPct += (next - Number(currentValue)) / Number(currentValue);
+                    count += 1;
+                }
+            }
+
+            engineImpact[engineId] = count ? (sumPct / count) : 0;
+            const engineName = engines.find(row => String(row[0]) === String(engineId))?.[1] || `Engine ${engineId}`;
+            if (bias === 1) winnerNames.push(engineName);
+            else if (bias === -1) loserNames.push(engineName);
+            else neutralNames.push(engineName);
+        }
+
+        data = {
+            changeType,
+            mainChangeArea,
+            variability,
+            manualMode: useManualEngineChanges,
+            engineData,
+            engineBias,
+            engineImpact,
+            requestedEngineChanges: useManualEngineChanges ? manualChangesByEngine : {},
+            winners: winnerNames,
+            losers: loserNames,
+            neutrals: neutralNames,
+            winnerNames,
+            loserNames,
+            neutralNames,
+            season: seasonYear
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 107, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 107, "original");
+        }
+
+        image = getImagePath(null, "engine", "engine");
+    }
+    else if (type === "turning_point_young_drivers") {
+        const ids = Array.isArray(params?.prospectDriverIds) ? params.prospectDriverIds.map(id => Number(id)).filter(id => id > 0) : [];
+        if (ids.length < 2) throw new Error("Pick at least two prospects");
+        ids.forEach((driverId, index) => assertOfficialF1DriverForCustomNews(driverId, `Prospect ${index + 1}`));
+
+        const prospects = ids.map(driverId => {
+            const driver = getDriverAndTeamForCustomNews(driverId);
+            return {
+                driverId: driver.driverId,
+                name: driver.name,
+                age: null,
+                position: null,
+                points: null,
+                teamId: driver.teamId || null,
+                team: driver.teamName || "",
+                series: driver.teamId ? "Formula 1" : "Junior formulas",
+                overall: Number(getDriverOverall(driver.driverId) || 0)
+            };
+        });
+
+        data = {
+            season: seasonYear,
+            driver1: prospects[0]?.name || "",
+            driver2: prospects[1]?.name || "",
+            driver3: prospects[2]?.name || "",
+            f2Prospects: [],
+            f3Prospects: [],
+            freeAgentProspects: [],
+            prospects
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 108, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 108, "original");
+        }
+
+        image = getImagePath(null, null, "young");
+    }
+    else if (type === "turning_point_aduo") {
+        const quarter = Math.max(1, Math.min(3, Number(params?.quarter) || 1));
+        const quarterString = quarter === 1 ? "1st" : quarter === 2 ? "2nd" : "3rd";
+        const useManualEstimate = !!params?.manualMode;
+        const requestedEngineChanges = Array.isArray(params?.engineChanges) ? params.engineChanges : [];
+        const requestedEstimateByEngine = {};
+        const selectedEngineIds = new Set();
+        const enginesData = fetchEngines()?.[0] || [];
+        const getPower = (engineRow) => {
+            const stats = engineRow?.[1] || {};
+            const raw = stats[10] !== undefined ? stats[10] : stats["10"];
+            return raw == null ? null : Number(raw);
+        };
+
+        for (const change of requestedEngineChanges) {
+            const engineId = String(Number(change?.engineId));
+            if (!engineId || engineId === "NaN") continue;
+            if (change?.enabled) {
+                selectedEngineIds.add(engineId);
+            }
+            const requestedValue = Number(change?.value);
+            requestedEstimateByEngine[engineId] = Number.isFinite(requestedValue) ? requestedValue : 0;
+        }
+
+        if (!selectedEngineIds.size) {
+            throw new Error("Select at least one engine for this ADUO period");
+        }
+
+        let bestEngine = null;
+        let bestPower = -Infinity;
+        for (const engineRow of enginesData) {
+            const power = getPower(engineRow);
+            if (power == null) continue;
+            if (power > bestPower) {
+                bestPower = power;
+                bestEngine = engineRow;
+            }
+        }
+
+        const threshold = bestPower * 0.92;
+        const engineImprovements = enginesData
+            .filter(engineRow => {
+                const engineId = String(engineRow?.[0]);
+                if (!selectedEngineIds.has(engineId)) return false;
+                const power = getPower(engineRow);
+                return power != null;
+            })
+            .map(engineRow => {
+                const stats = engineRow?.[1] || {};
+                const improvements = {};
+                for (const statId of Object.keys(stats)) {
+                    if (useManualEstimate) {
+                        const engineId = String(engineRow[0]);
+                        const requestedEstimate = Object.prototype.hasOwnProperty.call(requestedEstimateByEngine, engineId)
+                            ? Number(requestedEstimateByEngine[engineId])
+                            : 0;
+                        improvements[statId] = Math.round(clampValue(requestedEstimate + ((Math.random() * 2) - 1), -20, 20) * 100) / 100;
+                    } else {
+                        improvements[statId] = Math.round((1 + (Math.random() * 6)) * 100) / 100;
+                    }
+                }
+                return {
+                    engineId: engineRow[0],
+                    name: engineRow[2],
+                    improvements
+                };
+            });
+
+        if (!engineImprovements.length) throw new Error("No underperforming manufacturers were found for ADUO");
+
+        data = {
+            season: seasonYear,
+            quarter,
+            leader: { engineId: bestEngine?.[0], name: bestEngine?.[2], stat10: bestPower },
+            thresholdStat10: threshold,
+            engineImprovements,
+            estimateMode: useManualEstimate ? "manual" : "random",
+            requestedEngineChanges: useManualEstimate ? requestedEstimateByEngine : {},
+            quarterString,
+            manufacturers: engineImprovements.map(entry => entry.name).join(", ").replace(/, ([^,]*)$/, " and $1")
+        };
+
+        if (!finalTitle) {
+            finalTitle = renderTurningPointTitleTemplate(data, 109, "original", selectedTemplateIndex)
+                || generateTurningPointTitle(data, 109, "original");
+        }
+
+        image = getImagePath(null, "engine", "engine");
+    }
+    else if (type === "custom_new") {
+        const prompt = String(params?.prompt || "").trim();
+        const customImage = String(params?.image || "").trim();
+        if (!prompt) throw new Error("Missing prompt");
+        if (!customImage) throw new Error("Missing image");
+        if (!finalTitle) throw new Error("Custom articles need a title");
+
+        data = {
+            prompt,
+            image: customImage,
+            season_year: seasonYear
+        };
+        image = `./assets/images/news/${customImage}`;
+        overlay = null;
+    }
+    else {
+        throw new Error(`Unsupported custom news type: ${type}`);
+    }
+
+    //for testing purposes 
+    assertCustomTurningPointPayload(type, data);
+
+    return {
+        id,
+        stableKey,
+        type,
+        title: finalTitle || "Untitled",
+        date,
+        image,
+        overlay,
+        data,
+        text: null,
+        turning_point_type: type.startsWith("turning_point_") ? "original" : undefined
+    };
+}
+
 function randomRemovalOfNames(data) {
     let paramsWithName = ["winnerName", "pole_driver", "driver1", "driver2", "driver3", "driver_name"];
     const nestedPaths = [
@@ -2848,15 +4303,22 @@ function generateF2AndF3ReviewNews(currentMonth, savedNews) {
         return newsList;
     }
 
+    const [f2Name, f2Id] = formatNamesSimple(F2Champion || ["Unknown", "Driver", 0]);
+    const [f3Name, f3Id] = formatNamesSimple(F3Champion || ["Unknown", "Driver", 0]);
+
     const titleData = {
-        f2_champion: formatNamesSimple(F2Champion)[0],
-        f3_champion: formatNamesSimple(F3Champion)[0],
+        f2_champion: { name: news_insert_space(f2Name), driverId: f2Id },
+        f3_champion: { name: news_insert_space(f3Name), driverId: f3Id },
         season_year: season
     };
 
     const date = new Date(season, currentMonth - 1, Math.floor(Math.random() * 28) + 1);
     const excelDate = dateToExcel(date);
-    const title = generateTitle(titleData, 20);
+    const title = generateTitle({
+        f2_champion: titleData.f2_champion.name,
+        f3_champion: titleData.f3_champion.name,
+        season_year: season
+    }, 20);
     const image = getImagePath(null, null, "young");
     const newEntry = {
         id: entry,

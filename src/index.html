@@ -1420,6 +1420,58 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="customNewsModal" data-bs-keyboard="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h4 class="modal-title bold-font" id="customNewsModalTitle">Create custom news</h4>
+        </div>
+        <div class="modal-body custom-body">
+            <div id="customNewsForm">
+              <div class="custom-news-row">
+                <div class="custom-news-stack" data-span="6">
+                  <span class="custom-news-label bold-font">Type</span>
+                  <div class="dropdown-global">
+                    <button type="button" class="redesigned-dropdown bold-font" id="customNewsTypeButton" aria-haspopup="true"
+                      aria-expanded="false" data-value="">
+                      <span class="dropdown-label">Select type</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu" id="customNewsTypeMenu" style="font-family: Formula1;">
+                    </ul>
+                  </div>
+                </div>
+                <div class="custom-news-stack" data-span="6">
+                  <span class="custom-news-label bold-font">Date</span>
+                  <input type="date" class="custom-news-input" id="customNewsDateInput">
+                </div>
+              </div>
+              <div class="custom-news-row">
+                <div class="custom-news-stack" data-span="12">
+                  <span class="custom-news-label bold-font">Title</span>
+                  <div class="dropdown-global" id="customNewsTemplateWrap">
+                    <button type="button" class="redesigned-dropdown bold-font" id="customNewsTemplateButton" aria-haspopup="true"
+                      aria-expanded="false" data-value="">
+                      <span class="dropdown-label">Automatic / default title</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu" id="customNewsTemplateMenu" style="font-family: Formula1;">
+                    </ul>
+                  </div>
+                  <input type="text" class="custom-news-input custom-news-hidden custom-news-title-input" id="customNewsTitleInput" placeholder="Write the article title">
+                </div>
+              </div>
+              <div class="custom-news-params custom-news-params-top" id="customNewsParams"></div>
+              <div class="custom-news-error custom-news-hidden" id="customNewsError"></div>
+            </div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal" id="customNewsCancel">Cancel</button>
+          <button type="button" class="confirm-modal" id="customNewsCreateBtn">Create</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="confirmModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -1874,6 +1926,10 @@
             Latest news
           </div>
           <div class="title-buttons-right">
+            <div class="button-with-icon" id="createCustomNews">
+              <i class="bi bi-plus-circle"></i>
+              <span class="">Create news</span>
+            </div>
             <div class="button-with-icon" id="reloadNews">
               <i class="bi bi-arrow-clockwise"></i>
               <span class="">Regenerate news</span>
@@ -2161,17 +2217,6 @@
                   data-value="seasonreview">Season review</a>
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="standingspill"
                   data-value="standings">Standings</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill"
-                  data-value="podiums">Podiums</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="dotdpill" data-value="dotd">Driver of
-                  the day</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill"
-                  data-value="champs">Championships</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill"
-                  data-value="points">Points</a>
-                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
                 <div class="dropdown-submenu session-results-dropdown">
                   <a class="redesigned-dropdown-item session-results-root" style="cursor: pointer;"
                     data-value="sessionresults" data-no-check="1">
@@ -2185,6 +2230,18 @@
                       id="sessionResultsSessionMenu"></div>
                   </div>
                 </div>
+                <li class="custom-dropdown-section-title bold-font">Records</li>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="winspill" data-value="wins">Wins</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="polespill" data-value="poles">Poles</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="podiumspill"
+                  data-value="podiums">Podiums</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="dotdpill" data-value="dotd">Driver of
+                  the day</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="champspill"
+                  data-value="champs">Championships</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="pointsRecordpill"
+                  data-value="points">Points</a>
+                <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
               </ul>
             </div>
             <div class="dropdown-global">
@@ -2704,6 +2761,12 @@
                   Directors</a>
               </ul>
             </div>
+            <div class="stats-add-controls">
+              <div id="addStaffButton" class="button-with-icon d-none">
+                <i class="bi bi-person-plus"></i>
+                <span class="button-text">Add driver/staff</span>
+              </div>
+            </div>
             <div class="filter-container">
               <i class="bi bi-filter-circle filter-icon" id="filterIcon"></i>
               <div class="category-filters">
@@ -2773,12 +2836,21 @@
                       <span class="name-editor bold-font" id="driverStatsTitle"></span>
                       <div class="custom-separator"></div>
                       <span class="code-editor bold-font" id="driverCode"></span>
+                      <div id="genderSwapButton" class="button-with-icon compact d-none">
+                        <i class="bi bi-gender-male"></i>
+                        <span class="button-text">Male</span>
+                      </div>
                       <i class="bi bi-pencil-fill" id="editNameButton"></i>
                     </div>
                     <div class="flag-and-team">
-                      <div class="image-and-text">
-                        <img src="../assets/images/australia.png" class="driver-info-driver-flag" id="driverFlag">
-                        <span class="info-text flag-text">Placeholder</span>
+                      <div class="dropdown-global" id="nationalityDropdown">
+                        <button type="button" class="redesigned-dropdown bold-font nationality-dropdown"
+                          id="nationalityButton" aria-haspopup="true" aria-expanded="false" disabled>
+                          <img src="../assets/images/australia.png" class="driver-info-driver-flag" id="driverFlag">
+                          <span class="info-text flag-text">Placeholder</span>
+                          <i class="redesigned-chevron"></i>
+                        </button>
+                        <ul class="redesigned-dropdown-menu" id="nationalityMenu" style="font-family: Formula1;"></ul>
                       </div>
                       <div class="custom-separator"></div>
                       <div class="image-and-text">
@@ -2858,7 +2930,23 @@
                       <div class="title-and-stats">
                         <div class="attributes-title bold-font"
                           style="display: flex; justify-content: space-between; align-items: center;">
-                          <span>Driver Attributes</span>
+                          <div style="display:flex; align-items:center; gap:10px;">
+                            <span id="attributesTitleText">Driver Attributes</span>
+                            <div class="dropdown-global d-none" id="draftStaffTypeControl">
+                              <button type="button" class="redesigned-dropdown bold-font draft-staff-type-dropdown"
+                                id="addStaffTypeDropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="dropdown-label">Drivers</span>
+                                <i class="redesigned-chevron"></i>
+                              </button>
+                              <ul class="redesigned-dropdown-menu" id="addStaffTypeMenu" style="font-family: Formula1;">
+                                <a class="redesigned-dropdown-item" data-staff-type="0">Drivers</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="1">Technical Chiefs</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="2">Race Engineers</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="3">H. of Aerodynamics</a>
+                                <a class="redesigned-dropdown-item" data-staff-type="4">Sporting Directors</a>
+                              </ul>
+                            </div>
+                          </div>
                           <div id="compareButton" class="button-with-icon">
                             <i class="bi bi-arrow-left-right"></i>
                             <span class="button-text">Compare</span>
@@ -6083,9 +6171,7 @@
         <div class="mods-year-view d-none" id="mods2026View">
           <div class="mod-blocking mods-2026-blocking">
             <div class="mod-blocking-title">Save not compatible with 2026 Season Mod</div>
-            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24, and its date must be before the
-              first
-              race of the 2024 season!</div>
+            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24 can't have generated staff, and its date must be before the first race of the 2024 season!</div>
           </div>
           <div class="grid-and-downloads">
             <div class="changes-grid mods-2026-changes">

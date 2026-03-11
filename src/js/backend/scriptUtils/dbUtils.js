@@ -776,6 +776,11 @@ export function fetchStaff(gameYear) {
     let raceFormula = fetchRaceFormula(staffID) || 4;
     const futureTeam = fetchForFutureContract(staffID);
     const nationality = fetchNationality(staffID, gameYear);
+    const isRetired = queryDB(`
+      SELECT Retired
+      FROM Staff_GameData
+      WHERE StaffID = ?
+    `, [staffID], 'singleValue');
 
     const data = { ...result };
     data.retirement_age = retirementAge;
@@ -783,6 +788,7 @@ export function fetchStaff(gameYear) {
     data.race_formula = raceFormula;
     data.team_future = futureTeam;
     data.nationality = nationality;
+    data.is_retired = isRetired ?? 0;
 
     if (gameYear === "24") {
       const [morale, gMentality] = fetchMentality(staffID);
@@ -3330,6 +3336,12 @@ export function check2026ModCompatibility(year_version) {
   const firstRaceState2026 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2026`, [minDay2026], 'singleValue');
 
   if (year_version !== "24") {
+    return "NotCompatible";
+  }
+
+  //get staffID's from Staff_BasicData that have IsGeneratedForCustomTeam = 1 and StaffIDs are not 552 and 553
+  const generatedStaff = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE IsGeneratedForCustomTeam = 1 AND StaffID NOT IN (552, 553)`, [], 'allRows');
+  if (generatedStaff.length > 0) {
     return "NotCompatible";
   }
 
