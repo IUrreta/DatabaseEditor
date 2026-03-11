@@ -364,7 +364,7 @@ async function handleLogout() {
         if (response.ok) {
             console.log("Logout successful");
 
-            updatePatreonUI({ isLoggedIn: false, tier: 'Free' });
+            updatePatreonUI({ isLoggedIn: false, tier: 'Free', tierNumber: 0, whitelisted: false, paidMember: false });
 
             window.location.reload();
         }
@@ -375,7 +375,7 @@ async function handleLogout() {
 
 /**
  * Retrieves the user's Patreon tier from the cookie.
- * @returns {Promise<{paidMember: boolean, tier: string, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
+ * @returns {Promise<{paidMember: boolean, tier: string, tierNumber?: number, whitelisted: boolean, isLoggedIn: boolean, user: {fullName: string}}>} An object containing the user's tier information.
  */
 export async function getUserTier() {
     try {
@@ -388,6 +388,7 @@ export async function getUserTier() {
             paidMember: data.paidMember,
             tier: data.tier,
             tierNumber: data.tierNumber,
+            whitelisted: !!data.whitelisted,
             isLoggedIn: data.isLoggedIn,
         };
         window.__USER_DATA__ = windowData;
@@ -395,7 +396,7 @@ export async function getUserTier() {
         return windowData;
     } catch (error) {
         console.error("Failed to check auth status", error);
-        return { paidMember: false, tier: 'Free', isLoggedIn: false };
+        return { paidMember: false, tier: 'Free', whitelisted: false, isLoggedIn: false };
     }
 }
 
@@ -467,6 +468,8 @@ function updatePatreonUI(tier) {
     hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
 
+    console.log("Updating Patreon UI with tier:", tier);
+
     if (tier.paidMember) {
         patreonUnlockables.classList.remove("d-none");
         patreonThemes.classList.remove("d-none");
@@ -484,6 +487,12 @@ function updatePatreonUI(tier) {
         syncNightlyIndicator();
     }
     syncNightlyThemeVisibility();
+
+    const hasCreateNewsAccess = tier?.tierNumber === 3 || tier?.tier === "Founder" || !!tier?.whitelisted;
+    if (!hasCreateNewsAccess){
+        //remove the button from the DOM entirely
+        document.querySelector("#createCustomNews")?.remove();
+    }
 
     if (tier.isLoggedIn) {
         document.querySelector(".user-name-and-logout-tool").classList.remove("d-none");
