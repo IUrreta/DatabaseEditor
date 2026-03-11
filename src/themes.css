@@ -122,6 +122,7 @@
 
     --negative-general: #e95656;
     --negative-general-clicked: #cf2626;
+    --negative-transparent: color-mix(in srgb, var(--negative-general) 25%, var(--elements));
     --positive-general: #5bd999;
     --positive-transparent: color-mix(in srgb, var(--positive-general) 25%, var(--elements));
     --positive-general-clicked: #11ac5e;

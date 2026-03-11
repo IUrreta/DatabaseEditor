@@ -9,7 +9,8 @@ export default function handler(req, res) {
         return res.json({
             isLoggedIn: false,
             paidMember: false,
-            tier: 'Free'
+            tier: 'Free',
+            whitelisted: false
         });
     }
 
@@ -18,7 +19,7 @@ export default function handler(req, res) {
         const decoded = jwt.verify(auth_token, process.env.JWT_SECRET);
 
         const paidTiers = ["Backer", "Insider", "Founder"];
-        const tier = getEffectiveTier({ name: decoded.name, baseTier: decoded.tier });
+        const { tier, whitelisted } = getEffectiveTier({ name: decoded.name, baseTier: decoded.tier });
         const isPaid = paidTiers.includes(tier);
         const tierNumbers = {
             "Free": 0,
@@ -32,6 +33,7 @@ export default function handler(req, res) {
             paidMember: isPaid,
             tier: tier,
             tierNumber: tierNumbers[tier] ?? 0,
+            whitelisted,
             user: { fullName: decoded.name },
         });
 
@@ -40,7 +42,8 @@ export default function handler(req, res) {
         return res.json({
             isLoggedIn: false,
             paidMember: false,
-            tier: 'Free'
+            tier: 'Free',
+            whitelisted: false
         });
     }
 }

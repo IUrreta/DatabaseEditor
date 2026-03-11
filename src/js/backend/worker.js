@@ -52,7 +52,10 @@ import {
   deleteNewByKey,
   checkDoublePointsBug,
   fixDoublePointsBug,
-  getFullFeederSeriesDetails
+  getFullFeederSeriesDetails,
+  getCustomNewsOptions,
+  getRaceDriversForCustomNews,
+  createCustomNewsEntry
 } from "./scriptUtils/newsUtils";
 import { fetchSeasonReviewData, getSelectedRecord, getSelectedTeamRecord, editRaceResults } from "./scriptUtils/recordUtils";
 import { teamReplaceDict } from "./commandGlobals";
@@ -60,6 +63,7 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
+import { fetchCountryLocaleForCode, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -361,6 +365,36 @@ const workerCommands = {
       noti_msg: `Succesfully edited ${data.driver}'s stats`,
       isEditCommand: true,
       unlocksDownload: true
+    });
+  },
+  fetchRandomStaffDraft: (data, postMessage) => {
+    const yearData = checkYearSave();
+    const draft = fetchRandomStaffDraft(data.typeStaff, yearData[0]);
+
+    postMessage({
+      responseMessage: "Random staff draft fetched",
+      content: draft
+    });
+  },
+  fetchRandomDraftForename: (data, postMessage) => {
+    const res = fetchRandomDraftForename(data.gender, data.staffNameLocale);
+    postMessage({
+      responseMessage: "Random draft forename fetched",
+      content: {
+        ...res,
+        draftId: data.draftId,
+        gender: data.gender
+      }
+    });
+  },
+  fetchCountryLocaleForCode: (data, postMessage) => {
+    const res = fetchCountryLocaleForCode(data.code);
+    postMessage({
+      responseMessage: "Draft country locale fetched",
+      content: {
+        ...res,
+        draftId: data.draftId
+      }
     });
   },
   devSetAllDriversStats85: (data, postMessage) => {
@@ -752,6 +786,32 @@ const workerCommands = {
       console.error("ERROR COMPLETO:", e);
       console.error("STACK:", e.stack);
       postMessage({ responseMessage: "Error", error: e.message });
+    }
+  },
+  getCustomNewsOptions: (data, postMessage) => {
+    const options = getCustomNewsOptions();
+    postMessage({ responseMessage: "Custom news options", content: options });
+  },
+  customNewsRaceDrivers: (data, postMessage) => {
+    const raceId = Number(data?.raceId);
+    const drivers = getRaceDriversForCustomNews(raceId);
+    postMessage({ responseMessage: "Custom news race drivers", content: drivers });
+  },
+  createCustomNews: (data, postMessage) => {
+    try {
+      const entry = createCustomNewsEntry(data || {});
+      entry.stableKey = entry.stableKey ?? computeStableKey(entry);
+      upsertNews([entry]);
+      postMessage({
+        responseMessage: "Custom news created",
+        noti_msg: "Custom news created",
+        content: entry,
+        isEditCommand: true,
+        unlocksDownload: true
+      });
+    } catch (e) {
+      console.error(e);
+      postMessage({ responseMessage: "Error", error: e.message, unlocksDownload: true });
     }
   },
   fixDoublePointsBug: (data, postMessage) => {

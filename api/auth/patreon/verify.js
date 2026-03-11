@@ -91,8 +91,14 @@ export default async function handler(req, res) {
 
         const fullName = identityData?.data?.attributes?.full_name || "";
         const baseTier = tier;
-        const effectiveTier = getEffectiveTier({ name: fullName, baseTier });
+        const { tier: effectiveTier, whitelisted } = getEffectiveTier({ name: fullName, baseTier });
         const isPaid = paidTiers.includes(effectiveTier);
+        const tierNumbers = {
+            "Free": 0,
+            "Backer": 1,
+            "Insider": 2,
+            "Founder": 3
+        };
 
         const patreonUser = {
             name: fullName,
@@ -126,6 +132,8 @@ export default async function handler(req, res) {
             success: true,
             user: { fullName: patreonUser.name },
             tier: patreonUser.tier,
+            tierNumber: tierNumbers[patreonUser.tier] ?? 0,
+            whitelisted,
             isLoggedIn: true,
             paidMember: isPaid
         });

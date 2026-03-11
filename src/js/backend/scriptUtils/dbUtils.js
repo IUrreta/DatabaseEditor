@@ -776,6 +776,11 @@ export function fetchStaff(gameYear) {
     let raceFormula = fetchRaceFormula(staffID) || 4;
     const futureTeam = fetchForFutureContract(staffID);
     const nationality = fetchNationality(staffID, gameYear);
+    const isRetired = queryDB(`
+      SELECT Retired
+      FROM Staff_GameData
+      WHERE StaffID = ?
+    `, [staffID], 'singleValue');
 
     const data = { ...result };
     data.retirement_age = retirementAge;
@@ -783,6 +788,7 @@ export function fetchStaff(gameYear) {
     data.race_formula = raceFormula;
     data.team_future = futureTeam;
     data.nationality = nationality;
+    data.is_retired = isRetired ?? 0;
 
     if (gameYear === "24") {
       const [morale, gMentality] = fetchMentality(staffID);
