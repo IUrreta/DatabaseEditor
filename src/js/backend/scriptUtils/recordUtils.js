@@ -298,7 +298,6 @@ export function getSelectedRecord(type, year) {
             teamId: r[4],
             retired: r[5],
         }));
-
         const formattedSince = sinceGameStart.map(r => ({
             name: formatNamesSimple([r[0], r[1]])[0],
             id: r[2],
@@ -370,10 +369,11 @@ export function getSelectedRecord(type, year) {
             value: r[3],
             teamId: r[4],
             retired: r[5],
-        })).sort((a, b) => b.value - a.value);
+        }));
 
         // enriquecemos también para temporada concreta con histórico all-time
-        return enrichDriversWithHistory(formatted, year);
+        const aggregated = aggregateSeasonDriverRecords(formatted);
+        return enrichDriversWithHistory(aggregated, year);
 
     }
 
@@ -729,6 +729,36 @@ function mapExternalItem(item, type) {
         lastWin: item.lastWin ?? { season: 0, trackName: null },
 
     };
+}
+
+function aggregateSeasonDriverRecords(records) {
+    const byId = new Map();
+
+    (records || []).forEach((record) => {
+        const driverId = Number(record?.id);
+        const value = Number(record?.value) || 0;
+
+        if (!driverId || value === 0) return;
+
+        if (!byId.has(driverId)) {
+            byId.set(driverId, {
+                ...record,
+                id: driverId,
+                value
+            });
+            return;
+        }
+
+        const current = byId.get(driverId);
+        current.value += value;
+
+        const teamId = Number(record?.teamId ?? -1);
+        if (teamId !== -1) current.teamId = teamId;
+        if (record?.name) current.name = record.name;
+        if (record?.retired != null) current.retired = record.retired;
+    });
+
+    return [...byId.values()].sort((a, b) => (Number(b?.value) || 0) - (Number(a?.value) || 0));
 }
 
 function mergeWithExternalRecords(dbDrivers, externalJson, type, year) {
