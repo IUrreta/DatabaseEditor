@@ -3362,6 +3362,16 @@ function showSessionResultsTable() {
     updateTopPanelControlsVisibility();
 }
 
+function getSessionResultsQualiGridPosition(row) {
+    const explicitGridPosition = Number(row?.gridPosition);
+    if (explicitGridPosition > 0) return explicitGridPosition;
+
+    const qualifyingPos = Number(row?.pos);
+    const gridPenalty = Number(row?.gridPenalty);
+    const computedGridPosition = gridPenalty > 0 ? 0 : qualifyingPos;
+    return computedGridPosition > 0 ? computedGridPosition : 0;
+}
+
 export function onSessionResultsFetched(data) {
     sessionResultsLastFetched = data;
     const meta = data?.meta || {};
@@ -3411,10 +3421,12 @@ export function onSessionResultsFetched(data) {
         const trackCode = races_names?.[trackId];
         const flagKey = trackCode ? `${String(trackCode).toLowerCase()}0` : null;
         const flagPath = flagKey ? codes_dict?.[flagKey] : null;
+        const useTallFlagHeader = ["HUN", "NED", "UAE"].includes(String(trackCode || "").toUpperCase());
         titleEl.style.setProperty(
             "--session-results-flag-bg",
             flagPath ? `url("${String(flagPath)}")` : "none"
         );
+        titleEl.classList.toggle("session-results-title-tall-flag", useTallFlagHeader);
     }
 
     document.querySelectorAll(".session-results-table .session-results-rows .session-results-row").forEach((el) => el.remove());
@@ -3429,6 +3441,8 @@ export function onSessionResultsFetched(data) {
     const isEditableResultsSession = isMainRaceSession || sessionKeyLower === "sprintrace";
     const isEditRace = sessionResultsEditMode && isEditableResultsSession;
     const dotdDriverId = Number(meta?.dotdDriverId);
+    const showPointsColumn = !isPracticeSession && (!isQualiSession || Number(meta?.hasPolePositionPoints) === 1);
+    const hasQualiGrid = isQualiSession && results.some((r) => getSessionResultsQualiGridPosition(r) > 0);
 
     if (!isEditableResultsSession && sessionResultsEditMode) {
         sessionResultsEditMode = false;
@@ -3457,6 +3471,8 @@ export function onSessionResultsFetched(data) {
         sessionResultsTable.classList.toggle("is-practice", isPracticeSession);
         sessionResultsTable.classList.toggle("is-edit", isEditRace);
         sessionResultsTable.classList.toggle("is-compact", sessionResultsCompactMode);
+        sessionResultsTable.classList.toggle("no-points", !showPointsColumn);
+        sessionResultsTable.classList.toggle("has-quali-grid", hasQualiGrid);
     }
 
     const leaderRow = results.find(r => Number(r?.pos) === 1) || results[0] || null;
@@ -3739,6 +3755,16 @@ export function onSessionResultsFetched(data) {
         if (isQualiSession) timeDiv.classList.add("hidden");
         sessionResultRow.appendChild(timeDiv);
 
+        const qualiGridDiv = document.createElement("div");
+        qualiGridDiv.className = "session-results-grid-position bold-font";
+        qualiGridDiv.classList.add("session-results-cell");
+        const qualiGridPosition = getSessionResultsQualiGridPosition(row);
+        const gridPenalty = Number(row?.gridPenalty);
+        qualiGridDiv.textContent = qualiGridPosition > 0 ? `P${qualiGridPosition}` : "-";
+        if (gridPenalty > 0) qualiGridDiv.classList.add("penalty");
+        if (!isQualiSession || !hasQualiGrid) qualiGridDiv.classList.add("hidden");
+        sessionResultRow.appendChild(qualiGridDiv);
+
         const pointsDiv = document.createElement("div");
         pointsDiv.className = "session-results-points";
         pointsDiv.classList.add("session-results-cell");
@@ -3751,7 +3777,7 @@ export function onSessionResultsFetched(data) {
             pointsDiv.textContent = String(pts);
         }
         sessionResultRow.appendChild(pointsDiv);
-        if (isPracticeSession) pointsDiv.classList.add("hidden");
+        if (!showPointsColumn) pointsDiv.classList.add("hidden");
         if (isEditRace) pointsDiv.dataset.static = "0";
 
         const container = document.querySelector(".session-results-table .session-results-rows");
@@ -4147,18 +4173,42 @@ function slugifyForUniqueName(txt) {
     return s.replace(/[^a-z0-9]+/g, "").slice(0, 40) || "unknown";
 }
 
+function normalizeRltoolsDriverName(name) {
+    return String(name || "").replace(/\bAndreaKimi\b/g, "Kimi").trim();
+}
+
+function getRltoolsTrackUniqueName(trackId, year) {
+    const trackCode = races_names?.[Number(trackId)];
+    const rlToolsName = trackCode ? String(countries_data?.[String(trackCode)]?.rlToolsName || "").trim() : "";
+    if (rlToolsName) return rlToolsName;
+    const trackName = getGpDisplayName(trackId);
+    return `${slugifyForUniqueName(trackName)}.${year || "0"}`;
+}
+
 function getSessionPositionForKey(sessionKeyLower) {
     if (sessionKeyLower === "fp1") return 1;
     if (sessionKeyLower === "fp2") return 2;
     if (sessionKeyLower === "fp3") return 3;
+    if (sessionKeyLower === "quali" || sessionKeyLower === "sprintquali") return 0;
     return 1;
 }
 
 function getRltoolsSessionType(sessionKeyLower) {
     if (sessionKeyLower === "race" || sessionKeyLower === "sprintrace") return "Race";
-    if (sessionKeyLower === "quali" || sessionKeyLower === "sprintquali") return "Qualifying";
-    if (sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3") return "FreePractice";
+    if (sessionKeyLower === "quali" || sessionKeyLower === "sprintquali") return "Qualification";
+    if (sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3") return "Practice";
     return "Unknown";
+}
+
+function getRltoolsSessionFilenamePart(sessionKeyLower) {
+    if (sessionKeyLower === "quali") return "qualification";
+    if (sessionKeyLower === "sprintquali") return "sprint_qualification";
+    if (sessionKeyLower === "fp" || sessionKeyLower === "fp1") return "practice_1";
+    if (sessionKeyLower === "fp2") return "practice_2";
+    if (sessionKeyLower === "fp3") return "practice_3";
+    if (sessionKeyLower === "sprintrace") return "sprint_race";
+    if (sessionKeyLower === "race") return "race";
+    return slugifyForFilename(sessionKeyLower);
 }
 
 function secondsToIntMs(v) {
@@ -4221,7 +4271,6 @@ function buildRltoolsExportObject() {
     const trackId = Number(meta?.trackId);
     const weekendType = Number(meta?.weekendType);
     const trackName = getGpDisplayName(trackId);
-    const trackSlug = slugifyForUniqueName(trackName);
 
     const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
     const sessionType = getRltoolsSessionType(sessionKeyLower);
@@ -4235,7 +4284,7 @@ function buildRltoolsExportObject() {
 
     const bestLapByRow = (r) => {
         if (sessionType === "Race") return Number(r?.fastestLap) || 0;
-        if (sessionType === "Qualifying") {
+        if (sessionType === "Qualification") {
             const times = [Number(r?.q1FastestLap), Number(r?.q2FastestLap), Number(r?.q3FastestLap)].filter(v => v > 0);
             return times.length ? Math.min(...times) : 0;
         }
@@ -4246,7 +4295,7 @@ function buildRltoolsExportObject() {
     const leaderTimeSec = (() => {
         if (!leaderRow) return 0;
         if (sessionType === "Race") return Number(leaderRow?.time) || 0;
-        if (sessionType === "Qualifying") return bestLapByRow(leaderRow);
+        if (sessionType === "Qualification") return bestLapByRow(leaderRow);
         return Number(leaderRow?.time) || Number(leaderRow?.fastestLap) || 0;
     })();
     const leaderTimeInt = secondsToIntMs(leaderTimeSec);
@@ -4257,34 +4306,39 @@ function buildRltoolsExportObject() {
         const t = bestLapByRow(r);
         if (t > 0 && (fastestLapTimeSec <= 0 || t < fastestLapTimeSec)) {
             fastestLapTimeSec = t;
-            fastestLapDriverName = String(r?.name ?? "");
+            fastestLapDriverName = normalizeRltoolsDriverName(r?.name);
         }
     }
 
     const dotdDriverId = Number(meta?.dotdDriverId);
     const dotdName = (sessionKeyLower === "race" && dotdDriverId > 0)
-        ? String(results.find(r => Number(r?.driverId) === dotdDriverId)?.name ?? "")
+        ? normalizeRltoolsDriverName(results.find(r => Number(r?.driverId) === dotdDriverId)?.name)
         : "";
 
     const drivers = results.map((r) => {
-        const driverName = String(r?.name ?? "");
+        const driverName = normalizeRltoolsDriverName(r?.name);
         const teamId = Number(r?.teamId ?? -1);
         const teamName = (teamId !== -1) ? String(combined_dict?.[teamId] ?? "") : "";
         const teamUnique = teamName ? `${slugifyForUniqueName(teamName)}.${year || "0"}` : "";
+        const lapsCount = Number(r?.laps) || 0;
+        const bestLapTimeInt = secondsToIntMs(bestLapByRow(r));
 
         let timeSec = 0;
         if (sessionType === "Race") timeSec = Number(r?.time) || 0;
-        else if (sessionType === "Qualifying") timeSec = bestLapByRow(r);
+        else if (sessionType === "Qualification") timeSec = 0;
         else timeSec = Number(r?.time) || Number(r?.fastestLap) || 0;
 
         const timeInt = secondsToIntMs(timeSec);
-        const gapInt = (leaderTimeInt > 0 && timeInt > 0 && Number(r?.pos) !== 1) ? Math.max(0, timeInt - leaderTimeInt) : 0;
-
-        const statusOk = timeInt > 0 && Number(r?.dnf) !== 1;
-        const status = statusOk ? "Ok" : "Dnf";
+        const gapInt = sessionType === "Race" && leaderTimeInt > 0 && timeInt > 0 && Number(r?.pos) !== 1
+            ? Math.max(0, timeInt - leaderTimeInt)
+            : 0;
+        const status = sessionType === "Race"
+            ? ((timeInt > 0 && Number(r?.dnf) !== 1) ? "Ok" : "Dnf")
+            : ((bestLapTimeInt > 0 || lapsCount > 0) ? "Ok" : "Dns");
 
         const base = {
             Driver: { Name: driverName },
+            RaceNumber: Number(r?.raceNumber) || 0,
             Position: Number(r?.pos) || 0,
             Team: { Name: teamName, UniqueName: teamUnique },
             SeatType: "Primary",
@@ -4295,15 +4349,13 @@ function buildRltoolsExportObject() {
 
         if (sessionType === "Race") {
             base.FastestLapTimeInt = secondsToIntMs(Number(r?.fastestLap) || 0);
-            base.LapsCount = Number(r?.laps) || 0;
+            base.LapsCount = lapsCount;
             base.GridPosition = Number(r?.grid) || 0;
-        } else if (sessionType === "Qualifying") {
-            base.Q1FastestLapTimeInt = secondsToIntMs(Number(r?.q1FastestLap) || 0);
-            base.Q2FastestLapTimeInt = secondsToIntMs(Number(r?.q2FastestLap) || 0);
-            base.Q3FastestLapTimeInt = secondsToIntMs(Number(r?.q3FastestLap) || 0);
         } else {
-            base.FastestLapTimeInt = secondsToIntMs(Number(r?.fastestLap) || Number(r?.time) || 0);
-            base.LapsCount = Number(r?.laps) || 0;
+            base.TimeInt = 0;
+            base.GapInt = 0;
+            base.FastestLapTimeInt = bestLapTimeInt;
+            base.LapsCount = lapsCount;
         }
 
         return base;
@@ -4316,7 +4368,7 @@ function buildRltoolsExportObject() {
         SessionPosition: sessionPosition,
         Date: null,
         TrackName: trackName,
-        TrackUniqueName: `${trackSlug}.${year || "0"}`,
+        TrackUniqueName: getRltoolsTrackUniqueName(trackId, year),
         Drivers: drivers
     };
 
@@ -4344,7 +4396,7 @@ function exportShownSessionResultsToRltools() {
     const year = String(sessionResultsLastFetched?.year ?? "").trim() || "unknown_year";
     const trackName = getGpDisplayName(meta?.trackId);
     const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase() || "unknown_session";
-    const sessionSlug = sessionKeyLower.replace(/([a-z])([0-9]+)/g, "$1$2").replace(/[^a-z0-9]+/g, "_");
+    const sessionSlug = getRltoolsSessionFilenamePart(sessionKeyLower);
 
     const filename = `results_${slugifyForFilename(trackName)}_${slugifyForFilename(year)}_${slugifyForFilename(sessionSlug)}.json`;
     const payload = buildRltoolsExportObject();

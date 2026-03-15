@@ -19814,7 +19814,7 @@ p.news-error-api-key {
   background-image: var(--session-results-flag-bg, none);
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: var(--session-results-flag-width, 280px) 130%;
+  background-size: var(--session-results-flag-width, 280px) auto;
   opacity: 0.5;
   -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
   mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
@@ -19824,6 +19824,10 @@ p.news-error-api-key {
   mask-size: 100% 100%;
   pointer-events: none;
   z-index: 0;
+}
+
+.session-results-title.session-results-title-tall-flag::before{
+  background-size: var(--session-results-flag-width, 280px) 130%;
 }
 
 .session-results-title > *{
@@ -19905,7 +19909,7 @@ p.news-error-api-key {
 
 .session-results-row{
   display: grid;
-  grid-template-columns: var(--session-results-col-drag, 0px) 42px var(--session-results-col-grid, 46px) 310px 340px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-points, 70px);
+  grid-template-columns: var(--session-results-col-drag, 0px) 42px var(--session-results-col-grid, 46px) 310px 340px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-quali-grid, 0px) var(--session-results-col-points, 70px);
   align-items: center;
   background-color: var(--table-default);
   column-gap: 0px;
@@ -19985,8 +19989,16 @@ p.news-error-api-key {
   --session-results-col-time: 0px;
 }
 
+.session-results-table.is-quali.has-quali-grid{
+  --session-results-col-quali-grid: 58px;
+}
+
 .session-results-table.is-practice{
   --session-results-col-laps: 70px;
+  --session-results-col-points: 0px;
+}
+
+.session-results-table.no-points{
   --session-results-col-points: 0px;
 }
 
@@ -20207,6 +20219,20 @@ p.news-error-api-key {
   justify-content: center;
   text-align: center;
   padding-top: 7px !important;
+}
+
+.session-results-grid-position {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 14px;
+  white-space: nowrap;
+  color: var(--text-secondary);
+}
+
+.session-results-grid-position.penalty {
+  color: var(--f1-first);
 }
 
 .session-results-points.positive {
