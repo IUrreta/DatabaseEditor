@@ -4739,7 +4739,31 @@ phm
 }
 
 .logo-porsche-table {
-  padding: 3px 3px;
+  padding: 5px;
+}
+
+.bento-grid .logo-porsche-table{
+  padding: 4px;
+}
+
+.bento-grid .logo-sauber-table, .session-results-row .logo-sauber-table {
+  width: 16px !important;
+}
+
+.bento-grid .logo-toyota-table{
+  width: 20px !important;
+}
+
+.session-results-row .logo-toyota-table {
+  width: 22px !important;
+}
+
+.session-results-row .logo-ferrari-table{
+  padding: 4px !important;
+}
+
+.bento-grid .logo-cadillac-table, .session-results-row .logo-cadillac-table {
+  padding: 1px 0px;
 }
 
 .logo-ford-table,
@@ -4761,20 +4785,27 @@ phm
 }
 
 .logo-sauber-table{
-  height: 23px;
+  height: 20px;
 }
+
+.drivers-table-row .hahoverback, .drivers-table-row .afhoverback{
+  width: 30px !important;
+  height: 30px;
+}
+
 
 .drivers-table-logo-div:has(.logo-sauber-table),
 .drivers-table-logo-div:has(.logo-toyota-table){
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
+  width: 24px;
 }
 
 .logo-merc-table {
   padding: 4px;
 }
+
 
 .wihoverback {
   width: 30px;
