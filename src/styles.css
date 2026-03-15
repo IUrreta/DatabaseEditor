@@ -19814,7 +19814,7 @@ p.news-error-api-key {
   background-image: var(--session-results-flag-bg, none);
   background-repeat: no-repeat;
   background-position: left center;
-  background-size: var(--session-results-flag-width, 280px) auto;
+  background-size: var(--session-results-flag-width, 280px) 130%;
   opacity: 0.5;
   -webkit-mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
   mask-image: linear-gradient(90deg, #000 0%, transparent 100%);
@@ -19894,7 +19894,7 @@ p.news-error-api-key {
 .session-results-footer-time{
   font-family: 'NumbersFont';
   font-size: 14px;
-  letter-spacing: -1.5px;
+  letter-spacing: -1.2px;
   color: var(--text-general);
   flex: 0 0 auto;
   padding-top: 3px;
@@ -19968,7 +19968,7 @@ p.news-error-api-key {
   padding: 0px 4px;
   font-family: 'NumbersFont', 'Formula1', sans-serif;
   font-size: 14px;
-  letter-spacing: -1.5px;
+  letter-spacing: -1.2px;
   text-align: center;
   height: 20px;
 }
@@ -20201,7 +20201,7 @@ p.news-error-api-key {
 .session-results-points {
   font-family: 'NumbersFont', 'Formula1', sans-serif;
   font-size: 14px;
-  letter-spacing: -1.5px;
+  letter-spacing: -1.2px;
   display: flex;
   align-items: center;
   justify-content: center;
