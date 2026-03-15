@@ -4276,8 +4276,8 @@ function buildRltoolsExportObject() {
     const sessionType = getRltoolsSessionType(sessionKeyLower);
     const sessionPosition = getSessionPositionForKey(sessionKeyLower);
 
-    const raceType = (sessionKeyLower === "sprintrace") ? "Sprint" : "Regular";
-    const qualType = (sessionKeyLower === "sprintquali") ? "Sprint" : "Regular";
+    const raceType = "Regular";
+    const qualType = "Regular";
 
     const rows = getShownSessionResultsRowsForExport();
     const results = Array.isArray(rows) ? rows : [];
