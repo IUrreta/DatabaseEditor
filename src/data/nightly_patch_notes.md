@@ -1,5 +1,5 @@
 ## 18th january
-- Added Show/Hide details inn standings view to show positions gaines/lodst and gap to leader
+- Added Show/Hide details in standings view to show positions gaines/lodst and gap to leader
 - Added many team replacement options (Williams -> BMW, Aston -> Racing Poitn, Jaguar, Red Bull -> Ford, Alpine -> Cadilac, Haas -> Toyota)
 - Added "Season review" in Records tab and made it the defualt screen to see all data from one season
 - Seasn review items can be clicked and will move the user to that Record/Standings/Comparison view. Team mates head to head can be clicked as well

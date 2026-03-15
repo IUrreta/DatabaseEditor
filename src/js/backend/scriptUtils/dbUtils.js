@@ -2141,7 +2141,9 @@ function fetchQualifyingResultsRows(raceId, sprintShootout = 0) {
           AND q3.SprintShootout = ?
           AND q3.QualifyingStage = 3
       ) AS Q3FastestLap,
-      res.ChampionshipPoints
+      res.ChampionshipPoints,
+      res.GridPenalty AS GridPenalty,
+      res.LapCount
     FROM Staff_BasicData bas
     JOIN Races_QualifyingResults res
       ON bas.StaffID = res.DriverID
@@ -2159,6 +2161,51 @@ function fetchQualifyingResultsRows(raceId, sprintShootout = 0) {
   `, [sprintShootout, sprintShootout, sprintShootout, raceId, sprintShootout, raceId, sprintShootout], 'allRows') || [];
 }
 
+function buildQualifyingGridPositionMap(rows) {
+  const orderedRows = (rows || [])
+    .map((row) => ({
+      driverId: Number(row?.[2]),
+      pos: Number(row?.[4]),
+      gridPenalty: Number(row?.[9])
+    }))
+    .filter((row) => row.driverId > 0 && row.pos > 0)
+    .sort((a, b) => a.pos - b.pos);
+
+  const slots = new Array(orderedRows.length).fill(null);
+  const penalizedRows = orderedRows
+    .filter((row) => row.gridPenalty > 0)
+    .sort((a, b) => b.pos - a.pos);
+
+  penalizedRows.forEach((row) => {
+    const targetPos = Math.min(orderedRows.length, row.pos + row.gridPenalty);
+    for (let slotIdx = targetPos - 1; slotIdx >= 0; slotIdx--) {
+      if (slots[slotIdx] == null) {
+        slots[slotIdx] = row;
+        return;
+      }
+    }
+  });
+
+  let nextFreeSlot = 0;
+  orderedRows
+    .filter((row) => row.gridPenalty <= 0)
+    .forEach((row) => {
+      while (slots[nextFreeSlot] != null) nextFreeSlot++;
+      if (nextFreeSlot < slots.length) {
+        slots[nextFreeSlot] = row;
+        nextFreeSlot++;
+      }
+    });
+
+  const positionByDriverId = new Map();
+  slots.forEach((row, idx) => {
+    if (!row) return;
+    positionByDriverId.set(row.driverId, idx + 1);
+  });
+
+  return positionByDriverId;
+}
+
 export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
   const raceIdNum = Number(raceId);
   const key = String(sessionKey || "").toLowerCase();
@@ -2174,6 +2221,21 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
     weekendType,
     sessionKey: key
   };
+  const driverRaceNumberCache = new Map();
+  const getDriverRaceNumber = (driverId) => {
+    const id = Number(driverId);
+    if (id <= 0) return 0;
+    if (!driverRaceNumberCache.has(id)) {
+      const [raceNumber] = fetchDriverNumberDetails(id);
+      driverRaceNumberCache.set(id, Number(raceNumber) || 0);
+    }
+    return driverRaceNumberCache.get(id) ?? 0;
+  };
+
+  if (key === "quali" || key === "sprintquali") {
+    const pointsInfo = fetchPointsRegulations();
+    meta.hasPolePositionPoints = Number(pointsInfo?.poleBonusPoint) === 1 ? 1 : 0;
+  }
 
   if (key === "race") {
     try {
@@ -2244,6 +2306,7 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
         laps: row[11],
         driverId,
         teamId,
+        raceNumber: getDriverRaceNumber(driverId),
         name: nameFormatted,
         fastestLap: row[12],
         nationality: gy ? fetchNationality(driverId, gy) : "",
@@ -2264,6 +2327,7 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
         laps: row[8],
         driverId,
         teamId,
+        raceNumber: getDriverRaceNumber(driverId),
         name: nameFormatted,
         nationality: gy ? fetchNationality(driverId, gy) : "",
       };
@@ -2274,17 +2338,24 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
   if (key === "quali" || key === "sprintquali") {
     const shootout = key === "sprintquali" ? 1 : 0;
     const rows = fetchQualifyingResultsRows(raceIdNum, shootout);
+    const qualifyingGridPositions = buildQualifyingGridPositionMap(rows);
     const results = rows.map((row) => {
       const [nameFormatted, driverId, teamId] = formatNamesSimple(row);
+      const qualifyingPos = Number(row[4]);
+      const gridPenalty = Number(row[9]);
       return {
-        pos: row[4],
+        pos: qualifyingPos,
         q1FastestLap: row[5],
         q2FastestLap: row[6],
         q3FastestLap: row[7],
         driverId,
         teamId,
+        raceNumber: getDriverRaceNumber(driverId),
         name: nameFormatted,
         points: row[8],
+        gridPenalty,
+        gridPosition: Number(qualifyingGridPositions.get(driverId) ?? 0),
+        laps: Number(row[10]) || 0,
         nationality: gy ? fetchNationality(driverId, gy) : "",
       };
     });
@@ -2303,6 +2374,7 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
         laps: row[5],
         driverId,
         teamId,
+        raceNumber: getDriverRaceNumber(driverId),
         name: nameFormatted,
         nationality: gy ? fetchNationality(driverId, gy) : "",
       };
