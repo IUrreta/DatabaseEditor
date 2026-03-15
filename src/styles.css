@@ -4340,11 +4340,11 @@ DRIVERS TABLE
 }
 
 .standings-pos-change.neutral {
-  color: var(--text-general);
+  color: var(--text-secondary);
 }
 
 .standings-points-gap {
-  color: var(--text-general);
+  color: var(--text-secondary);
 }
 
 .drivers-table-row:has(.drivers-table-points.eliminated) .standings-points-gap,
@@ -4364,18 +4364,18 @@ DRIVERS TABLE
 .teams-table-data .teams-table-position {
   font-family: 'NumbersFont' !important;
   font-size: 14px;
-  letter-spacing: -1.2px;
+  letter-spacing: -2.2px;
 }
 
 .drivers-table-data .drivers-table-points,
 .teams-table-data .teams-table-points {
   font-family: 'NumbersFont' !important;
   font-size: 14px;
-  letter-spacing: -1.2px;
+  letter-spacing: -1.8px;
 }
 
 .standings-points-gap{
-  letter-spacing: -1.2px;
+  letter-spacing: -2.2px;
 }
 
 
@@ -19894,7 +19894,7 @@ p.news-error-api-key {
 .session-results-footer-time{
   font-family: 'NumbersFont';
   font-size: 14px;
-  letter-spacing: -1.2px;
+  letter-spacing: -1.5px;
   color: var(--text-general);
   flex: 0 0 auto;
   padding-top: 3px;
@@ -19905,7 +19905,7 @@ p.news-error-api-key {
 
 .session-results-row{
   display: grid;
-  grid-template-columns: var(--session-results-col-drag, 0px) 42px var(--session-results-col-grid, 46px) 280px 340px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-points, 70px);
+  grid-template-columns: var(--session-results-col-drag, 0px) 42px var(--session-results-col-grid, 46px) 310px 340px 1fr var(--session-results-col-q1, 0px) var(--session-results-col-q2, 0px) var(--session-results-col-q3, 0px) var(--session-results-col-laps, 0px) var(--session-results-col-fl, 100px) var(--session-results-col-time, 130px) var(--session-results-col-points, 70px);
   align-items: center;
   background-color: var(--table-default);
   column-gap: 0px;
@@ -19968,7 +19968,7 @@ p.news-error-api-key {
   padding: 0px 4px;
   font-family: 'NumbersFont', 'Formula1', sans-serif;
   font-size: 14px;
-  letter-spacing: -1.2px;
+  letter-spacing: -1.5px;
   text-align: center;
   height: 20px;
 }
@@ -20022,7 +20022,7 @@ p.news-error-api-key {
 
 .session-results-row.quali-cut-q2,
 .session-results-row.quali-cut-q3{
-  box-shadow: inset 0 -2px 0 var(--negative-general);
+  border-bottom: 2px solid var(--f1-first);
 }
 
 .session-results-row.odd {
@@ -20069,7 +20069,7 @@ p.news-error-api-key {
 .session-results-position {
   font-family: 'NumbersFont';
   font-size: 14px;
-  letter-spacing: -1.2px;
+  letter-spacing: -2.2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20080,13 +20080,17 @@ p.news-error-api-key {
 .session-results-gained-lost {
   font-family: 'NumbersFont';
   font-size: 13px;
-  letter-spacing: -1.2px;
+  letter-spacing: -2.2px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
   line-height: 1;
   padding-top: 7px !important;
+}
+
+.session-results-gained-lost .bi-caret-up-fill, .bi-caret-down-fill, .standings-pos-change .bi-caret-up-fill, .standings-pos-change .bi-caret-down-fill {
+  font-size: 10px;
 }
 
 .session-results-gained-lost.up {
@@ -20178,6 +20182,10 @@ p.news-error-api-key {
   color: var(--text-secondary);
 }
 
+.session-results-quali-lap.session-results-q3{
+  color: var(--text-general);
+}
+
 .session-results-row.leader .session-results-time {
   color: var(--text-general);
 }
@@ -20193,7 +20201,7 @@ p.news-error-api-key {
 .session-results-points {
   font-family: 'NumbersFont', 'Formula1', sans-serif;
   font-size: 14px;
-  letter-spacing: -1.2px;
+  letter-spacing: -1.5px;
   display: flex;
   align-items: center;
   justify-content: center;

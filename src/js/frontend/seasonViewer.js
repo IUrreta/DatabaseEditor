@@ -123,7 +123,7 @@ function setStandingsPositionChange(changeDiv, lastPositionChange) {
     changeDiv.classList.remove("up", "down", "neutral");
 
     if (numberEl) {
-        numberEl.textContent = change > 0 ? `+${change}` : String(change);
+        numberEl.textContent = `${Math.abs(change)}`;
     }
 
     if (iconEl) {
@@ -543,7 +543,7 @@ export function new_drivers_table(data) {
     header.appendChild(PositionDiv)
     let posChangeHeader = document.createElement("div")
     posChangeHeader.classList = "standings-pos-change bold-font"
-    posChangeHeader.innerText = "G/L"
+    posChangeHeader.innerText = ""
     header.appendChild(posChangeHeader)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
@@ -569,7 +569,7 @@ export function new_drivers_table(data) {
     })
     let GapDiv = document.createElement("div")
     GapDiv.classList = "standings-points-gap bold-font"
-    GapDiv.innerText = "GAP"
+    GapDiv.innerText = ""
     header.appendChild(GapDiv)
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "drivers-table-points bold-font"
@@ -592,7 +592,7 @@ export function new_teams_table(data) {
     header.appendChild(PositionDiv)
     let posChangeHeader = document.createElement("div")
     posChangeHeader.classList = "standings-pos-change bold-font"
-    posChangeHeader.innerText = "G/L"
+    posChangeHeader.innerText = ""
     header.appendChild(posChangeHeader)
     header.appendChild(driverDiv)
     const isF1 = currentFormula === 1
@@ -618,7 +618,7 @@ export function new_teams_table(data) {
     })
     let GapDiv = document.createElement("div")
     GapDiv.classList = "standings-points-gap bold-font"
-    GapDiv.innerText = "GAP"
+    GapDiv.innerText = ""
     header.appendChild(GapDiv)
     let PointsDiv = document.createElement("div")
     PointsDiv.classList = "teams-table-points bold-font"
@@ -3543,12 +3543,12 @@ export function onSessionResultsFetched(data) {
         const grid = Number(row?.grid);
         const gained = grid - pos;
         if (gained > 0) {
-            gainedLostNumber.textContent = `+${gained}`;
+            gainedLostNumber.textContent = `${gained}`;
             gainedLostIcon.className = "bi bi-caret-up-fill";
             gainedLostDiv.classList.add("up");
         }
         else if (gained < 0) {
-            gainedLostNumber.textContent = String(gained);
+            gainedLostNumber.textContent = `${-gained}`;
             gainedLostIcon.className = "bi bi-caret-down-fill";
             gainedLostDiv.classList.add("down");
         }
@@ -3647,12 +3647,19 @@ export function onSessionResultsFetched(data) {
         if (!isQualiSession) q2Div.classList.add("hidden");
         sessionResultRow.appendChild(q2Div);
 
+
+        //for q3, display difference (without any 0 in front, so if 0:01.223 should be 1.223) to q3best instead of lap time, if q3best is available and the lap time is valid
         const q3Div = document.createElement("div");
         q3Div.className = "session-results-quali-lap session-results-q3";
         q3Div.classList.add("session-results-cell");
         const q3 = Number(row?.q3FastestLap);
-        q3Div.innerText = q3 > 0 ? formatLapTime(q3) : "-";
         if (q3Best != null && q3 > 0 && Math.abs(q3 - q3Best) < 1e-6) q3Div.classList.add("fastest");
+        if (q3Best != null && q3 > 0) {
+            const q3Gap = q3 - q3Best;
+            q3Div.innerText = q3Gap > 0 ? `+${q3Gap.toFixed(3)}` : formatLapTime(q3);
+        }        else {
+            q3Div.innerText = q3 > 0 ? formatLapTime(q3) : "-";
+        }
         if (!isQualiSession) q3Div.classList.add("hidden");
         sessionResultRow.appendChild(q3Div);
 
@@ -4118,6 +4125,24 @@ function formatLapTime(lapTimeMs) {
         return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
     }
     
+}
+
+function formatGapTime(lapTimeMs) {
+    const totalMs = Math.floor(lapTimeMs * 1000);
+    const hours = Math.floor(totalMs / 3600000);
+    const minutes = Math.floor((totalMs % 3600000) / 60000);
+    const seconds = Math.floor((totalMs % 60000) / 1000);
+    const milliseconds = totalMs % 1000;
+
+    if (hours > 0) {
+        return `${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+    }
+
+    if (minutes > 0) {
+        return `${minutes}:${String(seconds).padStart(2, "0")}.${String(milliseconds).padStart(3, "0")}`;
+    }
+
+    return `${seconds}.${String(milliseconds).padStart(3, "0")}`;
 }
 
 function getGpDisplayName(trackId) {
