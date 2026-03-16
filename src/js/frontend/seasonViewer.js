@@ -3695,9 +3695,15 @@ export function onSessionResultsFetched(data) {
         const fastestLapDiv = document.createElement("div");
         fastestLapDiv.className = "session-results-fastest-lap";
         fastestLapDiv.classList.add("session-results-cell");
+        if (isPracticeSession) fastestLapDiv.classList.add("session-results-fastest-lap-practice");
         const fl = Number(row?.fastestLap);
         if (fl > 0) {
-            fastestLapDiv.innerText = formatLapTime(fl);
+            if (isPracticeSession && fastestLapBest != null) {
+                const flGap = fl - fastestLapBest;
+                fastestLapDiv.innerText = flGap > 0 ? `+${flGap.toFixed(3)}` : formatLapTime(fl);
+            } else {
+                fastestLapDiv.innerText = formatLapTime(fl);
+            }
             if (fastestLapBest != null && Math.abs(fl - fastestLapBest) < 1e-6) {
                 fastestLapDiv.classList.add("fastest");
             }
@@ -3756,7 +3762,7 @@ export function onSessionResultsFetched(data) {
         sessionResultRow.appendChild(timeDiv);
 
         const qualiGridDiv = document.createElement("div");
-        qualiGridDiv.className = "session-results-grid-position bold-font";
+        qualiGridDiv.className = "session-results-grid-position";
         qualiGridDiv.classList.add("session-results-cell");
         const qualiGridPosition = getSessionResultsQualiGridPosition(row);
         const gridPenalty = Number(row?.gridPenalty);
@@ -4185,12 +4191,38 @@ function getRltoolsTrackUniqueName(trackId, year) {
     return `${slugifyForUniqueName(trackName)}.${year || "0"}`;
 }
 
-function getSessionPositionForKey(sessionKeyLower) {
-    if (sessionKeyLower === "fp1") return 1;
-    if (sessionKeyLower === "fp2") return 2;
-    if (sessionKeyLower === "fp3") return 3;
-    if (sessionKeyLower === "quali" || sessionKeyLower === "sprintquali") return 0;
-    return 1;
+function getQualifyingStageNumber(qualifyingStage) {
+    return Number(qualifyingStage?.fileSuffix) || 0;
+}
+
+function getSessionPositionForExport(sessionKeyLower, weekendType, qualifyingStage = null) {
+    const isSprintWeekend = Number(weekendType) === 1;
+    const qualiStageNumber = getQualifyingStageNumber(qualifyingStage);
+
+    if (sessionKeyLower === "fp" || sessionKeyLower === "fp1" || sessionKeyLower === "fp2" || sessionKeyLower === "fp3") {
+        return 0;
+    }
+
+    if (sessionKeyLower === "sprintquali") {
+        return qualiStageNumber || 0;
+    }
+
+    if (sessionKeyLower === "sprintrace") {
+        return 4;
+    }
+
+    if (sessionKeyLower === "quali") {
+        if (isSprintWeekend) {
+            return qualiStageNumber > 0 ? qualiStageNumber + 3 : 4;
+        }
+        return qualiStageNumber || 0;
+    }
+
+    if (sessionKeyLower === "race") {
+        return isSprintWeekend ? 7 : 4;
+    }
+
+    return 0;
 }
 
 function getRltoolsSessionType(sessionKeyLower) {
@@ -4209,6 +4241,14 @@ function getRltoolsSessionFilenamePart(sessionKeyLower) {
     if (sessionKeyLower === "sprintrace") return "sprint_race";
     if (sessionKeyLower === "race") return "race";
     return slugifyForFilename(sessionKeyLower);
+}
+
+function getRltoolsQualifyingStageConfigs() {
+    return [
+        { lapKey: "q1FastestLap", qualType: "Q1", fileSuffix: "1" },
+        { lapKey: "q2FastestLap", qualType: "Q2", fileSuffix: "2" },
+        { lapKey: "q3FastestLap", qualType: "Q3", fileSuffix: "3" }
+    ];
 }
 
 function secondsToIntMs(v) {
@@ -4264,7 +4304,7 @@ function getShownSessionResultsRowsForExport() {
     return merged;
 }
 
-function buildRltoolsExportObject() {
+function buildRltoolsExportObject(options = {}) {
     if (!sessionResultsLastFetched) return null;
     const meta = sessionResultsLastFetched?.meta || {};
     const year = String(sessionResultsLastFetched?.year ?? "").trim();
@@ -4274,16 +4314,39 @@ function buildRltoolsExportObject() {
 
     const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
     const sessionType = getRltoolsSessionType(sessionKeyLower);
-    const sessionPosition = getSessionPositionForKey(sessionKeyLower);
+    const qualifyingStage = sessionType === "Qualification" ? options.qualifyingStage || null : null;
+    const sessionPosition = getSessionPositionForExport(sessionKeyLower, weekendType, qualifyingStage);
+    const stageLapKey = qualifyingStage?.lapKey || "";
 
     const raceType = "Regular";
-    const qualType = "Regular";
+    const qualType = qualifyingStage?.qualType || "Regular";
 
     const rows = getShownSessionResultsRowsForExport();
-    const results = Array.isArray(rows) ? rows : [];
+    const allResults = Array.isArray(rows) ? rows : [];
+    const results = qualifyingStage
+        ? allResults
+            .filter((r) => Number(r?.[stageLapKey]) > 0)
+            .sort((a, b) => {
+                const aLap = Number(a?.[stageLapKey]) || 0;
+                const bLap = Number(b?.[stageLapKey]) || 0;
+                if (aLap !== bLap) return aLap - bLap;
+                return (Number(a?.pos) || 0) - (Number(b?.pos) || 0);
+            })
+        : allResults;
+
+    if (!results.length) return null;
+
+    const stagePositions = new Map();
+    if (qualifyingStage) {
+        results
+            .forEach((r, idx) => {
+                stagePositions.set(Number(r?.driverId), idx + 1);
+            });
+    }
 
     const bestLapByRow = (r) => {
         if (sessionType === "Race") return Number(r?.fastestLap) || 0;
+        if (qualifyingStage) return Number(r?.[stageLapKey]) || 0;
         if (sessionType === "Qualification") {
             const times = [Number(r?.q1FastestLap), Number(r?.q2FastestLap), Number(r?.q3FastestLap)].filter(v => v > 0);
             return times.length ? Math.min(...times) : 0;
@@ -4291,7 +4354,7 @@ function buildRltoolsExportObject() {
         return Number(r?.fastestLap) || Number(r?.time) || 0;
     };
 
-    const leaderRow = results.find(r => Number(r?.pos) === 1) || results[0] || null;
+    const leaderRow = results[0] || null;
     const leaderTimeSec = (() => {
         if (!leaderRow) return 0;
         if (sessionType === "Race") return Number(leaderRow?.time) || 0;
@@ -4339,7 +4402,7 @@ function buildRltoolsExportObject() {
         const base = {
             Driver: { Name: driverName },
             RaceNumber: Number(r?.raceNumber) || 0,
-            Position: Number(r?.pos) || 0,
+            Position: qualifyingStage ? (stagePositions.get(Number(r?.driverId)) || 0) : (Number(r?.pos) || 0),
             Team: { Name: teamName, UniqueName: teamUnique },
             SeatType: "Primary",
             Status: status,
@@ -4397,14 +4460,38 @@ function exportShownSessionResultsToRltools() {
     const trackName = getGpDisplayName(meta?.trackId);
     const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase() || "unknown_session";
     const sessionSlug = getRltoolsSessionFilenamePart(sessionKeyLower);
+    const exports = [];
 
-    const filename = `results_${slugifyForFilename(trackName)}_${slugifyForFilename(year)}_${slugifyForFilename(sessionSlug)}.json`;
-    const payload = buildRltoolsExportObject();
-    if (!payload) return;
-    safeJsonDownload(filename, payload);
+    if (sessionKeyLower === "quali" || sessionKeyLower === "sprintquali") {
+        getRltoolsQualifyingStageConfigs().forEach((stage) => {
+            const payload = buildRltoolsExportObject({ qualifyingStage: stage });
+            if (!payload) return;
+            exports.push({
+                filename: `results_${slugifyForFilename(trackName)}_${slugifyForFilename(year)}_${slugifyForFilename(sessionSlug)}${stage.fileSuffix}.json`,
+                payload
+            });
+        });
+    } else {
+        const payload = buildRltoolsExportObject();
+        if (!payload) return;
+        exports.push({
+            filename: `results_${slugifyForFilename(trackName)}_${slugifyForFilename(year)}_${slugifyForFilename(sessionSlug)}.json`,
+            payload
+        });
+    }
+
+    if (!exports.length) return;
+
+    exports.forEach(({ filename, payload }) => {
+        safeJsonDownload(filename, payload);
+    });
 
     if (typeof new_update_notifications === "function") {
-        new_update_notifications(`Exported ${filename}`, "success");
+        if (exports.length === 1) {
+            new_update_notifications(`Exported ${exports[0].filename}`, "success");
+        } else {
+            new_update_notifications(`Exported ${exports.length} files`, "success");
+        }
     }
 }
 

@@ -2329,6 +2329,7 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
         teamId,
         raceNumber: getDriverRaceNumber(driverId),
         name: nameFormatted,
+        fastestLap: row[9],
         nationality: gy ? fetchNationality(driverId, gy) : "",
       };
     });

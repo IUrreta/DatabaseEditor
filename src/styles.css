@@ -10,7 +10,12 @@
 
 @font-face {
   font-family: 'NumbersFont';
-  src: url("../assets/fonts/NewNumbers.otf") format('truetype');
+  src: url("../assets/fonts/NumbersRegular.otf") format('opentype');
+}
+
+@font-face {
+  font-family: 'NumbersBold';
+  src: url("../assets/fonts/NumbersBold.otf") format('opentype');
 }
 
 @font-face {
@@ -903,7 +908,7 @@ i.bi-file-text:hover {
 }
 
 #yearMenu{
-  min-width: 120px;
+  min-width: 140px;
 }
 
 .year-and-break {
@@ -1184,13 +1189,11 @@ i.bi-file-text:hover {
   top: 1px;
   font-size: 20px;
   line-height: 1;
-  letter-spacing: 0.4px;
   color: color-mix(in srgb, var(--white-general) 70%, var(--lineup-accent) 30%);
   opacity: 0.16;
   pointer-events: none;
   z-index: 0;
   font-family: 'NumbersFont';
-  letter-spacing: -4px;
 }
 
 .lineups-driver-first {
@@ -4322,7 +4325,6 @@ DRIVERS TABLE
   line-height: 1;
   font-family: 'NumbersFont';
   padding-top: 0;
-  letter-spacing: -1.3px;
 }
 
 
@@ -4362,20 +4364,14 @@ DRIVERS TABLE
 
 .drivers-table-data .drivers-table-position,
 .teams-table-data .teams-table-position {
-  font-family: 'NumbersFont' !important;
+  font-family: 'NumbersBold' !important;
   font-size: 14px;
-  letter-spacing: -2.2px;
 }
 
 .drivers-table-data .drivers-table-points,
 .teams-table-data .teams-table-points {
   font-family: 'NumbersFont' !important;
   font-size: 14px;
-  letter-spacing: -1.8px;
-}
-
-.standings-points-gap{
-  letter-spacing: -2.2px;
 }
 
 
@@ -8892,8 +8888,7 @@ body.og-theme .records-list {
 
 .record-number {
   font-size: 22px;
-  font-family: 'NumbersFont';
-  letter-spacing: -2.2px;
+  font-family: 'NumbersBold';
   padding-top: 4px;
   width: 37px;
   display: flex;
@@ -8935,7 +8930,6 @@ body.og-theme .records-list {
 
 .record-driver-number{
   font-family: 'NumbersFont';
-  letter-spacing: -1px;
   padding-top: 1px;
   height: 21px;
 }
@@ -8949,7 +8943,6 @@ body.og-theme .records-list {
 .record-value {
   font-size: 22px;
   font-family: 'NumbersFont';
-  letter-spacing: -3.2px;
   padding-top: 4px;
   z-index: 2;
 }
@@ -16269,12 +16262,10 @@ body:has(#modpill.active) .one-change {
 #mods2026View .ant-change::before{
   content: "84";
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
 }
 
 #mods2026View .ant-change::after{
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
 }
 
 .ant-change::after {
@@ -16345,7 +16336,6 @@ body:has(#modpill.active) .one-change {
   transform: translateY(-20px);
   color: var(--dark-text);
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
 }
 
 .had-change::after {
@@ -16360,7 +16350,6 @@ body:has(#modpill.active) .one-change {
   transform: translateY(0);
   color: var(--dark-text);
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
 }
 
 .one-change:has(.completed) .had-change::before {
@@ -16383,7 +16372,6 @@ body:has(#modpill.active) .one-change {
   transform: translateY(-20px);
   color: var(--dark-text);
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
 }
 
 .bea-change::after {
@@ -16398,7 +16386,6 @@ body:has(#modpill.active) .one-change {
   transform: translateY(0);
   color: var(--dark-text);
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
 }
 
 .one-change:has(.completed) .bea-change::before {
@@ -19373,8 +19360,7 @@ p.news-error-api-key {
 }
 
 .season-review-driver-position{
-  font-family: "NumbersFont";
-  letter-spacing: -2.2px;
+  font-family: "NumbersBold";
   width: 25px;
   text-align: center;
   padding-top: 1px;
@@ -19382,8 +19368,7 @@ p.news-error-api-key {
 }
 
 .season-review-driver-points{
-  font-family: "NumbersFont";
-  letter-spacing: -2.2px;
+  font-family: "NumbersBold";
   width: 52px;
   text-align: center;
   padding-top: 1px;
@@ -19391,6 +19376,7 @@ p.news-error-api-key {
 }
 
 .season-review-driver-points.diff{
+  font-family: "NumbersFont";
   color: var(--text-tertiary);
   margin-right: -15px;
 }
@@ -19451,22 +19437,21 @@ p.news-error-api-key {
 }
 
 .season-review-team-position{
-  font-family: "NumbersFont";
-  letter-spacing: -2.2px;
+  font-family: "NumbersBold";
   width: 25px;
   text-align: center;
   height: 22px;
 }
 
 .season-review-team-points{
-  font-family: "NumbersFont";
-  letter-spacing: -2.2px;
+  font-family: "NumbersBold";
   width: 52px;
   text-align: center;
   height: 22px;
 }
 
 .season-review-team-points.diff{
+  font-family: "NumbersFont";
   color: var(--text-tertiary);
   margin-right: -15px;
 }
@@ -19646,7 +19631,6 @@ p.news-error-api-key {
 
 .season-review-comparison-score{
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
   width: 26px;
   text-align: center;
   padding-top: 3px;
@@ -19662,8 +19646,7 @@ p.news-error-api-key {
 }
 
 .season-review-qualifying-position{
-  font-family: "NumbersFont";
-  letter-spacing: -2.2px;
+  font-family: "NumbersBold";
   width: 28px;
   text-align: center;
   font-size: 14px;
@@ -19683,7 +19666,6 @@ p.news-error-api-key {
 
 .season-review-qualifying-count{
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
   width: 26px;
   text-align: center;
   padding-top: 3px;
@@ -19732,7 +19714,6 @@ p.news-error-api-key {
 
 .round-number{
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
   width: 18px;
   text-align: center;
   font-size: 16px;
@@ -19741,8 +19722,7 @@ p.news-error-api-key {
 }
 
 .season-review-wins-position{
-  font-family: "NumbersFont";
-  letter-spacing: -2.2px;
+  font-family: "NumbersBold";
   width: 18px;
   text-align: center;
   font-size: 14px;
@@ -19769,7 +19749,6 @@ p.news-error-api-key {
 
 .season-review-wins-count{
   font-family: "NumbersFont";
-  letter-spacing: -2.2px;
   width: 26px;
   text-align: center;
   padding-top: 3px;
@@ -19913,7 +19892,7 @@ p.news-error-api-key {
 }
 
 .session-results-footer-label{
-  font-family: 'Formula1Dark';
+  font-family: 'NumbersBold';
   font-size: 16px;
   color: color-mix(in srgb, #B14DFF 70%, var(--text-general));
   flex: 0 0 auto;
@@ -19928,14 +19907,16 @@ p.news-error-api-key {
 
 .session-results-footer-time{
   font-family: 'NumbersFont';
-  font-size: 14px;
-  letter-spacing: -1.2px;
+  font-size: 16px;
   color: var(--text-general);
   flex: 0 0 auto;
-  padding-top: 3px;
-  padding-left: 15px;
-  border-left: 2px solid var(--text-tertiary);
   color: color-mix(in srgb, #B14DFF 70%, var(--text-general));
+  transform: translateY(2px);
+}
+
+.session-results-footer .session-results-team{
+  border-right: 2px solid var(--text-tertiary);
+  padding-right: 11px;
 }
 
 .session-results-row{
@@ -20003,7 +19984,6 @@ p.news-error-api-key {
   padding: 0px 4px;
   font-family: 'NumbersFont', 'Formula1', sans-serif;
   font-size: 14px;
-  letter-spacing: -1.2px;
   text-align: center;
   height: 20px;
 }
@@ -20110,9 +20090,8 @@ p.news-error-api-key {
 }
 
 .session-results-position {
-  font-family: 'NumbersFont';
+  font-family: 'NumbersBold';
   font-size: 14px;
-  letter-spacing: -2.2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20123,7 +20102,6 @@ p.news-error-api-key {
 .session-results-gained-lost {
   font-family: 'NumbersFont';
   font-size: 13px;
-  letter-spacing: -2.2px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20168,6 +20146,7 @@ p.news-error-api-key {
 .session-results-surname {
   text-transform: uppercase;
   flex: 0 0 auto;
+  color: var(--text-general);
 }
 
 .session-results-dotd {
@@ -20237,14 +20216,26 @@ p.news-error-api-key {
   color: var(--text-general);
 }
 
+.session-results-fastest-lap.session-results-fastest-lap-practice:not(.fastest) {
+  color: var(--text-general);
+}
+
 .session-results-fastest-lap,
 .session-results-laps,
 .session-results-quali-lap,
-.session-results-time,
-.session-results-points {
-  font-family: 'NumbersFont', 'Formula1', sans-serif;
+.session-results-time{
+  font-family: 'NumbersFont';
   font-size: 14px;
-  letter-spacing: -1.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding-top: 7px !important;
+}
+
+.session-results-points{
+  font-family: 'NumbersBold';
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20260,6 +20251,7 @@ p.news-error-api-key {
   font-size: 14px;
   white-space: nowrap;
   color: var(--text-secondary);
+  font-family: 'NumbersFont';
 }
 
 .session-results-grid-position.penalty {
