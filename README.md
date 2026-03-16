@@ -1,4 +1,4 @@
-<img width="100%"  src="https://github.com/user-attachments/assets/e29b6bdb-57a0-43f6-a7e8-5dd9d5c7b764" />
+<img width="1875" height="625" alt="Copia de DATABASE EDITOR F1 MANAGER 23" src="https://github.com/user-attachments/assets/7cb4d0ae-f6a5-4d79-9ab5-139e5f5513e2" />
 
 <h3>OPEN SOURCE TOOL TO EDIT YOUR SAVE FILES FROM F1 MANAGER 23 & 24</h3>
 <h4>Supports every bit of cuistomization you can imagine, and even more</h4>
