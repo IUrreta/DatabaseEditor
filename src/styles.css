@@ -4365,13 +4365,13 @@ DRIVERS TABLE
 .drivers-table-data .drivers-table-position,
 .teams-table-data .teams-table-position {
   font-family: 'NumbersBold' !important;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .drivers-table-data .drivers-table-points,
 .teams-table-data .teams-table-points {
-  font-family: 'NumbersFont' !important;
-  font-size: 14px;
+  font-family: 'NumbersBold' !important;
+  font-size: 16px;
 }
 
 
@@ -19896,7 +19896,7 @@ p.news-error-api-key {
   font-size: 16px;
   color: color-mix(in srgb, #B14DFF 70%, var(--text-general));
   flex: 0 0 auto;
-  padding-top: 5px;
+  padding-top: 3px;
   line-height: 1;
 }
 
@@ -20091,7 +20091,8 @@ p.news-error-api-key {
 
 .session-results-position {
   font-family: 'NumbersBold';
-  font-size: 14px;
+  font-size: 16px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20235,7 +20236,8 @@ p.news-error-api-key {
 
 .session-results-points{
   font-family: 'NumbersBold';
-  font-size: 14px;
+  font-size: 16px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
