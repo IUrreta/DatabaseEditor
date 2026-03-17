@@ -1,6 +1,8 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
   fetchTeamsStandingsWithPositionChange,
+  fetchTeamsStandingsWithPoints,
+  fetchDriversStandings,
   fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
   fetchJuniorTeamDriverNames,
@@ -72,6 +74,272 @@ import { fetchCountryLocaleForCode, fetchRandomDraftForename, fetchRandomStaffDr
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
 
+function getCustomDriverSeasonPoints(driver) {
+  const races = driver.races || [];
+  return races.reduce((sum, race) => {
+    const racePoints = race.points || 0;
+    const qualiPoints = race.qualifyingPoints || 0;
+    const sprintPoints = race.sprintPoints || 0;
+    return sum
+      + (racePoints > 0 ? racePoints : 0)
+      + (qualiPoints > 0 ? qualiPoints : 0)
+      + (sprintPoints > 0 ? sprintPoints : 0);
+  }, 0);
+}
+
+function getCustomQualifyingPosition(race) {
+  return race.qualifyingPos ?? race.startingPos ?? 99;
+}
+
+function normalizeCustomHeadToHeadPos(pos) {
+  if (pos <= 0 || pos === 99) return 999;
+  return pos;
+}
+
+function buildCustomQualifyingStageCounts(results, driversStandings) {
+  const cutoffQ2 = getGlobals().isCreateATeam ? 16 : 15;
+  const standingsByDriverId = new Map(
+    driversStandings.map((driver) => [driver.DriverID, driver.Position])
+  );
+
+  return results.map((driver) => {
+    const races = driver.races || [];
+    return {
+      id: driver.driverId,
+      name: driver.driverName,
+      teamId: driver.latestTeamId,
+      poleCount: races.filter((race) => getCustomQualifyingPosition(race) === 1).length,
+      q3Count: races.filter((race) => {
+        const qualiPos = getCustomQualifyingPosition(race);
+        return qualiPos > 0 && qualiPos !== 99 && qualiPos <= 10;
+      }).length,
+      q2Count: races.filter((race) => {
+        const qualiPos = getCustomQualifyingPosition(race);
+        return qualiPos > 0 && qualiPos !== 99 && qualiPos <= cutoffQ2;
+      }).length
+    };
+  }).filter((entry) => entry.poleCount > 0 || entry.q3Count > 0 || entry.q2Count > 0)
+    .sort((a, b) =>
+      b.poleCount - a.poleCount
+      || b.q3Count - a.q3Count
+      || b.q2Count - a.q2Count
+      || (standingsByDriverId.get(a.id) ?? 999) - (standingsByDriverId.get(b.id) ?? 999)
+    );
+}
+
+function buildCustomTeamMateHeadToHead(results, teamsStandings, lastRaceDoneId) {
+  const driversByTeamId = new Map();
+  const teamPositionById = new Map(
+    teamsStandings.map((row) => [row[0], row[1]])
+  );
+
+  results.forEach((driver) => {
+    const race = driver.races.find((entry) => entry.raceId === lastRaceDoneId);
+    if (!race) return;
+    const teamId = race?.teamId ?? driver.latestTeamId;
+    if (!teamId) return;
+    if (!driversByTeamId.has(teamId)) driversByTeamId.set(teamId, []);
+    driversByTeamId.get(teamId).push({
+      driverId: driver.driverId,
+      driverName: driver.driverName,
+      finishingPos: normalizeCustomHeadToHeadPos(race.finishingPos)
+    });
+  });
+
+  return Array.from(driversByTeamId.entries())
+    .sort((a, b) => (teamPositionById.get(a[0]) ?? 999) - (teamPositionById.get(b[0]) ?? 999))
+    .map(([teamId, drivers]) => {
+      const selectedDrivers = [...drivers]
+        .sort((a, b) => a.finishingPos - b.finishingPos || a.driverId - b.driverId)
+        .slice(0, 2);
+
+      if (selectedDrivers.length < 2) return null;
+
+      const [driver1, driver2] = selectedDrivers;
+      const driver1Data = results.find((driver) => driver.driverId === driver1.driverId);
+      const driver2Data = results.find((driver) => driver.driverId === driver2.driverId);
+      const byRaceId = new Map();
+
+      driver1Data.races.forEach((race) => {
+        if (race.teamId !== teamId) return;
+        const raceId = race.raceId;
+        if (!byRaceId.has(raceId)) byRaceId.set(raceId, new Map());
+        byRaceId.get(raceId).set(driver1.driverId, race);
+      });
+
+      driver2Data.races.forEach((race) => {
+        if (race.teamId !== teamId) return;
+        const raceId = race.raceId;
+        if (!byRaceId.has(raceId)) byRaceId.set(raceId, new Map());
+        byRaceId.get(raceId).set(driver2.driverId, race);
+      });
+
+      let raceAhead1 = 0;
+      let raceAhead2 = 0;
+      let qualiAhead1 = 0;
+      let qualiAhead2 = 0;
+
+      byRaceId.forEach((raceMap) => {
+        const d1Race = raceMap.get(driver1.driverId);
+        const d2Race = raceMap.get(driver2.driverId);
+        if (!d1Race || !d2Race) return;
+
+        const fin1 = normalizeCustomHeadToHeadPos(d1Race?.finishingPos);
+        const fin2 = normalizeCustomHeadToHeadPos(d2Race?.finishingPos);
+        if (fin1 < fin2) raceAhead1++;
+        else if (fin2 < fin1) raceAhead2++;
+
+        const quali1 = normalizeCustomHeadToHeadPos(getCustomQualifyingPosition(d1Race));
+        const quali2 = normalizeCustomHeadToHeadPos(getCustomQualifyingPosition(d2Race));
+        if (quali1 < quali2) qualiAhead1++;
+        else if (quali2 < quali1) qualiAhead2++;
+      });
+
+      return {
+        teamId,
+        driver1Id: driver1.driverId,
+        driver2Id: driver2.driverId,
+        driver1Name: driver1.driverName,
+        driver2Name: driver2.driverName,
+        raceHeadToHead: `${raceAhead1}-${raceAhead2}`,
+        qualiHeadToHead: `${qualiAhead1}-${qualiAhead2}`,
+        raceAhead1,
+        raceAhead2,
+        qualiAhead1,
+        qualiAhead2
+      };
+    })
+    .filter(Boolean);
+}
+
+function buildSeasonReviewFromCustomPackage(year, formula, customPackage) {
+  const events = customPackage.events;
+  const results = customPackage.results;
+  const teams = customPackage.teams;
+  const pointsInfo = fetchPointsRegulations();
+  const lastRaceDoneId = [...events]
+    .filter((eventRow) => eventRow[3] === 2)
+    .map((eventRow) => eventRow[0])
+    .pop() ?? events[events.length - 1]?.[0] ?? 0;
+
+  const driversStandings = results.map((driver, index) => ({
+    DriverID: driver.driverId,
+    DriverName: driver.driverName,
+    Position: driver.championshipPosition ?? (index + 1),
+    Points: getCustomDriverSeasonPoints(driver),
+    TeamID: driver.latestTeamId
+  })).sort((a, b) => a.Position - b.Position || b.Points - a.Points);
+
+  const pointsByTeamId = new Map();
+  results.forEach((driver) => {
+    driver.races.forEach((race) => {
+      const teamId = race.teamId ?? driver.latestTeamId;
+      if (!teamId) return;
+      const total = (race.points > 0 ? race.points : 0)
+        + (race.qualifyingPoints > 0 ? race.qualifyingPoints : 0)
+        + (race.sprintPoints > 0 ? race.sprintPoints : 0);
+      pointsByTeamId.set(teamId, (pointsByTeamId.get(teamId) || 0) + total);
+    });
+  });
+
+  const teamsStandings = teams.map((teamRow) => {
+    const teamId = teamRow[0];
+    return [teamId, teamRow[1], pointsByTeamId.get(teamId) || 0];
+  });
+
+  const buildDriverRecordList = (predicate) => results.map((driver) => {
+    const races = driver.races;
+    return {
+      name: driver.driverName,
+      id: driver.driverId,
+      record: "",
+      value: races.filter(predicate).length,
+      teamId: driver.latestTeamId,
+      retired: 0
+    };
+  }).filter((entry) => entry.value > 0)
+    .sort((a, b) => b.value - a.value || a.name.localeCompare(b.name));
+
+  const qualifyingStageCounts = buildCustomQualifyingStageCounts(results, driversStandings);
+
+  const driverOfTheDayCounts = results.map((driver) => ({
+    name: driver.driverName,
+    id: driver.driverId,
+    count: driver.races.filter((race) => race.driverOfTheDay).length,
+    teamId: driver.latestTeamId
+  })).filter((entry) => entry.count > 0)
+    .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+  const teamMateHeadToHead = buildCustomTeamMateHeadToHead(results, teamsStandings, lastRaceDoneId);
+
+  return {
+    year,
+    formula,
+    teamsStandings,
+    driversStandings,
+    events,
+    pointsInfo,
+    lastRaceDoneId,
+    qualifyingStageCounts,
+    driverOfTheDayCounts,
+    teamMateHeadToHead,
+    teamWinsTotals: [],
+    teamPolesTotals: [],
+    teamPodiumsTotals: [],
+    polesRecords: buildDriverRecordList((race) => race.qualifyingPos === 1),
+    podiumsRecords: buildDriverRecordList((race) => race.finishingPos >= 1 && race.finishingPos <= 3),
+    winsRecords: buildDriverRecordList((race) => race.finishingPos === 1)
+  };
+}
+
+function buildCustomRaceSessionPayload(year, raceId, sessionKey) {
+  if (String(sessionKey || "").toLowerCase() !== "race") return null;
+
+  const customPackage = fetchCustomSeasonResultsPackage(year, 1);
+  if (!customPackage) return null;
+
+  const event = customPackage.events.find((row) => row[0] === raceId);
+  if (!event) return null;
+
+  const results = customPackage.results.map((driver) => {
+    const race = driver.races.find((entry) => entry.raceId === raceId);
+    if (!race) return null;
+    const fastestLap = race.fastestLap || 0;
+    return {
+      pos: race.finishingPos,
+      grid: race.startingPos ?? race.qualifyingPos ?? 0,
+      points: race.points,
+      dnf: race.dnf ? 1 : 0,
+      safetyCar: race.safetyCarDeployments || 0,
+      virtualSafetyCar: race.virtualSafetyCarDeployments || 0,
+      time: race.time || 0,
+      laps: race.laps || 0,
+      driverId: driver.driverId,
+      teamId: race.teamId ?? driver.latestTeamId,
+      raceNumber: 0,
+      name: driver.driverName,
+      fastestLap: fastestLap > 1 ? fastestLap : 0,
+      nationality: driver.nationality || ""
+    };
+  }).filter(Boolean)
+    .sort((a, b) => a.pos - b.pos || a.name.localeCompare(b.name));
+
+  const dotdRow = customPackage.results.find((driver) =>
+    driver.races.some((race) => race.raceId === raceId && race.driverOfTheDay)
+  );
+
+  return {
+    meta: {
+      raceId,
+      trackId: event[1] ?? 0,
+      weekendType: event[2] ?? 0,
+      sessionKey: "race",
+      dotdDriverId: dotdRow?.driverId ?? 0
+    },
+    results
+  };
+}
+
 // Diccionario de comandos
 const workerCommands = {
   loadDB: async (data, postMessage) => {
@@ -116,9 +384,9 @@ const workerCommands = {
     const isCurrentYear = data.isCurrentYear ?? true;
     const formula = data.formula ? Number(data.formula) : 1;
     const customPackage = fetchCustomSeasonResultsPackage(year, formula);
-    const results = customPackage?.results || fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
-    const events = customPackage?.events || fetchEventsFrom(year, formula);
-    const teams = customPackage?.teams || fetchTeamsStandingsWithPositionChange(year, formula);
+    const results = customPackage ? customPackage.results : fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
+    const events = customPackage ? customPackage.events : fetchEventsFrom(year, formula);
+    const teams = customPackage ? customPackage.teams : fetchTeamsStandingsWithPositionChange(year, formula);
     const pointsInfo = fetchPointsRegulations()
 
     postMessage({
@@ -218,12 +486,11 @@ const workerCommands = {
     postMessage({ responseMessage: "Records export options fetched", content: years });
   },
   exportRecordsSeasons: (data, postMessage) => {
-    const seasons = Array.isArray(data?.seasons) ? data.seasons : [];
-    const archive = exportSeasonsRecordsArchive(seasons);
+    const archive = exportSeasonsRecordsArchive(data.seasons || []);
     postMessage({ responseMessage: "Records seasons exported", content: archive });
   },
   importRecordsSeasons: (data, postMessage) => {
-    const importedSeasons = importSeasonsRecordsArchive(data?.archive || {});
+    const importedSeasons = importSeasonsRecordsArchive(data.archive || {});
     postMessage({
       responseMessage: "Records seasons imported",
       content: importedSeasons,
@@ -937,8 +1204,19 @@ const workerCommands = {
 
     const globals = getGlobals();
     const isCurrentYear = data.isCurrentYear ?? (String(globals?.yearIteration) === String(year));
+    const customPackage = fetchCustomSeasonResultsPackage(year, formula);
+    const defaultEvents = fetchEventsFrom(year, formula);
+    const defaultDriversStandings = fetchDriversStandings(year, formula);
+    const defaultTeamsStandings = fetchTeamsStandingsWithPoints(year, formula);
+    const hasDefaultSeasonReviewData = defaultEvents.length > 0 || defaultDriversStandings.length > 0 || defaultTeamsStandings.length > 0;
 
-    const review = fetchSeasonReviewData(year, formula, isCurrentYear);
+    if (!hasDefaultSeasonReviewData && customPackage) {
+      console.log(`[seasonReviewSelected] No default season review data for season ${year} (formula ${formula}); going to fetch the data from the custom tables.`);
+    }
+
+    const review = (!hasDefaultSeasonReviewData && customPackage)
+      ? buildSeasonReviewFromCustomPackage(year, formula, customPackage)
+      : fetchSeasonReviewData(year, formula, isCurrentYear);
 
     postMessage({ responseMessage: "Season review data fetched", content: review });
   },
@@ -1050,7 +1328,8 @@ const workerCommands = {
   eventsFromRequest: (data, postMessage) => {
     const year = data.year;
     const formula = data.formula ? Number(data.formula) : 1;
-    const events = fetchEventsFrom(year, formula);
+    const customPackage = fetchCustomSeasonResultsPackage(year, formula);
+    const events = customPackage ? customPackage.events : fetchEventsFrom(year, formula);
     postMessage({ responseMessage: "Events fetched", content: { year, formula, events } });
   },
   sessionResultsRequest: (data, postMessage) => {
@@ -1059,7 +1338,8 @@ const workerCommands = {
     const raceId = data.raceId;
     const sessionKey = data.sessionKey;
 
-    const payload = fetchSessionResults(raceId, sessionKey, gameYear);
+    const payload = buildCustomRaceSessionPayload(year, raceId, sessionKey)
+      || fetchSessionResults(raceId, sessionKey, gameYear);
     postMessage({ responseMessage: "Session results fetched", content: { year, raceId, sessionKey, ...payload } });
   },
   editRaceResults: (data, postMessage) => {

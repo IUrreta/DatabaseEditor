@@ -17609,7 +17609,8 @@ p.news-error-api-key {
 }
 
 #newsTypeMenu .redesigned-dropdown-item i,
-#newsLanguageMenu .redesigned-dropdown-item i {
+#newsLanguageMenu .redesigned-dropdown-item i,
+#recordsSeasonExportMenu .redesigned-dropdown-item i {
   display: inline-block;
   font-size: 18px;
   margin-left: 8px;
@@ -17627,6 +17628,7 @@ p.news-error-api-key {
 
 #newsTypeMenu .redesigned-dropdown-item i.unactive,
 #newsLanguageMenu .redesigned-dropdown-item i.unactive,
+#recordsSeasonExportMenu .redesigned-dropdown-item i.unactive,
 #season_viewer .redesigned-dropdown-menu .redesigned-dropdown-item i.unactive,
 #aiModelmenu .dropdown-item i.unactive {
   transform: rotate(-90deg);
@@ -19369,7 +19371,7 @@ p.news-error-api-key {
 
 .season-review-driver-points{
   font-family: "NumbersBold";
-  width: 52px;
+  width: 42px;
   text-align: center;
   padding-top: 1px;
   height: 22px;
@@ -19378,7 +19380,7 @@ p.news-error-api-key {
 .season-review-driver-points.diff{
   font-family: "NumbersFont";
   color: var(--text-tertiary);
-  margin-right: -15px;
+  margin-right: -5px;
 }
 
 #standings2ndhalf{
@@ -19440,12 +19442,13 @@ p.news-error-api-key {
   font-family: "NumbersBold";
   width: 25px;
   text-align: center;
+  padding-top: 1px;
   height: 22px;
 }
 
 .season-review-team-points{
   font-family: "NumbersBold";
-  width: 52px;
+  width: 42px;
   text-align: center;
   height: 22px;
 }
@@ -19453,7 +19456,7 @@ p.news-error-api-key {
 .season-review-team-points.diff{
   font-family: "NumbersFont";
   color: var(--text-tertiary);
-  margin-right: -15px;
+  margin-right: -5px;
 }
 
 #teamStandings{
@@ -19650,7 +19653,7 @@ p.news-error-api-key {
   width: 28px;
   text-align: center;
   font-size: 14px;
-  padding-top: 3px;
+  padding-top: 1px;
   height: 22px;
 }
 
@@ -19668,7 +19671,7 @@ p.news-error-api-key {
   font-family: "NumbersFont";
   width: 26px;
   text-align: center;
-  padding-top: 3px;
+  padding-top: 1px;
   font-size: 14px;
   height: 22px;
 }
@@ -19705,11 +19708,7 @@ p.news-error-api-key {
   margin-left: auto;
   padding-right: 8px;
   color: var(--text-tertiary);
-  font-family: "Formula1";
-}
-
-.first-number{
-  padding-right: 2px;
+  font-family: "NumbersFont";
 }
 
 .round-number{
@@ -19726,7 +19725,7 @@ p.news-error-api-key {
   width: 18px;
   text-align: center;
   font-size: 14px;
-  padding-top: 3px;
+  padding-top: 1px;
   height: 22px;
 }
 
@@ -19751,7 +19750,7 @@ p.news-error-api-key {
   font-family: "NumbersFont";
   width: 26px;
   text-align: center;
-  padding-top: 3px;
+  padding-top: 1px;
   font-size: 14px;
   height: 22px;
   margin-left: auto;
@@ -19872,7 +19871,7 @@ p.news-error-api-key {
 .session-results-title-round{
   order: 3;
   margin-left: auto;
-  font-family: 'Formula1Dark';
+  font-family: 'NumbersFont';
   font-size: 16px;
   line-height: 1;
   color: var(--text-secondary);
@@ -20235,7 +20234,7 @@ p.news-error-api-key {
 }
 
 .session-results-points{
-  font-family: 'NumbersBold';
+  font-family: 'NumbersFont';
   font-size: 16px;
   height: 32px;
   display: flex;
@@ -20262,6 +20261,7 @@ p.news-error-api-key {
 
 .session-results-points.positive {
   color: var(--positive-general);
+  font-family: 'NumbersBold';
 }
 
 .session-results-row:has(.session-results-position.champion) .session-results-position {
@@ -20315,4 +20315,13 @@ p.news-error-api-key {
   width: 24px;
   height: 24px;
   object-fit: contain;
+}
+
+
+#exportRecordsSeasonsButton, #importRecordsSeasonsButton{
+  width: max-content;
+}
+
+#recordsSeasonExportButton{
+  max-width: 260px;
 }

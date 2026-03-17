@@ -8,6 +8,7 @@ const packageJson = require('./package.json');
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
+  devtool: (process.env.NODE_ENV || 'development') === 'development' ? 'source-map' : false,
 
   entry: './src/index.js',  // Archivo de entrada principal
 

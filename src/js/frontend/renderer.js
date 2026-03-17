@@ -1984,6 +1984,16 @@ const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsI
 
 let recordsExportSelectedSeasons = new Set();
 
+function refreshRecordsExportCheckIcons() {
+    if (!recordsSeasonExportMenu) return;
+
+    recordsSeasonExportMenu.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        const isSelected = recordsExportSelectedSeasons.has(Number(item.dataset.year));
+        item.classList.toggle("active", isSelected);
+        item.querySelector("i.bi-check")?.classList.toggle("unactive", !isSelected);
+    });
+}
+
 function updateRecordsExportButtonLabel() {
     if (!recordsSeasonExportButton) return;
 
@@ -2004,24 +2014,33 @@ function renderRecordsExportSeasonOptions(seasons) {
     seasons.forEach((season) => {
         const item = document.createElement("a");
         item.className = "redesigned-dropdown-item";
+        item.href = "#";
         item.style.cursor = "pointer";
-        item.textContent = String(season);
         item.dataset.year = String(season);
+        const text = document.createElement("span");
+        text.textContent = String(season);
+        const icon = document.createElement("i");
+        icon.classList.add("bi", "bi-check", "unactive");
+        item.append(text, icon);
 
-        item.addEventListener("click", () => {
+        item.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
             if (recordsExportSelectedSeasons.has(season)) {
                 recordsExportSelectedSeasons.delete(season);
-                item.classList.remove("active");
             }
             else {
                 recordsExportSelectedSeasons.add(season);
-                item.classList.add("active");
             }
             updateRecordsExportButtonLabel();
+            refreshRecordsExportCheckIcons();
         });
 
         recordsSeasonExportMenu.appendChild(item);
     });
+
+    refreshRecordsExportCheckIcons();
 }
 
 function loadRecordsExportOptions() {
