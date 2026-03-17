@@ -1084,6 +1084,124 @@ export function fetchSeasonResults(
   return resultsWithDoD;
 }
 
+function ensureCustomSeasonResultsTable() {
+  const tableExists = queryDB(
+    `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_Season_Results'`,
+    [],
+    'singleValue'
+  );
+
+  if (!tableExists) {
+    queryDB(`
+      CREATE TABLE Custom_Season_Results (
+        SeasonID INTEGER,
+        RaceFormula INTEGER,
+        Payload TEXT,
+        PRIMARY KEY (SeasonID, RaceFormula)
+      )
+    `, [], 'run');
+  }
+}
+
+export function fetchCustomSeasonResultsPackage(year, formula = 1) {
+  ensureCustomSeasonResultsTable();
+
+  const row = queryDB(`
+    SELECT Payload
+    FROM Custom_Season_Results
+    WHERE SeasonID = ?
+      AND RaceFormula = ?
+  `, [year, formula], 'singleRow');
+
+  if (!row?.[0]) return null;
+  return JSON.parse(row[0]);
+}
+
+export function fetchSeasonYearsForRecordsExport() {
+  ensureCustomSeasonResultsTable();
+
+  const dbYears = queryDB(`
+    SELECT DISTINCT SeasonID
+    FROM Races_DriverStandings
+    WHERE RaceFormula = 1
+    ORDER BY SeasonID DESC
+  `, [], 'allRows') || [];
+
+  const customYears = queryDB(`
+    SELECT DISTINCT SeasonID
+    FROM Custom_Season_Results
+    WHERE RaceFormula = 1
+    ORDER BY SeasonID DESC
+  `, [], 'allRows') || [];
+
+  const years = new Set();
+  dbYears.forEach((row) => years.add(Number(row[0])));
+  customYears.forEach((row) => years.add(Number(row[0])));
+  return Array.from(years).sort((a, b) => b - a);
+}
+
+export function exportSeasonsRecordsArchive(seasons = []) {
+  const payload = {
+    format: 'season-results-v1',
+    seasons: []
+  };
+
+  seasons.forEach((season) => {
+    const seasonId = Number(season);
+    const formulas = [];
+
+    [1, 2, 3].forEach((formula) => {
+      const events = fetchEventsFrom(seasonId, formula);
+      const results = fetchSeasonResults(seasonId, false, false, formula);
+      const teams = fetchTeamsStandingsWithPositionChange(seasonId, formula);
+
+      if (!events.length && !results.length && !teams.length) return;
+
+      formulas.push({
+        formula,
+        events,
+        results,
+        teams
+      });
+    });
+
+    if (formulas.length) {
+      payload.seasons.push({
+        season: seasonId,
+        formulas
+      });
+    }
+  });
+
+  return payload;
+}
+
+export function importSeasonsRecordsArchive(archive) {
+  ensureCustomSeasonResultsTable();
+
+  const seasons = Array.isArray(archive?.seasons) ? archive.seasons : [];
+  seasons.forEach((seasonBlock) => {
+    const seasonId = Number(seasonBlock.season);
+    const formulas = Array.isArray(seasonBlock.formulas) ? seasonBlock.formulas : [];
+
+    formulas.forEach((formulaBlock) => {
+      const formula = Number(formulaBlock.formula);
+      const payload = {
+        events: formulaBlock.events || [],
+        results: formulaBlock.results || [],
+        teams: formulaBlock.teams || []
+      };
+
+      queryDB(`
+        INSERT OR REPLACE INTO Custom_Season_Results (SeasonID, RaceFormula, Payload)
+        VALUES (?, ?, ?)
+      `, [seasonId, formula, JSON.stringify(payload)], 'run');
+    });
+  });
+
+  return seasons.length;
+}
+
 export function fetchQualiResults(yearSelected) {
   const drivers = queryDB(`
       SELECT DriverID

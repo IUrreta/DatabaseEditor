@@ -11,7 +11,11 @@ import {
   getDate,
   setCustomSaveConfig,
   check2026ModCompatibility,
-  snapshotEnginePowerProgression
+  snapshotEnginePowerProgression,
+  fetchCustomSeasonResultsPackage,
+  fetchSeasonYearsForRecordsExport,
+  exportSeasonsRecordsArchive,
+  importSeasonsRecordsArchive
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAduoEngineUpgradeRaceIds } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -111,9 +115,10 @@ const workerCommands = {
     const year = data.year
     const isCurrentYear = data.isCurrentYear ?? true;
     const formula = data.formula ? Number(data.formula) : 1;
-    const results = fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
-    const events = fetchEventsFrom(year, formula);
-    const teams = fetchTeamsStandingsWithPositionChange(year, formula);
+    const customPackage = fetchCustomSeasonResultsPackage(year, formula);
+    const results = customPackage?.results || fetchSeasonResults(year, isCurrentYear, formula === 1, formula);
+    const events = customPackage?.events || fetchEventsFrom(year, formula);
+    const teams = customPackage?.teams || fetchTeamsStandingsWithPositionChange(year, formula);
     const pointsInfo = fetchPointsRegulations()
 
     postMessage({
@@ -207,6 +212,25 @@ const workerCommands = {
     fetchSeasonResults(year, true, true, 1);
 
     postMessage({ responseMessage: "Save selected finished" });
+  },
+  recordsExportOptions: (data, postMessage) => {
+    const years = fetchSeasonYearsForRecordsExport();
+    postMessage({ responseMessage: "Records export options fetched", content: years });
+  },
+  exportRecordsSeasons: (data, postMessage) => {
+    const seasons = Array.isArray(data?.seasons) ? data.seasons : [];
+    const archive = exportSeasonsRecordsArchive(seasons);
+    postMessage({ responseMessage: "Records seasons exported", content: archive });
+  },
+  importRecordsSeasons: (data, postMessage) => {
+    const importedSeasons = importSeasonsRecordsArchive(data?.archive || {});
+    postMessage({
+      responseMessage: "Records seasons imported",
+      content: importedSeasons,
+      noti_msg: `Imported ${importedSeasons} season(s) to custom records`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   configuredH2H: (data, postMessage) => {
     if (data.h2h !== "-1") {

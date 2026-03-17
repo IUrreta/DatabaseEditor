@@ -60,6 +60,7 @@ const modPill = document.getElementById("modpill")
 export const editorPill = document.getElementById("editorPill")
 export const gamePill = document.getElementById("gamePill")
 const patreonPill = document.getElementById("patreonPill")
+const recordsPill = document.getElementById("recordsPill")
 
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
@@ -1975,6 +1976,115 @@ function finishDownloadSaveProgress() {
 
 const panicDownloadButton = document.getElementById("panicDownloadButton");
 const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
+const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
+const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
+const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
+const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
+
+let recordsExportSelectedSeasons = new Set();
+
+function updateRecordsExportButtonLabel() {
+    if (!recordsSeasonExportButton) return;
+
+    const selected = Array.from(recordsExportSelectedSeasons).sort((a, b) => Number(b) - Number(a));
+    const label = recordsSeasonExportButton.querySelector(".dropdown-label");
+    if (!label) return;
+
+    label.textContent = selected.length ? selected.join(", ") : "Select seasons";
+}
+
+function renderRecordsExportSeasonOptions(seasons) {
+    if (!recordsSeasonExportMenu) return;
+
+    recordsSeasonExportMenu.innerHTML = "";
+    recordsExportSelectedSeasons = new Set();
+    updateRecordsExportButtonLabel();
+
+    seasons.forEach((season) => {
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.style.cursor = "pointer";
+        item.textContent = String(season);
+        item.dataset.year = String(season);
+
+        item.addEventListener("click", () => {
+            if (recordsExportSelectedSeasons.has(season)) {
+                recordsExportSelectedSeasons.delete(season);
+                item.classList.remove("active");
+            }
+            else {
+                recordsExportSelectedSeasons.add(season);
+                item.classList.add("active");
+            }
+            updateRecordsExportButtonLabel();
+        });
+
+        recordsSeasonExportMenu.appendChild(item);
+    });
+}
+
+function loadRecordsExportOptions() {
+    const command = new Command("recordsExportOptions", {});
+    command.promiseExecute()
+        .then((response) => {
+            renderRecordsExportSeasonOptions(response.content || []);
+        })
+        .catch(() => {
+            renderRecordsExportSeasonOptions([]);
+        });
+}
+
+if (recordsPill) {
+    recordsPill.addEventListener("click", function () {
+        document.querySelector("#patreonChanges").classList.add("d-none")
+        document.querySelector("#editorChanges").classList.add("d-none")
+        document.querySelector("#gameChanges").classList.add("d-none")
+        document.querySelector("#recordsChanges").classList.remove("d-none")
+        loadRecordsExportOptions();
+    })
+}
+
+if (exportRecordsSeasonsButton) {
+    exportRecordsSeasonsButton.addEventListener("click", function () {
+        const selectedSeasons = Array.from(recordsExportSelectedSeasons).sort((a, b) => Number(b) - Number(a));
+        if (!selectedSeasons.length) {
+            new_update_notifications("Select at least one season to export", "error");
+            return;
+        }
+
+        const command = new Command("exportRecordsSeasons", { seasons: selectedSeasons });
+        command.promiseExecute().then((response) => {
+            const filename = `records-seasons-${new Date().toISOString().slice(0, 10)}.json`;
+            const blob = new Blob([JSON.stringify(response.content, null, 2)], { type: "application/json" });
+            saveAs(blob, filename);
+            new_update_notifications("Seasons records exported", "success");
+        });
+    });
+}
+
+if (importRecordsSeasonsButton && importRecordsSeasonsInput) {
+    importRecordsSeasonsButton.addEventListener("click", function () {
+        importRecordsSeasonsInput.click();
+    });
+
+    importRecordsSeasonsInput.addEventListener("change", function () {
+        const file = this.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const archive = JSON.parse(String(reader.result || "{}"));
+            const command = new Command("importRecordsSeasons", { archive });
+            command.promiseExecute().then(() => {
+                new Command("saveSelected", {}).execute();
+                loadRecordsExportOptions();
+            });
+        };
+        reader.readAsText(file);
+        this.value = "";
+    });
+}
 
 function downloadExportedSave(command) {
     if (isDownloadingSave) return;
@@ -2134,18 +2244,21 @@ gamePill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.remove("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
+    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 editorPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.remove("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
+    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 patreonPill.addEventListener("click", function () {
     document.querySelector("#patreonChanges").classList.remove("d-none")
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
+    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 if (turningPointsFrequencySlider) {
