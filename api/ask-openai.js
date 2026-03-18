@@ -44,13 +44,13 @@ export default async function handler(req, res) {
     await redis.expire(redisKey, 60 * 60 * 24);
 
     // 6️⃣ OpenAI
-    let aiModel = "gpt-5-mini";
+    let aiModel = "gpt-5.4-nano";
     if (tier === "Backer") {
       aiModel = "gpt-5-nano";
     }
     else if (tier === "Insider") {
       const firstHalfLimit = Math.ceil(limit / 2);
-      aiModel = used < firstHalfLimit ? "gpt-5-mini" : "gpt-5-nano";
+      aiModel = used < firstHalfLimit ? "gpt-5.4-nano" : "gpt-5-nano";
     }
     const safeMaxTokens = Math.min(max_tokens || 1500, 4000);
 

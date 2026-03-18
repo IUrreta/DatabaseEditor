@@ -60,6 +60,7 @@ const modPill = document.getElementById("modpill")
 export const editorPill = document.getElementById("editorPill")
 export const gamePill = document.getElementById("gamePill")
 const patreonPill = document.getElementById("patreonPill")
+const recordsPill = document.getElementById("recordsPill")
 
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
@@ -79,6 +80,15 @@ const patreonLogoutButton = document.getElementById('patreonLogoutButton');
 const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
+const panicDownloadButton = document.getElementById("panicDownloadButton");
+const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
+const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
+const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
+const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
+const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
+
+let recordsExportSelectedSeasons = new Set();
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
 initSeasonMods();
@@ -1973,8 +1983,128 @@ function finishDownloadSaveProgress() {
     window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
 }
 
-const panicDownloadButton = document.getElementById("panicDownloadButton");
-const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+
+
+function refreshRecordsExportCheckIcons() {
+    if (!recordsSeasonExportMenu) return;
+
+    recordsSeasonExportMenu.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        const isSelected = recordsExportSelectedSeasons.has(Number(item.dataset.year));
+        item.classList.toggle("active", isSelected);
+        item.querySelector("i.bi-check")?.classList.toggle("unactive", !isSelected);
+    });
+}
+
+function updateRecordsExportButtonLabel() {
+    if (!recordsSeasonExportButton) return;
+
+    const selected = Array.from(recordsExportSelectedSeasons).sort((a, b) => Number(b) - Number(a));
+    const label = recordsSeasonExportButton.querySelector(".dropdown-label");
+    if (!label) return;
+
+    label.textContent = selected.length ? selected.join(", ") : "Select seasons";
+}
+
+function renderRecordsExportSeasonOptions(seasons) {
+    if (!recordsSeasonExportMenu) return;
+
+    recordsSeasonExportMenu.innerHTML = "";
+    recordsExportSelectedSeasons = new Set();
+    updateRecordsExportButtonLabel();
+
+    seasons.forEach((season) => {
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.href = "#";
+        item.style.cursor = "pointer";
+        item.dataset.year = String(season);
+        const text = document.createElement("span");
+        text.textContent = String(season);
+        const icon = document.createElement("i");
+        icon.classList.add("bi", "bi-check", "unactive");
+        item.append(text, icon);
+
+        item.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (recordsExportSelectedSeasons.has(season)) {
+                recordsExportSelectedSeasons.delete(season);
+            }
+            else {
+                recordsExportSelectedSeasons.add(season);
+            }
+            updateRecordsExportButtonLabel();
+            refreshRecordsExportCheckIcons();
+        });
+
+        recordsSeasonExportMenu.appendChild(item);
+    });
+
+    refreshRecordsExportCheckIcons();
+}
+
+function loadRecordsExportOptions() {
+    const command = new Command("recordsExportOptions", {});
+    command.promiseExecute()
+        .then((response) => {
+            renderRecordsExportSeasonOptions(response.content || []);
+        })
+        .catch(() => {
+            renderRecordsExportSeasonOptions([]);
+        });
+}
+
+if (recordsPill) {
+    recordsPill.addEventListener("click", function () {
+        document.querySelector("#patreonChanges").classList.add("d-none")
+        document.querySelector("#editorChanges").classList.add("d-none")
+        document.querySelector("#gameChanges").classList.add("d-none")
+        document.querySelector("#recordsChanges").classList.remove("d-none")
+        loadRecordsExportOptions();
+    })
+}
+
+if (exportRecordsSeasonsButton) {
+    exportRecordsSeasonsButton.addEventListener("click", function () {
+        const selectedSeasons = Array.from(recordsExportSelectedSeasons).sort((a, b) => Number(b) - Number(a));
+        if (!selectedSeasons.length) {
+            new_update_notifications("Select at least one season to export", "error");
+            return;
+        }
+
+        const command = new Command("exportRecordsSeasons", { seasons: selectedSeasons });
+        command.promiseExecute().then((response) => {
+            const filename = `records-seasons-${new Date().toISOString().slice(0, 10)}.json`;
+            const blob = new Blob([JSON.stringify(response.content, null, 2)], { type: "application/json" });
+            saveAs(blob, filename);
+            new_update_notifications("Seasons records exported", "success");
+        });
+    });
+}
+
+if (importRecordsSeasonsButton && importRecordsSeasonsInput) {
+    importRecordsSeasonsButton.addEventListener("click", function () {
+        importRecordsSeasonsInput.click();
+    });
+
+    importRecordsSeasonsInput.addEventListener("change", function () {
+        const file = this.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const archive = JSON.parse(String(reader.result || "{}"));
+            const command = new Command("importRecordsSeasons", { archive });
+            command.promiseExecute().then(() => {
+                new Command("saveSelected", {}).execute();
+                loadRecordsExportOptions();
+            });
+        };
+        reader.readAsText(file);
+        this.value = "";
+    });
+}
 
 function downloadExportedSave(command) {
     if (isDownloadingSave) return;
@@ -2134,18 +2264,21 @@ gamePill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.remove("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
+    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 editorPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.remove("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
+    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 patreonPill.addEventListener("click", function () {
     document.querySelector("#patreonChanges").classList.remove("d-none")
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
+    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 if (turningPointsFrequencySlider) {

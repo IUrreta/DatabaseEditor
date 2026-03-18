@@ -28,7 +28,7 @@ let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
-let standingsDetailsEnabled = false;
+let standingsDetailsMode = 0;
 let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
@@ -94,20 +94,33 @@ function applyStandingsDetailsState() {
     const seasonViewer = document.getElementById("season_viewer");
     const button = document.getElementById("standingsDetailsButton");
     const label = button?.querySelector("span");
-    const eyeIcon = button?.querySelector("i.bi-eye");
-    const eyeSlashIcon = button?.querySelector("i.bi-eye-slash");
+    const icons = button?.querySelectorAll("i");
+    const mainIcon = icons?.[0];
+    const slashIcon = icons?.[1];
+    const detailsEnabled = standingsDetailsMode === 1 || standingsDetailsMode === 2;
+    const compactEnabled = standingsDetailsMode === 2;
 
-    if (seasonViewer) {
-        seasonViewer.classList.toggle("standings-details-enabled", standingsDetailsEnabled);
+    seasonViewer.classList.toggle("standings-details-enabled", detailsEnabled);
+    seasonViewer.classList.toggle("standings-compact-mode", compactEnabled);
+
+    button.classList.toggle("compact-mode", compactEnabled);
+    
+
+    if (standingsDetailsMode === 0) {
+        label.textContent = "Show details";
     }
-
-    if (label) {
-        label.textContent = standingsDetailsEnabled ? "Hide details" : "Show details";
+    else if (standingsDetailsMode === 1) {
+        label.textContent = "Compact table";
     }
+    else {
+        label.textContent = "Reset table";
+    }
+    
 
-    if (eyeIcon && eyeSlashIcon) {
-        eyeIcon.style.display = standingsDetailsEnabled ? "inline" : "none";
-        eyeSlashIcon.style.display = standingsDetailsEnabled ? "none" : "inline";
+    if (mainIcon && slashIcon) {
+        mainIcon.className = compactEnabled ? "bi bi-layout-sidebar-inset" : "bi bi-eye";
+        mainIcon.style.display = standingsDetailsMode === 0 ? "none" : "inline";
+        slashIcon.style.display = standingsDetailsMode === 0 ? "inline" : "none";
     }
 }
 
@@ -156,7 +169,7 @@ function updateStandingsPointsGaps(rows, leaderPoints) {
 }
 
 document.getElementById("standingsDetailsButton").addEventListener("click", function () {
-    standingsDetailsEnabled = !standingsDetailsEnabled;
+    standingsDetailsMode = (standingsDetailsMode + 1) % 3;
     applyStandingsDetailsState();
 });
 applyStandingsDetailsState();
@@ -518,6 +531,32 @@ function formatDriverCellValue(value, type) {
         return "-"
     }
     return manage_dataset_info_driver(value, undefined, type)
+}
+
+function isRaceDnf(entry, useSprint = false) {
+    if (!entry) return false
+    if (useSprint) {
+        return Number(entry?.sprintPoints) === -1 || Number(entry?.sprintPos) === -1
+    }
+    return Boolean(entry?.dnf) || Number(entry?.points) === -1 || Number(entry?.finishingPos) === -1
+}
+
+function hasFastestLapMark(race, allRaces = []) {
+    if (!race) return false
+    if (typeof race?.fastestLapWinner === "boolean") {
+        return race.fastestLapWinner
+    }
+
+    const fastestLap = Number(race?.fastestLap ?? 0)
+    if (fastestLap > 1) {
+        const bestLap = allRaces
+            .map((entry) => Number(entry?.fastestLap ?? 0))
+            .filter((value) => value > 1)
+            .reduce((best, value) => (best == null || value < best ? value : best), null)
+        return bestLap != null && Math.abs(fastestLap - bestLap) < 1e-6
+    }
+
+    return Boolean(race?.fastestLap)
 }
 
 function syncFormulaFromCalendar(formula) {
@@ -1451,8 +1490,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
                 const d1Points = d1 ? (safePoints(d1.points) + safePoints(d1.qualifyingPoints)) : 0;
                 const d2Points = d2 ? (safePoints(d2.points) + safePoints(d2.qualifyingPoints)) : 0;
-                const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
-                const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
+                const d1Pos = d1 ? (isRaceDnf(d1) ? "DNF" : d1.finishingPos) : "-";
+                const d2Pos = d2 ? (isRaceDnf(d2) ? "DNF" : d2.finishingPos) : "-";
 
                 // datasets base
                 raceDiv.dataset.raceid = raceId;
@@ -1484,8 +1523,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 raceDiv.dataset.quali1 = d1 ? d1.qualifyingPos ?? 99 : 99;
                 raceDiv.dataset.quali2 = d2 ? d2.qualifyingPos ?? 99 : 99;
 
-                raceDiv.dataset.fastlap1 = d1 && d1.fastestLap ? 1 : 0;
-                raceDiv.dataset.fastlap2 = d2 && d2.fastestLap ? 1 : 0;
+                raceDiv.dataset.fastlap1 = hasFastestLapMark(d1, pair) ? 1 : 0;
+                raceDiv.dataset.fastlap2 = hasFastestLapMark(d2, pair) ? 1 : 0;
 
                 // Suma de puntos de carrera
                 teampoints += parseInt(raceDiv.dataset.pointsCount);
@@ -1582,8 +1621,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
                 const d1Points = d1 ? safePoints(d1.points) : 0;
                 const d2Points = d2 ? safePoints(d2.points) : 0;
-                const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
-                const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
+                const d1Pos = d1 ? (isRaceDnf(d1) ? "DNF" : d1.finishingPos) : "-";
+                const d2Pos = d2 ? (isRaceDnf(d2) ? "DNF" : d2.finishingPos) : "-";
 
                 const d1PointsTotal = safePoints(d1?.points) + safePoints(d1?.qualifyingPoints);
                 const d2PointsTotal = safePoints(d2?.points) + safePoints(d2?.qualifyingPoints);
@@ -1828,7 +1867,7 @@ function new_addDriver(driver, races_done, odd) {
             if (races_done.includes(raceid) && race) {
                 const qualiPoints = parseInt(race.qualifyingPoints) || 0;
                 const racePointsRaw = parseInt(race.points);
-                const featurePoints = racePointsRaw === -1
+                const featurePoints = race?.dnf
                     ? -1
                     : racePointsRaw + Math.max(0, qualiPoints);
                 const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
@@ -1844,7 +1883,7 @@ function new_addDriver(driver, races_done, odd) {
                     hasSprintPoints ? race.sprintPoints : undefined,     
                     "points"
                 );
-                raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
+                raceDiv.dataset.fastlap = hasFastestLapMark(race, driver?.races || []) ? 1 : 0;
                 raceDiv.dataset.quali = manage_dataset_info_driver(
                     race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
                     undefined,
@@ -1897,11 +1936,11 @@ function new_addDriver(driver, races_done, odd) {
                     sprintDiv.textContent = "-";
                 }
 
-                featureDiv.dataset.pos = formatDriverCellValue(race.finishingPos, "pos");
+                featureDiv.dataset.pos = formatDriverCellValue(race?.dnf ? -1 : race.finishingPos, "pos");
                 const qualiPoints = parseInt(race.qualifyingPoints) || 0;
-                const featurePoints = (parseInt(race.points) || 0) + Math.max(0, qualiPoints);
+                const featurePoints = race?.dnf ? -1 : (parseInt(race.points) || 0) + Math.max(0, qualiPoints);
                 featureDiv.dataset.points = formatDriverCellValue(featurePoints, "points");
-                featureDiv.dataset.fastlap = race.fastestLap ? 1 : 0;
+                featureDiv.dataset.fastlap = hasFastestLapMark(race, driver?.races || []) ? 1 : 0;
                 featureDiv.dataset.quali = formatDriverCellValue(
                     race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
                     "quali"

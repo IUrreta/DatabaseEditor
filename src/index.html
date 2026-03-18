@@ -399,6 +399,13 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link bold-font categoryPills generalPills" data-bs-toggle="pill"
+                  data-section=".records-section" id="recordsPill">
+                  <div class="basic-label bold-font">Records</div>
+                  <div class="pill-line"></div>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".engines-section" id="patreonPill">
                   <div class="basic-label bold-font">Patreon</div>
@@ -1091,6 +1098,35 @@
             </div>
 
 
+          </div>
+
+          <div id="recordsChanges" class="d-none">
+            <div class="export-import-records">
+              <span class="modal-subtitle bold-font">Export seasons records</span>
+              <div class="modal-text">Select one or more seasons and export their standings and race results as JSON.</div>
+              <div class="dropdown-and-button-export mt-2">
+                <div class="dropdown-global">
+                  <button class="redesigned-dropdown bold-font" id="recordsSeasonExportButton" data-value="none">
+                    <span class="dropdown-label">Select seasons</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu" id="recordsSeasonExportMenu"></ul>
+                </div>
+                <div class="button-with-icon" id="exportRecordsSeasonsButton">
+                  <i class="bi bi-box-arrow-up"></i>
+                  <span>Export</span>
+                </div>
+              </div>
+            </div>
+            <div class="export-import-records">
+              <span class="modal-subtitle bold-font">Import seasons records</span>
+              <div class="modal-text">Import a JSON backup. Imported seasons are saved into a Custom table and become available in Season Viewer.</div>
+              <input type="file" id="importRecordsSeasonsInput" class="d-none" accept="application/json,.json">
+              <div class="button-with-icon mt-2" id="importRecordsSeasonsButton">
+                <i class="bi bi-box-arrow-down"></i>
+                <span>Import</span>
+              </div>
+            </div>
           </div>
 
         </div>
