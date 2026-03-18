@@ -909,6 +909,8 @@ i.bi-file-text:hover {
 
 #yearMenu{
   min-width: 140px;
+  max-height: 220px;
+  overflow: auto;
 }
 
 .year-and-break {
@@ -1511,7 +1513,8 @@ input[type="checkbox"]:focus {
 .bento-team-standings::-webkit-scrollbar,
 .quali-comparison::-webkit-scrollbar,
 .race-comparison::-webkit-scrollbar,
-.script-view::-webkit-scrollbar {
+.script-view::-webkit-scrollbar,
+#yearMenu::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -1541,7 +1544,8 @@ input[type="checkbox"]:focus {
 #engineMenu::-webkit-scrollbar-thumb,
 .quali-comparison::-webkit-scrollbar-thumb,
 .race-comparison::-webkit-scrollbar-thumb,
-.script-view::-webkit-scrollbar-thumb {
+.script-view::-webkit-scrollbar-thumb,
+#yearMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -1572,7 +1576,8 @@ input[type="checkbox"]:focus {
 .bento-team-standings::-webkit-scrollbar-thumb:hover,
 .quali-comparison::-webkit-scrollbar-thumb:hover,
 .race-comparison::-webkit-scrollbar-thumb:hover,
-.script-view::-webkit-scrollbar-thumb:hover {
+.script-view::-webkit-scrollbar-thumb:hover,
+#yearMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -4073,6 +4078,8 @@ DRIVERS TABLE
   overflow-y: auto;
   font-size: 15px;
   max-height: 80vh;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 :not(.f2-table-data) .drivers-table-row:first-child .drivers-table-position,
@@ -4303,6 +4310,42 @@ DRIVERS TABLE
   --standings-details-col-width: 44px;
 }
 
+#season_viewer.standings-compact-mode .drivers-table,
+#season_viewer.standings-compact-mode .teams-table {
+  width: fit-content;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#season_viewer.standings-compact-mode .drivers-table-header .drivers-table-driver,
+#season_viewer.standings-compact-mode .teams-table-header .teams-table-team {
+  min-width: 245px;
+}
+
+#season_viewer.standings-compact-mode .main-viewer-section {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+#season_viewer.standings-compact-mode .drivers-table-header,
+#season_viewer.standings-compact-mode .teams-table-header {
+  height: 33px;
+}
+
+
+#season_viewer.standings-compact-mode .drivers-table-driver,
+#season_viewer.standings-compact-mode .teams-table-team {
+  min-width: 215px;
+}
+
+#season_viewer.standings-compact-mode .drivers-table-header .drivers-table-normal,
+#season_viewer.standings-compact-mode .teams-table-header .teams-table-normal,
+#season_viewer.standings-compact-mode .drivers-table-row .drivers-table-normal,
+#season_viewer.standings-compact-mode .teams-table-row .teams-table-normal {
+  display: none;
+}
+
 .drivers-table-header .standings-pos-change,
 .teams-table-header .standings-pos-change,
 .drivers-table-header .standings-points-gap,
@@ -4321,7 +4364,7 @@ DRIVERS TABLE
   align-items: center;
   justify-content: center;
   gap: 1px;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1;
   font-family: 'NumbersFont';
   padding-top: 0;
@@ -4355,11 +4398,11 @@ DRIVERS TABLE
 }
 
 #season_viewer.standings-details-enabled .drivers-table-row.last-title-contender {
-  border-bottom: 1px solid var(--table-dnf);
+  border-bottom: 2px solid var(--table-dnf);
 }
 
 #season_viewer.standings-details-enabled .teams-table-row.last-title-contender {
-  border-bottom: 1px solid var(--table-dnf);
+  border-bottom: 2px solid var(--table-dnf);
 }
 
 .drivers-table-data .drivers-table-position,
@@ -5009,6 +5052,7 @@ phm
   display: flex;
   align-items: center;
   padding-left: 4px;
+  
 }
 
 .drivers-table-row .drivers-table-driver {
@@ -19718,7 +19762,6 @@ p.news-error-api-key {
 
 .rounds-counter{
   margin-left: auto;
-  padding-right: 8px;
   color: var(--text-tertiary);
   font-family: "NumbersFont";
 }

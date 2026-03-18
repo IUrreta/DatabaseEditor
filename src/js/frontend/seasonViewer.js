@@ -28,7 +28,7 @@ let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
-let standingsDetailsEnabled = false;
+let standingsDetailsMode = 0;
 let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
@@ -94,20 +94,33 @@ function applyStandingsDetailsState() {
     const seasonViewer = document.getElementById("season_viewer");
     const button = document.getElementById("standingsDetailsButton");
     const label = button?.querySelector("span");
-    const eyeIcon = button?.querySelector("i.bi-eye");
-    const eyeSlashIcon = button?.querySelector("i.bi-eye-slash");
+    const icons = button?.querySelectorAll("i");
+    const mainIcon = icons?.[0];
+    const slashIcon = icons?.[1];
+    const detailsEnabled = standingsDetailsMode === 1 || standingsDetailsMode === 2;
+    const compactEnabled = standingsDetailsMode === 2;
 
-    if (seasonViewer) {
-        seasonViewer.classList.toggle("standings-details-enabled", standingsDetailsEnabled);
+    seasonViewer.classList.toggle("standings-details-enabled", detailsEnabled);
+    seasonViewer.classList.toggle("standings-compact-mode", compactEnabled);
+
+    button.classList.toggle("compact-mode", compactEnabled);
+    
+
+    if (standingsDetailsMode === 0) {
+        label.textContent = "Show details";
     }
-
-    if (label) {
-        label.textContent = standingsDetailsEnabled ? "Hide details" : "Show details";
+    else if (standingsDetailsMode === 1) {
+        label.textContent = "Compact table";
     }
+    else {
+        label.textContent = "Reset table";
+    }
+    
 
-    if (eyeIcon && eyeSlashIcon) {
-        eyeIcon.style.display = standingsDetailsEnabled ? "inline" : "none";
-        eyeSlashIcon.style.display = standingsDetailsEnabled ? "none" : "inline";
+    if (mainIcon && slashIcon) {
+        mainIcon.className = compactEnabled ? "bi bi-layout-sidebar-inset" : "bi bi-eye";
+        mainIcon.style.display = standingsDetailsMode === 0 ? "none" : "inline";
+        slashIcon.style.display = standingsDetailsMode === 0 ? "inline" : "none";
     }
 }
 
@@ -156,7 +169,7 @@ function updateStandingsPointsGaps(rows, leaderPoints) {
 }
 
 document.getElementById("standingsDetailsButton").addEventListener("click", function () {
-    standingsDetailsEnabled = !standingsDetailsEnabled;
+    standingsDetailsMode = (standingsDetailsMode + 1) % 3;
     applyStandingsDetailsState();
 });
 applyStandingsDetailsState();
