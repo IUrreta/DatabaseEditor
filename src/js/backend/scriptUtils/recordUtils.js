@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, fetchEventsFrom, fetchPointsRegulations, fetchLastCompletedRaceId, ensureCustomDoDRankingTable } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, fetchEventsFrom, fetchPointsRegulations, fetchLastCompletedRaceId, ensureCustomDoDRankingTable, fetchCustomSeasonResultsPackage } from "./dbUtils.js";
 import records from "../../../data/records.json";
 import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
@@ -203,6 +203,220 @@ export function enrichDriversWithHistory(drivers, season = null) {
     });
 }
 
+function getCustomQualifyingPos(race) {
+    const pos = race?.qualifyingPos ?? race?.startingPos ?? 99;
+    return pos > 0 ? pos : 99;
+}
+
+function hasCustomFastestLap(race) {
+    return race?.fastestLapWinner === true || race?.fastestLap === true;
+}
+
+function getCustomRacePoints(race) {
+    return Math.max(0, race?.points ?? 0)
+        + Math.max(0, race?.qualifyingPoints ?? 0)
+        + Math.max(0, race?.sprintPoints ?? 0);
+}
+
+function getCustomDriverRecordValue(stats, type) {
+    if (!stats) return 0;
+    if (type === "wins") return stats.totalWins ?? 0;
+    if (type === "podiums") return stats.totalPodiums ?? 0;
+    if (type === "poles") return stats.totalPoles ?? 0;
+    if (type === "champs") return stats.totalChampionshipWins ?? 0;
+    if (type === "fastestlaps") return stats.totalFastestLaps ?? 0;
+    if (type === "points") return stats.totalPointsScored ?? 0;
+    if (type === "races") return stats.totalStarts ?? 0;
+    if (type === "dotd") return stats.totalDriverOfTheDay ?? 0;
+    return 0;
+}
+
+function buildCustomSeasonDriverStats(customPackage) {
+    const statsByDriverId = new Map();
+    const drivers = customPackage?.results || [];
+
+    drivers.forEach((driver) => {
+        const driverId = driver?.driverId;
+        if (!driverId) return;
+
+        const races = driver?.races || [];
+        const latestRaceTeamId = races.length
+            ? (races[races.length - 1]?.teamId ?? driver?.latestTeamId ?? -1)
+            : (driver?.latestTeamId ?? -1);
+
+        const stats = {
+            id: driverId,
+            name: driver?.driverName ?? "",
+            teamId: latestRaceTeamId,
+            retired: 0,
+            totalStarts: races.length,
+            totalPoles: 0,
+            totalPodiums: 0,
+            totalWins: 0,
+            totalSprintWins: 0,
+            totalChampionshipWins: driver?.championshipPosition === 1 ? 1 : 0,
+            totalPointsScored: 0,
+            totalFastestLaps: 0,
+            totalDriverOfTheDay: 0
+        };
+
+        races.forEach((race) => {
+            const finishingPos = race?.finishingPos ?? 0;
+            const sprintPos = race?.sprintPos ?? 0;
+            const qualifyingPos = getCustomQualifyingPos(race);
+
+            if (finishingPos === 1) stats.totalWins += 1;
+            if (finishingPos >= 1 && finishingPos <= 3) stats.totalPodiums += 1;
+            if (qualifyingPos === 1) stats.totalPoles += 1;
+            if (sprintPos === 1) stats.totalSprintWins += 1;
+            if (hasCustomFastestLap(race)) stats.totalFastestLaps += 1;
+            if (race?.driverOfTheDay) stats.totalDriverOfTheDay += 1;
+            stats.totalPointsScored += getCustomRacePoints(race);
+        });
+
+        statsByDriverId.set(driverId, stats);
+    });
+
+    return statsByDriverId;
+}
+
+function buildCustomSeasonDriverRecords(type, year, customPackage) {
+    const statsByDriverId = buildCustomSeasonDriverStats(customPackage);
+    const formatted = Array.from(statsByDriverId.values())
+        .map((stats) => ({
+            name: stats.name,
+            id: stats.id,
+            record: type,
+            value: getCustomDriverRecordValue(stats, type),
+            teamId: stats.teamId,
+            retired: stats.retired
+        }))
+        .filter((entry) => entry.value > 0);
+
+    if (formatted.length === 0) return [];
+
+    const enriched = enrichDriversWithHistory(aggregateSeasonDriverRecords(formatted), year);
+    return enriched
+        .map((record) => {
+            const stats = statsByDriverId.get(record?.id);
+            if (!stats) return record;
+
+            return {
+                ...record,
+                teamId: stats.teamId,
+                value: getCustomDriverRecordValue(stats, type),
+                totalStarts: stats.totalStarts,
+                totalPoles: stats.totalPoles,
+                totalPodiums: stats.totalPodiums,
+                totalWins: stats.totalWins,
+                totalSprintWins: stats.totalSprintWins,
+                totalChampionshipWins: stats.totalChampionshipWins,
+                totalPointsScored: stats.totalPointsScored,
+                totalFastestLaps: stats.totalFastestLaps
+            };
+        })
+        .filter((entry) => entry?.value > 0)
+        .sort((a, b) => (b?.value ?? 0) - (a?.value ?? 0));
+}
+
+function isAllowedCustomTeamId(teamId) {
+    const globals = getGlobals();
+    return globals.isCreateATeam
+        ? (teamId >= 1 && teamId <= 10) || teamId === 32
+        : (teamId >= 1 && teamId <= 10);
+}
+
+function getCustomTeamRaceValue(race, type) {
+    const finishingPos = race?.finishingPos ?? 0;
+    const qualifyingPos = getCustomQualifyingPos(race);
+
+    if (type === "wins") return finishingPos === 1 ? 1 : 0;
+    if (type === "podiums") return (finishingPos >= 1 && finishingPos <= 3) ? 1 : 0;
+    if (type === "poles") return qualifyingPos === 1 ? 1 : 0;
+    if (type === "dotd") return race?.driverOfTheDay ? 1 : 0;
+    return 0;
+}
+
+function fetchDriverCurrentNumber(driverId) {
+    const currentNumber = queryDB(`
+      SELECT Number
+      FROM Staff_DriverNumbers
+      WHERE CurrentHolder = ?
+    `, [driverId], 'singleValue');
+
+    return currentNumber != null ? currentNumber : null;
+}
+
+function buildCustomSeasonTeamRecords(type, customPackage) {
+    const teamTotals = new Map();
+    const breakdownByTeamId = new Map();
+    const lineupByTeamId = new Map();
+    const drivers = customPackage?.results || [];
+    const events = customPackage?.events || [];
+    const lastRaceDoneId = [...events]
+        .filter((eventRow) => eventRow?.[3] === 2)
+        .map((eventRow) => eventRow?.[0])
+        .pop() ?? (events[events.length - 1]?.[0] ?? 0);
+
+    drivers.forEach((driver) => {
+        const driverId = driver?.driverId;
+        if (!driverId) return;
+
+        const driverName = driver?.driverName ?? "";
+        const races = driver?.races || [];
+
+        races.forEach((race) => {
+            const teamId = race?.teamId ?? driver?.latestTeamId ?? -1;
+            if (!isAllowedCustomTeamId(teamId)) return;
+
+            const value = getCustomTeamRaceValue(race, type);
+            if (value > 0) {
+                teamTotals.set(teamId, (teamTotals.get(teamId) || 0) + value);
+
+                if (!breakdownByTeamId.has(teamId)) {
+                    breakdownByTeamId.set(teamId, new Map());
+                }
+                const teamBreakdown = breakdownByTeamId.get(teamId);
+                const current = teamBreakdown.get(driverId) || { id: driverId, name: driverName, count: 0 };
+                current.count += value;
+                teamBreakdown.set(driverId, current);
+            }
+
+            if (lastRaceDoneId > 0 && race?.raceId === lastRaceDoneId) {
+                if (!lineupByTeamId.has(teamId)) lineupByTeamId.set(teamId, []);
+                lineupByTeamId.get(teamId).push({
+                    id: driverId,
+                    name: driverName,
+                    number: fetchDriverCurrentNumber(driverId),
+                    finishingPos: race?.finishingPos ?? 99
+                });
+            }
+        });
+    });
+
+    return Array.from(teamTotals.entries())
+        .map(([teamId, value]) => {
+            const teamDrivers = (lineupByTeamId.get(teamId) || [])
+                .sort((a, b) => a.finishingPos - b.finishingPos || a.id - b.id)
+                .slice(0, 2)
+                .map(({ finishingPos, ...driver }) => driver);
+            const breakdown = Array.from(breakdownByTeamId.get(teamId)?.values() || [])
+                .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+            return {
+                teamId,
+                value: value || 0,
+                breakdown,
+                drivers: {
+                    driver1: teamDrivers[0] ?? null,
+                    driver2: teamDrivers[1] ?? null
+                }
+            };
+        })
+        .filter((entry) => entry.value > 0)
+        .sort((a, b) => b.value - a.value || a.teamId - b.teamId);
+}
+
 export function getSelectedRecord(type, year) {
     let recordTargetColumn, recordTargetTable;
 
@@ -243,6 +457,11 @@ export function getSelectedRecord(type, year) {
             }));
 
             return enrichDriversWithHistory(formatted);
+        }
+
+        const customPackage = fetchCustomSeasonResultsPackage(year, 1);
+        if (customPackage) {
+            return buildCustomSeasonDriverRecords(type, year, customPackage);
         }
 
         const counts = fetchDriverOfTheDayCounts(year) || [];
@@ -330,6 +549,11 @@ export function getSelectedRecord(type, year) {
         return merged;
     }
     else {
+        const customPackage = fetchCustomSeasonResultsPackage(year, 1);
+        if (customPackage) {
+            return buildCustomSeasonDriverRecords(type, year, customPackage);
+        }
+
         // temporada concreta
         recordTargetTable = "Staff_Driver_RaceRecordPerSeason";
 
@@ -420,6 +644,10 @@ export function getSelectedTeamRecord(type, year, formula = 1) {
     if (String(year) === "all") return [];
 
     const recordType = String(type);
+    const customPackage = formula === 1 ? fetchCustomSeasonResultsPackage(year, formula) : null;
+    if (customPackage) {
+        return buildCustomSeasonTeamRecords(recordType, customPackage);
+    }
 
     let base = [];
     let breakdownRows = [];

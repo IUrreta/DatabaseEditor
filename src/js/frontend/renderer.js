@@ -80,6 +80,15 @@ const patreonLogoutButton = document.getElementById('patreonLogoutButton');
 const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
+const panicDownloadButton = document.getElementById("panicDownloadButton");
+const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
+const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
+const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
+const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
+const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
+
+let recordsExportSelectedSeasons = new Set();
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
 initSeasonMods();
@@ -1974,15 +1983,7 @@ function finishDownloadSaveProgress() {
     window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
 }
 
-const panicDownloadButton = document.getElementById("panicDownloadButton");
-const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
-const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
-const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
-const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
-const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
-const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
 
-let recordsExportSelectedSeasons = new Set();
 
 function refreshRecordsExportCheckIcons() {
     if (!recordsSeasonExportMenu) return;
