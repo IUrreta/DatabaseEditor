@@ -14683,6 +14683,18 @@ a.bi-custom-patreon.close-slide-up {
   gap: 5px;
 }
 
+#recordsChanges{
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.dropdown-and-button-export{
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+
 #patreonChanges>.api-key-section {
   margin-top: 10px;
   padding-top: 5px;
@@ -20072,6 +20084,91 @@ p.news-error-api-key {
 
   .mod-name.title-2026{
     margin-top: -50px !important;
+  }
+}
+
+@media (max-height: 930px) {
+  .session-results-title{
+    padding: 13px 18px 10px 16px;
+  }
+
+  .session-results-title-main,
+  .session-results-title-session{
+    font-size: 21px;
+  }
+
+  .session-results-title-track{
+    font-size: 12px;
+  }
+
+  .session-results-title-round,
+  .session-results-footer-label,
+  .session-results-footer-time{
+    font-size: 14px;
+  }
+
+  .session-results-footer{
+    padding: 8px 18px 8px 16px;
+  }
+
+  .session-results-row > div {
+    padding: 2px 6px;
+  }
+
+  .session-results-position,
+  .session-results-points{
+    height: 30px !important;
+    padding-top: 5px !important;
+    font-size: 14px !important;
+  }
+
+  .session-results-gained-lost,
+  .session-results-fastest-lap,
+  .session-results-laps,
+  .session-results-quali-lap,
+  .session-results-time,
+  .session-results-grid-position{
+    font-size: 12px;
+    padding-top: 5px !important;
+  }
+
+  .session-results-driver-name,
+  .session-results-team-name{
+    font-size: 13px;
+  }
+
+  .session-results-engine-name{
+    font-size: 11px;
+  }
+
+  .session-results-dotd{
+    font-size: 10px;
+    margin-left: 4px;
+  }
+
+  .session-results-nationality-flag{
+    width: 20px;
+    height: 14px;
+    margin-right: 3px;
+  }
+
+  .session-results-team{
+    gap: 6px;
+  }
+
+  .session-results-driver-logo-div {
+    width: 20px;
+    height: 20px;
+  }
+
+  .session-results-driver-logo-div img, .session-results-driver-logo-div div {
+    width: 20px;
+    height: 20px;
+  }
+
+  .session-results-time-input{
+    font-size: 12px;
+    height: 18px;
   }
 }
 

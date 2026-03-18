@@ -150,39 +150,36 @@ export function fetchNationality(driverID, gameYear) {
   if (year === "2024") year = "24";
   if (year === "2023") year = "23";
 
-  if (year === "24") {
-    const countryID = queryDB(`
-        SELECT CountryID 
-        FROM Staff_BasicData 
-        WHERE StaffID = ?
-      `, [driverID], 'singleValue');
-    if (!countryID) return "";
-
-    const countryName = queryDB(`
-        SELECT Name 
-        FROM Countries 
-        WHERE CountryID = ?
-      `, [countryID], 'singleValue');
-    if (!countryName) return "";
-
-
-    const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
-    if (match) {
-      const nat = match[0];
-      const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
-      return countries_abreviations[natName] || "";
-    }
-
-    return "";
-  } else if (year === "23") {
+  if (year === "23") {
     const nationality = queryDB(`
         SELECT Nationality 
         FROM Staff_BasicData 
-        WHERE StaffID = ?
+      WHERE StaffID = ?
       `, [driverID], 'singleValue');
     if (!nationality) return "";
 
     const natName = nationality.replace(/(?<!^)([A-Z])/g, " $1");
+    return countries_abreviations[natName] || "";
+  }
+
+  const countryID = queryDB(`
+      SELECT CountryID 
+      FROM Staff_BasicData 
+      WHERE StaffID = ?
+    `, [driverID], 'singleValue');
+  if (!countryID) return "";
+
+  const countryName = queryDB(`
+      SELECT Name 
+      FROM Countries 
+      WHERE CountryID = ?
+    `, [countryID], 'singleValue');
+  if (!countryName) return "";
+
+  const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
+  if (match) {
+    const nat = match[0];
+    const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
     return countries_abreviations[natName] || "";
   }
 
@@ -1118,7 +1115,13 @@ export function fetchCustomSeasonResultsPackage(year, formula = 1) {
   `, [year], 'singleRow');
 
   if (!row || !row[0]) return null;
-  return JSON.parse(row[0]);
+  const payload = JSON.parse(row[0]);
+  if (!payload || typeof payload !== "object") return null;
+
+  return {
+    ...payload,
+    results: attachCustomSeasonDriverNationality(payload.results ?? [], year)
+  };
 }
 
 function fetchSeasonRaceResultsArchiveRows(seasonId) {
@@ -1484,7 +1487,7 @@ export function importSeasonsRecordsArchive(archive) {
     if (f1Block) {
       packagePayload = {
         events: f1Block.events || [],
-        results: f1Block.results || [],
+        results: attachCustomSeasonDriverNationality(f1Block.results || [], seasonId),
         teams: f1Block.teams || []
       };
     }
