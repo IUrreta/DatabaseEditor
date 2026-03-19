@@ -1,4 +1,6 @@
 import { inverted_countries_abreviations } from "../backend/scriptUtils/countries";
+import { Command } from "../backend/command.js";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { team_dict, mentalityModifiers, teamOrder, mentality_dict, combined_dict, logos_disc } from "./config";
 import { colors_dict } from "./head2head";
 import { attachHold } from "./renderer";
@@ -28,6 +30,7 @@ const draftStaffTypeControl = document.getElementById("draftStaffTypeControl");
 const genderSwapButton = document.getElementById("genderSwapButton");
 const nationalityButton = document.getElementById("nationalityButton");
 const nationalityMenu = document.getElementById("nationalityMenu");
+const generatedStaffFaceGalleryModalEl = document.getElementById("generatedStaffFaceGalleryModal");
 const plusBtn = document.querySelector('.age-holder .bi-plus');
 const minusBtn = document.querySelector('.age-holder .bi-dash');
 const ageSpan = document.querySelector('.age-holder .actual-age');
@@ -39,6 +42,7 @@ let minusNumberBtn = document.querySelector('.number-buttons .bi-dash');
 let numberSpan = document.querySelector('.number-holder');
 let selectedAddStaffType = "0";
 let currentDraftId = null;
+let generatedFaceGalleryRequest = 0;
 
 const staffTypeConfig = {
     "0": { label: "Drivers", spaceStats: "driverStats" },
@@ -82,17 +86,20 @@ function initNationalityDropdown() {
         item.appendChild(text);
 
         item.addEventListener("click", function () {
-            const draft = getCurrentDraftElement();
-            if (!draft) return;
+            const profile = document.querySelector(".clicked");
+            if (!profile) return;
 
-            draft.dataset.nationality = code;
+            profile.dataset.nationality = code;
             document.querySelector(".driver-info-driver-flag").src = `https://flagsapi.com/${code}/flat/64.png`;
             document.querySelector(".flag-text").textContent = inverted_countries_abreviations[code] || code;
 
             document.dispatchEvent(new CustomEvent("draft-nationality-selected", {
                 detail: {
-                    draftId: draft.dataset.driverid,
-                    code
+                    draftId: profile.dataset.isDraft === "1" ? profile.dataset.driverid : "",
+                    profileId: profile.dataset.driverid,
+                    code,
+                    gender: profile.dataset.gender,
+                    typeStaff: profile.dataset.type
                 }
             }));
         });
@@ -176,6 +183,7 @@ export function place_drivers_editStats(driversArray) {
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
         newDiv.dataset.isGeneratedStaff = String(driver["isGeneratedStaff"] ?? 0)
+        newDiv.dataset.gender = String(driver["gender"] ?? "")
         newDiv.dataset.faceType = driver["faceType"] ?? ""
         newDiv.dataset.faceIndex = driver["faceIndex"] ?? ""
         newDiv.dataset.ageType = driver["ageType"] ?? ""
@@ -329,6 +337,7 @@ export function place_staff_editStats(staffArray) {
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff["is_retired"] ?? 0
         newDiv.dataset.isGeneratedStaff = String(staff["isGeneratedStaff"] ?? 0)
+        newDiv.dataset.gender = String(staff["gender"] ?? "")
         newDiv.dataset.faceType = staff["faceType"] ?? ""
         newDiv.dataset.faceIndex = staff["faceIndex"] ?? ""
         newDiv.dataset.ageType = staff["ageType"] ?? ""
@@ -547,6 +556,18 @@ if (genderSwapButton) {
                 staffNameLocale: draft.dataset.staffNameLocale
             }
         }));
+
+        if (draft.dataset.nationality) {
+            document.dispatchEvent(new CustomEvent("draft-nationality-selected", {
+                detail: {
+                    draftId: draft.dataset.driverid,
+                    profileId: draft.dataset.driverid,
+                    code: draft.dataset.nationality,
+                    gender: nextGender,
+                    typeStaff: draft.dataset.type
+                }
+            }));
+        }
     });
 }
 
@@ -1057,14 +1078,51 @@ export function applyDraftForenameUpdate(payload) {
     }
 }
 
-export function applyDraftCountryLocale(payload) {
-    const draft = getCurrentDraftElement();
-    if (!draft) return;
-    if (String(draft.dataset.driverid) !== String(payload.draftId)) return;
+export function applyCountryLocaleUpdate(payload) {
+    const profile = document.querySelector(".clicked");
+    if (!profile) return;
+    const payloadProfileId = payload.profileId ?? payload.draftId;
+    if (String(profile.dataset.driverid) !== String(payloadProfileId)) return;
 
-    draft.dataset.staffNameLocale = payload.staffNameLocale ?? "";
-    draft.dataset.countryId = payload.countryId ?? "";
-    draft.dataset.countryName = payload.countryName ?? "";
+    profile.dataset.staffNameLocale = payload.staffNameLocale ?? "";
+    profile.dataset.countryId = payload.countryId ?? "";
+    profile.dataset.countryName = payload.countryName ?? "";
+    applyProfileFaceData(profile, payload);
+}
+
+function applyProfileFaceData(profile, faceData) {
+    if (!profile) return;
+
+    if (faceData.faceType !== undefined) {
+        profile.dataset.faceType = String(faceData.faceType);
+    }
+    if (faceData.faceIndex !== undefined) {
+        profile.dataset.faceIndex = String(faceData.faceIndex);
+    }
+    if (faceData.ageType !== undefined) {
+        profile.dataset.ageType = String(faceData.ageType);
+    }
+    if (faceData.facePath !== undefined) {
+        profile.dataset.facePath = faceData.facePath || "";
+    }
+
+    const previewButton = document.getElementById("generatedStaffFacePreviewButton");
+    const previewImage = previewButton?.querySelector("img");
+    if (!previewButton || !previewImage) return;
+    if (!profile.classList.contains("clicked")) return;
+
+    const facePath = profile.dataset.facePath || "";
+    previewButton.dataset.facePath = facePath;
+    previewButton.dataset.faceType = profile.dataset.faceType || "";
+    previewButton.dataset.faceIndex = profile.dataset.faceIndex || "";
+    previewButton.dataset.ageType = profile.dataset.ageType || "";
+    previewButton.dataset.gender = profile.dataset.gender || "";
+    previewButton.dataset.personName = profile.dataset.name || "Generated staff";
+    previewButton.classList.toggle("d-none", facePath === "");
+    if (facePath !== "") {
+        previewImage.src = facePath;
+        previewImage.alt = `${profile.dataset.name} face`;
+    }
 }
 
 function manage_order(state) {
@@ -1242,7 +1300,8 @@ function load_stats(div) {
     const logoImg = document.querySelector(".driver-info-team-logo-img");
     const logoMasked = document.querySelector(".driver-info-team-logo-masked");
     const logo = logos_disc[teamId];
-    const generatedFacePreview = ensureGeneratedFacePreview();
+    const generatedFacePreviewButton = getGeneratedFacePreviewButton();
+    const generatedFacePreview = generatedFacePreviewButton?.querySelector("img");
 
     if (!logoImg || !logoMasked || !teamId || !logo) {
         logoImg?.classList.add("d-none");
@@ -1259,32 +1318,151 @@ function load_stats(div) {
     }
     let teamName = combined_dict[div.dataset.teamid] || "Free Agent";
     document.querySelector(".team-text").textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
-    if (generatedFacePreview) {
+    if (generatedFacePreviewButton && generatedFacePreview) {
         const isGeneratedStaff = div.dataset.isGeneratedStaff === "1";
         const facePath = div.dataset.facePath || "";
-        generatedFacePreview.classList.toggle("d-none", !isGeneratedStaff || facePath === "");
+        generatedFacePreviewButton.classList.toggle("d-none", !isGeneratedStaff || facePath === "");
         if (isGeneratedStaff && facePath !== "") {
             generatedFacePreview.src = facePath;
+            generatedFacePreview.alt = `${div.dataset.name} face`;
+            generatedFacePreviewButton.dataset.facePath = facePath;
+            generatedFacePreviewButton.dataset.faceType = div.dataset.faceType || "";
+            generatedFacePreviewButton.dataset.faceIndex = div.dataset.faceIndex || "";
+            generatedFacePreviewButton.dataset.ageType = div.dataset.ageType || "";
+            generatedFacePreviewButton.dataset.gender = div.dataset.gender || "";
+            generatedFacePreviewButton.dataset.personName = div.dataset.name || "Generated staff";
         }
     }
     updateDraftControlVisibility(div);
     setAttributesTitle(div.dataset.type);
 }
 
-function ensureGeneratedFacePreview() {
+function getGeneratedFacePreviewButton() {
     const flagAndTeam = document.querySelector(".flag-and-team");
     if (!flagAndTeam) return null;
 
-    let preview = document.getElementById("generatedStaffFacePreview");
-    if (!preview) {
-        preview = document.createElement("img");
-        preview.id = "generatedStaffFacePreview";
-        preview.className = "generated-staff-face-preview d-none";
-        preview.alt = "Generated staff face";
-        flagAndTeam.appendChild(preview);
+    let previewButton = document.getElementById("generatedStaffFacePreviewButton");
+    if (!previewButton) {
+        previewButton = document.createElement("button");
+        previewButton.type = "button";
+        previewButton.id = "generatedStaffFacePreviewButton";
+        previewButton.className = "generated-staff-face-button d-none";
+        previewButton.setAttribute("aria-label", "Open generated staff face gallery");
+        previewButton.innerHTML = '<img class="generated-staff-face-preview" alt="Generated staff face">';
+        previewButton.addEventListener("click", openGeneratedStaffFaceGallery);
+        flagAndTeam.appendChild(previewButton);
     }
 
-    return preview;
+    return previewButton;
+}
+
+async function openGeneratedStaffFaceGallery() {
+    const previewButton = document.getElementById("generatedStaffFacePreviewButton");
+    if (!previewButton || previewButton.classList.contains("d-none")) return;
+
+    const modalParts = getGeneratedStaffFaceGalleryModal();
+    if (!modalParts) return;
+    const gender = previewButton.dataset.gender || "0";
+    const faceType = previewButton.dataset.faceType || "0";
+    const ageType = previewButton.dataset.ageType || "0";
+    const selectedFacePath = previewButton.dataset.facePath || "";
+    const personName = previewButton.dataset.personName || "Generated staff";
+    const genderLabel = gender === "1" ? "Female" : "Male";
+    const ageLabel = ageType === "0" ? "Driver" : "Staff";
+    const requestId = ++generatedFaceGalleryRequest;
+
+    modalParts.title.textContent = `${personName} Faces`;
+    modalParts.subtitle.textContent = `${genderLabel} | FT${faceType} | ${ageLabel}`;
+    modalParts.grid.replaceChildren();
+    modalParts.status.textContent = "Loading faces...";
+    modalParts.status.classList.remove("d-none");
+    modalParts.modal.show();
+
+    try {
+        const response = await new Command("getStaffFaceGallery", {
+            gender,
+            faceType,
+            ageType
+        }).promiseExecute();
+
+        if (requestId !== generatedFaceGalleryRequest) return;
+
+        renderGeneratedStaffFaceGallery(
+            modalParts.grid,
+            response.content?.faces || [],
+            selectedFacePath
+        );
+        modalParts.status.classList.add("d-none");
+    }
+    catch (error) {
+        if (requestId !== generatedFaceGalleryRequest) return;
+        modalParts.grid.replaceChildren();
+        modalParts.status.textContent = "Failed to load face gallery.";
+        modalParts.status.classList.remove("d-none");
+    }
+}
+
+function renderGeneratedStaffFaceGallery(grid, faces, selectedFacePath) {
+    if (faces.length === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "generated-face-gallery-empty";
+        emptyState.textContent = "No faces available for this profile.";
+        grid.replaceChildren(emptyState);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    faces.forEach((face, index) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "generated-face-gallery-card";
+        card.dataset.faceIndex = String(face.faceIndex);
+        card.dataset.facePath = face.path;
+        if (face.path === selectedFacePath) {
+            card.classList.add("selected");
+        }
+
+        const image = document.createElement("img");
+        image.src = face.path;
+        image.alt = `Face ${index + 1}`;
+        image.loading = "lazy";
+
+        const caption = document.createElement("span");
+        caption.className = "generated-face-gallery-caption";
+        caption.textContent = `Face ${String(face.faceIndex).padStart(3, "0")}`;
+
+        card.append(image, caption);
+        card.addEventListener("click", () => {
+            const selectedProfile = document.querySelector(".clicked");
+            if (!selectedProfile) return;
+
+            applyProfileFaceData(selectedProfile, {
+                faceIndex: face.faceIndex,
+                facePath: face.path
+            });
+
+            grid.querySelectorAll(".generated-face-gallery-card").forEach((item) => {
+                item.classList.toggle("selected", item === card);
+            });
+        });
+        fragment.appendChild(card);
+    });
+
+    grid.replaceChildren(fragment);
+}
+
+function getGeneratedStaffFaceGalleryModal() {
+    const modalElement = generatedStaffFaceGalleryModalEl;
+    if (!modalElement) return null;
+
+    return {
+        modal: bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement),
+        title: modalElement.querySelector(".generated-face-gallery-title"),
+        subtitle: modalElement.querySelector(".generated-face-gallery-subtitle"),
+        status: modalElement.querySelector(".generated-face-gallery-status"),
+        grid: modalElement.querySelector(".generated-face-gallery-grid")
+    };
 }
 
 document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (elem) {
@@ -1481,7 +1659,7 @@ function cssVar(name, fallback) {
 }
 
 
-function ensureStatsGraphCanvas() {
+function getStatsGraphCanvas() {
     const wrap = document.querySelector('.stats-graph');
     let canvas = wrap.querySelector('canvas');
     if (!canvas) {
@@ -1513,7 +1691,7 @@ function rgbaFromHex(hex, alpha) {
 }
 
 function createStatsRadarChart(labels) {
-    const ctx = ensureStatsGraphCanvas();
+    const ctx = getStatsGraphCanvas();
 
     if (statsRadarChart) {
         statsRadarChart.destroy();

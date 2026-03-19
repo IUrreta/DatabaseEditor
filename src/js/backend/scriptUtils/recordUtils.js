@@ -1,5 +1,5 @@
 import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
-import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, fetchEventsFrom, fetchPointsRegulations, fetchLastCompletedRaceId, ensureCustomDoDRankingTable, fetchCustomSeasonResultsPackage } from "./dbUtils.js";
+import { formatNamesSimple, fetchDriverOfTheDayCounts, fetchDriversStandings, fetchTeamsStandingsWithPoints, fetchTeamMateQualiRaceHeadToHead, fetchTeamSeasonPodiumsTotals, fetchTeamSeasonPolesTotals, fetchTeamSeasonWinsTotals, fetchEventsFrom, fetchPointsRegulations, fetchLastCompletedRaceId, createCustomDoDRankingTable, fetchCustomSeasonResultsPackage } from "./dbUtils.js";
 import records from "../../../data/records.json";
 import { getGlobals } from "../commandGlobals.js";
 function idsToCsv(ids) {
@@ -422,7 +422,7 @@ export function getSelectedRecord(type, year) {
 
     if (type === "dotd") {
         if (year === "all") {
-            ensureCustomDoDRankingTable();
+            createCustomDoDRankingTable();
             const rows = queryDB(`
         SELECT
           bas.FirstName,
@@ -656,7 +656,7 @@ export function getSelectedTeamRecord(type, year, formula = 1) {
     else if (recordType === "dotd") {
         if (Number(formula) !== 1) return [];
 
-        ensureCustomDoDRankingTable();
+        createCustomDoDRankingTable();
         const globals = getGlobals();
         const teamFilterSql = globals.isCreateATeam
             ? `(t.TeamID BETWEEN 1 AND 10 OR t.TeamID = 32)`

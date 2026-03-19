@@ -24,7 +24,7 @@ import { load_calendar } from './calendar';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyDraftCountryLocale,
+    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyCountryLocaleUpdate,
     getDraftCreateData, applyDraftBasicDataCreated
 } from './stats';
 import {
@@ -593,6 +593,11 @@ function editModeHandler() {
         marketability: marketability,
         newName: newName,
         newCode: newCode,
+        isGeneratedStaff: document.querySelector(".clicked").dataset.isGeneratedStaff,
+        countryId: document.querySelector(".clicked").dataset.countryId ?? "",
+        faceType: document.querySelector(".clicked").dataset.faceType ?? "",
+        faceIndex: document.querySelector(".clicked").dataset.faceIndex ?? "",
+        ageType: document.querySelector(".clicked").dataset.ageType ?? "",
     };
 
 
@@ -940,7 +945,7 @@ const messageHandlers = {
         applyDraftForenameUpdate(message);
     },
     "Draft country locale fetched": (message) => {
-        applyDraftCountryLocale(message);
+        applyCountryLocaleUpdate(message);
     },
     "Draft basic data created": (message) => {
         applyDraftBasicDataCreated(message);

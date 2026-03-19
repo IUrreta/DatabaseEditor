@@ -5,6 +5,7 @@ import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
 import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
+import { buildFacePath } from "./faceUtils.js";
 
 
 /**
@@ -204,18 +205,9 @@ function fetchGeneratedStaffVisual(staffID) {
     faceType,
     faceIndex,
     ageType,
-    facePath: isGeneratedStaff === 1 ? buildGeneratedFacePath(gender, faceType, faceIndex, ageType) : ""
+    gender,
+    facePath: isGeneratedStaff === 1 ? buildFacePath(gender, faceType, faceIndex, ageType) : ""
   };
-}
-
-function buildGeneratedFacePath(gender, faceType, faceIndex, ageType) {
-  const genderFolder = gender === 1 ? "Female" : "Male";
-  const genderToken = gender === 1 ? "F" : "M";
-  const ageToken = ageType === 0 ? "Y" : "A";
-  const index = String(faceIndex).padStart(3, "0");
-  const fileFaceType = Number(faceType) === 0 ? "FTO" : `FT${faceType}`;
-
-  return `./assets/images/Faces/${genderFolder}/FT${faceType}/AI_H_${index}_${ageToken}${genderToken}_${fileFaceType}_premultiplied.png`;
 }
 
 export function fetchForFutureContract(driverID) {
@@ -325,7 +317,7 @@ export function fetchEngines() {
   return [enginesList, engineAllocations];
 }
 
-export function ensureCustomEngineProgressionTable() {
+export function createCustomEngineProgressionTable() {
   queryDB(`
     CREATE TABLE IF NOT EXISTS Custom_Engine_Progression (
       SeasonID INTEGER NOT NULL,
@@ -368,7 +360,7 @@ function getNextSnapshotRaceIdForSeason(seasonId) {
 }
 
 export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw = null, raceIdRaw = null) {
-  ensureCustomEngineProgressionTable();
+  createCustomEngineProgressionTable();
 
   const seasonId = Number(seasonIdRaw) || Number(queryDB(`SELECT CurrentSeason FROM Player_State`, [], 'singleValue')) || null;
   if (!seasonId) return { ok: false, error: "Missing season id" };
@@ -744,6 +736,7 @@ export function fetchDrivers(gameYear) {
     data.driver_code = driverCode;
     data.nationality = nationality;
     data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
+    data.gender = generatedVisual.gender;
     data.faceType = generatedVisual.faceType;
     data.faceIndex = generatedVisual.faceIndex;
     data.ageType = generatedVisual.ageType;
@@ -826,6 +819,7 @@ export function fetchStaff(gameYear) {
     data.nationality = nationality;
     data.is_retired = isRetired ?? 0;
     data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
+    data.gender = generatedVisual.gender;
     data.faceType = generatedVisual.faceType;
     data.faceIndex = generatedVisual.faceIndex;
     data.ageType = generatedVisual.ageType;
@@ -1041,7 +1035,7 @@ export function getDotDWinnersMap(season) {
 }
 
 function computeSeasonDriverOfTheDay(seasonResults, season) {
-  ensureCustomDoDRankingTable();
+  createCustomDoDRankingTable();
 
   // A) contexto por carrera
   const raceIds = getSeasonRaceIds(season).map(Number);
@@ -2185,7 +2179,7 @@ export function getDoDTopNForRace(season, raceId, topN = 3) {
   }));
 }
 
-export function ensureCustomDoDRankingTable() {
+export function createCustomDoDRankingTable() {
   queryDB(`
     CREATE TABLE IF NOT EXISTS Custom_DriverOfTheDay_Ranking (
       Season    INTEGER NOT NULL,
@@ -2712,7 +2706,7 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
     try {
       const seasonId = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceIdNum], 'singleValue');
       if (seasonId != null) {
-        ensureCustomDoDRankingTable();
+        createCustomDoDRankingTable();
         let dotdDriverId = queryDB(
           `SELECT DriverID
            FROM Custom_DriverOfTheDay_Ranking
@@ -3580,7 +3574,7 @@ export function checkCustomTables(year) {
 
   createEngineMigrationTrigger();
 
-  ensureCustomEngineProgressionTable();
+  createCustomEngineProgressionTable();
 }
 
 export function fixCustomEnginesStatsTable() {
@@ -3815,7 +3809,7 @@ export function editEngines(engineData) {
 }
 
 export function check2025ModCompatibility(year_version) {
-  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
+  createSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
 
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
   const currentDay = daySeason[0];
@@ -3858,7 +3852,7 @@ export function check2025ModCompatibility(year_version) {
 }
 
 export function check2026ModCompatibility(year_version) {
-  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
+  createSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
 
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
   const currentDay = daySeason[0];
@@ -3938,7 +3932,7 @@ const defaultSeasonModKeys2026 = [
   'change-performance-2026'
 ];
 
-function ensureSeasonModTable(tableName, defaultKeys) {
+function createSeasonModTable(tableName, defaultKeys) {
   const tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName], "singleRow");
   if (!tableExists) {
     // Table name cannot be parameterized
@@ -4225,7 +4219,7 @@ function fetchPlayerTeam() {
 }
 
 export function fetch2025ModData() {
-  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
+  createSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
 
   const rows = queryDB(`SELECT key, value FROM Custom_2025_SeasonMod`, [], 'allRows') || [];
   const config = {};
@@ -4241,7 +4235,7 @@ export function fetch2025ModData() {
 }
 
 export function fetch2026ModData() {
-  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
+  createSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
 
   const rows = queryDB(`SELECT key, value FROM Custom_2026_SeasonMod`, [], 'allRows') || [];
   const config = {};

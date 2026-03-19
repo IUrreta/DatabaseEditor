@@ -46,7 +46,7 @@ let sessionResultsPointsInfo = null;
 let sessionResultsPointsInfoPromise = null;
 let sessionResultsCompactMode = false;
 
-function ensureDropdownCheckIcons(menuEl) {
+function addDropdownCheckIcons(menuEl) {
     if (!menuEl) return;
     menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
         if (item.dataset.noCheck === "1") return;
@@ -60,7 +60,7 @@ function ensureDropdownCheckIcons(menuEl) {
 
 function syncDropdownCheckIcons(menuEl, isSelected) {
     if (!menuEl || typeof isSelected !== "function") return;
-    ensureDropdownCheckIcons(menuEl);
+    addDropdownCheckIcons(menuEl);
     menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
         const selected = Boolean(isSelected(item));
         item.querySelector("i.bi-check")?.classList.toggle("unactive", !selected);
@@ -2401,7 +2401,7 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     raceComparisons.innerHTML = "";
     qualiComparisons.innerHTML = "";
     updateComparisonsMaxHeight();
-    ensureComparisonsHeightListener();
+    initComparisonsHeightListener();
     if (!Array.isArray(comparisons) || comparisons.length === 0) return;
 
     const startH2HFromSeasonReview = (driver1Id, driver2Id) => {
@@ -2615,7 +2615,7 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
     let height = standings.getBoundingClientRect().height;
 
     updateDriversStandingsMaxHeight();
-    ensureDriversStandingsHeightListener();
+    initDriversStandingsHeightListener();
 }
 
 function updateDriversStandingsMaxHeight() {
@@ -2638,7 +2638,7 @@ function updateDriversStandingsMaxHeight() {
     }
 }
 
-function ensureDriversStandingsHeightListener() {
+function initDriversStandingsHeightListener() {
     if (driversStandingsHeightListenerAttached) return;
     driversStandingsHeightListenerAttached = true;
 
@@ -2672,7 +2672,7 @@ function updateTeamsStandingsMaxHeight() {
     }
 }
 
-function ensureTeamsStandingsHeightListener() {
+function initTeamsStandingsHeightListener() {
     if (teamsStandingsHeightListenerAttached) return;
     teamsStandingsHeightListenerAttached = true;
 
@@ -2708,7 +2708,7 @@ function updateComparisonsMaxHeight() {
     });
 }
 
-function ensureComparisonsHeightListener() {
+function initComparisonsHeightListener() {
     if (comparisonsHeightListenerAttached) return;
     comparisonsHeightListenerAttached = true;
 
@@ -2809,7 +2809,7 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
     });
 
     updateTeamsStandingsMaxHeight();
-    ensureTeamsStandingsHeightListener();
+    initTeamsStandingsHeightListener();
 }
 
 function populateQualifyingAnalysisSeasonReview(data) {
@@ -2883,7 +2883,7 @@ function populateQualifyingAnalysisSeasonReview(data) {
     q2s.forEach((d, idx) => q2Container.appendChild(buildRow(d, idx + 1, Number(d?.q2Count) || 0)));
 
     updateQualifyingListsMaxHeight();
-    ensureQualifyingListsHeightListener();
+    initQualifyingListsHeightListener();
 }
 
 function updateQualifyingListsMaxHeight() {
@@ -2907,7 +2907,7 @@ function updateQualifyingListsMaxHeight() {
     });
 }
 
-function ensureQualifyingListsHeightListener() {
+function initQualifyingListsHeightListener() {
     if (qualifyingHeightListenerAttached) return;
     qualifyingHeightListenerAttached = true;
 
@@ -2972,7 +2972,7 @@ function populateWinsDriversSeasonReview(data) {
     });
 
     updateWinsDriversListMaxHeight();
-    ensureWinsDriversListHeightListener();
+    initWinsDriversListHeightListener();
 }
 
 function updateWinsDriversListMaxHeight() {
@@ -2993,7 +2993,7 @@ function updateWinsDriversListMaxHeight() {
     }
 }
 
-function ensureWinsDriversListHeightListener() {
+function initWinsDriversListHeightListener() {
     if (winsHeightListenerAttached) return;
     winsHeightListenerAttached = true;
 
@@ -3851,7 +3851,7 @@ export function onSessionResultsFetched(data) {
         const meta = sessionResultsLastFetched?.meta || {};
         const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
         if (sessionKeyLower === "race") {
-            ensureSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
+            loadSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
         }
         updateRaceEditPoints();
         manageSaveButton(true, "custom", saveSessionResultsRaceEdits);
@@ -4052,7 +4052,7 @@ async function saveSessionResultsRaceEdits() {
     }
 }
 
-async function ensureSessionResultsPointsInfo() {
+async function loadSessionResultsPointsInfo() {
     if (sessionResultsPointsInfo) return sessionResultsPointsInfo;
     if (sessionResultsPointsInfoPromise) return sessionResultsPointsInfoPromise;
     sessionResultsPointsInfoPromise = new Command("pointsRegulationsRequest", {}).promiseExecute()
@@ -4638,7 +4638,7 @@ function openSessionResultsForRace(year, raceId, sessionKey) {
     new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey }).execute();
 }
 
-async function ensureSessionResultsMenuPopulated() {
+async function populateSessionResultsMenu() {
     const gpMenu = document.getElementById("sessionResultsGpMenu");
     if (!gpMenu) return;
 
@@ -5163,7 +5163,7 @@ document.querySelectorAll("#recordsTypeDropdown > a").forEach(function (elem) {
 })
 
 document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("mouseenter", () => {
-    ensureSessionResultsMenuPopulated();
+    populateSessionResultsMenu();
 });
 
 document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("click", () => {

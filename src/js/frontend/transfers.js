@@ -732,7 +732,7 @@ export function manage_modal(info) {
         })
     }
 
-    ensureJuniorTeamDropdownBuilt();
+    buildJuniorTeamDropdown();
 
     const juniorPill = document.querySelector(".contract-category.junior-contract");
     if (info[2] !== null) {
@@ -879,7 +879,7 @@ function renderJuniorDriversList() {
     }
 }
 
-function ensureJuniorTeamDropdownBuilt() {
+function buildJuniorTeamDropdown() {
     const menu = document.getElementById("juniorTeamContractMenu");
     if (!menu) return;
 

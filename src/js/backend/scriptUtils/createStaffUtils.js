@@ -1,6 +1,7 @@
 import { queryDB } from "../dbManager";
 import { countries_abreviations, inverted_countries_abreviations } from "./countries.js";
 import { dateToExcel, excelToDate } from "./eidtStatsUtils";
+import { buildFacePath, getFaceCount } from "./faceUtils.js";
 
 const DRIVER_STAT_IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 const STAFF_STAT_IDS = {
@@ -18,28 +19,11 @@ const STAFF_TYPE_NAMES = {
   4: "Sporting Directors"
 };
 
-const FACE_COUNTS = {
-  Male: {
-    0: { 0: 35, 1: 35 },
-    1: { 0: 25, 1: 25 },
-    2: { 0: 25, 1: 25 },
-    3: { 0: 25, 1: 25 },
-    4: { 0: 25, 1: 25 }
-  },
-  Female: {
-    0: { 0: 10, 1: 9 },
-    1: { 0: 10, 1: 10 },
-    2: { 0: 10, 1: 10 },
-    3: { 0: 10, 1: 10 },
-    4: { 0: 10, 1: 10 }
-  }
-};
-
 export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
   const typeStaff = normalizeStaffType(typeStaffRaw);
   const nationality = pickRandomNationality(gameYear);
   const gender = randomInt(0, 1);
-  const faceData = buildFaceData(gender, nationality.staffNameLocale, typeStaff);
+  const faceData = buildRandomFaceForLocale(gender, nationality.staffNameLocale, typeStaff);
   const firstNameLocKey = pickRandomForename(gender, nationality.staffNameLocale);
   const lastNameLocKey = pickRandomSurname(nationality.staffNameLocale);
   const firstName = extractNameToken(firstNameLocKey);
@@ -118,6 +102,10 @@ export function fetchRandomDraftForename(genderRaw, staffNameLocaleRaw) {
 }
 
 export function fetchCountryLocaleForCode(codeRaw) {
+  return fetchCountryLocaleWithFace(codeRaw);
+}
+
+export function fetchCountryLocaleWithFace(codeRaw, genderRaw = null, typeStaffRaw = null) {
   const code = String(codeRaw || "").toUpperCase();
   const nationalityName = inverted_countries_abreviations[code] || "";
   const key = nationalityName.replace(/\s+/g, "");
@@ -129,12 +117,23 @@ export function fetchCountryLocaleForCode(codeRaw) {
     LIMIT 1
   `, [`%[Nationality_${key}]%`], "singleRow");
 
-  return {
+  const staffNameLocale = row?.[2] ?? null;
+  const response = {
     code,
     countryId: row?.[0] ?? null,
     countryName: nationalityName,
-    staffNameLocale: row?.[2] ?? null
+    staffNameLocale
   };
+
+  if (genderRaw !== null && typeStaffRaw !== null && staffNameLocale !== null) {
+    const faceData = buildRandomFaceForLocale(genderRaw, staffNameLocale, typeStaffRaw);
+    response.faceType = faceData.faceType;
+    response.faceIndex = faceData.faceIndex;
+    response.ageType = faceData.ageType;
+    response.facePath = faceData.facePath;
+  }
+
+  return response;
 }
 
 export function createStaffBasicData(data) {
@@ -274,14 +273,12 @@ function normalizeStaffType(typeStaffRaw) {
   return typeStaff;
 }
 
-function buildFaceData(gender, staffNameLocale, typeStaff) {
+export function buildRandomFaceForLocale(gender, staffNameLocale, typeStaffRaw) {
+  const typeStaff = normalizeStaffType(typeStaffRaw);
   const faceType = pickFaceType(staffNameLocale);
   const ageType = typeStaff === 0 ? 0 : 1;
-  const genderFolder = gender === 1 ? "Female" : "Male";
-  const genderToken = gender === 1 ? "F" : "M";
-  const ageToken = ageType === 0 ? "Y" : "A";
-  const faceIndex = randomInt(1, FACE_COUNTS[genderFolder][faceType][ageType]);
-  const facePath = buildFacePath(genderFolder, faceType, ageToken, genderToken, faceIndex);
+  const faceIndex = randomInt(1, getFaceCount(gender, faceType, ageType));
+  const facePath = buildFacePath(gender, faceType, faceIndex, ageType);
 
   return {
     faceType,
@@ -308,12 +305,6 @@ function pickFaceType(staffNameLocale) {
   }
 
   return 4;
-}
-
-function buildFacePath(genderFolder, faceType, ageToken, genderToken, faceIndex) {
-  const index = String(faceIndex).padStart(3, "0");
-  const fileFaceType = faceType === 0 ? "FTO" : `FT${faceType}`;
-  return `./assets/images/Faces/${genderFolder}/FT${faceType}/AI_H_${index}_${ageToken}${genderToken}_${fileFaceType}_premultiplied.png`;
 }
 
 function buildAgeDetails(typeStaff) {

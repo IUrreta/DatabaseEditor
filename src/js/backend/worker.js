@@ -25,7 +25,7 @@ import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, updateTeamExpertise } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
-import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
+import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import {
@@ -52,7 +52,7 @@ import {
   computeStableKey,
   migrateLegacyData,
   loadNewsMapFromDB,
-  ensureTurningPointsStructure,
+  getTurningPointsStructure,
   deleteNews,
   deleteTurningPoints,
   getNewsAndTpYearsAvailable,
@@ -71,7 +71,8 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
-import { createDraftStaff, fetchCountryLocaleForCode, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
+import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
+import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -649,6 +650,9 @@ const workerCommands = {
     if (data.newCode !== "-1") {
       editCode(data.driverID, data.newCode);
     }
+    if (String(data.isGeneratedStaff) === "1") {
+      editGeneratedStaffBasicData(data.driverID, data.countryId, data.faceType, data.faceIndex, data.ageType);
+    }
 
     postMessage({
       responseMessage: "Stats updated",
@@ -678,12 +682,13 @@ const workerCommands = {
     });
   },
   fetchCountryLocaleForCode: (data, postMessage) => {
-    const res = fetchCountryLocaleForCode(data.code);
+    const res = fetchCountryLocaleWithFace(data.code, data.gender, data.typeStaff);
     postMessage({
       responseMessage: "Draft country locale fetched",
       content: {
         ...res,
-        draftId: data.draftId
+        draftId: data.draftId,
+        profileId: data.profileId
       }
     });
   },
@@ -706,6 +711,14 @@ const workerCommands = {
       const staff = fetchStaff(yearData[0]);
       postMessage({ responseMessage: "Staff fetched", content: staff });
     }
+  },
+  getStaffFaceGallery: (data, postMessage) => {
+    const faces = buildFaceGalleryEntries(data.gender, data.faceType, data.ageType);
+
+    postMessage({
+      responseMessage: "Staff face gallery fetched",
+      content: { faces }
+    });
   },
   devSetAllDriversStats85: (data, postMessage) => {
     setAllDriversStatsTo85();
@@ -1080,7 +1093,7 @@ const workerCommands = {
       const tpStateFromDB = loadTPFromDB();        // ← desde DB
 
       // si necesitas asegurar estructura mínima de TP, hazlo aquí
-      const tpState = ensureTurningPointsStructure(tpStateFromDB);
+      const tpState = getTurningPointsStructure(tpStateFromDB);
 
       const { newsList, turningPointState } = generate_news(savedNewsMap, tpState);
       const doublePointsBug = checkDoublePointsBug(turningPointState)
