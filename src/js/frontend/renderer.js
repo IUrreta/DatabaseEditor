@@ -24,7 +24,8 @@ import { load_calendar } from './calendar';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyDraftCountryLocale
+    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyDraftCountryLocale,
+    getDraftCreateData, applyDraftBasicDataCreated
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -495,7 +496,8 @@ function updatePatreonUI(tier) {
 
 function editModeHandler() {
     if (isDraftProfileSelected()) {
-        new_update_notifications("Draft creation is not implemented yet. For now, this button only generates editable random values.", "error");
+        const command = new Command("createDraftStaff", getDraftCreateData());
+        command.execute();
         return;
     }
 
@@ -788,6 +790,7 @@ export function manageSaveButton(show, mode, customHandler) {
 }
 
 export async function updateFront(data) {
+    console.log("[updateFront] data from backend:", data);
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
@@ -937,6 +940,9 @@ const messageHandlers = {
     },
     "Draft country locale fetched": (message) => {
         applyDraftCountryLocale(message);
+    },
+    "Draft basic data created": (message) => {
+        applyDraftBasicDataCreated(message);
     },
     "Calendar fetched": (message) => {
         load_calendar(message)

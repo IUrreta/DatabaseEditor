@@ -839,6 +839,9 @@ function createDraftElement(profile) {
     newDiv.dataset.staffNameLocale = profile.staffNameLocale ?? "";
     newDiv.dataset.firstNameLocKey = profile.firstNameLocKey ?? "";
     newDiv.dataset.lastNameLocKey = profile.lastNameLocKey ?? "";
+    newDiv.dataset.countryId = profile.countryId ?? "";
+    newDiv.dataset.countryName = profile.countryName ?? "";
+    newDiv.dataset.createdStaffId = "";
     newDiv.dataset.stats = profile.stats;
     newDiv.dataset.age = profile.age;
     newDiv.dataset.retirement = profile.retirement_age;
@@ -876,7 +879,13 @@ function updateDraftControlVisibility(div) {
 
     draftStaffTypeControl?.classList.toggle("d-none", !isDraft);
     genderSwapButton?.classList.toggle("d-none", !isDraft);
-    if (nationalityButton) nationalityButton.disabled = !isDraft;
+    if (nationalityButton) {
+        nationalityButton.disabled = !isDraft;
+        if (!isDraft) {
+            nationalityButton.classList.remove("open");
+            nationalityButton.setAttribute("aria-expanded", "false");
+        }
+    }
 
     if (!isDraft || !genderSwapButton) return;
 
@@ -896,6 +905,41 @@ function enterNameEditMode() {
 
 export function isDraftProfileSelected() {
     return document.querySelector(".clicked")?.dataset?.isDraft === "1";
+}
+
+export function getDraftCreateData() {
+    const draft = getCurrentDraftElement();
+    const rawName = (document.querySelector("#driverStatsTitle textarea")?.value ?? draft?.dataset?.name ?? "").trim();
+    const normalizedName = rawName.replace(/\s+/g, " ");
+    const nameParts = normalizedName.split(" ");
+    const firstName = nameParts[0] ?? "";
+    const lastName = nameParts.slice(1).join(" ");
+    const statsValues = Array.from(document.querySelectorAll(".elegible")).map(input => input.value);
+
+    return {
+        draftId: draft.dataset.driverid,
+        createdStaffId: draft.dataset.createdStaffId ?? "",
+        typeStaff: draft.dataset.type,
+        firstName,
+        lastName,
+        countryId: draft.dataset.countryId,
+        gender: draft.dataset.gender,
+        age: document.querySelector(".actual-age").textContent,
+        retirementAge: document.querySelector(".actual-retirement").textContent,
+        isRetired: document.querySelector("#retiredInput").checked ? 1 : 0,
+        statsArray: statsValues.join(" "),
+        driverCode: document.querySelector("#driverCode textarea")?.value ?? document.querySelector("#driverCode").textContent,
+        wantsChampionDriverNumber: document.querySelector("#driverNumber1").checked ? 1 : 0,
+        marketability: document.getElementById("marketabilityInput")?.value ?? draft.dataset.marketability ?? ""
+    };
+}
+
+export function applyDraftBasicDataCreated(payload) {
+    const draft = getCurrentDraftElement();
+    if (!draft) return;
+    if (String(draft.dataset.driverid) !== String(payload.draftId)) return;
+
+    draft.dataset.createdStaffId = payload.staffId;
 }
 
 function setEditorStaffType(typeStaff) {

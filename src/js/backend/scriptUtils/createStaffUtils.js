@@ -1,5 +1,6 @@
 import { queryDB } from "../dbManager";
 import { countries_abreviations, inverted_countries_abreviations } from "./countries.js";
+import { dateToExcel, excelToDate } from "./eidtStatsUtils";
 
 const DRIVER_STAT_IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 const STAFF_STAT_IDS = {
@@ -111,6 +112,135 @@ export function fetchCountryLocaleForCode(codeRaw) {
     countryName: nationalityName,
     staffNameLocale: row?.[2] ?? null
   };
+}
+
+export function createStaffBasicData(data) {
+  const staffId = queryDB(`
+    SELECT MAX(StaffID) + 1
+    FROM Staff_BasicData
+  `, [], "singleValue");
+  const firstName = `[STRING_LITERAL:Value=|${data.firstName}|]`;
+  const lastName = `[STRING_LITERAL:Value=|${data.lastName}|]`;
+  const { dob, dobIso } = buildDobFromAge(data.age);
+
+  queryDB(`
+    INSERT INTO Staff_BasicData (
+      StaffID,
+      FirstName,
+      LastName,
+      CountryID,
+      DOB,
+      DOB_ISO,
+      Gender,
+      IsGeneratedStaff,
+      PhotoDay,
+      FaceType,
+      FaceIndex,
+      AgeType,
+      IsGeneratedForCustomTeam
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1, 45340, 0, 0, 0, 0)
+  `, [staffId, firstName, lastName, data.countryId, dob, dobIso, data.gender], "run");
+
+  return {
+    draftId: data.draftId,
+    staffId,
+    dob,
+    dobIso
+  };
+}
+
+export function createStaffGameData(data, staffId) {
+  queryDB(`
+    INSERT INTO Staff_GameData (
+      StaffID,
+      StaffType,
+      RetirementAge,
+      Retired,
+      PermaTraitSpawnBoost,
+      BestTeamFormula,
+      BestF1PosInTeamSinceGameStart,
+      DevelopmentPlan,
+      ExpectedRankForTeam,
+      AchievementScore,
+      ExpectedQualityScore,
+      ExpectedTimeScore
+    )
+    VALUES (?, ?, ?, ?, 0, NULL, 2, 0, 5, 0, 0, 0)
+  `, [staffId, data.typeStaff, data.retirementAge, data.isRetired], "run");
+}
+
+export function createStaffDriverData(data, staffId) {
+  const statsParams = String(data.statsArray || "").split(" ");
+  const improvability = statsParams[9];
+  const aggression = statsParams[10];
+  const driverCode = `[STRING_LITERAL:Value=|${data.driverCode}|]`;
+
+  queryDB(`
+    INSERT INTO Staff_DriverData (
+      StaffID,
+      Improvability,
+      Aggression,
+      DriverCode,
+      WantsChampionDriverNumber,
+      LastKnownDriverNumber,
+      AssignedCarNumber,
+      HasSuperLicense,
+      HasWonF2,
+      HasWonF3,
+      HasRacedEnoughToJoinF1,
+      PerformanceEvaluationDay,
+      Marketability,
+      TargetMarketability,
+      FeederSeriesAssignedCarNumber
+    )
+    VALUES (?, ?, ?, ?, ?, NULL, NULL, 1, NULL, NULL, 1, NULL, ?, ?, NULL)
+  `, [staffId, improvability, aggression, driverCode, data.wantsChampionDriverNumber, data.marketability, data.marketability], "run");
+}
+
+export function createStaffState(staffId) {
+  queryDB(`
+    INSERT INTO Staff_State (
+      StaffID,
+      UnspentXP,
+      XPGainedLastRace,
+      XPGainedLastWeek,
+      Mentality,
+      MentalityOpinion
+    )
+    VALUES (?, 0, 0, 0, 50, 2)
+  `, [staffId], "run");
+}
+
+export function createStaffPerformanceStats(data, staffId) {
+  const statsParams = String(data.statsArray || "").split(" ");
+  const statIds = data.typeStaff === "0" ? DRIVER_STAT_IDS : STAFF_STAT_IDS[data.typeStaff];
+  const statValues = data.typeStaff === "0"
+    ? statsParams.slice(0, DRIVER_STAT_IDS.length)
+    : statsParams;
+
+  statIds.forEach((statId, index) => {
+    queryDB(`
+      INSERT INTO Staff_PerformanceStats (
+        StaffID,
+        StatID,
+        Val,
+        Max
+      )
+      VALUES (?, ?, ?, 100)
+    `, [staffId, statId, statValues[index]], "run");
+  });
+}
+
+export function createDraftStaff(data) {
+  const basicData = createStaffBasicData(data);
+  createStaffGameData(data, basicData.staffId);
+  if (data.typeStaff === "0") {
+    createStaffDriverData(data, basicData.staffId);
+  }
+  createStaffState(basicData.staffId);
+  createStaffPerformanceStats(data, basicData.staffId);
+  return basicData;
 }
 
 function normalizeStaffType(typeStaffRaw) {
@@ -241,8 +371,34 @@ function pickAvailableDriverNumber() {
 }
 
 function buildDriverCode(firstName, lastName) {
-  const compact = `${firstName}${lastName}`.replace(/[^A-Za-z]/g, "").toUpperCase();
+  const compactSurname = String(lastName || "").replace(/[^A-Za-z]/g, "").toUpperCase();
+  const compact = compactSurname || String(firstName || "").replace(/[^A-Za-z]/g, "").toUpperCase();
   return (compact || "NEW").slice(0, 3).padEnd(3, "X");
+}
+
+function buildDobFromAge(age) {
+  const currentDay = queryDB(`
+    SELECT Day
+    FROM Player_State
+  `, [], "singleValue");
+  const currentDate = excelToDate(currentDay);
+  const dobDate = new Date(Date.UTC(
+    currentDate.getUTCFullYear() - Number(age),
+    currentDate.getUTCMonth(),
+    currentDate.getUTCDate()
+  ));
+
+  return {
+    dob: dateToExcel(dobDate),
+    dobIso: formatDateIso(dobDate)
+  };
+}
+
+function formatDateIso(date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function extractNameToken(value) {

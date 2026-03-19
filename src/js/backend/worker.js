@@ -28,9 +28,10 @@ import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
-import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings, 
+import {
+  change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings,
   insertStaff2025, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod,
-  change2025Standings, 
+  change2025Standings,
   updateCalendar2026,
   changeStats2026,
   insertStaff2026,
@@ -39,7 +40,8 @@ import { change2024Standings, changeDriverLineUps, changeStats, removeFastestLap
   apply2026EnginePerformanceChanges,
   updatePerofmrnace2026,
   changeAdditionalRegulations2026,
-  fixesMod2026} from "./scriptUtils/modUtils";
+  fixesMod2026
+} from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
   getFullChampionSeasonDetails, generateTurningResponse, upsertNews,
@@ -69,7 +71,7 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
-import { fetchCountryLocaleForCode, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
+import { createDraftStaff, fetchCountryLocaleForCode, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
@@ -437,8 +439,8 @@ const workerCommands = {
 
     const previousYear = Number(year) - 1;
     const standings = fetchTeamsStandings(previousYear, 1);
-    postMessage({responseMessage: "Previous year teams standings fetched", content: { year: previousYear, standings }});
-  
+    postMessage({ responseMessage: "Previous year teams standings fetched", content: { year: previousYear, standings } });
+
 
     const numbers = fetchDriverNumbers();
     postMessage({ responseMessage: "Numbers fetched", content: numbers });
@@ -685,6 +687,26 @@ const workerCommands = {
       }
     });
   },
+  createDraftStaff: (data, postMessage) => {
+    const res = createDraftStaff(data);
+    const isDriver = data.typeStaff === "0";
+    const yearData = checkYearSave();
+
+    postMessage({
+      responseMessage: "Draft basic data created",
+      content: res,
+      noti_msg: `Created ${isDriver ? "driver" : "staff"}: ${data.firstName} ${data.lastName}`.trim(),
+      unlocksDownload: true
+    });
+
+    if (isDriver) {
+      const drivers = fetchDrivers(yearData[0]);
+      postMessage({ responseMessage: "Drivers fetched", content: drivers });
+    } else {
+      const staff = fetchStaff(yearData[0]);
+      postMessage({ responseMessage: "Staff fetched", content: staff });
+    }
+  },
   devSetAllDriversStats85: (data, postMessage) => {
     setAllDriversStatsTo85();
 
@@ -866,7 +888,7 @@ const workerCommands = {
   },
   timeTravel: (data, postMessage) => {
     timeTravelWithData(data.dayNumber, false, data.mod);
-    if (data.mod === "2026"){
+    if (data.mod === "2026") {
       changeDriverNumbers2026();
     }
     postMessage({
@@ -876,13 +898,13 @@ const workerCommands = {
     });
   },
   changeLineUps: (data, postMessage) => {
-    if (data.mod === "2025"){
+    if (data.mod === "2025") {
       changeDriverLineUps();
       manageAffiliates();
       manageFeederSeries();
       changeDriverEngineerPairs();
     }
-    else if (data.mod === "2026"){
+    else if (data.mod === "2026") {
       changeLineUps2026();
     }
     postMessage({
@@ -912,10 +934,10 @@ const workerCommands = {
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   changeStats: (data, postMessage) => {
-    if (data.mod === "2025"){
+    if (data.mod === "2025") {
       changeStats();
     }
-    else if (data.mod === "2026"){
+    else if (data.mod === "2026") {
       changeStats2026();
     }
     postMessage({
@@ -933,14 +955,14 @@ const workerCommands = {
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changeCfd: (data, postMessage) => {
-    if (data.mod === "2025"){
+    if (data.mod === "2025") {
       change2024Standings(data.mod);
     }
-    else if (data.mod === "2026"){
+    else if (data.mod === "2026") {
       change2024Standings(data.mod);
       change2025Standings(data.mod);
     }
-    
+
     postMessage({
       responseMessage: "CFD times changed",
       isEditCommand: true,
@@ -949,7 +971,7 @@ const workerCommands = {
   },
   changeRegulations: (data, postMessage) => {
     removeFastestLap(data.mod);
-    if (data.mod === "2026"){
+    if (data.mod === "2026") {
       changeAdditionalRegulations2026();
     }
     postMessage({

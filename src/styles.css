@@ -2037,12 +2037,13 @@ input.comparing-tag {
   padding: 0 10px;
   border-radius: 8px;
   background: transparent;
-  max-width: 200px;
+  max-width: 240px;
 }
 
 .nationality-dropdown:disabled {
-  opacity: 0.75;
+  opacity: 1;
   cursor: default;
+  pointer-events: none;
 }
 
 .nationality-dropdown .flag-text {
@@ -18826,6 +18827,15 @@ p.news-error-api-key {
 
 .redesigned-chevron.clicked{
   transform: rotate(180deg);
+}
+
+.redesigned-dropdown.nationality-dropdown:disabled {
+  background-color: transparent;
+  color: var(--text-general);
+}
+
+.redesigned-dropdown.nationality-dropdown:disabled .redesigned-chevron {
+  display: none;
 }
 
 #teamMenu {
