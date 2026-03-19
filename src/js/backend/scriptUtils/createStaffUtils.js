@@ -18,10 +18,28 @@ const STAFF_TYPE_NAMES = {
   4: "Sporting Directors"
 };
 
+const FACE_COUNTS = {
+  Male: {
+    0: { 0: 35, 1: 35 },
+    1: { 0: 25, 1: 25 },
+    2: { 0: 25, 1: 25 },
+    3: { 0: 25, 1: 25 },
+    4: { 0: 25, 1: 25 }
+  },
+  Female: {
+    0: { 0: 10, 1: 9 },
+    1: { 0: 10, 1: 10 },
+    2: { 0: 10, 1: 10 },
+    3: { 0: 10, 1: 10 },
+    4: { 0: 10, 1: 10 }
+  }
+};
+
 export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
   const typeStaff = normalizeStaffType(typeStaffRaw);
   const nationality = pickRandomNationality(gameYear);
   const gender = randomInt(0, 1);
+  const faceData = buildFaceData(gender, nationality.staffNameLocale, typeStaff);
   const firstNameLocKey = pickRandomForename(gender, nationality.staffNameLocale);
   const lastNameLocKey = pickRandomSurname(nationality.staffNameLocale);
   const firstName = extractNameToken(firstNameLocKey);
@@ -40,6 +58,7 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
     typeStaff: String(typeStaff),
     typeName: STAFF_TYPE_NAMES[typeStaff],
     gender,
+    isGeneratedStaff: 1,
     firstName,
     lastName,
     firstNameLocKey,
@@ -49,6 +68,10 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
     countryId: nationality.countryId,
     countryName: nationality.name,
     staffNameLocale: nationality.staffNameLocale,
+    faceType: faceData.faceType,
+    faceIndex: faceData.faceIndex,
+    ageType: faceData.ageType,
+    facePath: faceData.facePath,
     stats: statsArray.join(" "),
     statsArray,
     age,
@@ -139,8 +162,8 @@ export function createStaffBasicData(data) {
       AgeType,
       IsGeneratedForCustomTeam
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, 1, 45340, 0, 0, 0, 0)
-  `, [staffId, firstName, lastName, data.countryId, dob, dobIso, data.gender], "run");
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1, 45340, ?, ?, ?, 0)
+  `, [staffId, firstName, lastName, data.countryId, dob, dobIso, data.gender, data.faceType, data.faceIndex, data.ageType], "run");
 
   return {
     draftId: data.draftId,
@@ -249,6 +272,48 @@ function normalizeStaffType(typeStaffRaw) {
     throw new Error(`Invalid staff type: ${typeStaffRaw}`);
   }
   return typeStaff;
+}
+
+function buildFaceData(gender, staffNameLocale, typeStaff) {
+  const faceType = pickFaceType(staffNameLocale);
+  const ageType = typeStaff === 0 ? 0 : 1;
+  const genderFolder = gender === 1 ? "Female" : "Male";
+  const genderToken = gender === 1 ? "F" : "M";
+  const ageToken = ageType === 0 ? "Y" : "A";
+  const faceIndex = randomInt(1, FACE_COUNTS[genderFolder][faceType][ageType]);
+  const facePath = buildFacePath(genderFolder, faceType, ageToken, genderToken, faceIndex);
+
+  return {
+    faceType,
+    faceIndex,
+    ageType,
+    facePath
+  };
+}
+
+function pickFaceType(staffNameLocale) {
+  const chances = queryDB(`
+    SELECT FT0Chance, FT1Chance, FT2Chance, FT3Chance, FT4Chance
+    FROM Staff_Enum_NameLocales
+    WHERE Value = ?
+  `, [staffNameLocale], "singleRow");
+  const roll = Math.random();
+  let accumulated = 0;
+
+  for (let faceType = 0; faceType <= 4; faceType++) {
+    accumulated += chances[faceType];
+    if (roll <= accumulated) {
+      return faceType;
+    }
+  }
+
+  return 4;
+}
+
+function buildFacePath(genderFolder, faceType, ageToken, genderToken, faceIndex) {
+  const index = String(faceIndex).padStart(3, "0");
+  const fileFaceType = faceType === 0 ? "FTO" : `FT${faceType}`;
+  return `./assets/images/Faces/${genderFolder}/FT${faceType}/AI_H_${index}_${ageToken}${genderToken}_${fileFaceType}_premultiplied.png`;
 }
 
 function buildAgeDetails(typeStaff) {

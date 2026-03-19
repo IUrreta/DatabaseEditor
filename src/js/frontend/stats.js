@@ -175,6 +175,11 @@ export function place_drivers_editStats(driversArray) {
         newDiv.dataset.raceFormula = driver["race_formula"]
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
+        newDiv.dataset.isGeneratedStaff = String(driver["isGeneratedStaff"] ?? 0)
+        newDiv.dataset.faceType = driver["faceType"] ?? ""
+        newDiv.dataset.faceIndex = driver["faceIndex"] ?? ""
+        newDiv.dataset.ageType = driver["ageType"] ?? ""
+        newDiv.dataset.facePath = driver["facePath"] ?? ""
         if (driver["nationality"] !== "") {
             newDiv.dataset.nationality = driver["nationality"]
         }
@@ -323,6 +328,11 @@ export function place_staff_editStats(staffArray) {
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff["is_retired"] ?? 0
+        newDiv.dataset.isGeneratedStaff = String(staff["isGeneratedStaff"] ?? 0)
+        newDiv.dataset.faceType = staff["faceType"] ?? ""
+        newDiv.dataset.faceIndex = staff["faceIndex"] ?? ""
+        newDiv.dataset.ageType = staff["ageType"] ?? ""
+        newDiv.dataset.facePath = staff["facePath"] ?? ""
         if (staff["nationality"] !== "") {
             newDiv.dataset.nationality = staff["nationality"]
         }
@@ -836,12 +846,17 @@ function createDraftElement(profile) {
     newDiv.dataset.type = profile.typeStaff;
     newDiv.dataset.name = profile.name;
     newDiv.dataset.gender = String(profile.gender ?? 0);
+    newDiv.dataset.isGeneratedStaff = String(profile.isGeneratedStaff ?? 1);
     newDiv.dataset.staffNameLocale = profile.staffNameLocale ?? "";
     newDiv.dataset.firstNameLocKey = profile.firstNameLocKey ?? "";
     newDiv.dataset.lastNameLocKey = profile.lastNameLocKey ?? "";
     newDiv.dataset.countryId = profile.countryId ?? "";
     newDiv.dataset.countryName = profile.countryName ?? "";
     newDiv.dataset.createdStaffId = "";
+    newDiv.dataset.faceType = profile.faceType ?? 0;
+    newDiv.dataset.faceIndex = profile.faceIndex ?? 0;
+    newDiv.dataset.ageType = profile.ageType ?? 0;
+    newDiv.dataset.facePath = profile.facePath ?? "";
     newDiv.dataset.stats = profile.stats;
     newDiv.dataset.age = profile.age;
     newDiv.dataset.retirement = profile.retirement_age;
@@ -876,12 +891,13 @@ function createDraftElement(profile) {
 
 function updateDraftControlVisibility(div) {
     const isDraft = div?.dataset?.isDraft === "1";
+    const allowsNationalityEdit = isDraft || div?.dataset?.isGeneratedStaff === "1";
 
     draftStaffTypeControl?.classList.toggle("d-none", !isDraft);
     genderSwapButton?.classList.toggle("d-none", !isDraft);
     if (nationalityButton) {
-        nationalityButton.disabled = !isDraft;
-        if (!isDraft) {
+        nationalityButton.disabled = !allowsNationalityEdit;
+        if (!allowsNationalityEdit) {
             nationalityButton.classList.remove("open");
             nationalityButton.setAttribute("aria-expanded", "false");
         }
@@ -924,6 +940,10 @@ export function getDraftCreateData() {
         lastName,
         countryId: draft.dataset.countryId,
         gender: draft.dataset.gender,
+        faceType: draft.dataset.faceType,
+        faceIndex: draft.dataset.faceIndex,
+        ageType: draft.dataset.ageType,
+        facePath: draft.dataset.facePath,
         age: document.querySelector(".actual-age").textContent,
         retirementAge: document.querySelector(".actual-retirement").textContent,
         isRetired: document.querySelector("#retiredInput").checked ? 1 : 0,
@@ -1222,6 +1242,7 @@ function load_stats(div) {
     const logoImg = document.querySelector(".driver-info-team-logo-img");
     const logoMasked = document.querySelector(".driver-info-team-logo-masked");
     const logo = logos_disc[teamId];
+    const generatedFacePreview = ensureGeneratedFacePreview();
 
     if (!logoImg || !logoMasked || !teamId || !logo) {
         logoImg?.classList.add("d-none");
@@ -1238,8 +1259,32 @@ function load_stats(div) {
     }
     let teamName = combined_dict[div.dataset.teamid] || "Free Agent";
     document.querySelector(".team-text").textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
+    if (generatedFacePreview) {
+        const isGeneratedStaff = div.dataset.isGeneratedStaff === "1";
+        const facePath = div.dataset.facePath || "";
+        generatedFacePreview.classList.toggle("d-none", !isGeneratedStaff || facePath === "");
+        if (isGeneratedStaff && facePath !== "") {
+            generatedFacePreview.src = facePath;
+        }
+    }
     updateDraftControlVisibility(div);
     setAttributesTitle(div.dataset.type);
+}
+
+function ensureGeneratedFacePreview() {
+    const flagAndTeam = document.querySelector(".flag-and-team");
+    if (!flagAndTeam) return null;
+
+    let preview = document.getElementById("generatedStaffFacePreview");
+    if (!preview) {
+        preview = document.createElement("img");
+        preview.id = "generatedStaffFacePreview";
+        preview.className = "generated-staff-face-preview d-none";
+        preview.alt = "Generated staff face";
+        flagAndTeam.appendChild(preview);
+    }
+
+    return preview;
 }
 
 document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (elem) {

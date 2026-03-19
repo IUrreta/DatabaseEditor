@@ -186,6 +186,38 @@ export function fetchNationality(driverID, gameYear) {
   return "";
 }
 
+function fetchGeneratedStaffVisual(staffID) {
+  const row = queryDB(`
+      SELECT IsGeneratedStaff, FaceType, FaceIndex, AgeType, Gender
+      FROM Staff_BasicData
+      WHERE StaffID = ?
+    `, [staffID], 'singleRow');
+
+  const isGeneratedStaff = row?.[0] ?? 0;
+  const faceType = row?.[1] ?? 0;
+  const faceIndex = row?.[2] ?? 0;
+  const ageType = row?.[3] ?? 0;
+  const gender = row?.[4] ?? 0;
+
+  return {
+    isGeneratedStaff,
+    faceType,
+    faceIndex,
+    ageType,
+    facePath: isGeneratedStaff === 1 ? buildGeneratedFacePath(gender, faceType, faceIndex, ageType) : ""
+  };
+}
+
+function buildGeneratedFacePath(gender, faceType, faceIndex, ageType) {
+  const genderFolder = gender === 1 ? "Female" : "Male";
+  const genderToken = gender === 1 ? "F" : "M";
+  const ageToken = ageType === 0 ? "Y" : "A";
+  const index = String(faceIndex).padStart(3, "0");
+  const fileFaceType = Number(faceType) === 0 ? "FTO" : `FT${faceType}`;
+
+  return `./assets/images/Faces/${genderFolder}/FT${faceType}/AI_H_${index}_${ageToken}${genderToken}_${fileFaceType}_premultiplied.png`;
+}
+
 export function fetchForFutureContract(driverID) {
   const teamInfo = queryDB(`
       SELECT TeamID, PosInTeam 
@@ -697,6 +729,7 @@ export function fetchDrivers(gameYear) {
     const juniorContracts = fetchJuniorContracts(driverID);
     const driverCode = fetchDriverCode(driverID);
     const nationality = fetchNationality(driverID, gameYear);
+    const generatedVisual = fetchGeneratedStaffVisual(driverID);
 
     // result es array, lo convertimos a objeto para mayor claridad
     const data = { ...result };
@@ -710,6 +743,11 @@ export function fetchDrivers(gameYear) {
     data.team_junior = juniorContracts;
     data.driver_code = driverCode;
     data.nationality = nationality;
+    data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
+    data.faceType = generatedVisual.faceType;
+    data.faceIndex = generatedVisual.faceIndex;
+    data.ageType = generatedVisual.ageType;
+    data.facePath = generatedVisual.facePath;
 
     // Datos específicos para 2024
     if (gameYear === "24") {
@@ -773,6 +811,7 @@ export function fetchStaff(gameYear) {
     let raceFormula = fetchRaceFormula(staffID) || 4;
     const futureTeam = fetchForFutureContract(staffID);
     const nationality = fetchNationality(staffID, gameYear);
+    const generatedVisual = fetchGeneratedStaffVisual(staffID);
     const isRetired = queryDB(`
       SELECT Retired
       FROM Staff_GameData
@@ -786,6 +825,11 @@ export function fetchStaff(gameYear) {
     data.team_future = futureTeam;
     data.nationality = nationality;
     data.is_retired = isRetired ?? 0;
+    data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
+    data.faceType = generatedVisual.faceType;
+    data.faceIndex = generatedVisual.faceIndex;
+    data.ageType = generatedVisual.ageType;
+    data.facePath = generatedVisual.facePath;
 
     if (gameYear === "24") {
       const [morale, gMentality] = fetchMentality(staffID);

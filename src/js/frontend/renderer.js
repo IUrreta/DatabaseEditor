@@ -790,7 +790,8 @@ export function manageSaveButton(show, mode, customHandler) {
 }
 
 export async function updateFront(data) {
-    console.log("[updateFront] data from backend:", data);
+    console.log("Received data from backend:", data);
+    console.log(data);
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
