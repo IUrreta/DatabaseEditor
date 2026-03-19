@@ -556,7 +556,6 @@ document.querySelector("#nameFilter").addEventListener("input", function (event)
     clearTimeout(timer);
     timer = setTimeout(() => {
         const q = val.trim().toLowerCase();
-        console.log("Filtering with query:", q);
         if (!q) { for (const { el } of editStatsItems) el.classList.remove("d-none"); return; }
         for (const { el, name } of editStatsItems) el.classList.toggle("d-none", !name.includes(q));
     }, 150);

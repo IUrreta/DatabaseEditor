@@ -3948,7 +3948,6 @@ export function updateCustomConfig(data) {
   const playerTeam = data.playerTeam
   const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;
   const forceEditorMinimapColors = data.forceEditorMinimapColors;
-  console.log("Updating custom config with data:", data);
 
   const replacableTeamsDict = { 9: 'alfa', 8: 'alphatauri', 5: 'alpine', 7: 'haas', 3: 'redbull', 10: 'aston', 6: 'williams', }
 
@@ -4052,7 +4051,6 @@ export function updateCustomConfig(data) {
   else {
     const teamId = 9;
     let color = defaultColors[teamId];
-    console.log("Reverting Alfa Romeo color to default:", color);
     queryDB(
       `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
       [color, teamId],

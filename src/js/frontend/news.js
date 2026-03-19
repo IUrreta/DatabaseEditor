@@ -5810,7 +5810,6 @@ export function updateNewsYearsButton(message) {
     item.dataset.value = year;
     item.innerText = year;
     item.addEventListener("click", function (e) {
-      console.log("Selected news year:", year);
       newsYearsButton.querySelector("span").innerText = year;
       const command = new Command("getNewsFromSeason", { season: year });
       command.execute();

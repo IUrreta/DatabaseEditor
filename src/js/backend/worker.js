@@ -343,7 +343,6 @@ function buildCustomRaceSessionPayload(year, raceId, sessionKey) {
 // Diccionario de comandos
 const workerCommands = {
   loadDB: async (data, postMessage) => {
-    console.log(data)
     const SQL = await initSqlJs({
       locateFile: file => 'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.13.0/sql-wasm.wasm',
       wasmMemory: new WebAssembly.Memory({ initial: 1024, maximum: 2048 })
@@ -351,7 +350,6 @@ const workerCommands = {
 
     const { db, metadata } = await analyzeFileToDatabase(data.file, SQL);
 
-    console.log(metadata)
 
     let day = metadata.careerSaveMetadata.Day;
     let date = excelToDate(day);
@@ -472,7 +470,6 @@ const workerCommands = {
     }
 
     const wasError2026 = fixesMod2026();
-    console.log("Was error 2026:", wasError2026);
     if (wasError2026.generalWasError) {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2026 DLC has been automatically fixed", unlocksDownload: true });
     }
@@ -1210,10 +1207,6 @@ const workerCommands = {
     const defaultTeamsStandings = fetchTeamsStandingsWithPoints(year, formula);
     const hasDefaultSeasonReviewData = defaultEvents.length > 0 || defaultDriversStandings.length > 0 || defaultTeamsStandings.length > 0;
 
-    if (!hasDefaultSeasonReviewData && customPackage) {
-      console.log(`[seasonReviewSelected] No default season review data for season ${year} (formula ${formula}); going to fetch the data from the custom tables.`);
-    }
-
     const review = (!hasDefaultSeasonReviewData && customPackage)
       ? buildSeasonReviewFromCustomPackage(year, formula, customPackage)
       : fetchSeasonReviewData(year, formula, isCurrentYear);
@@ -1387,7 +1380,7 @@ const workerCommands = {
 
 
 self.addEventListener('message', async (e) => {
-  console.log(e.data);
+  // console.log(e.data);
   const { command, data } = e.data;
   if (workerCommands[command]) {
     try {

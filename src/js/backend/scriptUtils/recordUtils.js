@@ -544,7 +544,6 @@ export function getSelectedRecord(type, year) {
         //sort again after merging
         merged.sort((a, b) => (b.value ?? 0) - (a.value ?? 0));
 
-        console.log("final all-time records:", merged);
 
         return merged;
     }

@@ -401,7 +401,6 @@ function applyAduoEffect(turningPointData) {
         engineDataToEdit[engineId] = newStats;
     }
 
-    console.log("[Aduo TP] Applying engine improvements:", engineImprovements);
     editEngines(engineDataToEdit);
 }
 
@@ -1541,7 +1540,6 @@ function generateYoungDriversTurningPointNews(currentMonth, savednews = {}, turn
     }
 
     const chance = getTurningPointChance("youngDrivers", tpConfig);
-    console.log("Young Drivers Turning Point Chance:", chance);
     if (Math.random() >= chance) {
         return newsList;
     }
@@ -4375,8 +4373,6 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
             usedDriverIdsGlobal.add(id);
         }
     });
-
-    console.log("USED DRIVERS FOR FAKE TRANSFERS:", usedDriverIdsGlobal);
 
     let newsList = [];
 

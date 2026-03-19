@@ -1583,8 +1583,6 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 if (currentFormula === 3) {
                     const sprintPosList = hasSprint ? buildTeamResultList(allEntries, "pos", true) : [];
                     const sprintQualiList = buildTeamResultList(allEntries, "quali", true);
-                    sprintDiv.dataset.poslist = JSON.stringify(sprintPosList);
-                    sprintDiv.dataset.qualilist = JSON.stringify(sprintQualiList);
                     if (pointsOrPos === "pos") {
                         renderTeamCellList(sprintDiv, sprintPosList);
                     }
@@ -1654,8 +1652,6 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 if (currentFormula === 3) {
                     const featurePosList = buildTeamResultList(allEntries, "pos", false);
                     const featureQualiList = buildTeamResultList(allEntries, "quali", false);
-                    featureDiv.dataset.poslist = JSON.stringify(featurePosList);
-                    featureDiv.dataset.qualilist = JSON.stringify(featureQualiList);
                     if (pointsOrPos === "pos") {
                         renderTeamCellList(featureDiv, featurePosList);
                     }
@@ -2313,8 +2309,6 @@ function manageRecordsSelected(forcedYearEl = null) {
     const selectedYear = selectedEl.dataset.year;
     const isCurrentYear = selectedYear === yearItems[1].dataset.year;
 
-    console.log("Selected year:", selectedYear, "Type:", typeVal);
-
     if (typeVal === "standings") {
         isYearSelected = true
         manage_show_tables();
@@ -2619,7 +2613,6 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
 
     //calculate heiight and console log it
     let height = standings.getBoundingClientRect().height;
-    console.log("Drivers Standings Height:", height);
 
     updateDriversStandingsMaxHeight();
     ensureDriversStandingsHeightListener();

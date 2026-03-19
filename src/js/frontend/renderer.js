@@ -115,7 +115,6 @@ const dropDownMenu = document.getElementById("dropdownMenu");
 
 const notificationPanel = document.getElementById("notificationPanel");
 
-const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
@@ -213,35 +212,6 @@ let isShowingNotification = false;
 
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
-
-
-
-(function () {
-    const originalLog = console.log;
-    const originalError = console.error;
-
-    const logArray = [];
-
-    console.log = function (...args) {
-        logArray.push({
-            type: 'log',
-            message: args,
-            timestamp: new Date()
-        });
-        originalLog.apply(console, args);
-    };
-
-    console.error = function (...args) {
-        logArray.push({
-            type: 'error',
-            message: args,
-            timestamp: new Date()
-        });
-        originalError.apply(console, args);
-    };
-
-    window.getLogEntries = () => logArray;
-})();
 
 
 export function setSaveName(name) {
@@ -372,8 +342,6 @@ async function handleLogout() {
         const response = await fetch('/api/auth/patreon/logout');
 
         if (response.ok) {
-            console.log("Logout successful");
-
             updatePatreonUI({ isLoggedIn: false, tier: 'Free', tierNumber: 0, whitelisted: false, paidMember: false });
 
             window.location.reload();
@@ -418,7 +386,6 @@ async function validateSession() {
         // Only force an OAuth refresh when an existing cookie is detected but invalid/legacy.
         // Not having a cookie simply means "not logged in" and should not redirect.
         if (data.valid === false && data.hasCookie === true) {
-            console.log("Old Patreon cookie → redirecting to login");
             window.location.href = "/api/auth/patreon/login";
             return false;
         }
@@ -436,7 +403,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
 
 if (code) {
-    console.log("There is code")
     // Clear the code from URL to prevent re-submission on refresh
     window.history.replaceState({}, document.title, window.location.pathname);
 
@@ -477,8 +443,6 @@ function maybeReloadForNightlyAccess(tierInfo) {
 function updatePatreonUI(tier) {
     hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
-
-    console.log("Updating Patreon UI with tier:", tier);
 
     if (tier.paidMember) {
         patreonUnlockables.classList.remove("d-none");
@@ -824,8 +788,6 @@ export function manageSaveButton(show, mode, customHandler) {
 }
 
 export async function updateFront(data) {
-    console.log("UPDATING FRONT")
-    console.log(data)
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
@@ -1134,7 +1096,6 @@ function removeLegacyKeys(base) {
     const lsNewsKey = `${base}_news`;
     const lsTPKey = `${base}_tps`;
     try {
-        console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
         localStorage.removeItem(lsNewsKey);
         localStorage.removeItem(lsTPKey);
     } catch (e) {
@@ -1690,7 +1651,6 @@ document.querySelectorAll(".color-reader").forEach(function (elem) {
 })
 
 function update_difficulty_info(triggerList) {
-    console.log("TRIGGER LIST", triggerList)
     //iterate through the objetc
     for (let key in triggerList) {
         let value = triggerList[key];
@@ -1708,7 +1668,6 @@ function update_difficulty_info(triggerList) {
             value = 0;
         }
         status.dataset.value = value;
-        console.log("UPDATING DIFFICULTY", key, value, options[value])
         status.textContent = options[value].text;
         status.className = `dif-status ${options[value].className}`;
     }
@@ -2976,83 +2935,6 @@ function loadTheme() {
     reload_performance_graph()
     reload_h2h_graphs()
 }
-
-document.getElementById('logButton').addEventListener('click', function () {
-    const logs = window.getLogEntries();
-
-    const logWindow = window.open('', '_blank');
-    const doc = logWindow.document;
-
-    const style = `
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .log { color: green; }
-        .error { color: red; }
-        pre { white-space: pre-wrap; word-break: break-word; max-width: 600px; }
-    `;
-
-    const head = doc.createElement('head');
-    const title = doc.createElement('title');
-    title.textContent = 'Log Console';
-
-    const styleTag = doc.createElement('style');
-    styleTag.textContent = style;
-
-    head.appendChild(title);
-    head.appendChild(styleTag);
-    doc.head.appendChild(head);
-
-    const body = doc.createElement('body');
-    const heading = document.createElement('h2');
-    heading.textContent = 'Logs';
-
-    const table = document.createElement('table');
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    ['Type', 'Message', 'Timestamp'].forEach(text => {
-        const th = document.createElement('th');
-        th.textContent = text;
-        headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
-
-    const tbody = document.createElement('tbody');
-
-    logs.forEach(log => {
-        const row = document.createElement('tr');
-
-        const typeCell = document.createElement('td');
-        typeCell.textContent = log.type.toUpperCase();
-        typeCell.classList.add(log.type);
-
-        const messageCell = document.createElement('td');
-        const pre = document.createElement('pre');
-
-        // Si el mensaje es un objeto, lo formateamos como JSON
-        pre.textContent = log.message.map(msg =>
-            typeof msg === 'object' ? JSON.stringify(msg, null, 2) : msg
-        ).join(' ');
-
-        messageCell.appendChild(pre);
-
-        const timestampCell = document.createElement('td');
-        timestampCell.textContent = new Date(log.timestamp).toLocaleString();
-
-        row.appendChild(typeCell);
-        row.appendChild(messageCell);
-        row.appendChild(timestampCell);
-        tbody.appendChild(row);
-    });
-
-    table.appendChild(thead);
-    table.appendChild(tbody);
-
-    body.appendChild(heading);
-    body.appendChild(table);
-    doc.body.appendChild(body);
-});
 
 /**
  * Verifies if the patch modal should be shown
