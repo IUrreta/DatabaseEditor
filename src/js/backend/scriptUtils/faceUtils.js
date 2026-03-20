@@ -23,7 +23,7 @@ export function buildFacePath(gender, faceType, faceIndex, ageType) {
   const genderFolder = getFaceGenderFolder(gender);
   const genderToken = getFaceGenderToken(gender);
   const ageToken = Number(ageType) === 0 ? "Y" : "A";
-  const index = String(faceIndex).padStart(3, "0");
+  const index = String(Number(faceIndex) + 1).padStart(3, "0");
   const normalizedFaceType = Number(faceType);
   const fileFaceType = normalizedFaceType === 0 ? "FTO" : `FT${normalizedFaceType}`;
 
@@ -34,7 +34,7 @@ export function buildFaceGalleryEntries(gender, faceType, ageType) {
   const totalFaces = getFaceCount(gender, faceType, ageType);
   const gallery = [];
 
-  for (let faceIndex = 1; faceIndex <= totalFaces; faceIndex++) {
+  for (let faceIndex = 0; faceIndex < totalFaces; faceIndex++) {
     gallery.push({
       faceIndex,
       path: buildFacePath(gender, faceType, faceIndex, ageType)

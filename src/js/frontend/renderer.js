@@ -25,7 +25,7 @@ import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
     initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyCountryLocaleUpdate,
-    getDraftCreateData, applyDraftBasicDataCreated
+    getDraftCreateData, applyDraftBasicDataCreated, applyDraftRandomAttributes, selectPendingCreatedStaff
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -93,24 +93,6 @@ let recordsExportSelectedSeasons = new Set();
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
 initSeasonMods();
-
-document.addEventListener("random-staff-requested", function (event) {
-    const data = event.detail || {};
-    const command = new Command("fetchRandomStaffDraft", data);
-    command.execute();
-});
-
-document.addEventListener("random-forename-requested", function (event) {
-    const data = event.detail || {};
-    const command = new Command("fetchRandomDraftForename", data);
-    command.execute();
-});
-
-document.addEventListener("draft-nationality-selected", function (event) {
-    const data = event.detail || {};
-    const command = new Command("fetchCountryLocaleForCode", data);
-    command.execute();
-});
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
@@ -928,6 +910,7 @@ const messageHandlers = {
         place_drivers_editStats(message);
         initFreeDriversElems();
         initStatsDrivers();
+        selectPendingCreatedStaff();
     },
     "Staff fetched": (message) => {
         remove_drivers(true);
@@ -937,12 +920,16 @@ const messageHandlers = {
         place_staff_editStats(message);
         initFreeDriversElems();
         initStatsDrivers();
+        selectPendingCreatedStaff();
     },
     "Random staff draft fetched": (message) => {
         loadRandomStaffDraft(message);
     },
     "Random draft forename fetched": (message) => {
         applyDraftForenameUpdate(message);
+    },
+    "Random staff attributes fetched": (message) => {
+        applyDraftRandomAttributes(message);
     },
     "Draft country locale fetched": (message) => {
         applyCountryLocaleUpdate(message);

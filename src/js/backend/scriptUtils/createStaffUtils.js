@@ -77,6 +77,29 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
   };
 }
 
+export function fetchRandomStaffAttributes(typeStaffRaw, nameRaw = "", driverCodeRaw = "", driverNumberRaw = "", wants1Raw = "", superlicenseRaw = "") {
+  const typeStaff = normalizeStaffType(typeStaffRaw);
+  const stats = buildRandomStats(typeStaff);
+  const statsArray = typeStaff === 0
+    ? [...stats.values, stats.improvability, stats.aggression]
+    : stats.values;
+  const name = String(nameRaw || "").trim();
+  const nameParts = name.split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ");
+
+  return {
+    typeStaff: String(typeStaff),
+    stats: statsArray.join(" "),
+    statsArray,
+    marketability: typeStaff === 0 ? stats.marketability : undefined,
+    driver_code: typeStaff === 0 ? (String(driverCodeRaw || "").trim() || buildDriverCode(firstName, lastName)) : undefined,
+    driver_number: typeStaff === 0 ? (Number(driverNumberRaw) > 0 ? Number(driverNumberRaw) : pickAvailableDriverNumber()) : undefined,
+    wants1: typeStaff === 0 ? (wants1Raw === "" ? 0 : Number(wants1Raw)) : undefined,
+    superlicense: typeStaff === 0 ? (superlicenseRaw === "" ? 1 : Number(superlicenseRaw)) : undefined
+  };
+}
+
 export function fetchRandomDraftForename(genderRaw, staffNameLocaleRaw) {
   const gender = Number(genderRaw);
   const staffNameLocale = Number(staffNameLocaleRaw);
@@ -277,7 +300,7 @@ export function buildRandomFaceForLocale(gender, staffNameLocale, typeStaffRaw) 
   const typeStaff = normalizeStaffType(typeStaffRaw);
   const faceType = pickFaceType(staffNameLocale);
   const ageType = typeStaff === 0 ? 0 : 1;
-  const faceIndex = randomInt(1, getFaceCount(gender, faceType, ageType));
+  const faceIndex = randomInt(0, getFaceCount(gender, faceType, ageType) - 1);
   const facePath = buildFacePath(gender, faceType, faceIndex, ageType);
 
   return {

@@ -2111,6 +2111,11 @@ input.comparing-tag {
   background-color: var(--mclaren-primary);
 }
 
+#addStaffTypeMenu{
+  font-size: 16px;
+  min-width: 190px;
+}
+
 .generated-staff-face-button {
   appearance: none;
   padding: 0;
@@ -2122,7 +2127,16 @@ input.comparing-tag {
   width: 46px;
   height: 46px;
   overflow: hidden;
+  margin-left: auto;
   transition: background-color 0.15s;
+}
+
+.generated-staff-face-button:active{
+  transform: scale(0.96);
+}
+
+.generated-staff-face-button:active img {
+  background-color: var(--new-primary-transparent);
 }
 
 .generated-staff-face-button:hover img {
@@ -2209,6 +2223,11 @@ input.comparing-tag {
 }
 
 .generated-face-gallery-card:hover{
+  background: var(--new-primary-transparent);
+}
+
+.generated-face-gallery-card:active {
+  transform: scale(0.96);
   background: var(--new-primary-transparent);
 }
 
@@ -2325,7 +2344,6 @@ input.comparing-tag {
 }
 
 .draft-staff-type-dropdown {
-  min-width: 190px;
   height: 32px;
   font-size: 14px;
   padding: 0 14px;

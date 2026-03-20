@@ -71,7 +71,7 @@ import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
 import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
-import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
+import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename, fetchRandomStaffAttributes, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 
 import initSqlJs from 'sql.js';
@@ -681,6 +681,23 @@ const workerCommands = {
       }
     });
   },
+  fetchRandomStaffAttributes: (data, postMessage) => {
+    const attributes = fetchRandomStaffAttributes(
+      data.typeStaff,
+      data.name,
+      data.driverCode,
+      data.driverNumber,
+      data.wants1,
+      data.superlicense
+    );
+    postMessage({
+      responseMessage: "Random staff attributes fetched",
+      content: {
+        ...attributes,
+        draftId: data.draftId
+      }
+    });
+  },
   fetchCountryLocaleForCode: (data, postMessage) => {
     const res = fetchCountryLocaleWithFace(data.code, data.gender, data.typeStaff);
     postMessage({
@@ -704,13 +721,10 @@ const workerCommands = {
       unlocksDownload: true
     });
 
-    if (isDriver) {
-      const drivers = fetchDrivers(yearData[0]);
-      postMessage({ responseMessage: "Drivers fetched", content: drivers });
-    } else {
-      const staff = fetchStaff(yearData[0]);
-      postMessage({ responseMessage: "Staff fetched", content: staff });
-    }
+    const drivers = fetchDrivers(yearData[0]);
+    postMessage({ responseMessage: "Drivers fetched", content: drivers });
+    const staff = fetchStaff(yearData[0]);
+    postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   getStaffFaceGallery: (data, postMessage) => {
     const faces = buildFaceGalleryEntries(data.gender, data.faceType, data.ageType);
