@@ -25,8 +25,6 @@ let numbersAvailable = [];
 
 const compareButton = document.getElementById('compareButton');
 const addStaffButton = document.getElementById("addStaffButton");
-const addStaffTypeDropdown = document.getElementById("addStaffTypeDropdown");
-const draftStaffTypeControl = document.getElementById("draftStaffTypeControl");
 const genderSwapButton = document.getElementById("genderSwapButton");
 const nationalityButton = document.getElementById("nationalityButton");
 const nationalityMenu = document.getElementById("nationalityMenu");
@@ -37,29 +35,23 @@ const ageSpan = document.querySelector('.age-holder .actual-age');
 const plusR = document.querySelector('.retirement-age .bi-plus');
 const minusR = document.querySelector('.retirement-age .bi-dash');
 const inputR = document.querySelector('.retirement-age .actual-retirement');
+const exportStaffButton = document.getElementById("exportStaffButton");
+const importStaffButton = document.getElementById("importStaffButton");
+
 let plusNumberBtn = document.querySelector('.number-buttons .bi-plus');
 let minusNumberBtn = document.querySelector('.number-buttons .bi-dash');
 let numberSpan = document.querySelector('.number-holder');
-let selectedAddStaffType = "0";
 let currentDraftId = null;
 let generatedFaceGalleryRequest = 0;
 let pendingCreatedStaffId = null;
 
 const staffTypeConfig = {
     "0": { label: "Drivers", spaceStats: "driverStats" },
-    "1": { label: "Technical Chiefs", spaceStats: "chiefStats" },
-    "2": { label: "Race Engineers", spaceStats: "engineerStats" },
-    "3": { label: "H. of Aerodynamics", spaceStats: "aeroStats" },
-    "4": { label: "Sporting Directors", spaceStats: "directorStats" }
+    "1": { label: "Technical chiefs", spaceStats: "chiefStats" },
+    "2": { label: "Race engineers", spaceStats: "engineerStats" },
+    "3": { label: "H. of aerodynamics", spaceStats: "aeroStats" },
+    "4": { label: "Sporting directors", spaceStats: "directorStats" }
 };
-
-function setAttributesTitle(typeStaff) {
-    const config = staffTypeConfig[String(typeStaff ?? "0")] || staffTypeConfig["0"];
-    const titleText = document.getElementById("attributesTitleText");
-    if (titleText) {
-        titleText.textContent = `${config.label} Attributes`;
-    }
-}
 
 function initNationalityDropdown() {
     if (!nationalityMenu) return;
@@ -564,17 +556,18 @@ function refreshStatsRadarFromInputs(name = "") {
 }
 
 function syncGeneratedFacePreview(profile) {
+    syncExportStaffButton(profile);
+
     const previewButton = getGeneratedFacePreviewButton();
     const previewImage = previewButton?.querySelector("img");
     if (!previewButton || !previewImage) return;
 
-    const isGeneratedStaff = profile?.dataset?.isGeneratedStaff === "1";
-    const facePath = profile?.dataset?.facePath || "";
-    const showPreview = !isComparisonModeActive && isGeneratedStaff && facePath !== "";
+    const showPreview = canExportStaffProfile(profile);
 
     previewButton.classList.toggle("d-none", !showPreview);
     if (!showPreview) return;
 
+    const facePath = profile?.dataset?.facePath || "";
     previewButton.dataset.facePath = facePath;
     previewButton.dataset.faceType = profile.dataset.faceType || "";
     previewButton.dataset.faceIndex = profile.dataset.faceIndex || "";
@@ -583,6 +576,73 @@ function syncGeneratedFacePreview(profile) {
     previewButton.dataset.personName = profile.dataset.name || "Generated staff";
     previewImage.src = facePath;
     previewImage.alt = `${profile.dataset.name} face`;
+}
+
+function canExportStaffProfile(profile) {
+    const isGeneratedStaff = profile?.dataset?.isGeneratedStaff === "1";
+    const facePath = profile?.dataset?.facePath || "";
+    return !isComparisonModeActive && isGeneratedStaff && facePath !== "";
+}
+
+function syncExportStaffButton(profile) {
+    if (!exportStaffButton) return;
+    exportStaffButton.classList.toggle("d-none", !canExportStaffProfile(profile));
+}
+
+function normalizeImportedStaffData(rawData) {
+    if (!rawData || typeof rawData !== "object" || Array.isArray(rawData)) {
+        throw new Error("Invalid staff JSON payload.");
+    }
+
+    const typeStaff = String(rawData.typeStaff ?? typeEdit ?? "0");
+    if (!staffTypeConfig[typeStaff]) {
+        throw new Error(`Invalid staff type: ${rawData.typeStaff}`);
+    }
+
+    const name = String(rawData.name ?? "").trim();
+    const stats = String(rawData.stats ?? "").trim();
+    if (!name || !stats) {
+        throw new Error("Imported staff is missing required fields.");
+    }
+
+    const nationality = String(rawData.nationality ?? "").trim().toUpperCase();
+    const gender = String(rawData.gender ?? 0);
+    const facePath = String(rawData.facePath ?? "").trim();
+    const isGeneratedStaff = String(rawData.isGeneratedStaff ?? 1);
+
+    return {
+        draftId: String(rawData.draftId ?? `import-${Date.now()}`),
+        draft: true,
+        name,
+        typeStaff,
+        stats,
+        marketability: rawData.marketability ?? "",
+        driver_code: rawData.driver_code ?? rawData.driverCode ?? "",
+        driver_number: rawData.driver_number ?? rawData.number ?? 0,
+        wants1: rawData.wants1 ?? rawData.numWC ?? 0,
+        superlicense: rawData.superlicense ?? rawData.superLicense ?? 0,
+        age: rawData.age ?? "",
+        retirement_age: rawData.retirement_age ?? rawData.retirement ?? "",
+        isRetired: rawData.isRetired ?? 0,
+        nationality,
+        gender,
+        isGeneratedStaff,
+        countryId: rawData.countryId ?? "",
+        countryName: rawData.countryName ?? "",
+        staffNameLocale: rawData.staffNameLocale ?? "",
+        firstNameLocKey: rawData.firstNameLocKey ?? "",
+        lastNameLocKey: rawData.lastNameLocKey ?? "",
+        faceType: rawData.faceType ?? "",
+        faceIndex: rawData.faceIndex ?? "",
+        ageType: rawData.ageType ?? (typeStaff === "0" ? 0 : 1),
+        facePath,
+        teamid: 0,
+        race_formula: rawData.race_formula ?? rawData.raceFormula ?? 4,
+        mentality0: rawData.mentality0 ?? "",
+        mentality1: rawData.mentality1 ?? "",
+        mentality2: rawData.mentality2 ?? "",
+        global_mentality: rawData.global_mentality ?? rawData.globalMentality ?? ""
+    };
 }
 
 
@@ -599,22 +659,10 @@ document.querySelectorAll(".attributes-panel .bi-dash").forEach(button => {
     attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar, onChange: handleAttributesChanged });
 });
 
-document.querySelectorAll("#addStaffTypeMenu a").forEach(item => {
-    item.addEventListener("click", function () {
-        setAddStaffType(item.dataset.staffType);
-        const currentDraft = getCurrentDraftElement();
-        if (currentDraft && currentDraft.dataset.type !== item.dataset.staffType) {
-            currentDraft.dataset.type = item.dataset.staffType;
-            setEditorStaffType(item.dataset.staffType);
-            requestRandomDraftAttributes(currentDraft, item.dataset.staffType);
-        }
-    });
-});
-
 if (addStaffButton) {
     addStaffButton.addEventListener("click", function () {
         if (isComparisonModeActive) toggleComparisonMode();
-        requestRandomStaffDraft(selectedAddStaffType);
+        requestRandomStaffDraft(String(typeEdit ?? "0"));
     });
 }
 
@@ -634,7 +682,6 @@ if (genderSwapButton) {
     });
 }
 
-setAddStaffType(selectedAddStaffType);
 initNationalityDropdown();
 
 attachHold(plusBtn, ageSpan, +1, { min: 0, max: 100 });
@@ -811,7 +858,7 @@ export function listenersStaffGroups() {
         item.addEventListener("click", function () {
             if (isComparisonModeActive) toggleComparisonMode();
             const staffButton = document.getElementById('staffDropdown');
-            let staffSelected = item.innerHTML
+            let staffSelected = item.innerText.trim();
             let staffCode = item.dataset.spacestats
             if (staffCode === "driverStats") {
                 typeOverall = "driver"
@@ -848,9 +895,10 @@ export function listenersStaffGroups() {
 
             }
 
-            staffButton.querySelector(".dropdown-label").innerHTML = staffSelected;
-            setAddStaffType(typeEdit);
-            setAttributesTitle(typeEdit);
+            staffButton.querySelector(".dropdown-label").innerText = staffSelected;
+            //uncapitalize the capital letters and remove the s at the end from the staff type to place it in the add button
+            const typeNameNoCapital = staffSelected.replace(/([A-Z])/g, letter => ` ${letter}`).trim().toLowerCase().replace(/s$/, '');
+            addStaffButton.querySelector("span").innerText = `Add ${typeNameNoCapital}`;
             change_elegibles(item.dataset.spacestats)
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.classList.add("d-none")
@@ -864,15 +912,6 @@ export function listenersStaffGroups() {
 
     });
     document.getElementById("driverStatsDrop").click()
-}
-
-function setAddStaffType(typeStaff) {
-    if (!addStaffTypeDropdown) return;
-
-    const nextType = String(typeStaff ?? "0");
-    const config = staffTypeConfig[nextType] || staffTypeConfig["0"];
-    selectedAddStaffType = nextType;
-    addStaffTypeDropdown.querySelector(".dropdown-label").textContent = config.label;
 }
 
 function clickStaffGroupForType(typeStaff) {
@@ -990,9 +1029,8 @@ function createDraftElement(profile) {
 
 function updateDraftControlVisibility(div) {
     const isDraft = div?.dataset?.isDraft === "1";
-    const allowsNationalityEdit = isDraft || div?.dataset?.isGeneratedStaff === "1";
+    const allowsNationalityEdit = !isComparisonModeActive && (isDraft || div?.dataset?.isGeneratedStaff === "1");
 
-    draftStaffTypeControl?.classList.toggle("d-none", !isDraft);
     genderSwapButton?.classList.toggle("d-none", !isDraft);
     compareButton?.classList.toggle("d-none", isDraft);
     if (nationalityButton) {
@@ -1069,6 +1107,11 @@ export function selectPendingCreatedStaff() {
     const createdProfile = document.querySelector(`.normal-driver[data-driverid="${pendingCreatedStaffId}"]:not([data-is-draft="1"])`);
     if (!createdProfile) return;
 
+    clickStaffGroupForType(createdProfile.dataset.type);
+
+    //scroll to the created profile and select it
+    createdProfile.scrollIntoView({ behavior: "smooth", block: "center" });
+
     pendingCreatedStaffId = null;
     createdProfile.click();
 }
@@ -1111,8 +1154,6 @@ function setEditorStaffType(typeStaff) {
     typeEdit = typeStr;
     typeOverall = isDriver ? "driver" : "staff";
 
-    setAttributesTitle(typeStr);
-
     if (isDriver) {
         document.getElementById("driverSpecialAttributes").classList.remove("d-none");
         document.querySelector("#superLicenseSwitch").classList.remove("d-none");
@@ -1143,7 +1184,6 @@ export function loadRandomStaffDraft(profile) {
     if (editNameButton?.classList.contains("editing")) {
         editNameButton.click();
     }
-    setAddStaffType(profile.typeStaff);
     setEditorStaffType(profile.typeStaff);
 
     document.querySelectorAll('.clicked').forEach(item => item.classList.remove('clicked'));
@@ -1229,6 +1269,97 @@ function applyProfileFaceData(profile, faceData) {
     if (!profile.classList.contains("clicked")) return;
     syncGeneratedFacePreview(profile);
 }
+
+if (importStaffButton) {
+    importStaffButton.addEventListener("click", function () {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json,.json";
+        input.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const content = e.target.result;
+                    const parsedData = JSON.parse(content);
+                    const importedProfile = normalizeImportedStaffData(parsedData);
+
+                    clickStaffGroupForType(importedProfile.typeStaff);
+                    loadRandomStaffDraft(importedProfile);
+
+                    const draft = getCurrentDraftElement();
+                    if (draft &&
+                        draft.dataset.driverid === importedProfile.draftId &&
+                        importedProfile.nationality &&
+                        (!draft.dataset.countryId || !draft.dataset.staffNameLocale || !draft.dataset.facePath)) {
+                        requestCountryLocaleUpdate(draft, importedProfile.nationality, draft.dataset.gender, importedProfile.typeStaff);
+                    }
+                } catch (error) {
+                    alert("Invalid JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        });
+        input.click();
+    });
+}
+
+if (exportStaffButton) {
+    exportStaffButton.addEventListener("click", function () {
+        const profile = document.querySelector("#StaffLists .clicked");
+        if (!profile || !canExportStaffProfile(profile)) return;
+
+        const data = {
+            name: profile.dataset.name,
+            typeStaff: profile.dataset.type,
+            stats: profile.dataset.stats,
+            marketability: profile.dataset.marketability,
+            driverCode: profile.dataset.driverCode,
+            driver_code: profile.dataset.driverCode,
+            age: profile.dataset.age,
+            retirement_age: profile.dataset.retirement,
+            number: profile.dataset.number,
+            driver_number: profile.dataset.number,
+            wants1: profile.dataset.numWC,
+            numWC: profile.dataset.numWC,
+            superlicense: profile.dataset.superLicense,
+            superLicense: profile.dataset.superLicense,
+            isRetired: profile.dataset.isRetired,
+            nationality: profile.dataset.nationality,
+            gender: profile.dataset.gender,
+            isGeneratedStaff: profile.dataset.isGeneratedStaff,
+            countryId: profile.dataset.countryId,
+            countryName: profile.dataset.countryName,
+            staffNameLocale: profile.dataset.staffNameLocale,
+            firstNameLocKey: profile.dataset.firstNameLocKey,
+            lastNameLocKey: profile.dataset.lastNameLocKey,
+            faceType: profile.dataset.faceType,
+            faceIndex: profile.dataset.faceIndex,
+            ageType: profile.dataset.ageType,
+            facePath: profile.dataset.facePath,
+            teamid: profile.dataset.teamid,
+            raceFormula: profile.dataset.raceFormula,
+            mentality0: profile.dataset.mentality0,
+            mentality1: profile.dataset.mentality1,
+            mentality2: profile.dataset.mentality2,
+            globalMentality: profile.dataset.globalMentality
+        };
+
+        const json = JSON.stringify(data);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${profile.dataset.name.replace(/\s+/g, "_")}_export.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
 
 function manage_order(state) {
     let elements = document.querySelectorAll('.normal-driver:not([data-is-draft="1"])');
@@ -1406,7 +1537,6 @@ function load_stats(div) {
         syncGeneratedFacePreview(div);
     }
     updateDraftControlVisibility(div);
-    setAttributesTitle(div.dataset.type);
 }
 
 function getGeneratedFacePreviewButton() {
@@ -1659,8 +1789,12 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
         codeSpan.style.height = "auto";
 
         // Restaurar texto
-        nameSpan.innerText = nameInput.value.trim();
-        codeSpan.innerText = codeInput.value.trim();
+        if (nameSpan && nameInput) {
+            nameSpan.innerText = nameInput.value.trim();
+        }
+        if (codeSpan && codeInput) {
+            codeSpan.innerText = codeInput.value.trim();
+        }
 
         // Limpiar los datasets
         delete nameSpan.dataset.originalWidth;
@@ -1917,6 +2051,7 @@ function toggleComparisonMode() {
     isComparisonModeActive = !isComparisonModeActive;
     const editStatsPanel = document.getElementById('editStatsPanel');
     const header = document.querySelector('.upper-section-stats');
+    const selectedProfile = document.querySelector(".normal-driver.clicked:not(.comparing-driver)") || document.querySelector(".clicked");
 
     if (isComparisonModeActive) {
         compareButton.querySelector("span").textContent = 'Cancel';
@@ -1986,6 +2121,7 @@ function toggleComparisonMode() {
         });
     }
 
+    updateDraftControlVisibility(selectedProfile);
     syncGeneratedFacePreview(document.querySelector(".normal-driver.clicked:not(.comparing-driver)") || document.querySelector(".clicked"));
 }
 

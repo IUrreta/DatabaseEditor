@@ -3769,7 +3769,7 @@ export function onSessionResultsFetched(data) {
             const rowLaps = Number(row?.laps);
 
             if (dnf) {
-                timeDiv.innerText = "-";
+                timeDiv.innerText = "DNF";
             }
             else if (rowLaps < leaderLaps) {
                 timeDiv.innerText = `+${leaderLaps - rowLaps}L`;

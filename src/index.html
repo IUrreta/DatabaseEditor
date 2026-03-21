@@ -2805,15 +2805,11 @@
               <ul class="redesigned-dropdown-menu" id="staffMenu" style="font-family: Formula1;">
                 <a class="redesigned-dropdown-item" data-list="fulldriverlist" data-spaceStats="driverStats"
                   id="driverStatsDrop">Drivers</a>
-                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
-                  Chiefs</a>
-                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
-                  Engineers</a>
-                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of
-                  Aerodynamics</a>
+                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical chiefs</a>
+                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race engineers</a>
+                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of aerodynamics</a>
                 <a class="redesigned-dropdown-item" data-list="fullDirectorList"
-                  data-spaceStats="directorStats">Sporting
-                  Directors</a>
+                  data-spaceStats="directorStats">Sporting directors</a>
               </ul>
             </div>
             <div class="filter-container">
@@ -2849,6 +2845,10 @@
           </div>
           <div class="title-buttons-right">
             <div class="stats-add-controls">
+              <div id="importStaffButton" class="button-with-icon">
+                <i class="bi bi-box-arrow-in-down"></i>
+                <span class="button-text">Import</span>
+              </div>
               <div id="addStaffButton" class="button-with-icon">
                 <i class="bi bi-person-plus"></i>
                 <span class="button-text">Add driver/staff</span>
@@ -2987,22 +2987,10 @@
                       <div class="title-and-stats">
                         <div class="attributes-title bold-font"
                           style="display: flex; justify-content: space-between; align-items: center;">
-                          <div style="display:flex; align-items:center; gap:10px;">
-                            <span id="attributesTitleText">Driver Attributes</span>
-                            <div class="dropdown-global d-none" id="draftStaffTypeControl">
-                              <button type="button" class="redesigned-dropdown bold-font draft-staff-type-dropdown"
-                                id="addStaffTypeDropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="dropdown-label">Drivers</span>
-                                <i class="redesigned-chevron"></i>
-                              </button>
-                              <ul class="redesigned-dropdown-menu" id="addStaffTypeMenu" style="font-family: Formula1;">
-                                <a class="redesigned-dropdown-item" data-staff-type="0">Drivers</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="1">Technical Chiefs</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="2">Race Engineers</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="3">H. of Aerodynamics</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="4">Sporting Directors</a>
-                              </ul>
-                            </div>
+                          <span id="attributesTitleText">Attributes</span>
+                          <div id="exportStaffButton" class="button-with-icon d-none">
+                            <i class="bi bi-box-arrow-up"></i>
+                            <span class="button-text">Export</span>
                           </div>
                           <div id="compareButton" class="button-with-icon">
                             <i class="bi bi-arrow-left-right"></i>

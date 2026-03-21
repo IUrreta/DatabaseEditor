@@ -13,10 +13,10 @@ const STAFF_STAT_IDS = {
 
 const STAFF_TYPE_NAMES = {
   0: "Drivers",
-  1: "Technical Chiefs",
-  2: "Race Engineers",
-  3: "H. of Aerodynamics",
-  4: "Sporting Directors"
+  1: "Technical chiefs",
+  2: "Race engineers",
+  3: "H. of aerodynamics",
+  4: "Sporting directors"
 };
 
 export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {

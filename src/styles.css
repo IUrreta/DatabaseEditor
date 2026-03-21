@@ -3746,6 +3746,9 @@ body.og-theme .main-calendar-section {
   width: 100%;
 }
 
+#attributesTitleText{
+  flex-grow: 1;
+}
 
 
 .attributes-title {
@@ -6250,6 +6253,7 @@ body.light-theme .flag-header img {
   scrollbar-color: var(--white-general);
   box-shadow: var(--shadow-s);
   margin-right: 14px;
+  overflow-x: hidden;
 }
 
 .staff-list::-webkit-scrollbar,
