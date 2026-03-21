@@ -42,6 +42,25 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="generatedStaffFaceGalleryModal" data-bs-keyboard="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal generated-face-gallery-modal">
+        <div class="modal-header custom-header">
+          <div class="generated-face-gallery-heading">
+            <h4 class="modal-title bold-font generated-face-gallery-title"></h4>
+            <p class="generated-face-gallery-subtitle"></p>
+          </div>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="generated-face-gallery-status d-none"></div>
+          <div class="generated-face-gallery-grid"></div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -2786,22 +2805,12 @@
               <ul class="redesigned-dropdown-menu" id="staffMenu" style="font-family: Formula1;">
                 <a class="redesigned-dropdown-item" data-list="fulldriverlist" data-spaceStats="driverStats"
                   id="driverStatsDrop">Drivers</a>
-                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
-                  Chiefs</a>
-                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
-                  Engineers</a>
-                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of
-                  Aerodynamics</a>
+                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical chiefs</a>
+                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race engineers</a>
+                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of aerodynamics</a>
                 <a class="redesigned-dropdown-item" data-list="fullDirectorList"
-                  data-spaceStats="directorStats">Sporting
-                  Directors</a>
+                  data-spaceStats="directorStats">Sporting directors</a>
               </ul>
-            </div>
-            <div class="stats-add-controls">
-              <div id="addStaffButton" class="button-with-icon d-none">
-                <i class="bi bi-person-plus"></i>
-                <span class="button-text">Add driver/staff</span>
-              </div>
             </div>
             <div class="filter-container">
               <i class="bi bi-filter-circle filter-icon" id="filterIcon"></i>
@@ -2833,6 +2842,18 @@
           </div>
           <div class="title bold-font">
             Attributes
+          </div>
+          <div class="title-buttons-right">
+            <div class="stats-add-controls">
+              <div id="importStaffButton" class="button-with-icon">
+                <i class="bi bi-box-arrow-in-down"></i>
+                <span class="button-text">Import</span>
+              </div>
+              <div id="addStaffButton" class="button-with-icon">
+                <i class="bi bi-person-plus"></i>
+                <span class="button-text">Add driver/staff</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="d-flex">
@@ -2966,22 +2987,10 @@
                       <div class="title-and-stats">
                         <div class="attributes-title bold-font"
                           style="display: flex; justify-content: space-between; align-items: center;">
-                          <div style="display:flex; align-items:center; gap:10px;">
-                            <span id="attributesTitleText">Driver Attributes</span>
-                            <div class="dropdown-global d-none" id="draftStaffTypeControl">
-                              <button type="button" class="redesigned-dropdown bold-font draft-staff-type-dropdown"
-                                id="addStaffTypeDropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="dropdown-label">Drivers</span>
-                                <i class="redesigned-chevron"></i>
-                              </button>
-                              <ul class="redesigned-dropdown-menu" id="addStaffTypeMenu" style="font-family: Formula1;">
-                                <a class="redesigned-dropdown-item" data-staff-type="0">Drivers</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="1">Technical Chiefs</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="2">Race Engineers</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="3">H. of Aerodynamics</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="4">Sporting Directors</a>
-                              </ul>
-                            </div>
+                          <span id="attributesTitleText">Attributes</span>
+                          <div id="exportStaffButton" class="button-with-icon d-none">
+                            <i class="bi bi-box-arrow-up"></i>
+                            <span class="button-text">Export</span>
                           </div>
                           <div id="compareButton" class="button-with-icon">
                             <i class="bi bi-arrow-left-right"></i>

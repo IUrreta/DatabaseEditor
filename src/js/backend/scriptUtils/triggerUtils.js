@@ -57,7 +57,6 @@ const invertedDifficultyDict = Object.fromEntries(
 );
 
 export function manageDifficultyTriggers(triggerList) {
-  console.log("Managing difficulty triggers with list:", triggerList);
   if (triggerList.statDif !== undefined) manageDesignBoostTriggers(triggerList.statDif);
   if (triggerList.designTimeDif !== undefined) manageDesignTimeTriggers(triggerList.designTimeDif);
   if (triggerList.lightDif !== undefined) manageWeightTrigger(triggerList.lightDif);
@@ -66,7 +65,6 @@ export function manageDifficultyTriggers(triggerList) {
 }
 
 export function manageWeightTrigger(triggerLevel) {
-  console.log("Managing weight trigger with level:", triggerLevel);
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_reducedWeight", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_normal", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS reduced_weight_extraHard", [], 'run');
@@ -327,9 +325,7 @@ export function fetchExistingTriggers() {
       }
       const parts = triggerName.split("_");
       const dif = parts[parts.length - 1];
-      console.log("Processing trigger:", triggerName, "with difficulty part:", dif);
       const dif_level = invertedDifficultyDict[dif] !== undefined ? invertedDifficultyDict[dif] : 0;
-      console.log("Mapped difficulty level:", dif_level);
       const type_trigger = parts[0];
 
       if (type_trigger === "difficulty") {
@@ -341,7 +337,6 @@ export function fetchExistingTriggers() {
       } else if (type_trigger === "research") {
         triggerList.researchDif = dif_level;
       } else if (type_trigger === "reduced") {
-        console.log("Found weight trigger with difficulty level:", dif_level);
         if (dif_level === 6) {
           triggerList.lightDif = 2;
         }

@@ -1,4 +1,6 @@
 import { inverted_countries_abreviations } from "../backend/scriptUtils/countries";
+import { Command } from "../backend/command.js";
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { team_dict, mentalityModifiers, teamOrder, mentality_dict, combined_dict, logos_disc } from "./config";
 import { colors_dict } from "./head2head";
 import { attachHold } from "./renderer";
@@ -23,38 +25,33 @@ let numbersAvailable = [];
 
 const compareButton = document.getElementById('compareButton');
 const addStaffButton = document.getElementById("addStaffButton");
-const addStaffTypeDropdown = document.getElementById("addStaffTypeDropdown");
-const draftStaffTypeControl = document.getElementById("draftStaffTypeControl");
 const genderSwapButton = document.getElementById("genderSwapButton");
 const nationalityButton = document.getElementById("nationalityButton");
 const nationalityMenu = document.getElementById("nationalityMenu");
+const generatedStaffFaceGalleryModalEl = document.getElementById("generatedStaffFaceGalleryModal");
 const plusBtn = document.querySelector('.age-holder .bi-plus');
 const minusBtn = document.querySelector('.age-holder .bi-dash');
 const ageSpan = document.querySelector('.age-holder .actual-age');
 const plusR = document.querySelector('.retirement-age .bi-plus');
 const minusR = document.querySelector('.retirement-age .bi-dash');
 const inputR = document.querySelector('.retirement-age .actual-retirement');
+const exportStaffButton = document.getElementById("exportStaffButton");
+const importStaffButton = document.getElementById("importStaffButton");
+
 let plusNumberBtn = document.querySelector('.number-buttons .bi-plus');
 let minusNumberBtn = document.querySelector('.number-buttons .bi-dash');
 let numberSpan = document.querySelector('.number-holder');
-let selectedAddStaffType = "0";
 let currentDraftId = null;
+let generatedFaceGalleryRequest = 0;
+let pendingCreatedStaffId = null;
 
 const staffTypeConfig = {
     "0": { label: "Drivers", spaceStats: "driverStats" },
-    "1": { label: "Technical Chiefs", spaceStats: "chiefStats" },
-    "2": { label: "Race Engineers", spaceStats: "engineerStats" },
-    "3": { label: "H. of Aerodynamics", spaceStats: "aeroStats" },
-    "4": { label: "Sporting Directors", spaceStats: "directorStats" }
+    "1": { label: "Technical chiefs", spaceStats: "chiefStats" },
+    "2": { label: "Race engineers", spaceStats: "engineerStats" },
+    "3": { label: "H. of aerodynamics", spaceStats: "aeroStats" },
+    "4": { label: "Sporting directors", spaceStats: "directorStats" }
 };
-
-function setAttributesTitle(typeStaff) {
-    const config = staffTypeConfig[String(typeStaff ?? "0")] || staffTypeConfig["0"];
-    const titleText = document.getElementById("attributesTitleText");
-    if (titleText) {
-        titleText.textContent = `${config.label} Attributes`;
-    }
-}
 
 function initNationalityDropdown() {
     if (!nationalityMenu) return;
@@ -82,19 +79,13 @@ function initNationalityDropdown() {
         item.appendChild(text);
 
         item.addEventListener("click", function () {
-            const draft = getCurrentDraftElement();
-            if (!draft) return;
+            const profile = document.querySelector(".clicked");
+            if (!profile) return;
 
-            draft.dataset.nationality = code;
+            profile.dataset.nationality = code;
             document.querySelector(".driver-info-driver-flag").src = `https://flagsapi.com/${code}/flat/64.png`;
             document.querySelector(".flag-text").textContent = inverted_countries_abreviations[code] || code;
-
-            document.dispatchEvent(new CustomEvent("draft-nationality-selected", {
-                detail: {
-                    draftId: draft.dataset.driverid,
-                    code
-                }
-            }));
+            requestCountryLocaleUpdate(profile, code, profile.dataset.gender, profile.dataset.type);
         });
 
         frag.appendChild(item);
@@ -175,6 +166,12 @@ export function place_drivers_editStats(driversArray) {
         newDiv.dataset.raceFormula = driver["race_formula"]
         newDiv.dataset.driverCode = driver["driver_code"]
         newDiv.dataset.isRetired = driver[4]
+        newDiv.dataset.isGeneratedStaff = String(driver["isGeneratedStaff"] ?? 0)
+        newDiv.dataset.gender = String(driver["gender"] ?? "")
+        newDiv.dataset.faceType = driver["faceType"] ?? ""
+        newDiv.dataset.faceIndex = driver["faceIndex"] ?? ""
+        newDiv.dataset.ageType = driver["ageType"] ?? ""
+        newDiv.dataset.facePath = driver["facePath"] ?? ""
         if (driver["nationality"] !== "") {
             newDiv.dataset.nationality = driver["nationality"]
         }
@@ -239,7 +236,7 @@ export function place_drivers_editStats(driversArray) {
             if (elem.value > 100) {
                 elem.value = 100;
             }
-            recalculateOverall()
+            handleAttributesChanged()
         });
     });
 
@@ -323,6 +320,12 @@ export function place_staff_editStats(staffArray) {
         newDiv.dataset.retirement = staff["retirement_age"]
         newDiv.dataset.raceFormula = staff["race_formula"]
         newDiv.dataset.isRetired = staff["is_retired"] ?? 0
+        newDiv.dataset.isGeneratedStaff = String(staff["isGeneratedStaff"] ?? 0)
+        newDiv.dataset.gender = String(staff["gender"] ?? "")
+        newDiv.dataset.faceType = staff["faceType"] ?? ""
+        newDiv.dataset.faceIndex = staff["faceIndex"] ?? ""
+        newDiv.dataset.ageType = staff["ageType"] ?? ""
+        newDiv.dataset.facePath = staff["facePath"] ?? ""
         if (staff["nationality"] !== "") {
             newDiv.dataset.nationality = staff["nationality"]
         }
@@ -478,46 +481,188 @@ function updateStat(input, increment) {
     if (val > 100) val = 100;
     if (val < 0) val = 0;
     input.value = val;
-    recalculateOverall();
     manage_stat_bar(input, val);
+    handleAttributesChanged();
+}
+
+function handleAttributesChanged() {
+    recalculateOverall();
+    refreshStatsRadarFromInputs();
+}
+
+function requestRandomStaffDraft(typeStaff) {
+    new Command("fetchRandomStaffDraft", { typeStaff }).execute();
+}
+
+function requestRandomDraftAttributes(draft, typeStaff) {
+    if (!draft) return;
+
+    new Command("fetchRandomStaffAttributes", {
+        draftId: draft.dataset.driverid,
+        typeStaff,
+        name: draft.dataset.name,
+        driverCode: draft.dataset.driverCode,
+        driverNumber: draft.dataset.number,
+        wants1: draft.dataset.numWC,
+        superlicense: draft.dataset.superLicense
+    }).execute();
+}
+
+function requestRandomDraftForename(draft, gender) {
+    if (!draft) return;
+
+    new Command("fetchRandomDraftForename", {
+        draftId: draft.dataset.driverid,
+        gender,
+        staffNameLocale: draft.dataset.staffNameLocale
+    }).execute();
+}
+
+function requestCountryLocaleUpdate(profile, code, gender, typeStaff) {
+    if (!profile) return;
+
+    new Command("fetchCountryLocaleForCode", {
+        draftId: profile.dataset.isDraft === "1" ? profile.dataset.driverid : "",
+        profileId: profile.dataset.driverid,
+        code,
+        gender,
+        typeStaff
+    }).execute();
+}
+
+function refreshStatsRadarFromInputs(name = "") {
+    const graphInputArray = document.querySelectorAll(".elegible");
+    const pairs = Array.from(graphInputArray).map(input => {
+        const labelEl = input.parentNode?.parentNode?.querySelector("span.bold-font");
+        return {
+            labelFull: (labelEl?.textContent || "").trim(),
+            value: Number(input.value)
+        };
+    });
+    const excluded = new Set(["growth", "aggression", "aggresion", "marketability"]);
+    const filtered = pairs.filter(pair => !excluded.has(pair.labelFull.toLowerCase()));
+    const labelsArray = filtered.map(pair => pair.labelFull.slice(0, 3).toUpperCase());
+    const valuesArray = filtered.map(pair => pair.value);
+    const datasetName = name || document.querySelector("#driverStatsTitle textarea")?.value || document.querySelector(".clicked")?.dataset?.name || "Stats";
+
+    if (!statsRadarChart ||
+        statsRadarChart.data.labels.length !== labelsArray.length ||
+        statsRadarChart.data.labels.some((label, index) => label !== labelsArray[index])) {
+        createStatsRadarChart(labelsArray);
+        statsRadarChart.config._fullLabels = filtered.map(pair => pair.labelFull);
+    }
+
+    updateStatsRadarData(valuesArray, 0, cssVar("--new-primary"), datasetName.split(" ").pop());
+}
+
+function syncGeneratedFacePreview(profile) {
+    syncExportStaffButton(profile);
+
+    const previewButton = getGeneratedFacePreviewButton();
+    const previewImage = previewButton?.querySelector("img");
+    if (!previewButton || !previewImage) return;
+
+    const showPreview = canExportStaffProfile(profile);
+
+    previewButton.classList.toggle("d-none", !showPreview);
+    if (!showPreview) return;
+
+    const facePath = profile?.dataset?.facePath || "";
+    previewButton.dataset.facePath = facePath;
+    previewButton.dataset.faceType = profile.dataset.faceType || "";
+    previewButton.dataset.faceIndex = profile.dataset.faceIndex || "";
+    previewButton.dataset.ageType = profile.dataset.ageType || "";
+    previewButton.dataset.gender = profile.dataset.gender || "";
+    previewButton.dataset.personName = profile.dataset.name || "Generated staff";
+    previewImage.src = facePath;
+    previewImage.alt = `${profile.dataset.name} face`;
+}
+
+function canExportStaffProfile(profile) {
+    const isGeneratedStaff = profile?.dataset?.isGeneratedStaff === "1";
+    const facePath = profile?.dataset?.facePath || "";
+    return !isComparisonModeActive && isGeneratedStaff && facePath !== "";
+}
+
+function syncExportStaffButton(profile) {
+    if (!exportStaffButton) return;
+    exportStaffButton.classList.toggle("d-none", !canExportStaffProfile(profile));
+}
+
+function normalizeImportedStaffData(rawData) {
+    if (!rawData || typeof rawData !== "object" || Array.isArray(rawData)) {
+        throw new Error("Invalid staff JSON payload.");
+    }
+
+    const typeStaff = String(rawData.typeStaff ?? typeEdit ?? "0");
+    if (!staffTypeConfig[typeStaff]) {
+        throw new Error(`Invalid staff type: ${rawData.typeStaff}`);
+    }
+
+    const name = String(rawData.name ?? "").trim();
+    const stats = String(rawData.stats ?? "").trim();
+    if (!name || !stats) {
+        throw new Error("Imported staff is missing required fields.");
+    }
+
+    const nationality = String(rawData.nationality ?? "").trim().toUpperCase();
+    const gender = String(rawData.gender ?? 0);
+    const facePath = String(rawData.facePath ?? "").trim();
+    const isGeneratedStaff = String(rawData.isGeneratedStaff ?? 1);
+
+    return {
+        draftId: String(rawData.draftId ?? `import-${Date.now()}`),
+        draft: true,
+        name,
+        typeStaff,
+        stats,
+        marketability: rawData.marketability ?? "",
+        driver_code: rawData.driver_code ?? rawData.driverCode ?? "",
+        driver_number: rawData.driver_number ?? rawData.number ?? 0,
+        wants1: rawData.wants1 ?? rawData.numWC ?? 0,
+        superlicense: rawData.superlicense ?? rawData.superLicense ?? 0,
+        age: rawData.age ?? "",
+        retirement_age: rawData.retirement_age ?? rawData.retirement ?? "",
+        isRetired: rawData.isRetired ?? 0,
+        nationality,
+        gender,
+        isGeneratedStaff,
+        countryId: rawData.countryId ?? "",
+        countryName: rawData.countryName ?? "",
+        staffNameLocale: rawData.staffNameLocale ?? "",
+        firstNameLocKey: rawData.firstNameLocKey ?? "",
+        lastNameLocKey: rawData.lastNameLocKey ?? "",
+        faceType: rawData.faceType ?? "",
+        faceIndex: rawData.faceIndex ?? "",
+        ageType: rawData.ageType ?? (typeStaff === "0" ? 0 : 1),
+        facePath,
+        teamid: 0,
+        race_formula: rawData.race_formula ?? rawData.raceFormula ?? 4,
+        mentality0: rawData.mentality0 ?? "",
+        mentality1: rawData.mentality1 ?? "",
+        mentality2: rawData.mentality2 ?? "",
+        global_mentality: rawData.global_mentality ?? rawData.globalMentality ?? ""
+    };
 }
 
 
 document.querySelectorAll(".attributes-panel .bi-plus").forEach(button => {
     let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
     let statInput = button.parentNode.parentNode.querySelector("input");
-    attachHold(button, statInput, +1, { min: 0, max: 99, progressEl: bar, onChange: recalculateOverall });
-    recalculateOverall();
+    attachHold(button, statInput, +1, { min: 0, max: 99, progressEl: bar, onChange: handleAttributesChanged });
+    handleAttributesChanged();
 });
 
 document.querySelectorAll(".attributes-panel .bi-dash").forEach(button => {
     let bar = button.parentNode.parentNode.parentNode.querySelector(".one-stat-progress");
     let statInput = button.parentNode.parentNode.querySelector("input");
-    attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar, onChange: recalculateOverall });
-});
-
-document.querySelectorAll("#addStaffTypeMenu a").forEach(item => {
-    item.addEventListener("click", function () {
-        setAddStaffType(item.dataset.staffType);
-        const currentDraft = getCurrentDraftElement();
-        if (currentDraft && currentDraft.dataset.type !== item.dataset.staffType) {
-            document.dispatchEvent(new CustomEvent("random-staff-requested", {
-                detail: {
-                    typeStaff: item.dataset.staffType
-                }
-            }));
-        }
-    });
+    attachHold(button, statInput, -1, { min: 0, max: 99, progressEl: bar, onChange: handleAttributesChanged });
 });
 
 if (addStaffButton) {
     addStaffButton.addEventListener("click", function () {
         if (isComparisonModeActive) toggleComparisonMode();
-        document.dispatchEvent(new CustomEvent("random-staff-requested", {
-            detail: {
-                typeStaff: selectedAddStaffType
-            }
-        }));
+        requestRandomStaffDraft(String(typeEdit ?? "0"));
     });
 }
 
@@ -529,18 +674,14 @@ if (genderSwapButton) {
         const nextGender = draft.dataset.gender === "1" ? "0" : "1";
         draft.dataset.gender = nextGender;
         updateDraftControlVisibility(draft);
+        requestRandomDraftForename(draft, nextGender);
 
-        document.dispatchEvent(new CustomEvent("random-forename-requested", {
-            detail: {
-                draftId: draft.dataset.driverid,
-                gender: nextGender,
-                staffNameLocale: draft.dataset.staffNameLocale
-            }
-        }));
+        if (draft.dataset.nationality) {
+            requestCountryLocaleUpdate(draft, draft.dataset.nationality, nextGender, draft.dataset.type);
+        }
     });
 }
 
-setAddStaffType(selectedAddStaffType);
 initNationalityDropdown();
 
 attachHold(plusBtn, ageSpan, +1, { min: 0, max: 100 });
@@ -556,7 +697,6 @@ document.querySelector("#nameFilter").addEventListener("input", function (event)
     clearTimeout(timer);
     timer = setTimeout(() => {
         const q = val.trim().toLowerCase();
-        console.log("Filtering with query:", q);
         if (!q) { for (const { el } of editStatsItems) el.classList.remove("d-none"); return; }
         for (const { el, name } of editStatsItems) el.classList.toggle("d-none", !name.includes(q));
     }, 150);
@@ -718,7 +858,7 @@ export function listenersStaffGroups() {
         item.addEventListener("click", function () {
             if (isComparisonModeActive) toggleComparisonMode();
             const staffButton = document.getElementById('staffDropdown');
-            let staffSelected = item.innerHTML
+            let staffSelected = item.innerText.trim();
             let staffCode = item.dataset.spacestats
             if (staffCode === "driverStats") {
                 typeOverall = "driver"
@@ -755,9 +895,10 @@ export function listenersStaffGroups() {
 
             }
 
-            staffButton.querySelector(".dropdown-label").innerHTML = staffSelected;
-            setAddStaffType(typeEdit);
-            setAttributesTitle(typeEdit);
+            staffButton.querySelector(".dropdown-label").innerText = staffSelected;
+            //uncapitalize the capital letters and remove the s at the end from the staff type to place it in the add button
+            const typeNameNoCapital = staffSelected.replace(/([A-Z])/g, letter => ` ${letter}`).trim().toLowerCase().replace(/s$/, '');
+            addStaffButton.querySelector("span").innerText = `Add ${typeNameNoCapital}`;
             change_elegibles(item.dataset.spacestats)
             document.querySelectorAll(".staff-list").forEach(function (elem) {
                 elem.classList.add("d-none")
@@ -773,13 +914,19 @@ export function listenersStaffGroups() {
     document.getElementById("driverStatsDrop").click()
 }
 
-function setAddStaffType(typeStaff) {
-    if (!addStaffTypeDropdown) return;
-
-    const nextType = String(typeStaff ?? "0");
-    const config = staffTypeConfig[nextType] || staffTypeConfig["0"];
-    selectedAddStaffType = nextType;
-    addStaffTypeDropdown.querySelector(".dropdown-label").textContent = config.label;
+function clickStaffGroupForType(typeStaff) {
+    const typeToSpace = {
+        "0": "driverStats",
+        "1": "chiefStats",
+        "2": "engineerStats",
+        "3": "aeroStats",
+        "4": "directorStats"
+    };
+    const targetSpace = typeToSpace[String(typeStaff ?? "0")] || "driverStats";
+    const targetItem = document.querySelector(`#staffMenu a[data-spaceStats="${targetSpace}"]`);
+    if (!targetItem) return;
+    if (String(typeEdit) === String(typeStaff ?? "0")) return;
+    targetItem.click();
 }
 
 function resetStatsFilters() {
@@ -837,9 +984,17 @@ function createDraftElement(profile) {
     newDiv.dataset.type = profile.typeStaff;
     newDiv.dataset.name = profile.name;
     newDiv.dataset.gender = String(profile.gender ?? 0);
+    newDiv.dataset.isGeneratedStaff = String(profile.isGeneratedStaff ?? 1);
     newDiv.dataset.staffNameLocale = profile.staffNameLocale ?? "";
     newDiv.dataset.firstNameLocKey = profile.firstNameLocKey ?? "";
     newDiv.dataset.lastNameLocKey = profile.lastNameLocKey ?? "";
+    newDiv.dataset.countryId = profile.countryId ?? "";
+    newDiv.dataset.countryName = profile.countryName ?? "";
+    newDiv.dataset.createdStaffId = "";
+    newDiv.dataset.faceType = profile.faceType ?? 0;
+    newDiv.dataset.faceIndex = profile.faceIndex ?? 0;
+    newDiv.dataset.ageType = profile.ageType ?? 0;
+    newDiv.dataset.facePath = profile.facePath ?? "";
     newDiv.dataset.stats = profile.stats;
     newDiv.dataset.age = profile.age;
     newDiv.dataset.retirement = profile.retirement_age;
@@ -874,10 +1029,17 @@ function createDraftElement(profile) {
 
 function updateDraftControlVisibility(div) {
     const isDraft = div?.dataset?.isDraft === "1";
+    const allowsNationalityEdit = !isComparisonModeActive && (isDraft || div?.dataset?.isGeneratedStaff === "1");
 
-    draftStaffTypeControl?.classList.toggle("d-none", !isDraft);
     genderSwapButton?.classList.toggle("d-none", !isDraft);
-    if (nationalityButton) nationalityButton.disabled = !isDraft;
+    compareButton?.classList.toggle("d-none", isDraft);
+    if (nationalityButton) {
+        nationalityButton.disabled = !allowsNationalityEdit;
+        if (!allowsNationalityEdit) {
+            nationalityButton.classList.remove("open");
+            nationalityButton.setAttribute("aria-expanded", "false");
+        }
+    }
 
     if (!isDraft || !genderSwapButton) return;
 
@@ -899,6 +1061,91 @@ export function isDraftProfileSelected() {
     return document.querySelector(".clicked")?.dataset?.isDraft === "1";
 }
 
+export function getDraftCreateData() {
+    const draft = getCurrentDraftElement();
+    const rawName = (document.querySelector("#driverStatsTitle textarea")?.value ?? draft?.dataset?.name ?? "").trim();
+    const normalizedName = rawName.replace(/\s+/g, " ");
+    const nameParts = normalizedName.split(" ");
+    const firstName = nameParts[0] ?? "";
+    const lastName = nameParts.slice(1).join(" ");
+    const statsValues = Array.from(document.querySelectorAll(".elegible")).map(input => input.value);
+
+    return {
+        draftId: draft.dataset.driverid,
+        createdStaffId: draft.dataset.createdStaffId ?? "",
+        typeStaff: draft.dataset.type,
+        firstName,
+        lastName,
+        countryId: draft.dataset.countryId,
+        gender: draft.dataset.gender,
+        faceType: draft.dataset.faceType,
+        faceIndex: draft.dataset.faceIndex,
+        ageType: draft.dataset.ageType,
+        facePath: draft.dataset.facePath,
+        age: document.querySelector(".actual-age").textContent,
+        retirementAge: document.querySelector(".actual-retirement").textContent,
+        isRetired: document.querySelector("#retiredInput").checked ? 1 : 0,
+        statsArray: statsValues.join(" "),
+        driverCode: document.querySelector("#driverCode textarea")?.value ?? document.querySelector("#driverCode").textContent,
+        wantsChampionDriverNumber: document.querySelector("#driverNumber1").checked ? 1 : 0,
+        marketability: document.getElementById("marketabilityInput")?.value ?? draft.dataset.marketability ?? ""
+    };
+}
+
+export function applyDraftBasicDataCreated(payload) {
+    const draft = getCurrentDraftElement();
+    if (!draft) return;
+    if (String(draft.dataset.driverid) !== String(payload.draftId)) return;
+
+    draft.dataset.createdStaffId = payload.staffId;
+    pendingCreatedStaffId = String(payload.staffId);
+}
+
+export function selectPendingCreatedStaff() {
+    if (!pendingCreatedStaffId) return;
+
+    const createdProfile = document.querySelector(`.normal-driver[data-driverid="${pendingCreatedStaffId}"]:not([data-is-draft="1"])`);
+    if (!createdProfile) return;
+
+    clickStaffGroupForType(createdProfile.dataset.type);
+
+    //scroll to the created profile and select it
+    createdProfile.scrollIntoView({ behavior: "smooth", block: "center" });
+
+    pendingCreatedStaffId = null;
+    createdProfile.click();
+}
+
+export function applyDraftRandomAttributes(payload) {
+    const draft = getCurrentDraftElement();
+    if (!draft) return;
+    if (String(draft.dataset.driverid) !== String(payload.draftId)) return;
+
+    draft.dataset.type = payload.typeStaff;
+    draft.dataset.stats = payload.stats;
+
+    if (payload.marketability !== undefined) {
+        draft.dataset.marketability = payload.marketability;
+    } else if (payload.typeStaff !== "0") {
+        draft.dataset.marketability = "";
+    }
+    if (payload.driver_code !== undefined) {
+        draft.dataset.driverCode = payload.driver_code;
+    }
+    if (payload.driver_number !== undefined) {
+        draft.dataset.number = payload.driver_number;
+    }
+    if (payload.wants1 !== undefined) {
+        draft.dataset.numWC = payload.wants1;
+    }
+    if (payload.superlicense !== undefined) {
+        draft.dataset.superLicense = payload.superlicense;
+    }
+
+    load_stats(draft);
+    recalculateOverall();
+}
+
 function setEditorStaffType(typeStaff) {
     const typeStr = String(typeStaff ?? "0");
     const config = staffTypeConfig[typeStr] || staffTypeConfig["0"];
@@ -906,8 +1153,6 @@ function setEditorStaffType(typeStaff) {
 
     typeEdit = typeStr;
     typeOverall = isDriver ? "driver" : "staff";
-
-    setAttributesTitle(typeStr);
 
     if (isDriver) {
         document.getElementById("driverSpecialAttributes").classList.remove("d-none");
@@ -939,7 +1184,6 @@ export function loadRandomStaffDraft(profile) {
     if (editNameButton?.classList.contains("editing")) {
         editNameButton.click();
     }
-    setAddStaffType(profile.typeStaff);
     setEditorStaffType(profile.typeStaff);
 
     document.querySelectorAll('.clicked').forEach(item => item.classList.remove('clicked'));
@@ -994,15 +1238,128 @@ export function applyDraftForenameUpdate(payload) {
     }
 }
 
-export function applyDraftCountryLocale(payload) {
-    const draft = getCurrentDraftElement();
-    if (!draft) return;
-    if (String(draft.dataset.driverid) !== String(payload.draftId)) return;
+export function applyCountryLocaleUpdate(payload) {
+    const profile = document.querySelector(".clicked");
+    if (!profile) return;
+    const payloadProfileId = payload.profileId ?? payload.draftId;
+    if (String(profile.dataset.driverid) !== String(payloadProfileId)) return;
 
-    draft.dataset.staffNameLocale = payload.staffNameLocale ?? "";
-    draft.dataset.countryId = payload.countryId ?? "";
-    draft.dataset.countryName = payload.countryName ?? "";
+    profile.dataset.staffNameLocale = payload.staffNameLocale ?? "";
+    profile.dataset.countryId = payload.countryId ?? "";
+    profile.dataset.countryName = payload.countryName ?? "";
+    applyProfileFaceData(profile, payload);
 }
+
+function applyProfileFaceData(profile, faceData) {
+    if (!profile) return;
+
+    if (faceData.faceType !== undefined) {
+        profile.dataset.faceType = String(faceData.faceType);
+    }
+    if (faceData.faceIndex !== undefined) {
+        profile.dataset.faceIndex = String(faceData.faceIndex);
+    }
+    if (faceData.ageType !== undefined) {
+        profile.dataset.ageType = String(faceData.ageType);
+    }
+    if (faceData.facePath !== undefined) {
+        profile.dataset.facePath = faceData.facePath || "";
+    }
+
+    if (!profile.classList.contains("clicked")) return;
+    syncGeneratedFacePreview(profile);
+}
+
+if (importStaffButton) {
+    importStaffButton.addEventListener("click", function () {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json,.json";
+        input.addEventListener("change", function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const content = e.target.result;
+                    const parsedData = JSON.parse(content);
+                    const importedProfile = normalizeImportedStaffData(parsedData);
+
+                    clickStaffGroupForType(importedProfile.typeStaff);
+                    loadRandomStaffDraft(importedProfile);
+
+                    const draft = getCurrentDraftElement();
+                    if (draft &&
+                        draft.dataset.driverid === importedProfile.draftId &&
+                        importedProfile.nationality &&
+                        (!draft.dataset.countryId || !draft.dataset.staffNameLocale || !draft.dataset.facePath)) {
+                        requestCountryLocaleUpdate(draft, importedProfile.nationality, draft.dataset.gender, importedProfile.typeStaff);
+                    }
+                } catch (error) {
+                    alert("Invalid JSON file.");
+                }
+            };
+            reader.readAsText(file);
+        });
+        input.click();
+    });
+}
+
+if (exportStaffButton) {
+    exportStaffButton.addEventListener("click", function () {
+        const profile = document.querySelector("#StaffLists .clicked");
+        if (!profile || !canExportStaffProfile(profile)) return;
+
+        const data = {
+            name: profile.dataset.name,
+            typeStaff: profile.dataset.type,
+            stats: profile.dataset.stats,
+            marketability: profile.dataset.marketability,
+            driverCode: profile.dataset.driverCode,
+            driver_code: profile.dataset.driverCode,
+            age: profile.dataset.age,
+            retirement_age: profile.dataset.retirement,
+            number: profile.dataset.number,
+            driver_number: profile.dataset.number,
+            wants1: profile.dataset.numWC,
+            numWC: profile.dataset.numWC,
+            superlicense: profile.dataset.superLicense,
+            superLicense: profile.dataset.superLicense,
+            isRetired: profile.dataset.isRetired,
+            nationality: profile.dataset.nationality,
+            gender: profile.dataset.gender,
+            isGeneratedStaff: profile.dataset.isGeneratedStaff,
+            countryId: profile.dataset.countryId,
+            countryName: profile.dataset.countryName,
+            staffNameLocale: profile.dataset.staffNameLocale,
+            firstNameLocKey: profile.dataset.firstNameLocKey,
+            lastNameLocKey: profile.dataset.lastNameLocKey,
+            faceType: profile.dataset.faceType,
+            faceIndex: profile.dataset.faceIndex,
+            ageType: profile.dataset.ageType,
+            facePath: profile.dataset.facePath,
+            teamid: profile.dataset.teamid,
+            raceFormula: profile.dataset.raceFormula,
+            mentality0: profile.dataset.mentality0,
+            mentality1: profile.dataset.mentality1,
+            mentality2: profile.dataset.mentality2,
+            globalMentality: profile.dataset.globalMentality
+        };
+
+        const json = JSON.stringify(data);
+        const blob = new Blob([json], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${profile.dataset.name.replace(/\s+/g, "_")}_export.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+}
+
 
 function manage_order(state) {
     let elements = document.querySelectorAll('.normal-driver:not([data-is-draft="1"])');
@@ -1071,6 +1428,9 @@ function load_stats(div) {
     if (editNameButton?.classList.contains("editing") && div.dataset.isDraft !== "1") {
         editNameButton.click();
     }
+    if (div.dataset.isDraft !== "1") {
+        clickStaffGroupForType(div.dataset.type);
+    }
 
     let statsArray = div.dataset.stats.split(" ").map(Number);
 
@@ -1082,31 +1442,7 @@ function load_stats(div) {
         manage_stat_bar(input, value)
     });
 
-    const graphInputArray = document.querySelectorAll(".elegible");
-    const pairs = Array.from(graphInputArray).map((input, index) => {
-        const labelEl = input.parentNode?.parentNode?.querySelector("span.bold-font");
-        const labelFull = (labelEl?.textContent || '').trim();
-        const value = statsArray[index];
-        return { labelFull, value };
-    });
-
-    // Excluir Growth y Aggression (incluida variante "Aggresion")
-    const excluded = new Set(['growth', 'aggression', 'aggresion', 'marketability']);
-    const filtered = pairs.filter(p => !excluded.has(p.labelFull.toLowerCase()));
-
-    // Labels = 3 primeras letras en MAYÚSCULAS
-    const labelsArray = filtered.map(p => p.labelFull.slice(0, 3).toUpperCase());
-    const valuesArray = filtered.map(p => p.value);
-
-    // (Re)crear si cambian etiquetas; si no, solo actualizar datos
-    if (!statsRadarChart ||
-        statsRadarChart.data.labels.length !== labelsArray.length ||
-        statsRadarChart.data.labels.some((l, i) => l !== labelsArray[i])) {
-        createStatsRadarChart(labelsArray);
-        statsRadarChart.config._fullLabels = filtered.map(p => p.labelFull);
-
-    }
-    updateStatsRadarData(valuesArray, 0, cssVar("--new-primary"), div.dataset.name.split(" ").pop());
+    refreshStatsRadarFromInputs(div.dataset.name);
 
     let actualAge = document.querySelector(".actual-age")
     let retirementAge = document.querySelector(".actual-retirement")
@@ -1179,6 +1515,8 @@ function load_stats(div) {
     const logoImg = document.querySelector(".driver-info-team-logo-img");
     const logoMasked = document.querySelector(".driver-info-team-logo-masked");
     const logo = logos_disc[teamId];
+    const generatedFacePreviewButton = getGeneratedFacePreviewButton();
+    const generatedFacePreview = generatedFacePreviewButton?.querySelector("img");
 
     if (!logoImg || !logoMasked || !teamId || !logo) {
         logoImg?.classList.add("d-none");
@@ -1195,8 +1533,138 @@ function load_stats(div) {
     }
     let teamName = combined_dict[div.dataset.teamid] || "Free Agent";
     document.querySelector(".team-text").textContent = teamName !== "Visa Cashapp RB" ? teamName : "VCARB";
+    if (generatedFacePreviewButton && generatedFacePreview) {
+        syncGeneratedFacePreview(div);
+    }
     updateDraftControlVisibility(div);
-    setAttributesTitle(div.dataset.type);
+}
+
+function getGeneratedFacePreviewButton() {
+    const flagAndTeam = document.querySelector(".flag-and-team");
+    if (!flagAndTeam) return null;
+
+    let previewButton = document.getElementById("generatedStaffFacePreviewButton");
+    if (!previewButton) {
+        previewButton = document.createElement("button");
+        previewButton.type = "button";
+        previewButton.id = "generatedStaffFacePreviewButton";
+        previewButton.className = "generated-staff-face-button d-none";
+        previewButton.setAttribute("aria-label", "Open generated staff face gallery");
+        previewButton.innerHTML = '<img class="generated-staff-face-preview" alt="Generated staff face">';
+        previewButton.addEventListener("click", openGeneratedStaffFaceGallery);
+        flagAndTeam.appendChild(previewButton);
+    }
+
+    return previewButton;
+}
+
+async function openGeneratedStaffFaceGallery() {
+    const previewButton = document.getElementById("generatedStaffFacePreviewButton");
+    if (!previewButton || previewButton.classList.contains("d-none")) return;
+
+    const modalParts = getGeneratedStaffFaceGalleryModal();
+    if (!modalParts) return;
+    const gender = previewButton.dataset.gender || "0";
+    const faceType = previewButton.dataset.faceType || "0";
+    const ageType = previewButton.dataset.ageType || "0";
+    const selectedFacePath = previewButton.dataset.facePath || "";
+    const personName = previewButton.dataset.personName || "Generated staff";
+    const genderLabel = gender === "1" ? "Female" : "Male";
+    const ageLabel = ageType === "0" ? "Driver" : "Staff";
+    const requestId = ++generatedFaceGalleryRequest;
+
+    modalParts.title.textContent = `${personName} Faces`;
+    modalParts.subtitle.textContent = `${genderLabel} | FT${faceType} | ${ageLabel}`;
+    modalParts.grid.replaceChildren();
+    modalParts.status.textContent = "Loading faces...";
+    modalParts.status.classList.remove("d-none");
+    modalParts.modal.show();
+
+    try {
+        const response = await new Command("getStaffFaceGallery", {
+            gender,
+            faceType,
+            ageType
+        }).promiseExecute();
+
+        if (requestId !== generatedFaceGalleryRequest) return;
+
+        renderGeneratedStaffFaceGallery(
+            modalParts.grid,
+            response.content?.faces || [],
+            selectedFacePath
+        );
+        modalParts.status.classList.add("d-none");
+    }
+    catch (error) {
+        if (requestId !== generatedFaceGalleryRequest) return;
+        modalParts.grid.replaceChildren();
+        modalParts.status.textContent = "Failed to load face gallery.";
+        modalParts.status.classList.remove("d-none");
+    }
+}
+
+function renderGeneratedStaffFaceGallery(grid, faces, selectedFacePath) {
+    if (faces.length === 0) {
+        const emptyState = document.createElement("div");
+        emptyState.className = "generated-face-gallery-empty";
+        emptyState.textContent = "No faces available for this profile.";
+        grid.replaceChildren(emptyState);
+        return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    faces.forEach((face, index) => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "generated-face-gallery-card";
+        card.dataset.faceIndex = String(face.faceIndex);
+        card.dataset.facePath = face.path;
+        if (face.path === selectedFacePath) {
+            card.classList.add("selected");
+        }
+
+        const image = document.createElement("img");
+        image.src = face.path;
+        image.alt = `Face ${index + 1}`;
+        image.loading = "lazy";
+
+        const caption = document.createElement("span");
+        caption.className = "generated-face-gallery-caption";
+        caption.textContent = `Face ${String(face.faceIndex + 1).padStart(3, "0")}`;
+
+        card.append(image, caption);
+        card.addEventListener("click", () => {
+            const selectedProfile = document.querySelector(".clicked");
+            if (!selectedProfile) return;
+
+            applyProfileFaceData(selectedProfile, {
+                faceIndex: face.faceIndex,
+                facePath: face.path
+            });
+
+            grid.querySelectorAll(".generated-face-gallery-card").forEach((item) => {
+                item.classList.toggle("selected", item === card);
+            });
+        });
+        fragment.appendChild(card);
+    });
+
+    grid.replaceChildren(fragment);
+}
+
+function getGeneratedStaffFaceGalleryModal() {
+    const modalElement = generatedStaffFaceGalleryModalEl;
+    if (!modalElement) return null;
+
+    return {
+        modal: bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement),
+        title: modalElement.querySelector(".generated-face-gallery-title"),
+        subtitle: modalElement.querySelector(".generated-face-gallery-subtitle"),
+        status: modalElement.querySelector(".generated-face-gallery-status"),
+        grid: modalElement.querySelector(".generated-face-gallery-grid")
+    };
 }
 
 document.querySelectorAll(".bar-container .bi-chevron-right").forEach(function (elem) {
@@ -1321,8 +1789,12 @@ document.querySelector("#editNameButton").addEventListener("click", function (e)
         codeSpan.style.height = "auto";
 
         // Restaurar texto
-        nameSpan.innerText = nameInput.value.trim();
-        codeSpan.innerText = codeInput.value.trim();
+        if (nameSpan && nameInput) {
+            nameSpan.innerText = nameInput.value.trim();
+        }
+        if (codeSpan && codeInput) {
+            codeSpan.innerText = codeInput.value.trim();
+        }
 
         // Limpiar los datasets
         delete nameSpan.dataset.originalWidth;
@@ -1393,7 +1865,7 @@ function cssVar(name, fallback) {
 }
 
 
-function ensureStatsGraphCanvas() {
+function getStatsGraphCanvas() {
     const wrap = document.querySelector('.stats-graph');
     let canvas = wrap.querySelector('canvas');
     if (!canvas) {
@@ -1425,7 +1897,7 @@ function rgbaFromHex(hex, alpha) {
 }
 
 function createStatsRadarChart(labels) {
-    const ctx = ensureStatsGraphCanvas();
+    const ctx = getStatsGraphCanvas();
 
     if (statsRadarChart) {
         statsRadarChart.destroy();
@@ -1579,6 +2051,7 @@ function toggleComparisonMode() {
     isComparisonModeActive = !isComparisonModeActive;
     const editStatsPanel = document.getElementById('editStatsPanel');
     const header = document.querySelector('.upper-section-stats');
+    const selectedProfile = document.querySelector(".normal-driver.clicked:not(.comparing-driver)") || document.querySelector(".clicked");
 
     if (isComparisonModeActive) {
         compareButton.querySelector("span").textContent = 'Cancel';
@@ -1647,6 +2120,9 @@ function toggleComparisonMode() {
             separator.classList.remove("d-none");
         });
     }
+
+    updateDraftControlVisibility(selectedProfile);
+    syncGeneratedFacePreview(document.querySelector(".normal-driver.clicked:not(.comparing-driver)") || document.querySelector(".clicked"));
 }
 
 if (compareButton) {

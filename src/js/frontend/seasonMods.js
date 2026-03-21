@@ -265,7 +265,7 @@ function initMods2026Actions(){
       updateJenzerToDams(changePerformanceButton2026.classList.contains("completed") ? "dams" : "jenzer");
     };
 
-    // Ensure the UI-dependent state is correct when the mod was already applied
+    // Keep the UI-dependent state correct when the mod was already applied
     // (e.g. after "Mod data fetched" marks the button as completed).
     syncJenzerDamsState();
 

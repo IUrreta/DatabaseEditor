@@ -270,6 +270,17 @@ export function editCode(driverID, newCode) {
   `, [stringLiteralCode, driverID], 'run');
 }
 
+export function editGeneratedStaffBasicData(driverID, countryId, faceType, faceIndex, ageType) {
+  queryDB(`
+    UPDATE Staff_BasicData
+    SET CountryID = ?,
+        FaceType = ?,
+        FaceIndex = ?,
+        AgeType = ?
+    WHERE StaffID = ?
+  `, [countryId, faceType, faceIndex, ageType, driverID], 'run');
+}
+
 // Helpers de fechas
 export function excelToDate(excelDate) {
   const baseUTC = Date.UTC(1899, 11, 30); // 1899-12-30 UTC

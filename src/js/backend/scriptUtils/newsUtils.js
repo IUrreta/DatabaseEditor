@@ -1,4 +1,4 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines, ensureCustomEngineProgressionTable, snapshotEnginePowerProgression } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines, createCustomEngineProgressionTable, snapshotEnginePowerProgression } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, turningPointsTuningByType } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
@@ -350,7 +350,7 @@ function applyAduoEffect(turningPointData) {
         return;
     }
 
-    ensureCustomEngineProgressionTable();
+    createCustomEngineProgressionTable();
 
     const [enginesData] = fetchEngines();
     const enginesById = {};
@@ -401,7 +401,6 @@ function applyAduoEffect(turningPointData) {
         engineDataToEdit[engineId] = newStats;
     }
 
-    console.log("[Aduo TP] Applying engine improvements:", engineImprovements);
     editEngines(engineDataToEdit);
 }
 
@@ -1541,7 +1540,6 @@ function generateYoungDriversTurningPointNews(currentMonth, savednews = {}, turn
     }
 
     const chance = getTurningPointChance("youngDrivers", tpConfig);
-    console.log("Young Drivers Turning Point Chance:", chance);
     if (Math.random() >= chance) {
         return newsList;
     }
@@ -4376,8 +4374,6 @@ export function generateFakeTransferNews(monthsDone, savedNews, bigConfirmedTran
         }
     });
 
-    console.log("USED DRIVERS FOR FAKE TRANSFERS:", usedDriverIdsGlobal);
-
     let newsList = [];
 
     monthsDone.forEach(m => {
@@ -6994,7 +6990,7 @@ const decodeJSON = (txt) => {
 };
 
 // --- DB helpers ---
-export function ensureEditorStateTable() {
+export function createEditorStateTable() {
     const exists = queryDB(
         `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_News_State'`,
         [],
@@ -7004,13 +7000,13 @@ export function ensureEditorStateTable() {
 }
 
 export function getEditorState(key) {
-    ensureEditorStateTable();
+    createEditorStateTable();
     const row = queryDB(`SELECT value FROM Custom_News_State WHERE key = ?`, [key], "singleRow");
     return row ? row[0] : null;
 }
 
 export function setEditorState(key, valueText) {
-    ensureEditorStateTable();
+    createEditorStateTable();
     queryDB(`
     INSERT INTO Custom_News_State (key,value) VALUES (?, ?)
     ON CONFLICT(key) DO UPDATE SET value=excluded.value
@@ -7185,7 +7181,7 @@ export function migrateLegacyData(lsNewsTxt, lsTPTxt) {
     return "migrated";
 }
 
-export function ensureTurningPointsStructure() {
+export function getTurningPointsStructure() {
     const globals = getGlobals?.(); // si lo tienes disponible
     const year = globals?.currentDate?.[1];
     const key = `${year}_tps`;

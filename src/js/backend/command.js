@@ -16,8 +16,8 @@ export class Command {
 
 
     async execute() {
-        console.log(`[Command] Executing command: ${this.commandName}`);
-        console.log(`[Command] Data:`, this.data);
+            // console.log(`[Command] Executing command: ${this.commandName}`);
+            // console.log(`[Command] Data:`, this.data);
 
         dbWorker.postMessage({ command: this.commandName, data: this.data });
 
@@ -25,9 +25,8 @@ export class Command {
             const response = msg.data;
             if (response.error) {
                 console.error(`[${this.commandName}] Error:`, response.error);
-                document.querySelector(".error").classList.remove("d-none");
             } else {
-                console.log(`[${this.commandName}] Response:`, response.responseMessage);
+                // console.log(`[${this.commandName}] Response:`, response.responseMessage);
                 await updateFront(response);
                 if (this.commandName === "saveSelected") {
                     if (response.responseMessage === "Game Year") {

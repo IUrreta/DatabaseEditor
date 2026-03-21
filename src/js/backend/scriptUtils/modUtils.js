@@ -1322,7 +1322,6 @@ export function changeStats2026() {
                 //check if the staff ID exists in staff_basicData, if not, skip
                 const staffExists = queryDB(`SELECT 1 FROM Staff_BasicData WHERE StaffID = ?`, [staffID], "singleRow");
                 if (!staffExists) {
-                    console.log("StaffID:", staffID, "does not exist in Staff_BasicData. Skipping performance stats insertion.");
                     return;
                 }
                 let columns = Object.keys(entry).join(", ");

@@ -1,5 +1,7 @@
 import { queryDB } from "../dbManager";
 import { countries_abreviations, inverted_countries_abreviations } from "./countries.js";
+import { dateToExcel, excelToDate } from "./eidtStatsUtils";
+import { buildFacePath, getFaceCount } from "./faceUtils.js";
 
 const DRIVER_STAT_IDS = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 const STAFF_STAT_IDS = {
@@ -11,16 +13,17 @@ const STAFF_STAT_IDS = {
 
 const STAFF_TYPE_NAMES = {
   0: "Drivers",
-  1: "Technical Chiefs",
-  2: "Race Engineers",
-  3: "H. of Aerodynamics",
-  4: "Sporting Directors"
+  1: "Technical chiefs",
+  2: "Race engineers",
+  3: "H. of aerodynamics",
+  4: "Sporting directors"
 };
 
 export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
   const typeStaff = normalizeStaffType(typeStaffRaw);
   const nationality = pickRandomNationality(gameYear);
   const gender = randomInt(0, 1);
+  const faceData = buildRandomFaceForLocale(gender, nationality.staffNameLocale, typeStaff);
   const firstNameLocKey = pickRandomForename(gender, nationality.staffNameLocale);
   const lastNameLocKey = pickRandomSurname(nationality.staffNameLocale);
   const firstName = extractNameToken(firstNameLocKey);
@@ -39,6 +42,7 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
     typeStaff: String(typeStaff),
     typeName: STAFF_TYPE_NAMES[typeStaff],
     gender,
+    isGeneratedStaff: 1,
     firstName,
     lastName,
     firstNameLocKey,
@@ -48,6 +52,10 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
     countryId: nationality.countryId,
     countryName: nationality.name,
     staffNameLocale: nationality.staffNameLocale,
+    faceType: faceData.faceType,
+    faceIndex: faceData.faceIndex,
+    ageType: faceData.ageType,
+    facePath: faceData.facePath,
     stats: statsArray.join(" "),
     statsArray,
     age,
@@ -66,6 +74,29 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
     mentality1: gameYear === "24" ? 2 : -1,
     mentality2: gameYear === "24" ? 2 : -1,
     global_mentality: gameYear === "24" ? 59 : -1
+  };
+}
+
+export function fetchRandomStaffAttributes(typeStaffRaw, nameRaw = "", driverCodeRaw = "", driverNumberRaw = "", wants1Raw = "", superlicenseRaw = "") {
+  const typeStaff = normalizeStaffType(typeStaffRaw);
+  const stats = buildRandomStats(typeStaff);
+  const statsArray = typeStaff === 0
+    ? [...stats.values, stats.improvability, stats.aggression]
+    : stats.values;
+  const name = String(nameRaw || "").trim();
+  const nameParts = name.split(/\s+/).filter(Boolean);
+  const firstName = nameParts[0] || "";
+  const lastName = nameParts.slice(1).join(" ");
+
+  return {
+    typeStaff: String(typeStaff),
+    stats: statsArray.join(" "),
+    statsArray,
+    marketability: typeStaff === 0 ? stats.marketability : undefined,
+    driver_code: typeStaff === 0 ? (String(driverCodeRaw || "").trim() || buildDriverCode(firstName, lastName)) : undefined,
+    driver_number: typeStaff === 0 ? (Number(driverNumberRaw) > 0 ? Number(driverNumberRaw) : pickAvailableDriverNumber()) : undefined,
+    wants1: typeStaff === 0 ? (wants1Raw === "" ? 0 : Number(wants1Raw)) : undefined,
+    superlicense: typeStaff === 0 ? (superlicenseRaw === "" ? 1 : Number(superlicenseRaw)) : undefined
   };
 }
 
@@ -94,6 +125,10 @@ export function fetchRandomDraftForename(genderRaw, staffNameLocaleRaw) {
 }
 
 export function fetchCountryLocaleForCode(codeRaw) {
+  return fetchCountryLocaleWithFace(codeRaw);
+}
+
+export function fetchCountryLocaleWithFace(codeRaw, genderRaw = null, typeStaffRaw = null) {
   const code = String(codeRaw || "").toUpperCase();
   const nationalityName = inverted_countries_abreviations[code] || "";
   const key = nationalityName.replace(/\s+/g, "");
@@ -105,12 +140,152 @@ export function fetchCountryLocaleForCode(codeRaw) {
     LIMIT 1
   `, [`%[Nationality_${key}]%`], "singleRow");
 
-  return {
+  const staffNameLocale = row?.[2] ?? null;
+  const response = {
     code,
     countryId: row?.[0] ?? null,
     countryName: nationalityName,
-    staffNameLocale: row?.[2] ?? null
+    staffNameLocale
   };
+
+  if (genderRaw !== null && typeStaffRaw !== null && staffNameLocale !== null) {
+    const faceData = buildRandomFaceForLocale(genderRaw, staffNameLocale, typeStaffRaw);
+    response.faceType = faceData.faceType;
+    response.faceIndex = faceData.faceIndex;
+    response.ageType = faceData.ageType;
+    response.facePath = faceData.facePath;
+  }
+
+  return response;
+}
+
+export function createStaffBasicData(data) {
+  const staffId = queryDB(`
+    SELECT MAX(StaffID) + 1
+    FROM Staff_BasicData
+  `, [], "singleValue");
+  const firstName = `[STRING_LITERAL:Value=|${data.firstName}|]`;
+  const lastName = `[STRING_LITERAL:Value=|${data.lastName}|]`;
+  const { dob, dobIso } = buildDobFromAge(data.age);
+
+  queryDB(`
+    INSERT INTO Staff_BasicData (
+      StaffID,
+      FirstName,
+      LastName,
+      CountryID,
+      DOB,
+      DOB_ISO,
+      Gender,
+      IsGeneratedStaff,
+      PhotoDay,
+      FaceType,
+      FaceIndex,
+      AgeType,
+      IsGeneratedForCustomTeam
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, 1, 45340, ?, ?, ?, 0)
+  `, [staffId, firstName, lastName, data.countryId, dob, dobIso, data.gender, data.faceType, data.faceIndex, data.ageType], "run");
+
+  return {
+    draftId: data.draftId,
+    staffId,
+    dob,
+    dobIso
+  };
+}
+
+export function createStaffGameData(data, staffId) {
+  queryDB(`
+    INSERT INTO Staff_GameData (
+      StaffID,
+      StaffType,
+      RetirementAge,
+      Retired,
+      PermaTraitSpawnBoost,
+      BestTeamFormula,
+      BestF1PosInTeamSinceGameStart,
+      DevelopmentPlan,
+      ExpectedRankForTeam,
+      AchievementScore,
+      ExpectedQualityScore,
+      ExpectedTimeScore
+    )
+    VALUES (?, ?, ?, ?, 0, NULL, 2, 0, 5, 0, 0, 0)
+  `, [staffId, data.typeStaff, data.retirementAge, data.isRetired], "run");
+}
+
+export function createStaffDriverData(data, staffId) {
+  const statsParams = String(data.statsArray || "").split(" ");
+  const improvability = statsParams[9];
+  const aggression = statsParams[10];
+  const driverCode = `[STRING_LITERAL:Value=|${data.driverCode}|]`;
+
+  queryDB(`
+    INSERT INTO Staff_DriverData (
+      StaffID,
+      Improvability,
+      Aggression,
+      DriverCode,
+      WantsChampionDriverNumber,
+      LastKnownDriverNumber,
+      AssignedCarNumber,
+      HasSuperLicense,
+      HasWonF2,
+      HasWonF3,
+      HasRacedEnoughToJoinF1,
+      PerformanceEvaluationDay,
+      Marketability,
+      TargetMarketability,
+      FeederSeriesAssignedCarNumber
+    )
+    VALUES (?, ?, ?, ?, ?, NULL, NULL, 1, NULL, NULL, 1, NULL, ?, ?, NULL)
+  `, [staffId, improvability, aggression, driverCode, data.wantsChampionDriverNumber, data.marketability, data.marketability], "run");
+}
+
+export function createStaffState(staffId) {
+  queryDB(`
+    INSERT INTO Staff_State (
+      StaffID,
+      UnspentXP,
+      XPGainedLastRace,
+      XPGainedLastWeek,
+      Mentality,
+      MentalityOpinion
+    )
+    VALUES (?, 0, 0, 0, 50, 2)
+  `, [staffId], "run");
+}
+
+export function createStaffPerformanceStats(data, staffId) {
+  const statsParams = String(data.statsArray || "").split(" ");
+  const statIds = data.typeStaff === "0" ? DRIVER_STAT_IDS : STAFF_STAT_IDS[data.typeStaff];
+  const statValues = data.typeStaff === "0"
+    ? statsParams.slice(0, DRIVER_STAT_IDS.length)
+    : statsParams;
+
+  statIds.forEach((statId, index) => {
+    queryDB(`
+      INSERT INTO Staff_PerformanceStats (
+        StaffID,
+        StatID,
+        Val,
+        Max
+      )
+      VALUES (?, ?, ?, 100)
+    `, [staffId, statId, statValues[index]], "run");
+  });
+}
+
+export function createDraftStaff(data) {
+  const basicData = createStaffBasicData(data);
+  createStaffGameData(data, basicData.staffId);
+  if (data.typeStaff === "0") {
+    createStaffDriverData(data, basicData.staffId);
+  }
+  createStaffState(basicData.staffId);
+  createStaffPerformanceStats(data, basicData.staffId);
+  return basicData;
 }
 
 function normalizeStaffType(typeStaffRaw) {
@@ -119,6 +294,40 @@ function normalizeStaffType(typeStaffRaw) {
     throw new Error(`Invalid staff type: ${typeStaffRaw}`);
   }
   return typeStaff;
+}
+
+export function buildRandomFaceForLocale(gender, staffNameLocale, typeStaffRaw) {
+  const typeStaff = normalizeStaffType(typeStaffRaw);
+  const faceType = pickFaceType(staffNameLocale);
+  const ageType = typeStaff === 0 ? 0 : 1;
+  const faceIndex = randomInt(0, getFaceCount(gender, faceType, ageType) - 1);
+  const facePath = buildFacePath(gender, faceType, faceIndex, ageType);
+
+  return {
+    faceType,
+    faceIndex,
+    ageType,
+    facePath
+  };
+}
+
+function pickFaceType(staffNameLocale) {
+  const chances = queryDB(`
+    SELECT FT0Chance, FT1Chance, FT2Chance, FT3Chance, FT4Chance
+    FROM Staff_Enum_NameLocales
+    WHERE Value = ?
+  `, [staffNameLocale], "singleRow");
+  const roll = Math.random();
+  let accumulated = 0;
+
+  for (let faceType = 0; faceType <= 4; faceType++) {
+    accumulated += chances[faceType];
+    if (roll <= accumulated) {
+      return faceType;
+    }
+  }
+
+  return 4;
 }
 
 function buildAgeDetails(typeStaff) {
@@ -241,8 +450,34 @@ function pickAvailableDriverNumber() {
 }
 
 function buildDriverCode(firstName, lastName) {
-  const compact = `${firstName}${lastName}`.replace(/[^A-Za-z]/g, "").toUpperCase();
+  const compactSurname = String(lastName || "").replace(/[^A-Za-z]/g, "").toUpperCase();
+  const compact = compactSurname || String(firstName || "").replace(/[^A-Za-z]/g, "").toUpperCase();
   return (compact || "NEW").slice(0, 3).padEnd(3, "X");
+}
+
+function buildDobFromAge(age) {
+  const currentDay = queryDB(`
+    SELECT Day
+    FROM Player_State
+  `, [], "singleValue");
+  const currentDate = excelToDate(currentDay);
+  const dobDate = new Date(Date.UTC(
+    currentDate.getUTCFullYear() - Number(age),
+    currentDate.getUTCMonth(),
+    currentDate.getUTCDate()
+  ));
+
+  return {
+    dob: dateToExcel(dobDate),
+    dobIso: formatDateIso(dobDate)
+  };
+}
+
+function formatDateIso(date) {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function extractNameToken(value) {

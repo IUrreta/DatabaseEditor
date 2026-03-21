@@ -1618,7 +1618,11 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed. Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      //list of 9 or 10 different personalities to chose from so each article has a different tone
+      const randomPersonalitiesForAI = ["Positive", "Negative", "Neutral", "Sarcastic", "Optimistic", "Pessimistic", "Humorous", "Serious", "Dramatic", "Inspirational"];
+      const persoonality = randomPersonalitiesForAI[Math.floor(Math.random() * randomPersonalitiesForAI.length)];
+
+      finalInstruction += `\n\nAvoid GPT-isms or the typical AI writing format/language, have a ${persoonality} personality.\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Avoid bullet points or lists. Do not include any raw HTML or code blocks\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
       if (expectsJson) {
         finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
@@ -1656,7 +1660,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         content: finalInstruction
       });
 
-      // Ensure {{language}} placeholders are always substituted in every prompt message
+      // Keep {{language}} placeholders substituted in every prompt message
       messages = messages.map(m => ({
         ...m,
         content: replaceLanguagePlaceholder(m.content, selectedLanguage)
@@ -3367,7 +3371,7 @@ function buildEmergencyOverlay() {
   return overlayDiv;
 }
 
-function ensureEmergencyOverlay(imageContainer) {
+function addEmergencyOverlay(imageContainer) {
   if (!imageContainer.querySelector('.breaking-news-overlay')) {
     imageContainer.prepend(buildEmergencyOverlay());
   }
@@ -3707,12 +3711,12 @@ function manage_overlay(imageContainer, overlay, data, image) {
         : (typeof image === 'string' ? image : null);
 
     if (!url) {
-      ensureEmergencyOverlay(imageContainer);
+      addEmergencyOverlay(imageContainer);
       return;
     }
     const probe = new Image();
     probe.onload = () => { /* ok, no hacemos nada */ };
-    probe.onerror = () => { ensureEmergencyOverlay(imageContainer); };
+    probe.onerror = () => { addEmergencyOverlay(imageContainer); };
     probe.src = url;
   } catch {
     console.warn('Image probe failed unexpectedly');
@@ -5810,7 +5814,6 @@ export function updateNewsYearsButton(message) {
     item.dataset.value = year;
     item.innerText = year;
     item.addEventListener("click", function (e) {
-      console.log("Selected news year:", year);
       newsYearsButton.querySelector("span").innerText = year;
       const command = new Command("getNewsFromSeason", { season: year });
       command.execute();
