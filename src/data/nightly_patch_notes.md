@@ -8,4 +8,5 @@
 ## 21st march
 - Added create driver/staff button in "Attributes" tab
 - Added export/import buttons for created/generated staff in "Attributes" tab
+- Added random personalities for news generations and refined prompt to avoid bullet points
 - Minor UI changes with the numbers font
