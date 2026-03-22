@@ -19,11 +19,11 @@ import {
   exportSeasonsRecordsArchive,
   importSeasonsRecordsArchive
 } from "./scriptUtils/dbUtils";
-import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
+import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAttributesAllTeamsExpertise, getAttributesAllCarsExpertise, getAttributesAllTeamsNextSeasonCar, getAttributesAllCarsNextSeasonCar, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, updateTeamExpertise } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
@@ -451,11 +451,15 @@ const workerCommands = {
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds] });
 
     const attributes = getAttributesAllTeams(yearData[2]);
-    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes] });
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], getGlobals().yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], getGlobals().yearIteration);
+    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes, expertiseAttributes, nextSeasonCarAttributes] });
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
-    postMessage({ responseMessage: "Cars fetched", content: [carPerformance, carAttributes] });
+    const carExpertiseAttributes = getAttributesAllCarsExpertise(yearData[2], getGlobals().yearIteration);
+    const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], getGlobals().yearIteration);
+    postMessage({ responseMessage: "Cars fetched", content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes] });
 
     const mod2026Data = fetch2026ModData();
     const mod2025Data = fetch2025ModData();
@@ -550,7 +554,9 @@ const workerCommands = {
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races, engineUpgradeRaceIds] });
 
     const attributes = getAttributesAllTeams(yearData[2]);
-    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes] });
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], getGlobals().yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], getGlobals().yearIteration);
+    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes, expertiseAttributes, nextSeasonCarAttributes] });
   },
   deleteCustomEngine: (data, postMessage) => {
     const res = deleteCustomEngineAndReassign(data?.engineId, data?.fallbackEngineId);
@@ -586,8 +592,9 @@ const workerCommands = {
     const allParts = getAllPartsFromTeam(data.teamID);
     const maxDesign = getMaxDesign();
     const expertise = getTeamExpertise(data.teamID, globals.yearIteration);
+    const nextSeasonCar = getTeamNextSeasonCarExpertise(data.teamID, globals.yearIteration);
 
-    const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign, expertise] };
+    const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign, expertise, nextSeasonCar] };
     postMessage(designResponse);
   },
   editExpertise: (data, postMessage) => {
@@ -601,6 +608,31 @@ const workerCommands = {
     });
     const expertise = getTeamExpertise(data.teamID, globals.yearIteration);
     postMessage({ responseMessage: "Team expertise fetched", content: expertise });
+  },
+  editNextSeasonExpertise: (data, postMessage) => {
+    const globals = getGlobals();
+    updateTeamNextSeasonExpertise(data.teamID, data.expertise, globals.yearIteration);
+    postMessage({
+      responseMessage: "Next season expertise updated",
+      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s ${Number(fetchYear()) + 1} car`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+
+    const nextSeasonCar = getTeamNextSeasonCarExpertise(data.teamID, globals.yearIteration);
+    postMessage({ responseMessage: "Team next season expertise fetched", content: nextSeasonCar });
+
+    const yearData = checkYearSave();
+    const attributes = getAttributesAllTeams(yearData[2]);
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], globals.yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], globals.yearIteration);
+    postMessage({ responseMessage: "Performance fetched", content: [null, attributes, expertiseAttributes, nextSeasonCarAttributes] });
+
+    const carPerformance = getPerformanceAllCars(yearData[2]);
+    const carAttributes = getAttributesAllCars(yearData[2]);
+    const carExpertiseAttributes = getAttributesAllCarsExpertise(yearData[2], globals.yearIteration);
+    const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], globals.yearIteration);
+    postMessage({ responseMessage: "Cars fetched", content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes] });
   },
   driverRequest: (data, postMessage) => {
     const contract = fetchDriverContracts(data.driverID);
@@ -795,14 +827,18 @@ const workerCommands = {
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
-    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], globals.yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], globals.yearIteration);
+    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes, expertiseAttributes, nextSeasonCarAttributes] };
     postMessage(attributesResponse);
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
+    const carExpertiseAttributes = getAttributesAllCarsExpertise(yearData[2], globals.yearIteration);
+    const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], globals.yearIteration);
     const carPerformanceResponse = {
       responseMessage: "Cars fetched",
-      content: [carPerformance, carAttributes],
+      content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes],
       isEditCommand: true,
       unlocksDownload: true
     };
@@ -824,7 +860,9 @@ const workerCommands = {
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races, engineUpgradeRaceIds] });
 
     const attributes = getAttributesAllTeams(yearData[2]);
-    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes] });
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], getGlobals().yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], getGlobals().yearIteration);
+    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes, expertiseAttributes, nextSeasonCarAttributes] });
   },
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
@@ -1076,14 +1114,18 @@ const workerCommands = {
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
-    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], getGlobals().yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], getGlobals().yearIteration);
+    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes, expertiseAttributes, nextSeasonCarAttributes] };
     postMessage(attributesResponse);
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
+    const carExpertiseAttributes = getAttributesAllCarsExpertise(yearData[2], getGlobals().yearIteration);
+    const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], getGlobals().yearIteration);
     const carPerformanceResponse = {
       responseMessage: "Cars fetched",
-      content: [carPerformance, carAttributes],
+      content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes],
       isEditCommand: true,
       unlocksDownload: true
     };
@@ -1099,14 +1141,18 @@ const workerCommands = {
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
-    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes] };
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], getGlobals().yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], getGlobals().yearIteration);
+    const attributesResponse = { responseMessage: "Performance fetched", content: [performance[performance.length - 1], attibutes, expertiseAttributes, nextSeasonCarAttributes] };
     postMessage(attributesResponse);
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
+    const carExpertiseAttributes = getAttributesAllCarsExpertise(yearData[2], getGlobals().yearIteration);
+    const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], getGlobals().yearIteration);
     const carPerformanceResponse = {
       responseMessage: "Cars fetched",
-      content: [carPerformance, carAttributes],
+      content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes],
       isEditCommand: true,
       unlocksDownload: true
     };

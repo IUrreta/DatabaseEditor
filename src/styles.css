@@ -7155,6 +7155,10 @@ input.engine-performance-title:focus {
   color: var(--new-primary);
 }
 
+.teams-show.research-mode .part-performance-stat .custom-input-number {
+  color: var(--new-secondary);
+}
+
 
 
 .overview-show {
@@ -11266,50 +11270,94 @@ input[type='number'] {
   width: 0%;
   height: 5px;
   position: absolute;
-  border-right: 1px solid var(--text-general);
+  border-right: 2px solid var(--text-general);
+  overflow: visible;
+}
+
+.performance-bar-progress.expertise-bar{
+  border-color: var(--new-primary);
+}
+
+.performance-bar-progress.expertise-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, var(--new-primary) 7%, var(--performance-team-color) 80%);
+  opacity: 1;
+  pointer-events: none;
+}
+
+.performance-bar-progress.next-season-car-bar{
+  border-color: var(--new-secondary);
+}
+
+.performance-bar-progress.next-season-car-bar::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to right, var(--new-secondary) 7%, var(--performance-team-color) 80%);
+  opacity: 1;
+  pointer-events: none;
 }
 
 .performance-bar-progress.rb {
+  --performance-team-color: var(--redbull-primary);
   background-color: var(--redbull-primary);
 }
 
 .performance-bar-progress.fe {
+  --performance-team-color: var(--ferrari-primary);
   background-color: var(--ferrari-primary);
 }
 
 .performance-bar-progress.mc {
+  --performance-team-color: var(--mclaren-primary);
   background-color: var(--mclaren-primary);
 }
 
 .performance-bar-progress.me {
+  --performance-team-color: var(--mercedes-primary);
   background-color: var(--mercedes-primary);
 }
 
 .performance-bar-progress.al {
+  --performance-team-color: var(--alpine-primary);
   background-color: var(--alpine-primary);
 }
 
 .performance-bar-progress.wi {
+  --performance-team-color: var(--williams-primary);
   background-color: var(--williams-primary);
 }
 
 .performance-bar-progress.ha {
+  --performance-team-color: var(--haas-primary);
   background-color: var(--haas-primary);
 }
 
 .performance-bar-progress.at {
+  --performance-team-color: var(--alphatauri-primary);
   background-color: var(--alphatauri-primary);
 }
 
 .performance-bar-progress.as {
+  --performance-team-color: var(--aston-primary);
   background-color: var(--aston-primary);
 }
 
 .performance-bar-progress.af {
+  --performance-team-color: var(--alfa-primary);
   background-color: var(--alfa-primary);
 }
 
 .performance-bar-progress.ct {
+  --performance-team-color: var(--custom-team-primary);
   background-color: var(--custom-team-primary);
 }
 

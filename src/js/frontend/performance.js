@@ -31,9 +31,15 @@ let currentData;
 let performanceView = "graph";
 let currentPartsStats = null;
 let currentTeamExpertise = null;
+let currentTeamNextSeasonCar = null;
 let performanceDraftStats = null;
 let expertiseDraftStats = null;
+let nextSeasonCarDraftStats = null;
 let performanceAnnotationsToggle = true;
+let currentPerformanceCriterion = "overall";
+let performanceCurrentSeason = null;
+
+const performanceDetailsModes = ["performance", "expertise", "nextSeasonCar"];
 
 Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
@@ -63,6 +69,35 @@ function clampPercent(value) {
 function setBarWidth(bar, value) {
     if (!bar) return;
     bar.style.width = clampPercent(value) + "%";
+}
+
+function getDatasetKey(mode, criterion) {
+    let parts = String(criterion).split("_");
+    let key = mode;
+    parts.forEach(function (part) {
+        key += part.charAt(0).toUpperCase() + part.slice(1);
+    });
+    return key;
+}
+
+function setBarDatasetValue(bar, mode, criterion, value) {
+    if (!bar) return;
+    bar.dataset[getDatasetKey(mode, criterion)] = Number(value).toFixed(3);
+}
+
+function getBarDatasetValue(bar, criterion) {
+    if (!bar) return 0;
+    const rawValue = bar.dataset[getDatasetKey(performanceDetailsMode, criterion)];
+    if (rawValue === undefined) {
+        return 0;
+    }
+    return Number(rawValue);
+}
+
+function updateBarModeClass(bar) {
+    if (!bar) return;
+    bar.classList.toggle("expertise-bar", performanceDetailsMode === "expertise");
+    bar.classList.toggle("next-season-car-bar", performanceDetailsMode === "nextSeasonCar");
 }
 
 function normalizeData(data) {
@@ -115,21 +150,44 @@ function applyPartsStatsToDom(data) {
     }
 }
 
-function updateExpertiseModeUi() {
+function getNextSeasonCarLabel() {
+    if (performanceCurrentSeason) {
+        return (performanceCurrentSeason + 1).toString() + " Car";
+    }
+    return "Next Season Car";
+}
+
+function getPerformanceDetailsModeLabel(mode = performanceDetailsMode) {
+    if (mode === "expertise") {
+        return "Expertise";
+    }
+    if (mode === "nextSeasonCar") {
+        return getNextSeasonCarLabel();
+    }
+    return "Performance";
+}
+
+export function setPerformanceCurrentSeason(year) {
+    performanceCurrentSeason = Number(year) || null;
+    updatePerformanceExpertiseButton();
+    updateDetailsModeUi();
+}
+
+function updateDetailsModeUi() {
     const teamsShow = document.querySelector(".performance-show.teams-show");
     if (!teamsShow) return;
 
-    const isExpertise = performanceDetailsMode === "expertise";
-    teamsShow.classList.toggle("expertise-mode", isExpertise);
+    const isStatsMode = performanceDetailsMode !== "performance";
+    teamsShow.classList.toggle("expertise-mode", isStatsMode);
 
     document.querySelectorAll(".part-performance").forEach(function (part) {
         const arrows = part.querySelector(".part-performance-title .arrows");
-        if (arrows) arrows.classList.toggle("d-none", isExpertise);
+        if (arrows) arrows.classList.toggle("d-none", isStatsMode);
 
         const chevron = part.querySelector(".part-performance-title .redesigned-chevron");
-        if (chevron) chevron.classList.toggle("d-none", isExpertise);
+        if (chevron) chevron.classList.toggle("d-none", isStatsMode);
 
-        if (isExpertise) {
+        if (isStatsMode) {
             const statsContainer = part.querySelector(".part-performance-stats");
             if (statsContainer) statsContainer.classList.remove("hidden");
 
@@ -140,15 +198,15 @@ function updateExpertiseModeUi() {
         }
 
         const list = part.querySelector(".parts-list");
-        if (list) list.classList.toggle("d-none", isExpertise);
+        if (list) list.classList.toggle("d-none", isStatsMode);
 
         const subtitle = part.querySelector(".part-subtitle");
         if (!subtitle) return;
-        if (isExpertise) {
-            if (subtitle.innerText !== "Expertise") {
+        if (isStatsMode) {
+            if (subtitle.dataset.performanceText === undefined) {
                 subtitle.dataset.performanceText = subtitle.innerText;
             }
-            subtitle.innerText = "Expertise";
+            subtitle.innerText = getPerformanceDetailsModeLabel();
         }
         else if (subtitle.dataset.performanceText) {
             subtitle.innerText = subtitle.dataset.performanceText;
@@ -157,26 +215,35 @@ function updateExpertiseModeUi() {
 }
 
 function setPerformanceDetailsMode(mode) {
-    if (mode !== "performance" && mode !== "expertise") return;
+    if (!performanceDetailsModes.includes(mode)) return;
     if (mode === performanceDetailsMode) return;
 
     if (performanceDetailsMode === "performance") {
         performanceDraftStats = readPartsStatsFromDom();
     }
-    else {
+    else if (performanceDetailsMode === "expertise") {
         expertiseDraftStats = readPartsStatsFromDom();
+    }
+    else {
+        nextSeasonCarDraftStats = readPartsStatsFromDom();
     }
 
     performanceDetailsMode = mode;
     updatePerformanceExpertiseButton();
-    updateExpertiseModeUi();
+    updateDetailsModeUi();
 
     if (mode === "performance") {
         applyPartsStatsToDom(performanceDraftStats || currentPartsStats);
     }
-    else {
+    else if (mode === "expertise") {
         applyPartsStatsToDom(expertiseDraftStats || currentTeamExpertise);
     }
+    else {
+        applyPartsStatsToDom(nextSeasonCarDraftStats || currentTeamNextSeasonCar);
+    }
+
+    order_by(currentPerformanceCriterion);
+    load_overview();
 }
 
 function updatePerformanceExpertiseButton() {
@@ -189,7 +256,11 @@ function updatePerformanceExpertiseButton() {
     button.dataset.value = performanceDetailsMode;
     if (performanceDetailsMode === "expertise") {
         if (icon) icon.className = "bi bi-stars";
-        if (text) text.textContent = "Expertise";
+        if (text) text.textContent = "Upgrades";
+    }
+    else if (performanceDetailsMode === "nextSeasonCar") {
+        if (icon) icon.className = "bi bi-calendar2-plus";
+        if (text) text.textContent = "Research"
     }
     else {
         if (icon) icon.className = "bi bi-speedometer2";
@@ -200,6 +271,9 @@ function updatePerformanceExpertiseButton() {
 
 
 export function load_performance(teams) {
+    if (!teams) {
+        return;
+    }
     // let teams = normalizeData(teams);
     for (let key in teams) {
         if (teams.hasOwnProperty(key)) {
@@ -208,9 +282,10 @@ export function load_performance(teams) {
                 let performanceBarProgress = teamPerformance.querySelector('.performance-bar-progress');
                 let team_value = teamPerformance.querySelector('.team-title-value');
                 if (performanceBarProgress) {
+                    setBarDatasetValue(performanceBarProgress, "performance", "overall", teams[key]);
                     setBarWidth(performanceBarProgress, teams[key]);
                     team_value.innerText = teams[key].toFixed(2) + ' %';
-                    performanceBarProgress.dataset.overall = teams[key];
+                    updateBarModeClass(performanceBarProgress);
                 }
             }
         }
@@ -218,14 +293,18 @@ export function load_performance(teams) {
 }
 
 export function load_cars(data) {
+    if (!data) {
+        return;
+    }
     for (let key in data) {
         let cars = document.querySelectorAll(`#carsDiv .car[data-teamid='${key}']`);
         cars.forEach(function (car, index) {
             let carNumber = parseInt(car.dataset.carnumber);
             index = index + 1;
             let bar = car.querySelector('.performance-bar-progress');
-            bar.dataset.overall = data[key][carNumber][0];
+            setBarDatasetValue(bar, "performance", "overall", data[key][carNumber][0]);
             setBarWidth(bar, data[key][carNumber][0]);
+            updateBarModeClass(bar);
             let name = car.querySelector('.team-title-name');
             name.innerText = car.dataset.teamshow + " " + carNumber.toString() + " -  #" + data[key][carNumber][1];
             let missing_parts = data[key][carNumber][2];
@@ -256,42 +335,45 @@ export function load_cars(data) {
     }
 }
 
-export function load_attributes(teams) {
+export function load_attributes(teams, mode = "performance") {
     for (let key in teams) {
         for (let attribute in teams[key]) {
             let team = document.querySelector(`#teamsDiv .team-performance[data-teamid='${key}']`);
             let bar = team.querySelector(`.performance-bar-progress`);
             let attributeValue = teams[key][attribute];
-            bar.dataset[attribute] = attributeValue.toFixed(3);
+            setBarDatasetValue(bar, mode, attribute, attributeValue);
         }
     }
     load_overview();
 }
 
-export function load_car_attributes(teams) {
+export function load_car_attributes(teams, mode = "performance") {
     for (let key in teams) {
         for (let car in teams[key]) {
             let carDiv = document.querySelector(`#carsDiv .car[data-teamid='${key}'][data-carnumber='${car}']`);
             for (let attribute in teams[key][car]) {
                 let bar = carDiv.querySelector(`.performance-bar-progress`);
                 let attributeValue = teams[key][car][attribute];
-                bar.dataset[attribute] = attributeValue.toFixed(3);
+                setBarDatasetValue(bar, mode, attribute, attributeValue);
             }
         }
     }
 }
 
 export function order_by(criterion) {
+    currentPerformanceCriterion = criterion;
     let teams = document.querySelectorAll(".team-performance");
     let teamsArray = Array.from(teams);
     teamsArray.sort(function (a, b) {
-        return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+        return getBarDatasetValue(b.querySelector(".performance-bar-progress"), criterion) - getBarDatasetValue(a.querySelector(".performance-bar-progress"), criterion);
     })
     teamsArray.forEach(function (team, index) {
         document.getElementById("teamsDiv").appendChild(team);
         let bar = team.querySelector(".performance-bar-progress");
-        setBarWidth(bar, bar.dataset[criterion]);
-        team.querySelector(".team-title-value").innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+        let barValue = getBarDatasetValue(bar, criterion);
+        updateBarModeClass(bar);
+        setBarWidth(bar, barValue);
+        team.querySelector(".team-title-value").innerText = barValue.toFixed(2) + " %";
         let number = team.querySelector(".team-number")
         number.innerText = index + 1
     })
@@ -299,15 +381,17 @@ export function order_by(criterion) {
     let cars = document.querySelectorAll(".car-performance");
     let carsArray = Array.from(cars);
     carsArray.sort(function (a, b) {
-        return b.querySelector(".performance-bar-progress").dataset[criterion] - a.querySelector(".performance-bar-progress").dataset[criterion];
+        return getBarDatasetValue(b.querySelector(".performance-bar-progress"), criterion) - getBarDatasetValue(a.querySelector(".performance-bar-progress"), criterion);
     })
     carsArray.forEach(function (car, index) {
         document.getElementById("carsDiv").appendChild(car);
         let bar = car.querySelector(".performance-bar-progress");
-        setBarWidth(bar, bar.dataset[criterion]);
+        let barValue = getBarDatasetValue(bar, criterion);
+        updateBarModeClass(bar);
+        setBarWidth(bar, barValue);
         let number = car.querySelector(".performance-number")
         let value = car.querySelector(".car-missing-parts .value")
-        value.innerText = parseFloat(bar.dataset[criterion]).toFixed(2) + " %";
+        value.innerText = barValue.toFixed(2) + " %";
         number.innerText = index + 1
     })
 
@@ -337,6 +421,8 @@ teamsCarsButton.addEventListener("click", function () {
         document.getElementById("teamsDiv").classList.remove("d-none");
     }
     updateTeamsCarsButton();
+    order_by(currentPerformanceCriterion);
+    load_overview();
 })
 
 updateTeamsCarsButton();
@@ -359,9 +445,6 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
-    if (performanceExpertiseButton) {
-        performanceExpertiseButton.classList.toggle("d-none", performanceView !== "details");
-    }
     removeSelected()
     if (performanceView === "details") {
         document.querySelector(".save-button").classList.remove("d-none")
@@ -378,9 +461,6 @@ enginesPill.addEventListener("click", function () {
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
-    if (performanceExpertiseButton) {
-        performanceExpertiseButton.classList.add("d-none");
-    }
     removeSelected()
     document.querySelector(".save-button").classList.remove("d-none")
     first_show_animation()
@@ -458,8 +538,10 @@ document.querySelectorAll(".team").forEach(function (elem) {
         teamSelected = elem.dataset.teamid;
         performanceDraftStats = null;
         expertiseDraftStats = null;
+        nextSeasonCarDraftStats = null;
         currentPartsStats = null;
         currentTeamExpertise = null;
+        currentTeamNextSeasonCar = null;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
     })
@@ -474,8 +556,10 @@ document.querySelectorAll(".car").forEach(function (elem) {
         teamSelected = elem.dataset.teamid;
         performanceDraftStats = null;
         expertiseDraftStats = null;
+        nextSeasonCarDraftStats = null;
         currentPartsStats = null;
         currentTeamExpertise = null;
+        currentTeamNextSeasonCar = null;
         const command = new Command("performanceRequest",  { teamID: teamSelected});
         command.execute();
     })
@@ -507,9 +591,22 @@ export function load_team_expertise(data) {
     currentTeamExpertise = data;
     expertiseDraftStats = null;
 
-    updateExpertiseModeUi();
+    updateDetailsModeUi();
 
     if (performanceDetailsMode !== "expertise") {
+        return;
+    }
+
+    applyPartsStatsToDom(data);
+}
+
+export function load_team_next_season_car(data) {
+    currentTeamNextSeasonCar = data;
+    nextSeasonCarDraftStats = null;
+
+    updateDetailsModeUi();
+
+    if (performanceDetailsMode !== "nextSeasonCar") {
         return;
     }
 
@@ -622,7 +719,7 @@ export function load_parts_list(data) {
         }
         add_new_part_button(list)
     }
-    updateExpertiseModeUi();
+    updateDetailsModeUi();
 }
 
 function add_new_part_button(list) {
@@ -742,7 +839,7 @@ export function load_one_part(data) {
 
 function add_partName_listener(div, subtitle, type = "old") {
     div.addEventListener("click", function () {
-        if (performanceDetailsMode === "expertise") {
+        if (performanceDetailsMode !== "performance") {
             return;
         }
         if (type === "new") {
@@ -925,6 +1022,7 @@ const performanceGraphText = performanceGraphButton.querySelector("span");
 const performanceOverview = document.getElementById("performanceOverview");
 const performanceExpertiseButton = document.getElementById("performanceExpertiseButton");
 const performanceAnnotationsToggleInput = document.getElementById("performanceAnnotationsToggle");
+const performanceAnnotationsToggleWrapper = performanceAnnotationsToggleInput ? performanceAnnotationsToggleInput.closest(".annotations") : null;
 
 if (performanceAnnotationsToggleInput) {
     performanceAnnotationsToggle = performanceAnnotationsToggleInput.checked;
@@ -959,8 +1057,8 @@ function setPerformanceView(view) {
     document.querySelector("#performanceGraph").classList.toggle("d-none", view !== "graph");
     document.querySelector(".teams-show").classList.toggle("d-none", view !== "details");
     performanceOverview.classList.toggle("d-none", view !== "overview");
-    if (performanceExpertiseButton) {
-        performanceExpertiseButton.classList.toggle("d-none", view !== "details" || teamsEngine !== "teams");
+    if (performanceAnnotationsToggleWrapper) {
+        performanceAnnotationsToggleWrapper.classList.toggle("d-none", view !== "graph");
     }
 
     document.querySelector(".save-button").classList.toggle("d-none", view !== "details");
@@ -975,7 +1073,8 @@ function setPerformanceView(view) {
 
 if (performanceExpertiseButton) {
     performanceExpertiseButton.addEventListener("click", function () {
-        const next = performanceDetailsMode === "performance" ? "expertise" : "performance";
+        const currentIndex = performanceDetailsModes.indexOf(performanceDetailsMode);
+        const next = performanceDetailsModes[(currentIndex + 1) % performanceDetailsModes.length];
         setPerformanceDetailsMode(next);
     });
 }
@@ -1039,7 +1138,8 @@ function createOverviewCard(attributeConfig) {
         teamRow.appendChild(performanceBar);
 
         let sourceKey = attributeConfig.source || attributeConfig.key;
-        let value = parseFloat(sourceBar.dataset[sourceKey] || 0);
+        let value = getBarDatasetValue(sourceBar, sourceKey);
+        updateBarModeClass(progressBar);
         setBarWidth(progressBar, value);
         teamValue.textContent = value.toFixed(2) + " %";
 
@@ -1103,7 +1203,7 @@ document.querySelector("#performanceGraphButton").addEventListener("click", func
 
 setPerformanceView("graph");
 updatePerformanceExpertiseButton();
-updateExpertiseModeUi();
+updateDetailsModeUi();
 
 document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
     elem.addEventListener("click", function () {
