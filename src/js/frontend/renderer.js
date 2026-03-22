@@ -19,7 +19,8 @@ import { load_calendar } from './calendar';
   import {
       load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
       order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, load_team_next_season_car, gather_team_expertise_data, performanceDetailsMode, setPerformanceCurrentSeason
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, load_team_next_season_car, gather_team_expertise_data, performanceDetailsMode, setPerformanceCurrentSeason,
+      updateEngineLabels
   } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
@@ -1327,6 +1328,7 @@ function update_engine_allocations(message) {
     window.__ENGINE_NAMES__ = { ...engine_names }
 
     reloadTables()
+    updateEngineLabels()
 }
 
 

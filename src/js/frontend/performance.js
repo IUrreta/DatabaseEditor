@@ -178,7 +178,8 @@ function updateDetailsModeUi() {
     if (!teamsShow) return;
 
     const isStatsMode = performanceDetailsMode !== "performance";
-    teamsShow.classList.toggle("expertise-mode", isStatsMode);
+    teamsShow.classList.toggle("expertise-mode", performanceDetailsMode === "expertise");
+    teamsShow.classList.toggle("research-mode", performanceDetailsMode === "nextSeasonCar");
 
     document.querySelectorAll(".part-performance").forEach(function (part) {
         const arrows = part.querySelector(".part-performance-title .arrows");
@@ -259,7 +260,7 @@ function updatePerformanceExpertiseButton() {
         if (text) text.textContent = "Upgrades";
     }
     else if (performanceDetailsMode === "nextSeasonCar") {
-        if (icon) icon.className = "bi bi-calendar2-plus";
+        if (icon) icon.className = "bi bi-flask";
         if (text) text.textContent = "Research"
     }
     else {
@@ -446,23 +447,17 @@ teamsPill.addEventListener("click", function () {
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
     removeSelected()
-    if (performanceView === "details") {
-        document.querySelector(".save-button").classList.remove("d-none")
-        first_show_animation()
-    }
-    else {
-        document.querySelector(".save-button").classList.add("d-none")
-    }
+    setPerformanceView(performanceView)
 })
 
 enginesPill.addEventListener("click", function () {
     teamsEngine = "engines"
-    document.querySelector("#teamsPerformance").classList.add("d-none")
+    document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
     removeSelected()
-    document.querySelector(".save-button").classList.remove("d-none")
+    setPerformanceView(performanceView)
     first_show_animation()
 })
 
@@ -1054,6 +1049,19 @@ function setPerformanceView(view) {
         performanceGraphText.textContent = "Overview";
     }
 
+    if (teamsEngine === "engines") {
+        document.querySelector("#performanceGraph").classList.add("d-none");
+        document.querySelector(".teams-show").classList.add("d-none");
+        performanceOverview.classList.add("d-none");
+        document.querySelector("#enginesPerformance").classList.remove("d-none");
+        if (performanceAnnotationsToggleWrapper) {
+            performanceAnnotationsToggleWrapper.classList.add("d-none");
+        }
+        document.querySelector(".save-button").classList.remove("d-none");
+        return;
+    }
+
+    document.querySelector("#enginesPerformance").classList.add("d-none");
     document.querySelector("#performanceGraph").classList.toggle("d-none", view !== "graph");
     document.querySelector(".teams-show").classList.toggle("d-none", view !== "details");
     performanceOverview.classList.toggle("d-none", view !== "overview");
@@ -1352,6 +1360,19 @@ function add_custom_engine(name, stats) {
     generalEngineDiv.appendChild(caret)
     generalEngineDiv.appendChild(trash)
     document.querySelector(".custom-engines-div").appendChild(generalEngineDiv)
+}
+
+export function updateEngineLabels() {
+    let engine_allocations = window.__ENGINE_ALLOCATIONS__ || {}
+    let engine_names = window.__ENGINE_NAMES__ || {}
+    for (const teamId in engine_allocations) {
+        console.log("Updating engine label for team", teamId, "with engine", engine_allocations[teamId])
+        let engine_label = document.querySelector("#teamsPerformance .team-performance[data-teamid='" + teamId + "'] .engine-label")
+        console.log("Found engine label element:", engine_label)
+        if (!engine_label) continue;
+        let engineName = engine_names[engine_allocations[teamId]] || "Default Engine";
+        engine_label.innerText = engineName;
+    }
 }
 
 

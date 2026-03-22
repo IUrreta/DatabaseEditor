@@ -7232,6 +7232,7 @@ input.engine-performance-title:focus {
   color: var(--dark-text);
   font-size: 11px;
 }
+
 .teams-show,
 .engines-show {
   background-color: transparent !important;
@@ -7243,10 +7244,28 @@ input.engine-performance-title:focus {
   flex: 1;
 }
 
+#enginesPerformance{
+  margin: 0;
+  padding: 0;
+}
+
 .main-columns-drag-section:has(.teams-show:not(.d-none)),
-.main-columns-drag-section:has(.overview-show:not(.d-none)){
+.main-columns-drag-section:has(.overview-show:not(.d-none)),
+.main-columns-drag-section:has(.engines-show:not(.d-none)){
   background-color: transparent !important;
   box-shadow: none !important;
+}
+
+#teamsPerformance:has(.engines-show:not(.d-none)) .engine-label{
+  font-family: "Formula1Bold";
+  color: var(--text-general);
+  font-size: 18px;
+}
+
+#teamsPerformance:has(.engines-show:not(.d-none)) #teamsDiv .team-title-name{
+  font-family: "Formula1";
+  color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .engines-show {
@@ -11395,9 +11414,18 @@ input[type='number'] {
 
 .team-title {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   font-size: 18px;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.engine-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  flex-grow: 1;
+  font-family: 'Formula1';
 }
 
 .team-performance:hover .team-title-value {
