@@ -19,7 +19,7 @@ import { load_calendar } from './calendar';
   import {
       load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
       order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, load_team_next_season_car, gather_team_expertise_data, performanceDetailsMode, setPerformanceCurrentSeason,
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, load_team_next_season_car, gather_team_expertise_data, performanceDetailsMode, setPerformanceCurrentSeason, load_engine_conditions,
       updateEngineLabels
   } from './performance';
 import {
@@ -1049,6 +1049,9 @@ const messageHandlers = {
         if (message[4]) {
             load_team_next_season_car(message[4])
         }
+    },
+    "Engine conditions fetched": (message) => {
+        load_engine_conditions(message)
     },
     "Game Year": (message) => {
         manage_game_year(message)

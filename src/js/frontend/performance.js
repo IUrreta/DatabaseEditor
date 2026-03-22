@@ -14,6 +14,8 @@ const enginesPill = document.getElementById("enginesPill");
 
 const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
+const engineConditionEditor = document.getElementById("teamEngineConditionEditor");
+const engineManufacturerList = document.getElementById("engineManufacturerList");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
 
@@ -38,8 +40,17 @@ let nextSeasonCarDraftStats = null;
 let performanceAnnotationsToggle = true;
 let currentPerformanceCriterion = "overall";
 let performanceCurrentSeason = null;
+let engineConditionEditorVisible = false;
 
 const performanceDetailsModes = ["performance", "expertise", "nextSeasonCar"];
+const engineConditionSlots = [
+    { car: "1", key: "engine" },
+    { car: "1", key: "ers" },
+    { car: "1", key: "gearbox" },
+    { car: "2", key: "engine" },
+    { car: "2", key: "ers" },
+    { car: "2", key: "gearbox" }
+];
 
 Chart.register(ChartDataLabels);
 Chart.register(annotationPlugin);
@@ -69,6 +80,21 @@ function clampPercent(value) {
 function setBarWidth(bar, value) {
     if (!bar) return;
     bar.style.width = clampPercent(value) + "%";
+}
+
+function setEngineConditionEditorState(visible) {
+    engineConditionEditorVisible = visible;
+
+    if (engineConditionEditor) {
+        engineConditionEditor.classList.toggle("d-none", !visible);
+    }
+    if (engineManufacturerList) {
+        engineManufacturerList.classList.toggle("d-none", visible);
+    }
+
+    if (teamsEngine === "engines") {
+        manageSaveButton(!visible, "performance");
+    }
 }
 
 function getDatasetKey(mode, criterion) {
@@ -441,24 +467,46 @@ document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function 
  * Pills that manage engines and teams screens and lists
  */
 teamsPill.addEventListener("click", function () {
+    const selectedTeamOrCar = getSelectedTeamOrCar();
     teamsEngine = "teams"
+    setEngineConditionEditorState(false)
     document.querySelector("#enginesPerformance").classList.add("d-none")
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.remove("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
-    removeSelected()
-    setPerformanceView(performanceView)
+    if (!selectedTeamOrCar) {
+        removeSelected()
+        setPerformanceView(performanceView)
+        return;
+    }
+
+    teamSelected = selectedTeamOrCar.dataset.teamid;
+    setPerformanceView("details")
+    manageSaveButton(true, "performance")
+    const command = new Command("performanceRequest", { teamID: teamSelected });
+    command.execute();
 })
 
 enginesPill.addEventListener("click", function () {
+    const selectedTeamOrCar = getSelectedTeamOrCar();
     teamsEngine = "engines"
+    setEngineConditionEditorState(false)
     document.querySelector("#teamsPerformance").classList.remove("d-none")
     document.querySelector("#enginesPerformance").classList.remove("d-none")
     document.querySelector("#carAttributeSelector").classList.add("d-none")
     document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
-    removeSelected()
-    setPerformanceView(performanceView)
-    first_show_animation()
+    if (!selectedTeamOrCar) {
+        removeSelected()
+        setPerformanceView(performanceView)
+        first_show_animation()
+        return;
+    }
+
+    teamSelected = selectedTeamOrCar.dataset.teamid;
+    setPerformanceView("details")
+    manageSaveButton(false)
+    const command = new Command("engineConditionRequest", { teamID: teamSelected });
+    command.execute();
 })
 
 export function gather_engines_data() {
@@ -521,16 +569,26 @@ function removeSelected() {
     });
 }
 
+function getSelectedTeamOrCar() {
+    return document.querySelector(".team.selected, .car.selected");
+}
+
 /**
  * eventListeners for all teams and engines
  */
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
-        manageSaveButton(true, "performance")
         setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
+        if (teamsEngine === "engines") {
+            manageSaveButton(false)
+            const command = new Command("engineConditionRequest", { teamID: teamSelected });
+            command.execute();
+            return;
+        }
+        manageSaveButton(true, "performance")
         performanceDraftStats = null;
         expertiseDraftStats = null;
         nextSeasonCarDraftStats = null;
@@ -545,10 +603,16 @@ document.querySelectorAll(".team").forEach(function (elem) {
 document.querySelectorAll(".car").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
-        manageSaveButton(true, "performance")
         setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
+        if (teamsEngine === "engines") {
+            manageSaveButton(false)
+            const command = new Command("engineConditionRequest", { teamID: teamSelected });
+            command.execute();
+            return;
+        }
+        manageSaveButton(true, "performance")
         performanceDraftStats = null;
         expertiseDraftStats = null;
         nextSeasonCarDraftStats = null;
@@ -567,6 +631,7 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         engineSelected = elem.dataset.engineid;
         teamEngineSelected = elem.dataset.teamengine
         document.querySelector(".engines-show").classList.remove("d-none")
+        setEngineConditionEditorState(false)
         resetBarsEngines(elem)
     })
 })
@@ -606,6 +671,115 @@ export function load_team_next_season_car(data) {
     }
 
     applyPartsStatsToDom(data);
+}
+
+export function load_engine_conditions(data) {
+    setEngineConditionEditorState(true);
+
+    if (!engineConditionEditor) {
+        return;
+    }
+
+    engineConditionSlots.forEach(function (slot) {
+        const part = engineConditionEditor.querySelector(`.engine-condition-part[data-car='${slot.car}'][data-slot='${slot.key}']`);
+        if (!part) {
+            return;
+        }
+
+        const stats = part.querySelector(".engine-performance-stats");
+        if (!stats) {
+            return;
+        }
+
+        stats.innerHTML = "";
+
+        const items = data?.cars?.[slot.car]?.[slot.key]?.items || [];
+        if (!items.length) {
+            const empty = document.createElement("div");
+            empty.classList.add("engine-condition-empty");
+            empty.innerText = "No items";
+            stats.appendChild(empty);
+            return;
+        }
+
+        items.forEach(function (item) {
+            const stat = document.createElement("div");
+            stat.classList.add("engine-performance-stat");
+            stat.dataset.itemid = item.itemID;
+
+            const itemTitle = document.createElement("div");
+            itemTitle.classList.add("engine-condition-item-title");
+
+            const title = document.createElement("div");
+            title.classList.add("part-performance-stat-title");
+            title.innerText = item.name || `#${item.itemID}`;
+            itemTitle.appendChild(title);
+
+            if (item.isFitted) {
+                const fitted = document.createElement("span");
+                fitted.classList.add("engine-condition-fitted");
+                fitted.innerText = "Fitted";
+                itemTitle.appendChild(fitted);
+            }
+
+            const statNumber = document.createElement("div");
+            statNumber.classList.add("stat-number");
+
+            const less = document.createElement("i");
+            less.classList.add("bi", "bi-dash", "new-augment-button", "transparent");
+
+            const input = document.createElement("input");
+            input.type = "text";
+            input.classList.add("custom-input-number");
+            input.min = "0";
+            input.max = "100";
+            input.value = (Number(item.condition || 0) * 100).toFixed(1);
+
+            const plus = document.createElement("i");
+            plus.classList.add("bi", "bi-plus", "new-augment-button", "transparent");
+
+            statNumber.appendChild(less);
+            statNumber.appendChild(input);
+            statNumber.appendChild(plus);
+
+            const bar = document.createElement("div");
+            bar.classList.add("engine-performance-bar");
+
+            const progress = document.createElement("div");
+            progress.classList.add("engine-performance-progress");
+            bar.appendChild(progress);
+            setBarWidth(progress, Number(input.value));
+
+            input.addEventListener("input", function () {
+                let value = Number(input.value);
+                if (Number.isNaN(value)) {
+                    value = 0;
+                }
+                value = Math.max(0, Math.min(100, value));
+                input.value = value.toFixed(1);
+                setBarWidth(progress, value);
+            });
+
+            const holdOptions = buildHoldOptions(input, {
+                min: 0,
+                max: 100,
+                format: function (value) {
+                    return value.toFixed(1);
+                },
+                onChange: function (value) {
+                    setBarWidth(progress, value);
+                }
+            });
+
+            attachHold(less, input, -0.5, holdOptions);
+            attachHold(plus, input, 0.5, holdOptions);
+
+            stat.appendChild(itemTitle);
+            stat.appendChild(statNumber);
+            stat.appendChild(bar);
+            stats.appendChild(stat);
+        });
+    });
 }
 
 export function gather_team_expertise_data() {
@@ -1057,7 +1231,7 @@ function setPerformanceView(view) {
         if (performanceAnnotationsToggleWrapper) {
             performanceAnnotationsToggleWrapper.classList.add("d-none");
         }
-        document.querySelector(".save-button").classList.remove("d-none");
+        document.querySelector(".save-button").classList.toggle("d-none", engineConditionEditorVisible);
         return;
     }
 
@@ -1212,6 +1386,7 @@ document.querySelector("#performanceGraphButton").addEventListener("click", func
 setPerformanceView("graph");
 updatePerformanceExpertiseButton();
 updateDetailsModeUi();
+setEngineConditionEditorState(false);
 
 document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
     elem.addEventListener("click", function () {
@@ -1519,7 +1694,7 @@ function createCustomEngineCard(engineId, name, stats) {
 }
 
 function renderCustomEnginesInList(engines) {
-    const enginesContainer = document.getElementById("enginesPerformance")
+    const enginesContainer = document.getElementById("engineManufacturerList") || document.getElementById("enginesPerformance")
     if (!enginesContainer) return
 
     enginesContainer.querySelectorAll(".engine-performance.custom-engine-card").forEach(function (elem) {
@@ -1535,7 +1710,7 @@ function renderCustomEnginesInList(engines) {
 }
 
 function getNextCustomEngineId() {
-    const ids = Array.from(document.querySelectorAll("#enginesPerformance .engine-performance[data-custom-engine=\"true\"]"))
+    const ids = Array.from(document.querySelectorAll("#engineManufacturerList .engine-performance[data-custom-engine=\"true\"], #enginesPerformance .engine-performance[data-custom-engine=\"true\"]"))
         .map((elem) => Number(elem.dataset.engineid))
 
     if (!ids.length) return 14
@@ -1551,7 +1726,7 @@ function getNextCustomEngineId() {
 const addCustomEngineButton = document.getElementById("customEngines")
 if (addCustomEngineButton) {
     addCustomEngineButton.addEventListener("click", function () {
-        const enginesContainer = document.getElementById("enginesPerformance")
+        const enginesContainer = document.getElementById("engineManufacturerList") || document.getElementById("enginesPerformance")
         if (!enginesContainer) return
 
         enginesContainer.appendChild(createCustomEngineCard(getNextCustomEngineId(), "", {}))
@@ -1560,7 +1735,7 @@ if (addCustomEngineButton) {
 }
 
 export function gather_custom_engines_data() {
-    const engines = document.querySelectorAll("#enginesPerformance .engine-performance[data-custom-engine=\"true\"]")
+    const engines = document.querySelectorAll("#engineManufacturerList .engine-performance[data-custom-engine=\"true\"], #enginesPerformance .engine-performance[data-custom-engine=\"true\"]")
     let enginesData = {}
     engines.forEach(function (engine) {
         const engineID = engine.dataset.engineid
@@ -1849,6 +2024,8 @@ function createPerformanceChart(labelsArray) {
         }
     );
 }
+
+
 
 
 

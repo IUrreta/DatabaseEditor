@@ -1235,6 +1235,127 @@ export function setMinPowerUnitCondition(minCondition = 0.75) {
     return itemsToRepair;
 }
 
+const powerUnitSlots = [
+    { key: "engine", partType: 0 },
+    { key: "ers", partType: 1 },
+    { key: "gearbox", partType: 2 }
+];
+
+const powerUnitNameCodes = {
+    0: "E",
+    1: "ERS",
+    2: "G"
+};
+
+const teamPartPrefixes = {
+    1: "FE",
+    2: "MC",
+    3: "RB",
+    4: "MER",
+    5: "ALP",
+    6: "WIL",
+    7: "HA",
+    8: "AT",
+    9: "ALFA",
+    10: "AM",
+    32: "CUS"
+};
+
+export function getTeamPowerUnitConditionData(teamId) {
+    const currentSeason = queryDB(`
+        SELECT CurrentSeason
+        FROM Player_State
+    `, [], "singleValue");
+    const yearSuffix = String(currentSeason).slice(-2).padStart(2, "0");
+    const teamPrefix = teamPartPrefixes[Number(teamId)] || "TEAM";
+
+    const allItems = queryDB(`
+        SELECT pd.DesignID, pd.PartType, pi.ItemID, pi.Condition, pi.AssociatedCar
+        FROM Parts_Designs pd
+        INNER JOIN Parts_Items pi
+            ON pi.DesignID = pd.DesignID
+        WHERE pd.TeamID = ?
+          AND pd.PartType IN (0, 1, 2)
+        ORDER BY pd.PartType ASC, pd.DesignID DESC, pi.ItemID ASC
+    `, [teamId], "allRows");
+
+    const itemsByDesign = new Map();
+    const teamPartCounters = {
+        0: 0,
+        1: 0,
+        2: 0
+    };
+
+    for (const [designId, partType, itemId, condition, associatedCar] of allItems) {
+        if (!itemsByDesign.has(designId)) {
+            itemsByDesign.set(designId, []);
+        }
+
+        teamPartCounters[partType] += 1;
+
+        itemsByDesign.get(designId).push({
+            itemID: itemId,
+            condition,
+            associatedCar,
+            name: `${teamPrefix}${yearSuffix}-${powerUnitNameCodes[partType]}-${teamPartCounters[partType]}`
+        });
+    }
+
+    const loadoutRows = queryDB(`
+        SELECT LoadoutID, PartType, DesignID, ItemID
+        FROM Parts_CarLoadout
+        WHERE TeamID = ?
+          AND PartType IN (0, 1, 2)
+          AND LoadoutID IN (1, 2)
+        ORDER BY LoadoutID ASC, PartType ASC
+    `, [teamId], "allRows");
+
+    const loadouts = new Map();
+    for (const [loadoutId, partType, designId, itemId] of loadoutRows) {
+        if (!loadouts.has(loadoutId)) {
+            loadouts.set(loadoutId, new Map());
+        }
+
+        loadouts.get(loadoutId).set(partType, {
+            designID: designId,
+            itemID: itemId
+        });
+    }
+
+    const cars = {};
+    for (const loadoutId of [1, 2]) {
+        cars[loadoutId] = {};
+
+        powerUnitSlots.forEach(function (slot) {
+            const loadoutPart = loadouts.get(loadoutId)?.get(slot.partType) || null;
+            const designId = loadoutPart?.designID ?? null;
+            const fittedItemId = loadoutPart?.itemID ?? null;
+            const items = designId != null
+                ? (itemsByDesign.get(designId) || []).filter(function (item) {
+                    return Number(item.associatedCar) === Number(loadoutId);
+                }).map(function (item) {
+                    return {
+                        name: item.name,
+                        itemID: item.itemID,
+                        condition: item.condition,
+                        isFitted: item.itemID === fittedItemId
+                    };
+                })
+                : [];
+
+            cars[loadoutId][slot.key] = {
+                fittedItemID: fittedItemId,
+                items
+            };
+        });
+    }
+
+    return {
+        teamID: teamId,
+        cars
+    };
+}
+
 export function fitLoadoutsDict(loadoutsDict, teamId) {
     for (const partKey of Object.keys(loadoutsDict)) {
         const part = Number(partKey);

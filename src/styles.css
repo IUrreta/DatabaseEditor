@@ -6825,7 +6825,6 @@ input.engine-performance-title:focus {
 .engine-performance-stat {
   position: relative;
   align-items: baseline;
-  margin: 4px 0;
 }
 
 .engine-performance-bar {
@@ -6833,7 +6832,7 @@ input.engine-performance-title:focus {
   bottom: 1px;
   left: 0;
   height: 2px;
-  width: 83%;
+  width: 100%;
 }
 
 .engine-performance-progress {
@@ -6904,9 +6903,12 @@ input.engine-performance-title:focus {
   text-shadow: 2px 2px 4px var(--negative-text);
 }
 
-.part-performance-stats,
-.engine-performance-stats {
+.part-performance-stats{
   margin-top: 8px;
+  transition: all 0.15s;
+}
+
+.engine-performance-stats{
   transition: all 0.15s;
 }
 
@@ -7233,8 +7235,7 @@ input.engine-performance-title:focus {
   font-size: 11px;
 }
 
-.teams-show,
-.engines-show {
+.teams-show {
   background-color: transparent !important;
   box-shadow: none !important;
   display: grid;
@@ -7269,13 +7270,66 @@ input.engine-performance-title:focus {
 }
 
 .engines-show {
-  /* Keep the grid layout but allow any number of rows (custom engines are appended). */
+  flex: 1;
+}
+
+.engine-manufacturer-list {
+  display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: unset;
-  grid-auto-rows: max-content;
-  align-content: start;
-  padding-right: 7px;
-  max-height: 81vh;
+  gap: 8px;
+}
+
+.engine-condition-editor {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  display: grid;
+  grid-template-columns: repeat(3, 0.333fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 8px;
+  height: 100%;
+}
+
+.engine-condition-grid {
+  display: contents;
+}
+
+.engine-condition-part {
+  height: 100%;
+}
+
+.engine-condition-part .part-name-buttons {
+  margin-left: 0;
+}
+
+.engine-condition-part .engine-performance-stats {
+  display: flex;
+  flex-direction: column;
+}
+
+.engine-condition-item-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.engine-condition-fitted {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--new-primary) 18%, transparent);
+  color: var(--new-primary);
+  font-family: "Formula1Bold";
+  font-size: 10px;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.engine-condition-empty {
+  color: var(--dark-text);
+  font-family: "Formula1";
+  padding-top: 6px;
 }
 
 
@@ -12352,7 +12406,7 @@ input[type='number'] {
   mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: #EB0A1B; /* toyota primary color, different from their background gray color */
+  background-color: var(--toyota-secondary);
 }
 
 .haaslogo,

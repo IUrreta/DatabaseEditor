@@ -23,7 +23,7 @@ import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllC
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
@@ -596,6 +596,10 @@ const workerCommands = {
 
     const designResponse = { responseMessage: "Parts stats fetched", content: [unitValues, allParts, maxDesign, expertise, nextSeasonCar] };
     postMessage(designResponse);
+  },
+  engineConditionRequest: (data, postMessage) => {
+    const engineConditions = getTeamPowerUnitConditionData(data.teamID);
+    postMessage({ responseMessage: "Engine conditions fetched", content: engineConditions });
   },
   editExpertise: (data, postMessage) => {
     const globals = getGlobals();
