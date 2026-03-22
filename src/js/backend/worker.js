@@ -683,7 +683,7 @@ const workerCommands = {
       editCode(data.driverID, data.newCode);
     }
     if (String(data.isGeneratedStaff) === "1") {
-      editGeneratedStaffBasicData(data.driverID, data.countryId, data.faceType, data.faceIndex, data.ageType);
+      editGeneratedStaffBasicData(data.driverID, data.countryId, data.nationality, data.faceType, data.faceIndex, data.ageType);
     }
 
     postMessage({

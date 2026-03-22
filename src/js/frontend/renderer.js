@@ -577,6 +577,8 @@ function editModeHandler() {
         newName: newName,
         newCode: newCode,
         isGeneratedStaff: document.querySelector(".clicked").dataset.isGeneratedStaff,
+        nationality: document.querySelector(".clicked").dataset.nationality ?? "",
+        gender: document.querySelector(".clicked").dataset.gender ?? "",
         countryId: document.querySelector(".clicked").dataset.countryId ?? "",
         faceType: document.querySelector(".clicked").dataset.faceType ?? "",
         faceIndex: document.querySelector(".clicked").dataset.faceIndex ?? "",

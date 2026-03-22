@@ -146,21 +146,26 @@ export function checkYearSave() {
   return ["24", name, primaryColor, secondaryColor];
 }
 
-export function fetchNationality(driverID, gameYear) {
+function fetchCountryIdentity(driverID, gameYear) {
   let year = String(gameYear || "").trim();
   if (year === "2024") year = "24";
   if (year === "2023") year = "23";
 
   if (year === "23") {
     const nationality = queryDB(`
-        SELECT Nationality 
+      SELECT Nationality 
         FROM Staff_BasicData 
       WHERE StaffID = ?
       `, [driverID], 'singleValue');
-    if (!nationality) return "";
+    if (!nationality) {
+      return { nationality: "", countryId: "" };
+    }
 
     const natName = nationality.replace(/(?<!^)([A-Z])/g, " $1");
-    return countries_abreviations[natName] || "";
+    return {
+      nationality: countries_abreviations[natName] || "",
+      countryId: ""
+    };
   }
 
   const countryID = queryDB(`
@@ -168,23 +173,40 @@ export function fetchNationality(driverID, gameYear) {
       FROM Staff_BasicData 
       WHERE StaffID = ?
     `, [driverID], 'singleValue');
-  if (!countryID) return "";
+  if (!countryID) {
+    return { nationality: "", countryId: "" };
+  }
 
   const countryName = queryDB(`
       SELECT Name 
       FROM Countries 
       WHERE CountryID = ?
     `, [countryID], 'singleValue');
-  if (!countryName) return "";
+  if (!countryName) {
+    return {
+      nationality: "",
+      countryId: countryID
+    };
+  }
 
   const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
   if (match) {
     const nat = match[0];
     const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
-    return countries_abreviations[natName] || "";
+    return {
+      nationality: countries_abreviations[natName] || "",
+      countryId: countryID
+    };
   }
 
-  return "";
+  return {
+    nationality: "",
+    countryId: countryID
+  };
+}
+
+export function fetchNationality(driverID, gameYear) {
+  return fetchCountryIdentity(driverID, gameYear).nationality;
 }
 
 function fetchGeneratedStaffVisual(staffID) {
@@ -720,7 +742,7 @@ export function fetchDrivers(gameYear) {
     const futureTeam = fetchForFutureContract(driverID);
     const juniorContracts = fetchJuniorContracts(driverID);
     const driverCode = fetchDriverCode(driverID);
-    const nationality = fetchNationality(driverID, gameYear);
+    const countryIdentity = fetchCountryIdentity(driverID, gameYear);
     const generatedVisual = fetchGeneratedStaffVisual(driverID);
 
     // result es array, lo convertimos a objeto para mayor claridad
@@ -734,7 +756,8 @@ export function fetchDrivers(gameYear) {
     data.team_future = futureTeam;
     data.team_junior = juniorContracts;
     data.driver_code = driverCode;
-    data.nationality = nationality;
+    data.nationality = countryIdentity.nationality;
+    data.countryId = countryIdentity.countryId;
     data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
     data.gender = generatedVisual.gender;
     data.faceType = generatedVisual.faceType;
@@ -803,7 +826,7 @@ export function fetchStaff(gameYear) {
     const [retirementAge, age] = fetchDriverRetirement(staffID);
     let raceFormula = fetchRaceFormula(staffID) || 4;
     const futureTeam = fetchForFutureContract(staffID);
-    const nationality = fetchNationality(staffID, gameYear);
+    const countryIdentity = fetchCountryIdentity(staffID, gameYear);
     const generatedVisual = fetchGeneratedStaffVisual(staffID);
     const isRetired = queryDB(`
       SELECT Retired
@@ -816,7 +839,8 @@ export function fetchStaff(gameYear) {
     data.age = age;
     data.race_formula = raceFormula;
     data.team_future = futureTeam;
-    data.nationality = nationality;
+    data.nationality = countryIdentity.nationality;
+    data.countryId = countryIdentity.countryId;
     data.is_retired = isRetired ?? 0;
     data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
     data.gender = generatedVisual.gender;

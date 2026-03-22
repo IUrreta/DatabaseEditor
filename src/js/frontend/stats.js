@@ -172,6 +172,7 @@ export function place_drivers_editStats(driversArray) {
         newDiv.dataset.faceIndex = driver["faceIndex"] ?? ""
         newDiv.dataset.ageType = driver["ageType"] ?? ""
         newDiv.dataset.facePath = driver["facePath"] ?? ""
+        newDiv.dataset.countryId = driver["countryId"] ?? ""
         if (driver["nationality"] !== "") {
             newDiv.dataset.nationality = driver["nationality"]
         }
@@ -326,6 +327,7 @@ export function place_staff_editStats(staffArray) {
         newDiv.dataset.faceIndex = staff["faceIndex"] ?? ""
         newDiv.dataset.ageType = staff["ageType"] ?? ""
         newDiv.dataset.facePath = staff["facePath"] ?? ""
+        newDiv.dataset.countryId = staff["countryId"] ?? ""
         if (staff["nationality"] !== "") {
             newDiv.dataset.nationality = staff["nationality"]
         }

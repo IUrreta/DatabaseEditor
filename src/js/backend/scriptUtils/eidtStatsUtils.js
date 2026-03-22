@@ -1,4 +1,5 @@
 import { queryDB } from "../dbManager";
+import { inverted_countries_abreviations } from "./countries.js";
 
 // Constantes para referencias en la edición de mentalidad
 export const driverStats = [2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -270,7 +271,36 @@ export function editCode(driverID, newCode) {
   `, [stringLiteralCode, driverID], 'run');
 }
 
-export function editGeneratedStaffBasicData(driverID, countryId, faceType, faceIndex, ageType) {
+function fetchCountryIdFromNationalityCode(codeRaw) {
+  const code = String(codeRaw || "").trim().toUpperCase();
+  if (!code) return null;
+
+  const nationalityName = inverted_countries_abreviations[code] || "";
+  if (!nationalityName) return null;
+
+  const key = nationalityName.replace(/\s+/g, "");
+  return queryDB(`
+    SELECT CountryID
+    FROM Countries
+    WHERE Name LIKE ?
+    LIMIT 1
+  `, [`%[Nationality_${key}]%`], 'singleValue');
+}
+
+export function editGeneratedStaffBasicData(driverID, countryId, nationalityCode, faceType, faceIndex, ageType) {
+  const resolvedCountryId = fetchCountryIdFromNationalityCode(nationalityCode) ?? countryId;
+
+  if (resolvedCountryId === "" || resolvedCountryId === null || resolvedCountryId === undefined) {
+    queryDB(`
+    UPDATE Staff_BasicData
+    SET FaceType = ?,
+        FaceIndex = ?,
+        AgeType = ?
+    WHERE StaffID = ?
+  `, [faceType, faceIndex, ageType, driverID], 'run');
+    return;
+  }
+
   queryDB(`
     UPDATE Staff_BasicData
     SET CountryID = ?,
@@ -278,7 +308,7 @@ export function editGeneratedStaffBasicData(driverID, countryId, faceType, faceI
         FaceIndex = ?,
         AgeType = ?
     WHERE StaffID = ?
-  `, [countryId, faceType, faceIndex, ageType, driverID], 'run');
+  `, [resolvedCountryId, faceType, faceIndex, ageType, driverID], 'run');
 }
 
 // Helpers de fechas
