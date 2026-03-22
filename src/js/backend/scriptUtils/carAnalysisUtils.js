@@ -1070,6 +1070,32 @@ export function updateItemsForDesignDict(designDict, teamId) {
     // commit
 }
 
+export function setMinPowerUnitCondition(minCondition = 0.75) {
+    const itemsToRepair = queryDB(`
+        SELECT COUNT(*)
+        FROM Parts_Items pi
+        INNER JOIN Parts_Designs pd
+            ON pd.DesignID = pi.DesignID
+        WHERE pd.PartType IN (0, 1, 2)
+          AND pi.Condition < ?
+    `, [minCondition], "singleValue") || 0;
+
+    queryDB(`
+        UPDATE Parts_Items
+        SET Condition = ?
+        WHERE ItemID IN (
+            SELECT pi.ItemID
+            FROM Parts_Items pi
+            INNER JOIN Parts_Designs pd
+                ON pd.DesignID = pi.DesignID
+            WHERE pd.PartType IN (0, 1, 2)
+              AND pi.Condition < ?
+        )
+    `, [minCondition, minCondition], "run");
+
+    return itemsToRepair;
+}
+
 export function fitLoadoutsDict(loadoutsDict, teamId) {
     for (const partKey of Object.keys(loadoutsDict)) {
         const part = Number(partKey);

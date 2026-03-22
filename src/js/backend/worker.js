@@ -19,7 +19,7 @@ import {
   exportSeasonsRecordsArchive,
   importSeasonsRecordsArchive
 } from "./scriptUtils/dbUtils";
-import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAduoEngineUpgradeRaceIds } from "./scriptUtils/carAnalysisUtils"
+import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
@@ -751,6 +751,18 @@ const workerCommands = {
 
     const staff = fetchStaff(yearData[0]);
     postMessage({ responseMessage: "Staff fetched", content: staff });
+  },
+  devSetMinPowerUnitCondition75: (data, postMessage) => {
+    const repairedItems = setMinPowerUnitCondition(0.75);
+
+    postMessage({
+      responseMessage: "Dev: power unit condition updated",
+      noti_msg: repairedItems > 0
+        ? `Raised ${repairedItems} engine, ERS and gearbox item(s) to 75% condition`
+        : "All engine, ERS and gearbox items were already at 75% condition or higher",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   devDownloadDatabase: (data, postMessage) => {
     const db = getDatabase();

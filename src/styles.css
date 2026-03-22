@@ -4251,28 +4251,48 @@ DRIVERS TABLE
 
 .drivers-table-row:has(.drivers-table-position.champion) .drivers-table-position,
 .teams-table-row:has(.teams-table-position.champion) .teams-table-position {
-  border-left: 2px solid #FEDB37;
-  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, var(--table-default-odd) 75%);
+  border-left: 2px solid var(--champion-color);
+  background-color: var(--table-default-odd);
+  overflow: hidden;
 }
 
 .drivers-table-row:has(.drivers-table-position.champion):hover .drivers-table-position,
 .teams-table-row:has(.teams-table-position.champion):hover .teams-table-position {
-  border-left: 2px solid #FEDB37;
-  background: linear-gradient(90deg, rgba(254, 219, 55, 0.35) 0%, var(--text-general) 75%);
-  color: var(--negative-text) !important;
+  border-left: 2px solid var(--champion-color);
+  background-color: var(--table-default-odd);
 }
 
 .drivers-table-row:has(.drivers-table-position.champion) .drivers-table-points,
 .teams-table-row:has(.teams-table-position.champion) .teams-table-points {
-  border-right: 2px solid #FEDB37;
-  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, var(--table-default-odd) 75%);
+  border-right: 2px solid var(--champion-color);
+  background-color: var(--table-default-odd);
+  overflow: hidden;
 }
 
 .drivers-table-row:has(.drivers-table-position.champion):hover .drivers-table-points,
 .teams-table-row:has(.teams-table-position.champion):hover .teams-table-points {
-  border-right: 2px solid #FEDB37;
-  background: linear-gradient(270deg, rgba(254, 219, 55, 0.35) 0%, var(--text-general) 75%);
-  color: var(--negative-text) !important;
+  border-right: 2px solid var(--champion-color);
+  background-color: var(--table-default-odd);
+}
+
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-position::before,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-position::before,
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-points::before,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-points::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-position::before,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-position::before {
+  background: linear-gradient(90deg, var(--champion-color-transparent) 0%, transparent 75%);
+}
+
+.drivers-table-row:has(.drivers-table-position.champion) .drivers-table-points::before,
+.teams-table-row:has(.teams-table-position.champion) .teams-table-points::before {
+  background: linear-gradient(270deg, var(--champion-color-transparent) 0%, transparent 75%);
 }
 
 
@@ -4463,8 +4483,6 @@ DRIVERS TABLE
 #season_viewer.standings-compact-mode .teams-table {
   width: fit-content;
   max-width: 100%;
-  margin-left: auto;
-  margin-right: auto;
 }
 
 #season_viewer.standings-compact-mode .drivers-table-header .drivers-table-driver,
@@ -5219,7 +5237,7 @@ phm
   display: flex;
   justify-content: center;
   align-items: center;
-
+  position: relative;
 }
 
 .drivers-table-header .drivers-table-points,
@@ -5807,6 +5825,13 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   border-radius: 10px;
   box-shadow: var(--shadow-s);
 }
+
+.standings-compact-mode .main-viewer-section{
+  display: flex;
+  justify-content: center;
+  gap: 2%;
+}
+
 
 
 .year-drivers-teams {
