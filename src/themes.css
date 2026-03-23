@@ -41,6 +41,8 @@
     --table-third: #d7985a;
     --table-third-light: #f2cda6;
     --table-dnf: #676767;
+    --champion-color: #FEDB37;
+    --champion-color-transparent: #FEDB3759;
     --text-outline: #000000;
     --blur-color: #616161d3;
     --toast-background: #5a5b5c;
@@ -226,8 +228,8 @@
     --lotus-secondary: #595959;
     --visarb-primary: #6c8ff3;
     --visarb-secondary: #f1f1f1;
-    --toyota-primary: #989898;
-    --toyota-secondary: #f1f1f1;
+    --toyota-primary: #f1f1f1;
+    --toyota-secondary: #EB0A1B;
     --hugo-primary: #bd9514;
     --hugo-secondary: #f1f1f1;
     --alphatauri-primary: #5E8FAA;

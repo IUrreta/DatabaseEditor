@@ -97,6 +97,7 @@ function applyStandingsDetailsState() {
     const icons = button?.querySelectorAll("i");
     const mainIcon = icons?.[0];
     const slashIcon = icons?.[1];
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
     const detailsEnabled = standingsDetailsMode === 1 || standingsDetailsMode === 2;
     const compactEnabled = standingsDetailsMode === 2;
 
@@ -104,7 +105,6 @@ function applyStandingsDetailsState() {
     seasonViewer.classList.toggle("standings-compact-mode", compactEnabled);
 
     button.classList.toggle("compact-mode", compactEnabled);
-    
 
     if (standingsDetailsMode === 0) {
         label.textContent = "Show details";
@@ -115,12 +115,15 @@ function applyStandingsDetailsState() {
     else {
         label.textContent = "Reset table";
     }
-    
 
     if (mainIcon && slashIcon) {
         mainIcon.className = compactEnabled ? "bi bi-layout-sidebar-inset" : "bi bi-eye";
         mainIcon.style.display = standingsDetailsMode === 0 ? "none" : "inline";
         slashIcon.style.display = standingsDetailsMode === 0 ? "inline" : "none";
+    }
+
+    if (typeVal === "standings") {
+        manage_show_tables();
     }
 }
 
@@ -331,6 +334,11 @@ function updateTopPanelControlsVisibility() {
     updateAllTimeVisibilityForTeamsRecords();
 }
 
+function shouldShowBothStandingsTables() {
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    return typeVal === "standings" && standingsDetailsMode === 2 && isYearSelected;
+}
+
 
 function manage_show_tables() {
     const recordsList = document.querySelector(".records-list")
@@ -341,7 +349,11 @@ function manage_show_tables() {
     const seasonReviewBento = document.querySelector(".season-review-bento")
     seasonReviewBento.classList.add("d-none")
     if (isYearSelected) {
-        if (driverOrTeams === "drivers") {
+        if (shouldShowBothStandingsTables()) {
+            document.querySelector(".teams-table").classList.remove("d-none")
+            document.querySelector(".drivers-table").classList.remove("d-none")
+        }
+        else if (driverOrTeams === "drivers") {
             document.querySelector(".teams-table").classList.add("d-none")
             document.querySelector(".drivers-table").classList.remove("d-none")
         }

@@ -19,7 +19,8 @@ import { load_calendar } from './calendar';
   import {
       load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
       order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, gather_team_expertise_data, performanceDetailsMode
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, load_team_next_season_car, gather_team_expertise_data, performanceDetailsMode, setPerformanceCurrentSeason, load_engine_conditions, gather_engine_condition_data,
+      updateEngineLabels
   } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
@@ -132,7 +133,7 @@ function updateTurningPointsFrequencyUI() {
 
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
-const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Team next season expertise fetched", "Expertise updated", "Next season expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 const glowSpot = document.querySelector('.glow-spot');
 const blockDiv = document.getElementById('blockDiv');
 
@@ -576,6 +577,8 @@ function editModeHandler() {
         newName: newName,
         newCode: newCode,
         isGeneratedStaff: document.querySelector(".clicked").dataset.isGeneratedStaff,
+        nationality: document.querySelector(".clicked").dataset.nationality ?? "",
+        gender: document.querySelector(".clicked").dataset.gender ?? "",
         countryId: document.querySelector(".clicked").dataset.countryId ?? "",
         faceType: document.querySelector(".clicked").dataset.faceType ?? "",
         faceIndex: document.querySelector(".clicked").dataset.faceIndex ?? "",
@@ -664,6 +667,16 @@ function performanceModeHandler() {
             command.execute();
             return;
         }
+        if (performanceDetailsMode === "nextSeasonCar") {
+            data = {
+                teamID: teamSelected,
+                expertise: gather_team_expertise_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editNextSeasonExpertise", data);
+            command.execute();
+            return;
+        }
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
@@ -701,6 +714,17 @@ function performanceModeHandler() {
         command.execute();
     }
     else if (teamsEngine === "engines") {
+        if (document.getElementById("teamEngineConditionEditor") && !document.getElementById("teamEngineConditionEditor").classList.contains("d-none")) {
+            data = {
+                teamID: teamSelected,
+                items: gather_engine_condition_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editEngineCondition", data);
+            command.execute();
+            return;
+        }
+
         const engineData = gather_engines_data()
         const officialEngines = {}
         for (let engineId in engineData) {
@@ -955,6 +979,7 @@ const messageHandlers = {
     },
     "Year fetched": (message) => {
         latestSaveYear = Number(message);
+        setPerformanceCurrentSeason(message);
         generateYearsMenu(message);
     },
     "Previous year teams standings fetched": (message) => {
@@ -1010,6 +1035,12 @@ const messageHandlers = {
     "Performance fetched": (message) => {
         load_performance(message[0])
         load_attributes(message[1])
+        if (message[2]) {
+            load_attributes(message[2], "expertise")
+        }
+        if (message[3]) {
+            load_attributes(message[3], "nextSeasonCar")
+        }
         //wait 100 ms
         setTimeout(function () {
             order_by("overall")
@@ -1026,6 +1057,12 @@ const messageHandlers = {
         if (message[3]) {
             load_team_expertise(message[3])
         }
+        if (message[4]) {
+            load_team_next_season_car(message[4])
+        }
+    },
+    "Engine conditions fetched": (message) => {
+        load_engine_conditions(message)
     },
     "Game Year": (message) => {
         manage_game_year(message)
@@ -1036,9 +1073,18 @@ const messageHandlers = {
     "Team expertise fetched": (message) => {
         load_team_expertise(message)
     },
+    "Team next season expertise fetched": (message) => {
+        load_team_next_season_car(message)
+    },
     "Cars fetched": (message) => {
         load_cars(message[0])
         load_car_attributes(message[1])
+        if (message[2]) {
+            load_car_attributes(message[2], "expertise")
+        }
+        if (message[3]) {
+            load_car_attributes(message[3], "nextSeasonCar")
+        }
         order_by("overall")
     },
     "Custom Engines fetched": (message) => {
@@ -1298,6 +1344,7 @@ function update_engine_allocations(message) {
     window.__ENGINE_NAMES__ = { ...engine_names }
 
     reloadTables()
+    updateEngineLabels()
 }
 
 
@@ -3051,6 +3098,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
+    const getStep = typeof opts.getStep === 'function' ? opts.getStep : (() => step);
 
     // NUEVO: Permitimos pasar una función de formateo
     const format = opts.format || ((v) => v);
@@ -3168,23 +3216,23 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         progressEl.ariaValueNow = String(p);
     };
 
-    const tick = () => {
+    const tick = (heldMs = 0) => {
         if (values) {
             const cur = findCurrentIndex();
             setIndex(cur + (step >= 0 ? +1 : -1));
         } else {
             const cur = getNum();
-            setNum(cur + step);
+            setNum(cur + getStep(heldMs, step));
         }
     };
 
     const startLoop = () => {
         start = performance.now();
-        tick();
+        tick(0);
         const loopFn = () => {
             const held = performance.now() - start;
             timer = setTimeout(() => {
-                tick();
+                tick(held);
                 loopFn();
             }, pickInterval(held));
         };
