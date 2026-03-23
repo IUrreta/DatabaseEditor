@@ -1792,6 +1792,21 @@ body.og-theme .dropdown-menu a:hover {
   font-size: 16px;
   padding: 3px 7px;
   border-radius: 5px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.button-with-icon * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.button-with-icon .button-icon-image {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+  pointer-events: none;
 }
 
 .button-with-icon.close-modal{
@@ -7271,6 +7286,8 @@ input.engine-performance-title:focus {
 
 .engines-show {
   flex: 1;
+  background: transparent;
+  box-shadow: none;
 }
 
 .engine-manufacturer-list {
@@ -11347,10 +11364,6 @@ input[type='number'] {
   overflow: visible;
 }
 
-.performance-bar-progress.expertise-bar{
-  border-color: var(--new-primary);
-}
-
 .performance-bar-progress.expertise-bar::after {
   content: '';
   position: absolute;
@@ -11363,9 +11376,6 @@ input[type='number'] {
   pointer-events: none;
 }
 
-.performance-bar-progress.next-season-car-bar{
-  border-color: var(--new-secondary);
-}
 
 .performance-bar-progress.next-season-car-bar::after {
   content: '';

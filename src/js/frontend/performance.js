@@ -31,6 +31,7 @@ let actualMaxDesign = 0;
 let customEnginesCopy;
 let currentData;
 let performanceView = "graph";
+let enginesView = "manufacturerList";
 let currentPartsStats = null;
 let currentTeamExpertise = null;
 let currentTeamNextSeasonCar = null;
@@ -40,7 +41,6 @@ let nextSeasonCarDraftStats = null;
 let performanceAnnotationsToggle = true;
 let currentPerformanceCriterion = "overall";
 let performanceCurrentSeason = null;
-let engineConditionEditorVisible = false;
 
 const performanceDetailsModes = ["performance", "expertise", "nextSeasonCar"];
 const engineConditionSlots = [
@@ -80,21 +80,6 @@ function clampPercent(value) {
 function setBarWidth(bar, value) {
     if (!bar) return;
     bar.style.width = clampPercent(value) + "%";
-}
-
-function setEngineConditionEditorState(visible) {
-    engineConditionEditorVisible = visible;
-
-    if (engineConditionEditor) {
-        engineConditionEditor.classList.toggle("d-none", !visible);
-    }
-    if (engineManufacturerList) {
-        engineManufacturerList.classList.toggle("d-none", visible);
-    }
-
-    if (teamsEngine === "engines") {
-        manageSaveButton(!visible, "performance");
-    }
 }
 
 function getDatasetKey(mode, criterion) {
@@ -197,6 +182,22 @@ export function setPerformanceCurrentSeason(year) {
     performanceCurrentSeason = Number(year) || null;
     updatePerformanceExpertiseButton();
     updateDetailsModeUi();
+}
+
+function updateEngineViewModeButton() {
+    const button = engineViewModeButton || document.getElementById("engineViewModeButton");
+    if (!button) return;
+
+    const icon = button.querySelector("i");
+    const text = button.querySelector("span");
+    const isEnginesSection = teamsEngine === "engines";
+    const isConditionView = enginesView === "condition";
+
+    button.classList.toggle("d-none", !isEnginesSection);
+    button.dataset.value = isConditionView ? "durability" : "performance";
+
+    if (icon) icon.className = isConditionView ? "bi bi-activity" : "bi bi-speedometer2";
+    if (text) text.textContent = isConditionView ? "Durability" : "Performance";
 }
 
 function updateDetailsModeUi() {
@@ -468,20 +469,14 @@ document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function 
  */
 teamsPill.addEventListener("click", function () {
     const selectedTeamOrCar = getSelectedTeamOrCar();
-    teamsEngine = "teams"
-    setEngineConditionEditorState(false)
-    document.querySelector("#enginesPerformance").classList.add("d-none")
-    document.querySelector("#teamsPerformance").classList.remove("d-none")
-    document.querySelector("#carAttributeSelector").classList.remove("d-none")
-    document.querySelector("#customEnginesButtonContainer").classList.add("d-none")
     if (!selectedTeamOrCar) {
         removeSelected()
-        setPerformanceView(performanceView)
+        setPerformanceSubview("teams", performanceView)
         return;
     }
 
     teamSelected = selectedTeamOrCar.dataset.teamid;
-    setPerformanceView("details")
+    setPerformanceSubview("teams", "details")
     manageSaveButton(true, "performance")
     const command = new Command("performanceRequest", { teamID: teamSelected });
     command.execute();
@@ -489,22 +484,17 @@ teamsPill.addEventListener("click", function () {
 
 enginesPill.addEventListener("click", function () {
     const selectedTeamOrCar = getSelectedTeamOrCar();
-    teamsEngine = "engines"
-    setEngineConditionEditorState(false)
-    document.querySelector("#teamsPerformance").classList.remove("d-none")
-    document.querySelector("#enginesPerformance").classList.remove("d-none")
-    document.querySelector("#carAttributeSelector").classList.add("d-none")
-    document.querySelector("#customEnginesButtonContainer").classList.remove("d-none")
     if (!selectedTeamOrCar) {
         removeSelected()
-        setPerformanceView(performanceView)
+        setPerformanceSubview("engines", "manufacturerList")
+        manageSaveButton(true, "performance")
         first_show_animation()
         return;
     }
 
     teamSelected = selectedTeamOrCar.dataset.teamid;
-    setPerformanceView("details")
-    manageSaveButton(false)
+    setPerformanceSubview("engines", "condition")
+    manageSaveButton(true, "performance")
     const command = new Command("engineConditionRequest", { teamID: teamSelected });
     command.execute();
 })
@@ -573,21 +563,47 @@ function getSelectedTeamOrCar() {
     return document.querySelector(".team.selected, .car.selected");
 }
 
+function getFirstVisibleTeamOrCar() {
+    const selector = teamsCarsButton.dataset.value === "cars" ? "#carsDiv .car" : "#teamsDiv .team";
+    return Array.from(document.querySelectorAll(selector)).find(function (elem) {
+        return !elem.classList.contains("d-none");
+    }) || null;
+}
+
+function selectDefaultTeamOrCarIfNeeded() {
+    const selected = getSelectedTeamOrCar();
+    if (selected) {
+        teamSelected = selected.dataset.teamid;
+        return { element: selected, autoSelected: false };
+    }
+
+    const firstVisible = getFirstVisibleTeamOrCar();
+    if (!firstVisible) {
+        return { element: null, autoSelected: false };
+    }
+
+    removeSelected();
+    firstVisible.classList.add("selected");
+    teamSelected = firstVisible.dataset.teamid;
+    return { element: firstVisible, autoSelected: true };
+}
+
 /**
  * eventListeners for all teams and engines
  */
 document.querySelectorAll(".team").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
-        setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         if (teamsEngine === "engines") {
-            manageSaveButton(false)
+            setPerformanceSubview("engines", "condition")
+            manageSaveButton(true, "performance")
             const command = new Command("engineConditionRequest", { teamID: teamSelected });
             command.execute();
             return;
         }
+        setPerformanceSubview("teams", "details")
         manageSaveButton(true, "performance")
         performanceDraftStats = null;
         expertiseDraftStats = null;
@@ -603,15 +619,16 @@ document.querySelectorAll(".team").forEach(function (elem) {
 document.querySelectorAll(".car").forEach(function (elem) {
     elem.addEventListener("click", function () {
         removeSelected()
-        setPerformanceView("details")
         elem.classList.toggle('selected');
         teamSelected = elem.dataset.teamid;
         if (teamsEngine === "engines") {
-            manageSaveButton(false)
+            setPerformanceSubview("engines", "condition")
+            manageSaveButton(true, "performance")
             const command = new Command("engineConditionRequest", { teamID: teamSelected });
             command.execute();
             return;
         }
+        setPerformanceSubview("teams", "details")
         manageSaveButton(true, "performance")
         performanceDraftStats = null;
         expertiseDraftStats = null;
@@ -630,8 +647,7 @@ document.querySelectorAll(".engine").forEach(function (elem) {
         elem.classList.toggle('selected');
         engineSelected = elem.dataset.engineid;
         teamEngineSelected = elem.dataset.teamengine
-        document.querySelector(".engines-show").classList.remove("d-none")
-        setEngineConditionEditorState(false)
+        setPerformanceSubview("engines", "manufacturerList")
         resetBarsEngines(elem)
     })
 })
@@ -674,8 +690,6 @@ export function load_team_next_season_car(data) {
 }
 
 export function load_engine_conditions(data) {
-    setEngineConditionEditorState(true);
-
     if (!engineConditionEditor) {
         return;
     }
@@ -712,7 +726,7 @@ export function load_engine_conditions(data) {
 
             const title = document.createElement("div");
             title.classList.add("part-performance-stat-title");
-            title.innerText = item.name || `#${item.itemID}`;
+            title.innerText = getEngineConditionItemLabel(item.name) || `#${item.itemID}`;
             itemTitle.appendChild(title);
 
             if (item.isFitted) {
@@ -1204,6 +1218,7 @@ const performanceGraphIcon = performanceGraphButton.querySelector("i");
 const performanceGraphText = performanceGraphButton.querySelector("span");
 const performanceOverview = document.getElementById("performanceOverview");
 const performanceExpertiseButton = document.getElementById("performanceExpertiseButton");
+const engineViewModeButton = document.getElementById("engineViewModeButton");
 const performanceAnnotationsToggleInput = document.getElementById("performanceAnnotationsToggle");
 const performanceAnnotationsToggleWrapper = performanceAnnotationsToggleInput ? performanceAnnotationsToggleInput.closest(".annotations") : null;
 
@@ -1219,16 +1234,34 @@ if (performanceAnnotationsToggleInput) {
     });
 }
 
-function setPerformanceView(view) {
-    performanceView = view;
-    viewingGraph = view === "graph";
+function setPerformanceSubview(section, subview) {
+    teamsEngine = section;
+    if (section === "teams") {
+        performanceView = subview;
+    }
+    else {
+        enginesView = subview;
+    }
+
+    let selectionState = { element: null, autoSelected: false };
+    if (section === "teams" && subview === "details") {
+        selectionState = selectDefaultTeamOrCarIfNeeded();
+    }
+    else if (section === "engines" && (subview === "manufacturerList" || subview === "condition")) {
+        selectionState = selectDefaultTeamOrCarIfNeeded();
+    }
+    else if (section === "teams" && subview === "overview") {
+        removeSelected();
+    }
+
+    viewingGraph = teamsEngine === "teams" && performanceView === "graph";
 
     performanceGraphButton.classList.add("active");
-    if (view === "graph") {
+    if (performanceView === "graph") {
         performanceGraphIcon.className = "bi bi-graph-up";
         performanceGraphText.textContent = "Graph";
     }
-    else if (view === "details") {
+    else if (performanceView === "details") {
         performanceGraphIcon.className = "bi bi-list-ul";
         performanceGraphText.textContent = "Details";
     }
@@ -1237,34 +1270,60 @@ function setPerformanceView(view) {
         performanceGraphText.textContent = "Overview";
     }
 
-    if (teamsEngine === "engines") {
-        document.querySelector("#performanceGraph").classList.add("d-none");
-        document.querySelector(".teams-show").classList.add("d-none");
-        performanceOverview.classList.add("d-none");
-        document.querySelector("#enginesPerformance").classList.remove("d-none");
-        if (performanceAnnotationsToggleWrapper) {
-            performanceAnnotationsToggleWrapper.classList.add("d-none");
-        }
-        document.querySelector(".save-button").classList.toggle("d-none", engineConditionEditorVisible);
-        return;
-    }
+    const isTeamsSection = teamsEngine === "teams";
+    const isGraphView = isTeamsSection && performanceView === "graph";
+    const isDetailsView = isTeamsSection && performanceView === "details";
+    const isOverviewView = isTeamsSection && performanceView === "overview";
+    const isManufacturerListView = !isTeamsSection && enginesView === "manufacturerList";
+    const isConditionView = !isTeamsSection && enginesView === "condition";
 
-    document.querySelector("#enginesPerformance").classList.add("d-none");
-    document.querySelector("#performanceGraph").classList.toggle("d-none", view !== "graph");
-    document.querySelector(".teams-show").classList.toggle("d-none", view !== "details");
-    performanceOverview.classList.toggle("d-none", view !== "overview");
+    document.querySelector("#performanceGraph").classList.toggle("d-none", !isGraphView);
+    document.querySelector(".teams-show").classList.toggle("d-none", !isDetailsView);
+    performanceOverview.classList.toggle("d-none", !isOverviewView);
+    document.querySelector("#enginesPerformance").classList.toggle("d-none", isTeamsSection);
+    if (engineConditionEditor) {
+        engineConditionEditor.classList.toggle("d-none", !isConditionView);
+    }
+    if (engineManufacturerList) {
+        engineManufacturerList.classList.toggle("d-none", !isManufacturerListView);
+    }
+    document.querySelector("#carAttributeSelector").classList.toggle("d-none", !isTeamsSection);
+    document.querySelector("#customEnginesButtonContainer").classList.toggle("d-none", isTeamsSection);
+    document.querySelector("#customEngines").classList.toggle("d-none", !isManufacturerListView);
     if (performanceAnnotationsToggleWrapper) {
-        performanceAnnotationsToggleWrapper.classList.toggle("d-none", view !== "graph");
+        performanceAnnotationsToggleWrapper.classList.toggle("d-none", !isGraphView);
     }
+    document.querySelector(".save-button").classList.toggle("d-none", isTeamsSection && performanceView !== "details");
+    updateEngineViewModeButton();
 
-    document.querySelector(".save-button").classList.toggle("d-none", view !== "details");
-
-    if (view === "details") {
+    if (isDetailsView) {
         first_show_animation();
     }
-    if (view === "overview") {
+    if (isOverviewView) {
         load_overview();
     }
+
+    if (section === "teams" && subview === "details" && selectionState.autoSelected) {
+        const command = new Command("performanceRequest", { teamID: teamSelected });
+        command.execute();
+    }
+}
+
+function getEngineConditionItemLabel(name) {
+    const itemName = String(name || "").trim();
+    const replacementAbbreviation = abreviations_dict[teamSelected];
+
+    if (!itemName || !replacementAbbreviation || !itemName.includes("-")) {
+        return itemName;
+    }
+
+    const parts = itemName.split("-");
+    parts[0] = replacementAbbreviation;
+    return parts.join("-");
+}
+
+function setPerformanceView(view) {
+    setPerformanceSubview("teams", view);
 }
 
 if (performanceExpertiseButton) {
@@ -1272,6 +1331,31 @@ if (performanceExpertiseButton) {
         const currentIndex = performanceDetailsModes.indexOf(performanceDetailsMode);
         const next = performanceDetailsModes[(currentIndex + 1) % performanceDetailsModes.length];
         setPerformanceDetailsMode(next);
+    });
+}
+
+if (engineViewModeButton) {
+    engineViewModeButton.addEventListener("click", function () {
+        if (teamsEngine !== "engines") {
+            return;
+        }
+
+        if (enginesView === "manufacturerList") {
+            const selectedTeamOrCar = getSelectedTeamOrCar();
+            if (!selectedTeamOrCar) {
+                return;
+            }
+
+            teamSelected = selectedTeamOrCar.dataset.teamid;
+            setPerformanceSubview("engines", "condition");
+            manageSaveButton(true, "performance");
+            const command = new Command("engineConditionRequest", { teamID: teamSelected });
+            command.execute();
+            return;
+        }
+
+        setPerformanceSubview("engines", "manufacturerList");
+        manageSaveButton(true, "performance");
     });
 }
 
@@ -1385,6 +1469,10 @@ function load_overview() {
 }
 
 document.querySelector("#performanceGraphButton").addEventListener("click", function () {
+    if (teamsEngine !== "teams") {
+        return;
+    }
+
     if (performanceView === "graph") {
         setPerformanceView("details");
     }
@@ -1400,7 +1488,6 @@ document.querySelector("#performanceGraphButton").addEventListener("click", func
 setPerformanceView("graph");
 updatePerformanceExpertiseButton();
 updateDetailsModeUi();
-setEngineConditionEditorState(false);
 
 document.querySelectorAll(".part-performance-title .bi-chevron-up").forEach(function (elem) {
     elem.addEventListener("click", function () {
