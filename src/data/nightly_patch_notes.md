@@ -10,3 +10,13 @@
 - Added export/import buttons for created/generated staff in "Attributes" tab
 - Added random personalities for news generations and refined prompt to avoid bullet points
 - Minor UI changes with the numbers font
+
+## 23rd march
+- Compact tables in "Records" tab now show both drivers and teams championships at the same time
+- Added Upgrades and Research info on bar charts for Teams, Cars and Attributes in "Performance" tab, also visible in performance overview
+- Added Research (next season's car) expertise editing in "Performance" tab
+- Added engine condition editing in "Performance" tab
+- Fixed an issue that would crash the game when editing generated drivers/staff
+- Unlocked engine stats (no longer capped at 0-100)
+- Changed Toyota logo color
+- Plus and Minus buttons on parts stats editing now icrease the values faster

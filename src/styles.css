@@ -4680,7 +4680,7 @@ DRIVERS TABLE
   mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--white-general);
+  background-color: var(--toyota-secondary);
   width: 48px;
 }
 
@@ -5198,9 +5198,12 @@ phm
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
 .drivers-table-row:hover .logo-williams-2026-table,
-.drivers-table-row:hover .logo-toyota-table,
 .drivers-table-row:hover .logo-sauber-table {
   background-color: #f0f0f0;
+}
+
+.drivers-table-row:hover .logo-toyota-table{
+  background-color: var(--toyota-secondary);
 }
 
 .drivers-table-row:hover .logo-renault-table,

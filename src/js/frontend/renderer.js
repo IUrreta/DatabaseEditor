@@ -3098,6 +3098,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
+    const getStep = typeof opts.getStep === 'function' ? opts.getStep : (() => step);
 
     // NUEVO: Permitimos pasar una función de formateo
     const format = opts.format || ((v) => v);
@@ -3215,23 +3216,23 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         progressEl.ariaValueNow = String(p);
     };
 
-    const tick = () => {
+    const tick = (heldMs = 0) => {
         if (values) {
             const cur = findCurrentIndex();
             setIndex(cur + (step >= 0 ? +1 : -1));
         } else {
             const cur = getNum();
-            setNum(cur + step);
+            setNum(cur + getStep(heldMs, step));
         }
     };
 
     const startLoop = () => {
         start = performance.now();
-        tick();
+        tick(0);
         const loopFn = () => {
             const held = performance.now() - start;
             timer = setTimeout(() => {
-                tick();
+                tick(held);
                 loopFn();
             }, pickInterval(held));
         };

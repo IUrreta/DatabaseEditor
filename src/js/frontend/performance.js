@@ -74,7 +74,7 @@ function clampPercent(value) {
     if (Number.isNaN(numericValue)) {
         return 0;
     }
-    return Math.max(0, numericValue);
+    return Math.max(0, Math.min(100, numericValue));
 }
 
 function setBarWidth(bar, value) {
@@ -1124,7 +1124,6 @@ document.querySelectorAll(".part-performance-title .redesigned-chevron").forEach
 function buildHoldOptions(input, extra = {}) {
     const min = parseFloat(input.min);
     const max = parseFloat(input.max);
-    const isEngineStat = !!input.closest(".engine-performance-stat");
     const hasMin = input.min !== "";
     const hasMax = input.max !== "";
     const format = extra.format ?? ((val) => (
@@ -1137,14 +1136,21 @@ function buildHoldOptions(input, extra = {}) {
     if (hasMax) {
         opts.max = max;
     }
-    if (isEngineStat && !hasMin) {
-        opts.min = 0;
-    }
-    if (isEngineStat && !hasMax) {
-        opts.max = 100;
-    }
     return opts;
 }
+
+function getPartHoldStep(heldMs, baseStep) {
+    const sign = Math.sign(baseStep) || 1;
+    if (heldMs >= 3000) return sign * 0.1;
+    if (heldMs >= 1500) return sign * 0.05;
+    if (heldMs >= 750) return sign * 0.02;
+    return baseStep;
+}
+
+document.querySelectorAll("#engineManufacturerList .engine-performance-stat .custom-input-number").forEach(function (input) {
+    input.removeAttribute("min");
+    input.removeAttribute("max");
+});
 
 document.querySelector(".performance-show").querySelectorAll(".part-name-buttons .bi-plus.new-augment-button").forEach(function (elem) {
     const part = elem.closest(".part-performance");
@@ -1169,13 +1175,13 @@ document.querySelector(".performance-show").querySelectorAll(".part-name-buttons
 document.querySelector(".performance-show").querySelectorAll(".stat-number .bi-plus.new-augment-button").forEach(button => {
     const input = button.parentNode.querySelector(".custom-input-number");
     if (!input) return;
-    attachHold(button, input, 0.01, buildHoldOptions(input));
+    attachHold(button, input, 0.01, buildHoldOptions(input, { getStep: getPartHoldStep }));
 });
 
 document.querySelector(".performance-show").querySelectorAll(".stat-number .bi-dash.new-augment-button").forEach(button => {
     const input = button.parentNode.querySelector(".custom-input-number");
     if (!input) return;
-    attachHold(button, input, -0.01, buildHoldOptions(input));
+    attachHold(button, input, -0.01, buildHoldOptions(input, { getStep: getPartHoldStep }));
 });
 
 document.querySelector(".engines-show").querySelectorAll(".stat-number .bi-plus.new-augment-button").forEach(button => {
@@ -1354,6 +1360,7 @@ if (engineViewModeButton) {
             return;
         }
 
+        removeSelected();
         setPerformanceSubview("engines", "manufacturerList");
         manageSaveButton(true, "performance");
     });
