@@ -1235,6 +1235,16 @@ export function setMinPowerUnitCondition(minCondition = 0.75) {
     return itemsToRepair;
 }
 
+export function updateTeamPowerUnitCondition(items) {
+    for (const item of items) {
+        queryDB(`
+            UPDATE Parts_Items
+            SET Condition = ?
+            WHERE ItemID = ?
+        `, [item.condition, item.itemID], "run");
+    }
+}
+
 const powerUnitSlots = [
     { key: "engine", partType: 0 },
     { key: "ers", partType: 1 },
@@ -2007,6 +2017,5 @@ export function deleteCustomEngineAndReassign(engineIdRaw, fallbackEngineIdRaw) 
 
     return { ok: true, fallbackEngineId, reassignedTeams: teamsSupplied.length };
 }
-
 
 

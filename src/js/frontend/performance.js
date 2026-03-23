@@ -782,6 +782,20 @@ export function load_engine_conditions(data) {
     });
 }
 
+export function gather_engine_condition_data() {
+    const items = [];
+
+    document.querySelectorAll(".engine-condition-part .engine-performance-stat").forEach(function (stat) {
+        const input = stat.querySelector(".custom-input-number");
+        items.push({
+            itemID: Number(stat.dataset.itemid),
+            condition: Number(input.value) / 100
+        });
+    });
+
+    return items;
+}
+
 export function gather_team_expertise_data() {
     let expertise = {};
     document.querySelectorAll(".part-performance").forEach(function (elem) {
@@ -2024,7 +2038,6 @@ function createPerformanceChart(labelsArray) {
         }
     );
 }
-
 
 
 
