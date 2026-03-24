@@ -11481,10 +11481,14 @@ input[type='number'] {
 
 .team-title {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   font-size: 18px;
   justify-content: flex-start;
   gap: 5px;
+}
+
+.team-title:has(.engine-label:not(.d-none)) {
+  align-items: baseline;
 }
 
 .engine-label {
@@ -11507,6 +11511,14 @@ input[type='number'] {
   color: var(--dark-text);
   transition: color 0.15s;
 }
+
+.team-overall-adjust-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-grow: 1;
+}
+
 
 .car:hover .main-car,
 .team:hover .main-car {

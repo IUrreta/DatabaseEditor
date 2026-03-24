@@ -758,7 +758,7 @@ export function first_show_animation() {
     }
 }
 
-let saveButtonCustomHandler = null;
+var saveButtonCustomHandler = null;
 
 export function manageSaveButton(show, mode, customHandler) {
     let button = document.querySelector(".save-button")
