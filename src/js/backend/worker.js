@@ -23,7 +23,7 @@ import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllC
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
@@ -859,6 +859,39 @@ const workerCommands = {
       unlocksDownload: true
     };
     postMessage(carPerformanceResponse);
+  },
+  editTargetOverall: (data, postMessage) => {
+    let globals = getGlobals();
+    const yearData = checkYearSave();
+    const mode = data.mode || "performance";
+    const result = adjustTeamOverallToTarget(
+      data.teamID,
+      data.targetOverall,
+      mode,
+      globals.isCreateATeam,
+      globals.yearIteration
+    );
+
+    const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
+    const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
+    postMessage({ responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds] });
+
+    const attributes = getAttributesAllTeams(yearData[2]);
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], globals.yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], globals.yearIteration);
+    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes, expertiseAttributes, nextSeasonCarAttributes] });
+
+    const carPerformance = getPerformanceAllCars(yearData[2]);
+    const carAttributes = getAttributesAllCars(yearData[2]);
+    const carExpertiseAttributes = getAttributesAllCarsExpertise(yearData[2], globals.yearIteration);
+    const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], globals.yearIteration);
+    postMessage({
+      responseMessage: "Cars fetched",
+      content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes],
+      noti_msg: `Adjusted ${teamReplaceDict[data.teamName]}'s ${mode} overall to ${result.achieved.toFixed(2)}%`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   editEngine: (data, postMessage) => {
     snapshotEnginePowerProgression(Object.keys(data?.engines || {}), 'pre_engine_edit');

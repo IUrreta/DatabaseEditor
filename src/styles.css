@@ -11508,6 +11508,20 @@ input[type='number'] {
   transition: color 0.15s;
 }
 
+.team-overall-adjust-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.team-overall-adjust-input {
+  width: 54px;
+  text-align: center;
+  font-size: 12px;
+  padding: 0;
+  margin: 0;
+}
+
 .car:hover .main-car,
 .team:hover .main-car {
   border-left: 2px solid var(--white-general);

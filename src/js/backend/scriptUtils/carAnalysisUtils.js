@@ -614,6 +614,148 @@ export function updateTeamNextSeasonExpertise(teamId, nextSeasonCarUnitValues, y
     }
 }
 
+function getOverallByMode(teamId, mode, customTeam = false, yearIteration = null) {
+    if (mode === "performance") {
+        const performance = getPerformanceAllTeams(null, null, customTeam);
+        return Number(performance[teamId] || 0);
+    }
+
+    if (mode === "nextSeasonCar") {
+        const attributes = getAttributesAllTeamsNextSeasonCar(customTeam, yearIteration);
+        return Number(attributes?.[teamId]?.overall || 0);
+    }
+
+    const attributes = getAttributesAllTeamsExpertise(customTeam, yearIteration);
+    return Number(attributes?.[teamId]?.overall || 0);
+}
+
+function cloneStatsDict(statsDict) {
+    return JSON.parse(JSON.stringify(statsDict || {}));
+}
+
+function scaleStatsDictUnitValues(statsDict, factor, yearIteration = null) {
+    const scaled = cloneStatsDict(statsDict);
+
+    for (const partKey of Object.keys(scaled)) {
+        if (partKey === "engine") continue;
+        const partStats = scaled[partKey] || {};
+
+        for (const statKey of Object.keys(partStats)) {
+            const stat = Number(statKey);
+            if (stat === 15 || stat === 10) continue;
+
+            const oldUnitValue = Number(partStats[statKey]);
+            let oldValue = oldUnitValue;
+            if (yearIteration === "24" && stat >= 7 && stat <= 9) {
+                oldValue = carConstants.downforce24UnitValueToValue[stat](oldUnitValue);
+            }
+            else if (carConstants.unitValueToValue?.[stat]) {
+                oldValue = carConstants.unitValueToValue[stat](oldUnitValue);
+            }
+
+            const newValue = oldValue * factor;
+
+            let nextUnitValue = newValue;
+            if (yearIteration === "24" && stat >= 7 && stat <= 9) {
+                nextUnitValue = carConstants.downforce24ValueToUnitValue[stat](newValue);
+            }
+            else if (carConstants.valueToUnitValue?.[stat]) {
+                nextUnitValue = carConstants.valueToUnitValue[stat](newValue);
+            }
+
+            const minMax = carConstants.statsMinMax[stat];
+            if (minMax) {
+                if (nextUnitValue < minMax[0]) nextUnitValue = minMax[0];
+                if (nextUnitValue > minMax[1]) nextUnitValue = minMax[1];
+            }
+
+            partStats[statKey] = Math.round(nextUnitValue * 1000) / 1000;
+        }
+    }
+
+    return scaled;
+}
+
+function buildPartTypeStats(statsDict) {
+    const mapped = {};
+    for (let partType = 3; partType < 9; partType++) {
+        const partName = carConstants.parts[partType];
+        mapped[partType] = cloneStatsDict(statsDict?.[partName] || {});
+    }
+    return mapped;
+}
+
+function buildPerformancePayload(teamId, statsDict) {
+    const designs = getPartsFromTeam(teamId);
+    const performancePayload = {};
+
+    for (let partType = 3; partType < 9; partType++) {
+        const partName = carConstants.parts[partType];
+        performancePayload[partName] = cloneStatsDict(statsDict?.[partName] || {});
+        performancePayload[partName].designEditing = designs?.[partType]?.[0]?.[0];
+    }
+
+    return performancePayload;
+}
+
+export function adjustTeamOverallToTarget(teamId, targetOverall, mode = "performance", customTeam = false, yearIteration = null) {
+    let target = Number(targetOverall);
+    if (target < 0) target = 0;
+    if (target > 100) target = 100;
+
+    let stats;
+    if (mode === "performance") {
+        stats = getUnitValueFromParts(getPartsFromTeam(teamId));
+    }
+    else if (mode === "nextSeasonCar") {
+        stats = getTeamNextSeasonCarExpertise(teamId, yearIteration);
+    }
+    else {
+        stats = getTeamExpertise(teamId, yearIteration);
+    }
+
+    let achieved = getOverallByMode(teamId, mode, customTeam, yearIteration);
+    let iterations = 0;
+
+    while (iterations < 8) {
+        if (Math.abs(target - achieved) <= 0.1) break;
+        if (!achieved) break;
+
+        const factor = target / achieved;
+        const scaled = scaleStatsDictUnitValues(stats, factor, yearIteration);
+
+        if (mode === "performance") {
+            const payload = buildPerformancePayload(teamId, scaled);
+            overwritePerformanceTeam(teamId, payload, customTeam, yearIteration);
+        }
+        else if (mode === "nextSeasonCar") {
+            updateTeamNextSeasonExpertise(teamId, buildPartTypeStats(scaled), yearIteration);
+        }
+        else {
+            updateTeamExpertise(teamId, buildPartTypeStats(scaled), yearIteration);
+        }
+
+        if (mode === "performance") {
+            stats = getUnitValueFromParts(getPartsFromTeam(teamId));
+        }
+        else if (mode === "nextSeasonCar") {
+            stats = getTeamNextSeasonCarExpertise(teamId, yearIteration);
+        }
+        else {
+            stats = getTeamExpertise(teamId, yearIteration);
+        }
+
+        achieved = getOverallByMode(teamId, mode, customTeam, yearIteration);
+        iterations += 1;
+    }
+
+    return {
+        requested: target,
+        achieved: Math.round(achieved * 100) / 100,
+        mode
+    };
+}
+
 export function getUnitValueFromOnePart(designId) {
 
     const partType = queryDB(`
@@ -2017,5 +2159,4 @@ export function deleteCustomEngineAndReassign(engineIdRaw, fallbackEngineIdRaw) 
 
     return { ok: true, fallbackEngineId, reassignedTeams: teamsSupplied.length };
 }
-
 
