@@ -1115,7 +1115,7 @@ export function addAudiCustomEngine(unitValue = 80) {
     else {
         const maxEngineId = customEngines.reduce((max, engine) => {
             const id = Number(engine?.[0]);
-            if (!Number.isFinite(id)) return max;
+            if (!id) return max;
             return Math.max(max, id);
         }, 0);
         audiEngineId = maxEngineId ? (maxEngineId + 3) : 14;

@@ -2961,7 +2961,7 @@ function assertCustomTurningPointPayload(type, data) {
     }
 
     const requireNumber = (value, label) => {
-        if (!Number.isFinite(Number(value))) {
+        if (value === null || value === undefined || value === "") {
             throw new Error(`Missing ${label} for ${type}`);
         }
     };
@@ -3938,7 +3938,7 @@ export function createCustomNewsEntry(input = {}) {
             const engineId = String(Number(change?.engineId));
             if (!engineId || engineId === "NaN") continue;
             const requestedValue = Number(change?.value);
-            manualChangesByEngine[engineId] = Number.isFinite(requestedValue) ? requestedValue : 0;
+            manualChangesByEngine[engineId] = requestedValue || 0;
         }
 
         for (const [engineId, stats] of Object.entries(currentStats)) {
@@ -4064,7 +4064,7 @@ export function createCustomNewsEntry(input = {}) {
                 selectedEngineIds.add(engineId);
             }
             const requestedValue = Number(change?.value);
-            requestedEstimateByEngine[engineId] = Number.isFinite(requestedValue) ? requestedValue : 0;
+            requestedEstimateByEngine[engineId] = requestedValue || 0;
         }
 
         if (!selectedEngineIds.size) {

@@ -2205,7 +2205,7 @@
             </div>
           </div>
           <div class="title-buttons-right" id="standingsSettings">
-            <div class="hide-historic-drivers">
+            <div class="hide-historic-drivers button-with-icon">
               <i class="bi bi-eye"></i>
               <i class="bi bi-eye-slash"></i>
               <span class="">Hide historic drivers</span>
@@ -4598,26 +4598,6 @@
       <div class="script-view hide unloaded" id="car_performance">
         <div class="general-top-panel">
           <div class="title-buttons-left" id="carAttributeSelector">
-            <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font" id="attributeButton" aria-haspopup="true"
-                aria-expanded="false">
-                <span class="dropdown-label">Overall</span>
-                <i class="redesigned-chevron"></i>
-              </button>
-              <ul class="redesigned-dropdown-menu" id="attributeMenu" style="font-family: Formula1;">
-                <a class="redesigned-dropdown-item" data-attribute="top_speed">Top speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="acceleration">Acceleration</a>
-                <a class="redesigned-dropdown-item" data-attribute="low_speed">Low speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="medium_speed">Medium speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="high_speed">High speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="drs">DRS Effectiveness</a>
-                <a class="redesigned-dropdown-item" data-attribute="dirty_air">Dirty air tolerance</a>
-                <a class="redesigned-dropdown-item brake-cooling-replace" data-attribute="brake_cooling">Brake
-                  cooling</a>
-                <a class="redesigned-dropdown-item" data-attribute="engine_cooling">Engine cooling</a>
-                <a class="redesigned-dropdown-item" data-attribute="overall">Overall</a>
-              </ul>
-            </div>
             <div class="button-with-icon" id="teamsCarsButton" data-value="teams">
               <i class="bi bi-people-fill"></i>
               <span>Teams</span>
@@ -4652,7 +4632,7 @@
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".teams-section" id="teamsPill">
-                  <div class="basic-label bold-font">Teams</div>
+                  <div class="basic-label bold-font">Cars</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
@@ -6292,7 +6272,7 @@
         <div class="mods-year-view d-none" id="mods2026View">
           <div class="mod-blocking mods-2026-blocking">
             <div class="mod-blocking-title">Save not compatible with 2026 Season Mod</div>
-            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24 can't have generated staff, and its date must be before the first race of the 2024 season!</div>
+            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24, can't have generated staff, and its date must be before the first race of the 2024 season!</div>
           </div>
           <div class="grid-and-downloads">
             <div class="changes-grid mods-2026-changes">
@@ -6543,13 +6523,67 @@
   </div>
   </div>
   <div class="patreon-slide-up">
-    <div class="slide-up-title-and-x bold-font">
-      <span class="slide-up-title">
-        Support the project
-      </span>
+    <div class="patreon-slide-up-header">
+      <div class="patreon-slide-up-copy">
+        <span class="patreon-slide-up-kicker">Patreon</span>
+        <span class="slide-up-title bold-font">Your save has a story worth telling.</span>
+      </div>
       <i class="bi bi-x" id="patreonSlideUpClose"></i>
     </div>
-    <div class="patreon-paragraph">
+    <div class="patreon-slide-up-lede">
+      Unlock AI news, transfer rumours, and live drama, all based on what&apos;s actually happening in your season.
+    </div>
+    <div class="patreon-plan-grid">
+      <div class="patreon-plan-card">
+        <div class="patreon-plan-price-block">
+          <span class="patreon-plan-price bold-font">€3</span>
+          <span class="patreon-plan-period">/mo</span>
+        </div>
+        <div class="patreon-plan-heading">
+          <span class="patreon-plan-name bold-font">Backer</span>
+          <span class="patreon-plan-tagline">Your save, brought to life</span>
+        </div>
+        <p class="patreon-plan-description">
+          Generate AI news articles about your season: race reports, transfer rumours, team drama.
+        </p>
+      </div>
+      <div class="patreon-plan-card patreon-plan-card-featured">
+        <span class="patreon-plan-badge bold-font">Most popular</span>
+        <div class="patreon-plan-price-block">
+          <span class="patreon-plan-price bold-font">€6</span>
+          <span class="patreon-plan-period">/mo</span>
+        </div>
+        <div class="patreon-plan-heading">
+          <span class="patreon-plan-name bold-font">Insider</span>
+          <span class="patreon-plan-tagline">Decide how events unfold</span>
+        </div>
+        <p class="patreon-plan-description">
+          Unlock turning points: disqualifications, mid-season transfers, race cancellations. You choose the outcome.
+        </p>
+      </div>
+      <div class="patreon-plan-card">
+        <div class="patreon-plan-price-block">
+          <span class="patreon-plan-price bold-font">€10</span>
+          <span class="patreon-plan-period">/mo</span>
+        </div>
+        <div class="patreon-plan-heading">
+          <span class="patreon-plan-name bold-font">Founder</span>
+          <span class="patreon-plan-tagline">Be the hand of god</span>
+        </div>
+        <p class="patreon-plan-description">
+          Spawn any news or turning point at will, at any moment. Complete control over your season&apos;s story.
+        </p>
+      </div>
+    </div>
+    <div class="patreon-slide-up-actions">
+      <a class="patreon-button patreon-popup-button" href="https://www.patreon.com/cw/f1dbeditor/membership"
+        target="_blank" rel="noreferrer">
+        <div class="patreon-button-logo"></div>
+        <span class="patreon-button-text bold-font">See membership options</span>
+      </a>
+      <span class="patreon-slide-up-note">Pick the tier that matches how much control you want over your season.</span>
+    </div>
+    <div class="patreon-paragraph d-none">
       <span class="">
         The Database Editor will <span class="important-text bold-font ">remain free</span>, and no core features
         will

@@ -41,6 +41,7 @@ let nextSeasonCarDraftStats = null;
 let performanceAnnotationsToggle = true;
 let currentPerformanceCriterion = "overall";
 let performanceCurrentSeason = null;
+const overallAdjustStep = 0.5;
 
 const performanceDetailsModes = ["performance", "expertise", "nextSeasonCar"];
 const engineConditionSlots = [
@@ -94,6 +95,16 @@ function getDatasetKey(mode, criterion) {
 function setBarDatasetValue(bar, mode, criterion, value) {
     if (!bar) return;
     bar.dataset[getDatasetKey(mode, criterion)] = Number(value).toFixed(3);
+}
+
+function setTeamBarValue(teamElem, mode, value) {
+    const bar = teamElem?.querySelector(".performance-bar-progress");
+    const teamValue = teamElem?.querySelector(".team-title-value");
+    if (!bar || !teamValue) return;
+    setBarDatasetValue(bar, mode, "overall", value);
+    setBarWidth(bar, value);
+    teamValue.innerText = Number(value).toFixed(2) + " %";
+    updateBarModeClass(bar);
 }
 
 function getBarDatasetValue(bar, criterion) {
@@ -271,6 +282,7 @@ function setPerformanceDetailsMode(mode) {
     }
 
     order_by(currentPerformanceCriterion);
+    syncOverviewAdjustControlsWithMode();
     load_overview();
 }
 
@@ -314,6 +326,17 @@ export function load_performance(teams) {
                     setBarWidth(performanceBarProgress, teams[key]);
                     team_value.innerText = teams[key].toFixed(2) + ' %';
                     updateBarModeClass(performanceBarProgress);
+                    let targetValue = teams[key];
+                    if (performanceDetailsMode === "expertise") {
+                        targetValue = getBarDatasetValue(performanceBarProgress, "overall");
+                    }
+                    if (performanceDetailsMode === "nextSeasonCar") {
+                        targetValue = getBarDatasetValue(performanceBarProgress, "overall");
+                    }
+                    const targetInput = teamPerformance.querySelector(".team-overall-adjust-input");
+                    if (targetInput) {
+                        targetInput.value = Number(targetValue).toFixed(2);
+                    }
                 }
             }
         }
@@ -371,6 +394,9 @@ export function load_attributes(teams, mode = "performance") {
             let attributeValue = teams[key][attribute];
             setBarDatasetValue(bar, mode, attribute, attributeValue);
         }
+    }
+    if (mode === performanceDetailsMode) {
+        syncOverviewAdjustControlsWithMode();
     }
     load_overview();
 }
@@ -454,15 +480,7 @@ teamsCarsButton.addEventListener("click", function () {
 })
 
 updateTeamsCarsButton();
-
-
-document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
-    elem.addEventListener("click", function () {
-        document.querySelector("#attributeButton span").innerText = elem.innerText;
-        order_by(elem.dataset.attribute);
-    })
-})
-
+setupOverviewAdjustControls();
 
 /**
  * Pills that manage engines and teams screens and lists
@@ -1299,8 +1317,23 @@ function setPerformanceSubview(section, subview) {
     if (performanceAnnotationsToggleWrapper) {
         performanceAnnotationsToggleWrapper.classList.toggle("d-none", !isGraphView);
     }
-    document.querySelector(".save-button").classList.toggle("d-none", isTeamsSection && performanceView !== "details");
+    document.querySelectorAll(".team-overall-adjust-controls").forEach(function (controls) {
+        controls.classList.toggle("d-none", !isOverviewView);
+    });
+    document.querySelectorAll("#teamsDiv .engine-label").forEach(function (label) {
+        label.classList.toggle("d-none", isOverviewView);
+    });
     updateEngineViewModeButton();
+
+    if (isOverviewView) {
+        manageSaveButton(true, "custom", saveTeamOverallTargets);
+    }
+    else if (isGraphView) {
+        manageSaveButton(false);
+    }
+    else {
+        manageSaveButton(true, "performance");
+    }
 
     if (isDetailsView) {
         first_show_animation();
@@ -1313,6 +1346,111 @@ function setPerformanceSubview(section, subview) {
         const command = new Command("performanceRequest", { teamID: teamSelected });
         command.execute();
     }
+}
+
+function syncOverviewAdjustControlsWithMode() {
+    document.querySelectorAll("#teamsDiv .team-performance").forEach(function (teamElem) {
+        const bar = teamElem.querySelector(".performance-bar-progress");
+        const holdInput = teamElem.querySelector(".team-overall-adjust-hold-input");
+        if (!bar) return;
+
+        const targetValue = getBarDatasetValue(bar, "overall");
+        if (holdInput) {
+            holdInput.value = targetValue.toFixed(2);
+        }
+
+        if (performanceView === "overview") {
+            setBarWidth(bar, targetValue);
+            teamElem.querySelector(".team-title-value").innerText = targetValue.toFixed(2) + " %";
+            updateBarModeClass(bar);
+        }
+    });
+}
+
+function gatherTeamOverallTargets() {
+    let targets = [];
+    document.querySelectorAll("#teamsDiv .team-performance").forEach(function (teamElem) {
+        const bar = teamElem.querySelector(".performance-bar-progress");
+        if (!bar) return;
+
+        targets.push({
+            teamID: teamElem.dataset.teamid,
+            teamName: teamElem.dataset.teamname,
+            targetOverall: getBarDatasetValue(bar, "overall")
+        });
+    });
+    return targets;
+}
+
+function saveTeamOverallTargets() {
+    const targets = gatherTeamOverallTargets();
+    if (!targets.length) return;
+
+    const command = new Command("editTargetOveralls", {
+        mode: performanceDetailsMode,
+        targets: targets
+    });
+    command.execute();
+}
+
+function changeTeamOverallFromControl(teamElem, delta) {
+    const bar = teamElem.querySelector(".performance-bar-progress");
+    if (!bar) return;
+
+    let target = getBarDatasetValue(bar, "overall");
+    target = target + delta;
+    if (target < 0) target = 0;
+    if (target > 100) target = 100;
+    setTeamBarValue(teamElem, performanceDetailsMode, target);
+}
+
+function setupOverviewAdjustControls() {
+    document.querySelectorAll("#teamsDiv .team-performance").forEach(function (teamElem) {
+        const title = teamElem.querySelector(".team-title");
+        if (!title || title.querySelector(".team-overall-adjust-controls")) return;
+
+        const controls = document.createElement("span");
+        controls.classList.add("team-overall-adjust-controls", "d-none");
+
+        const less = document.createElement("i");
+        less.classList.add("bi", "bi-dash", "new-augment-button");
+
+        const holdInput = document.createElement("input");
+        holdInput.type = "text";
+        holdInput.classList.add("team-overall-adjust-hold-input", "d-none");
+        holdInput.min = "0";
+        holdInput.max = "100";
+        holdInput.value = "0.00";
+
+        const plus = document.createElement("i");
+        plus.classList.add("bi", "bi-plus", "new-augment-button");
+
+        controls.appendChild(less);
+        controls.appendChild(holdInput);
+        controls.appendChild(plus);
+        title.insertBefore(controls, title.querySelector(".team-title-value"));
+
+        [controls, less, plus, holdInput].forEach(function (elem) {
+            ["click", "mousedown", "mouseup", "pointerdown", "pointerup", "touchstart", "touchend"].forEach(function (eventName) {
+                elem.addEventListener(eventName, function (event) {
+                    event.stopPropagation();
+                });
+            });
+        });
+
+        const holdOptions = buildHoldOptions(holdInput, {
+            format: function (value) {
+                return value.toFixed(2);
+            },
+            onChange: function (value) {
+                setTeamBarValue(teamElem, performanceDetailsMode, value);
+            }
+        });
+
+        attachHold(less, holdInput, -overallAdjustStep, holdOptions);
+        attachHold(plus, holdInput, overallAdjustStep, holdOptions);
+    });
+    syncOverviewAdjustControlsWithMode();
 }
 
 function getEngineConditionItemLabel(name) {
@@ -2132,7 +2270,6 @@ function createPerformanceChart(labelsArray) {
         }
     );
 }
-
 
 
 
