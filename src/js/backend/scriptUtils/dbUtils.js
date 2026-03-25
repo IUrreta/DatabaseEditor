@@ -358,7 +358,7 @@ export function createCustomEngineProgressionTable() {
 }
 
 function getNextSnapshotRaceIdForSeason(seasonId) {
-  if (!Number.isFinite(Number(seasonId))) {
+  if (!Number(seasonId)) {
     return null;
   }
 
@@ -373,7 +373,7 @@ function getNextSnapshotRaceIdForSeason(seasonId) {
 
   if (nextRaceIdRaw !== null && nextRaceIdRaw !== undefined) {
     const nextRaceId = Number(nextRaceIdRaw);
-    return Number.isFinite(nextRaceId) && nextRaceId > 0 ? nextRaceId : null;
+    return nextRaceId > 0 ? nextRaceId : null;
   }
 
   const maxRaceIdRaw = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ?`, [seasonId], 'singleValue');
@@ -388,11 +388,11 @@ export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw
   if (!seasonId) return { ok: false, error: "Missing season id" };
 
   const raceId = Number(raceIdRaw) || getNextSnapshotRaceIdForSeason(seasonId);
-  if (!Number.isFinite(raceId) || raceId <= 0) return { ok: false, error: "Missing race id" };
+  if (!raceId || raceId <= 0) return { ok: false, error: "Missing race id" };
 
   const engineIds = (engineIdsRaw || [])
     .map((id) => Number(id))
-    .filter((id) => Number.isFinite(id) && id > 0);
+    .filter((id) => id > 0);
 
   if (!engineIds.length) return { ok: true, seasonId, raceId, inserted: 0 };
 
@@ -409,7 +409,7 @@ export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw
   for (const row of powerRows) {
     const engineId = Number(row?.[0]);
     const power = Number(row?.[1]);
-    if (!engineId || !Number.isFinite(power)) continue;
+    if (!engineId) continue;
 
     queryDB(`
       INSERT OR IGNORE INTO Custom_Engine_Progression (SeasonID, RaceID, EngineID, Power, Source)

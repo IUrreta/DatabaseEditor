@@ -282,6 +282,7 @@ function setPerformanceDetailsMode(mode) {
     }
 
     order_by(currentPerformanceCriterion);
+    syncOverviewAdjustControlsWithMode();
     load_overview();
 }
 

@@ -2068,6 +2068,15 @@ input.comparing-tag {
   text-overflow: ellipsis;
   white-space: nowrap;
   text-align: left;
+  transition: color 0.15s;
+}
+
+.nationality-dropdown:hover .flag-text {
+  color: var(--text-general);
+}
+
+#nationalityDropdown:has(#nationalityMenu:hover) .flag-text {
+  color: var(--text-general);
 }
 
 #nationalityMenu {
@@ -2112,9 +2121,10 @@ input.comparing-tag {
 }
 
 .driver-info-team-logo {
-  width: 34px;
   height: auto;
+  max-height: 24px;
   border-radius: 5px;
+  width: 24px;
 }
 
 .driver-info-team-logo-masked {

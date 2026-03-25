@@ -171,6 +171,40 @@ function updateStandingsPointsGaps(rows, leaderPoints) {
     });
 }
 
+function hasLastRaceDoublePoints(pointsInfo) {
+    return Number(pointsInfo?.isLastRaceDouble ?? pointsInfo?.isLastraceDouble) === 1;
+}
+
+function getRemainingStandingsPoints(events, lastCompletedRaceId, pointsInfo, maxRacePoints, maxSprintPoints) {
+    if (!Array.isArray(events) || events.length === 0) {
+        return { racesLeft: 0, sprintsLeft: 0, pointsRemaining: 0 };
+    }
+
+    const lastRaceIndex = events.findIndex(event => Number(event?.[0]) === Number(lastCompletedRaceId));
+    if (lastRaceIndex < 0) {
+        return { racesLeft: 0, sprintsLeft: 0, pointsRemaining: 0 };
+    }
+
+    const remainingEvents = events.slice(lastRaceIndex + 1);
+    const racesLeft = remainingEvents.length;
+    const sprintsLeftLocal = remainingEvents.filter(event => Number(event?.[2]) === 1).length;
+    const finalRaceStillRemaining = remainingEvents.length > 0;
+    const isDoublePoints = hasLastRaceDoublePoints(pointsInfo);
+    const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+    const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+
+    const pointsRemaining = racesLeft * maxRacePoints + sprintsLeftLocal * maxSprintPoints +
+        (isDoublePoints && finalRaceStillRemaining ? maxRacePoints : 0) +
+        (fastestLapBonus ? racesLeft : 0) +
+        (poleBonus ? racesLeft : 0);
+
+    return {
+        racesLeft,
+        sprintsLeft: sprintsLeftLocal,
+        pointsRemaining
+    };
+}
+
 document.getElementById("standingsDetailsButton").addEventListener("click", function () {
     standingsDetailsMode = (standingsDetailsMode + 1) % 3;
     applyStandingsDetailsState();
@@ -1080,20 +1114,13 @@ export function new_load_drivers_table(data) {
 function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo, driverRows = []) {
     if (driver1 !== undefined) {
         const lastRaceDone = driver1["races"][driver1["races"].length - 1]["raceId"];
-        const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
-        racesLeftCount = calendarData.length - (lastRaceIndex + 1);
-        sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
-
         const maxRacePoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
-        const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
-        const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
-        const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+        const remainingInfo = getRemainingStandingsPoints(calendarData, lastRaceDone, pointsInfo, maxRacePoints, 8);
+        racesLeftCount = remainingInfo.racesLeft;
+        sprintsLeft = remainingInfo.sprintsLeft;
 
         const pointsDif = driver1Points - driver2Points
-        let pointsRemaining = racesLeftCount * maxRacePoints + sprintsLeft * 8 +
-            (isDoublePoints ? maxRacePoints : 0) +
-            (fastestLapBonus ? racesLeftCount : 0) +
-            (poleBonus ? racesLeftCount : 0)
+        let pointsRemaining = remainingInfo.pointsRemaining;
 
         const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
         const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
@@ -1311,14 +1338,10 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows = [])
     const maxFirstPoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
     const maxSecondPoints = Number(pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? pointsInfo?.twoBiggestPoints?.[1] ?? 0);
     const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
-    const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
-    const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
-    const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
-
     let pointsRemaining = racesLeftCount * maxTeamRacePoints + sprintsLeft * 15 +
-        (isDoublePoints ? maxTeamRacePoints : 0) +
-        (fastestLapBonus ? racesLeftCount : 0) +
-        (poleBonus ? racesLeftCount : 0)
+        (hasLastRaceDoublePoints(pointsInfo) && racesLeftCount > 0 ? maxTeamRacePoints : 0) +
+        (Number(pointsInfo?.fastestLapBonusPoint) === 1 ? racesLeftCount : 0) +
+        (Number(pointsInfo?.poleBonusPoint) === 1 ? racesLeftCount : 0)
 
 
     const firstTeamRow = document.querySelector(
@@ -2556,18 +2579,8 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
         const lastRaceIndex = meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId);
 
         if (lastRaceIndex >= 0) {
-            const racesLeft = meta.events.length - (lastRaceIndex + 1);
-            const sprintsLeftLocal = meta.events.filter(x => Number(x?.[2]) === 1 && Number(x?.[0]) >= lastRaceDoneId).length;
-
             const maxRacePoints = Number(meta.pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[0] ?? 0);
-            const isDoublePoints = Number(meta.pointsInfo?.isLastRaceDouble ?? meta.pointsInfo?.isLastraceDouble) === 1;
-            const fastestLapBonus = Number(meta.pointsInfo?.fastestLapBonusPoint) === 1;
-            const poleBonus = Number(meta.pointsInfo?.poleBonusPoint) === 1;
-
-            const pointsRemaining = racesLeft * maxRacePoints + sprintsLeftLocal * 8 +
-                (isDoublePoints ? maxRacePoints : 0) +
-                (fastestLapBonus ? racesLeft : 0) +
-                (poleBonus ? racesLeft : 0);
+            const pointsRemaining = getRemainingStandingsPoints(meta.events, lastRaceDoneId, meta.pointsInfo, maxRacePoints, 8).pointsRemaining;
 
             championClinched = (leaderPts - secondPts) > pointsRemaining;
         }
@@ -2750,21 +2763,10 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
         const lastRaceIndex = meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId);
 
         if (lastRaceIndex >= 0) {
-            const racesLeft = meta.events.length - (lastRaceIndex + 1);
-            const sprintsLeftLocal = meta.events.filter(x => Number(x?.[2]) === 1 && Number(x?.[0]) >= lastRaceDoneId).length;
-
             const maxFirstPoints = Number(meta.pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[0] ?? 0);
             const maxSecondPoints = Number(meta.pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[1] ?? 0);
             const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
-
-            const isDoublePoints = Number(meta.pointsInfo?.isLastRaceDouble ?? meta.pointsInfo?.isLastraceDouble) === 1;
-            const fastestLapBonus = Number(meta.pointsInfo?.fastestLapBonusPoint) === 1;
-            const poleBonus = Number(meta.pointsInfo?.poleBonusPoint) === 1;
-
-            const pointsRemaining = racesLeft * maxTeamRacePoints + sprintsLeftLocal * 15 +
-                (isDoublePoints ? maxTeamRacePoints : 0) +
-                (fastestLapBonus ? racesLeft : 0) +
-                (poleBonus ? racesLeft : 0);
+            const pointsRemaining = getRemainingStandingsPoints(meta.events, lastRaceDoneId, meta.pointsInfo, maxTeamRacePoints, 15).pointsRemaining;
 
             championClinched = (Number(leaderPts) - Number(secondPts)) > pointsRemaining;
         }

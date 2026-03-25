@@ -602,6 +602,11 @@ export function updateTeamNextSeasonExpertise(teamId, nextSeasonCarUnitValues, y
                   AND PartType = ?
                   AND PartStat = ?
             `, [teamId, partType, stat], 'singleValue')) || 0;
+            let nextSeasonExpertiseValue = totalValue - expertiseValue;
+
+            if (nextSeasonExpertiseValue < 0) {
+                nextSeasonExpertiseValue = 0;
+            }
 
             queryDB(`
                 UPDATE Parts_TeamExpertise
@@ -609,7 +614,7 @@ export function updateTeamNextSeasonExpertise(teamId, nextSeasonCarUnitValues, y
                 WHERE TeamID = ?
                   AND PartType = ?
                   AND PartStat = ?
-            `, [totalValue - expertiseValue, teamId, partType, stat], 'run');
+            `, [nextSeasonExpertiseValue, teamId, partType, stat], 'run');
         }
     }
 }
@@ -703,7 +708,7 @@ function convertPartWeightUnitValueToValue(partType, unitValue) {
     const minimalWeight = Number(carConstants.minimalWeightPerPart?.[partType]);
     const numericUnitValue = Number(unitValue);
 
-    if (!Number.isFinite(standardWeight) || !Number.isFinite(minimalWeight) || !Number.isFinite(numericUnitValue) || standardWeight === minimalWeight) {
+    if (standardWeight === minimalWeight) {
         return 500;
     }
 
@@ -732,10 +737,9 @@ export function adjustTeamOverallToTarget(teamId, targetOverall, mode = "perform
 
     while (iterations < 8) {
         if (Math.abs(target - achieved) <= 0.1) break;
-        if (!Number.isFinite(achieved) || achieved <= 0) break;
+        if (!achieved) break;
 
         const factor = target / achieved;
-        if (!Number.isFinite(factor) || factor < 0) break;
         const scaled = scaleStatsDictUnitValues(stats, factor, yearIteration);
 
         if (mode === "performance") {
@@ -760,9 +764,6 @@ export function adjustTeamOverallToTarget(teamId, targetOverall, mode = "perform
         }
 
         achieved = getOverallByMode(teamId, mode, customTeam, yearIteration);
-        if (!Number.isFinite(achieved)) {
-            break;
-        }
         iterations += 1;
     }
 
@@ -988,7 +989,7 @@ function buildEnginePowerProgressionContext() {
     for (const row of currentPowerRows) {
         const engineId = Number(row?.[0]);
         const unitValue = Number(row?.[1]);
-        if (!engineId || !Number.isFinite(unitValue)) continue;
+        if (!engineId) continue;
         currentPowerByEngineId[engineId] = unitValue;
     }
 
@@ -1002,7 +1003,7 @@ function buildEnginePowerProgressionContext() {
 
 function getEnginePowerUnitValueForRace(engineId, raceId, ctx) {
     const current = ctx?.currentPowerByEngineId?.[engineId];
-    if (!Number.isFinite(current)) {
+    if (current === null || current === undefined) {
         return null;
     }
 
@@ -1018,9 +1019,7 @@ function getEnginePowerUnitValueForRace(engineId, raceId, ctx) {
 
     if (snapshot !== null && snapshot !== undefined) {
         const snapNum = Number(snapshot);
-        if (Number.isFinite(snapNum)) {
-            return snapNum;
-        }
+        return snapNum;
     }
 
     return current;
@@ -1044,7 +1043,7 @@ export function getPerformanceAllTeams(day = null, previous = null, customTeam =
     const canOverrideEnginePower = Boolean(
         useHistoricalEnginePower &&
         enginePowerCtx?.enabled &&
-        Number.isFinite(Number(raceId))
+        Number(raceId) > 0
     );
 
     let enginePowerValueByEngineId = null;
@@ -1060,7 +1059,6 @@ export function getPerformanceAllTeams(day = null, previous = null, customTeam =
         if (typeof powerToValue === "function") {
             for (const engineId of enginesUsed) {
                 const unitValue = getEnginePowerUnitValueForRace(engineId, Number(raceId), enginePowerCtx);
-                if (!Number.isFinite(unitValue)) continue;
                 const value = powerToValue(unitValue);
                 enginePowerValueByEngineId[engineId] = Math.round(value * 1000) / 1000;
             }
@@ -1884,7 +1882,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                 if (Number(newDesign) !== -1) {
                     // update
                     if (Number(statKey) !== 15) {
-                        changeExpertiseBased(part, statKey, value, Number(teamId));
+                        changeExpertiseBased(part, statKey, value, Number(teamId), "existing", null, yearIteration);
                     }
                     queryDB(`
                     UPDATE Parts_Designs_StatValues
@@ -1943,7 +1941,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
                     } else {
                         value = carConstants.unitValueToValue[statKey](statNum);
                     }
-                    changeExpertiseBased(part, statKey, value, Number(teamId), "new", latestDesignPartFromTeam);
+                    changeExpertiseBased(part, statKey, value, Number(teamId), "new", latestDesignPartFromTeam, yearIteration);
                 }
             }
         }
@@ -1952,7 +1950,7 @@ export function overwritePerformanceTeam(teamId, performance, customTeam = null,
     // commit
 }
 
-export function changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null) {
+export function changeExpertiseBased(part, stat, newValue, teamId, type = "existing", oldDesign = null, yearIteration = null) {
     // SELECT Day, CurrentSeason FROM Player_State
     const row = queryDB(`
       SELECT Day, CurrentSeason
@@ -2006,7 +2004,7 @@ export function changeExpertiseBased(part, stat, newValue, teamId, type = "exist
 
     // console.log(newValue, currentValue, currentExpertise);
 
-    const newExpertise = (Number(newValue) * Number(currentExpertise)) / Number(currentValue);
+    let newExpertise = (Number(newValue) * Number(currentExpertise)) / Number(currentValue);
 
 
     // console.log(`Old expertise: ${currentExpertise}, New expertise: ${newExpertise}`);
@@ -2069,7 +2067,7 @@ export function getAduoEngineUpgradeRaceIds(seasonId = null) {
 
     return rows
         .map(r => Number(r?.[0]))
-        .filter(raceId => Number.isFinite(raceId) && raceId > 0);
+        .filter(raceId => raceId > 0);
 }
 
 export function getFirstDaySeason() {

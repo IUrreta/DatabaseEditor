@@ -74,7 +74,7 @@ function isBlankContractValue(value) {
 function toContractInt(value, fallback) {
   if (isBlankContractValue(value)) return fallback;
   const parsed = Number.parseInt(String(value), 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
+  return parsed || parsed === 0 ? parsed : fallback;
 }
 
 function sanitizeContractPayload(payload = {}) {
