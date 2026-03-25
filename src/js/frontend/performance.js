@@ -482,15 +482,6 @@ teamsCarsButton.addEventListener("click", function () {
 updateTeamsCarsButton();
 setupOverviewAdjustControls();
 
-
-document.querySelector("#attributeMenu").querySelectorAll("a").forEach(function (elem) {
-    elem.addEventListener("click", function () {
-        document.querySelector("#attributeButton span").innerText = elem.innerText;
-        order_by(elem.dataset.attribute);
-    })
-})
-
-
 /**
  * Pills that manage engines and teams screens and lists
  */
