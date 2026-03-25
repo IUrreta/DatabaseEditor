@@ -602,11 +602,9 @@ export function updateTeamNextSeasonExpertise(teamId, nextSeasonCarUnitValues, y
                   AND PartType = ?
                   AND PartStat = ?
             `, [teamId, partType, stat], 'singleValue')) || 0;
+            // Next season car values are derived from Expertise + NextSeasonExpertise,
+            // so lowering the total below current expertise requires a negative delta.
             let nextSeasonExpertiseValue = totalValue - expertiseValue;
-
-            if (nextSeasonExpertiseValue < 0) {
-                nextSeasonExpertiseValue = 0;
-            }
 
             queryDB(`
                 UPDATE Parts_TeamExpertise
