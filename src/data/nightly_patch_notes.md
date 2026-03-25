@@ -20,3 +20,10 @@
 - Unlocked engine stats (no longer capped at 0-100)
 - Changed Toyota logo color
 - Plus and Minus buttons on parts stats editing now icrease the values faster
+
+## 25th match
+- Research added as editable with the same UI as Performance and Expertise (Upgrades)
+- Expertise (Upgrades) and Research now visible in Car Attributes bar graphs
+- Added quick Performcnae/Upgrades/Research editing through the abr graphs in Overview mode
+- Minor style improvments
+- Redesigned patreon pop up
