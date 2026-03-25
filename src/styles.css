@@ -17556,8 +17556,7 @@ body.default-theme .news-article-date {
   opacity: 1;
 }
 
-.reload-news,
-.hide-historic-drivers {
+.reload-news{
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -17568,18 +17567,15 @@ body.default-theme .news-article-date {
   font-size: 16px;
 }
 
-.reload-news::selection,
-.hide-historic-drivers::selection {
+.reload-news::selection {
   background: transparent;
 }
 
-.reload-news:hover,
-.hide-historic-drivers:hover {
+.reload-news:hover {
   color: var(--new-primary);
 }
 
-.reload-news:active span,
-.hide-historic-drivers:active span {
+.reload-news:active span{
   transform: scale(0.96);
 }
 
@@ -18683,7 +18679,7 @@ p.news-error-api-key {
   position: absolute;
   left: 0px;
   top: 0px;
-  color: var(--text-muted);
+  color: color-mix(in srgb, var(--new-primary) 50%, var(--text-muted))
 }
 
 .fake-text {
@@ -18701,24 +18697,25 @@ p.news-error-api-key {
   0% {
     opacity: 0;
     transform: translateY(-11px) scale(0.8);
-    color: var(--text-general);
+    color: var(--white-general);
   }
 
   50% {
     opacity: 1;
+    color: var(--white-general);
   }
 
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
-    color: var(--text-muted);
+    color: color-mix(in srgb, var(--new-primary) 50%, var(--text-muted))
   }
 }
 
 #animatedText .char {
   display: inline-block;
   opacity: 0;
-  animation: pop-in 0.10s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: pop-in 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .drop-zone {
@@ -19680,6 +19677,7 @@ p.news-error-api-key {
 
 .bento-grid .stats-header-separator{
   background-color: var(--text-tertiary);
+  transition: background-color 0.15s ease;
 }
 
 
@@ -19688,6 +19686,7 @@ p.news-error-api-key {
   color: var(--text-general);
   display: flex;
   align-items: baseline;
+  transition: color 0.15s ease;
   gap: 5px;
 }
 
@@ -19695,6 +19694,34 @@ p.news-error-api-key {
   font-size: 16px;
   font-family: "Formula1";
   color: var(--text-tertiary);
+  transition: color 0.15s ease;
+}
+
+.bento-item:hover .bento-title{
+  color: var(--new-primary);
+}
+
+.bento-item:hover .bento-subtitle,
+.bento-item:hover .season-review-driver-points.diff,
+.bento-item:hover .season-review-team-points.diff,
+.bento-item:hover .rounds-counter,
+.bento-item:hover .bento-vertical-label,
+.bento-item:hover .season-review-wins-name span:not(.bold-font),
+.bento-item:hover .season-review-driver-name span:not(.bold-font){  
+  color: color-mix(in srgb, var(--new-primary) 50%, var(--text-tertiary))
+}
+
+.bento-item .season-review-wins-name span:not(.bold-font),
+.bento-item .season-review-driver-name span:not(.bold-font){
+  transition: color 0.15s ease;
+}
+
+.bento-item:hover .stats-header-separator{
+  background-color: color-mix(in srgb, var(--new-primary) 50%, var(--text-tertiary));
+}
+
+.bento-item:hover .bento-split-list .bento-standings-half + .bento-standings-half{
+  border-color: color-mix(in srgb, var(--new-primary) 50%, var(--text-tertiary));
 }
 
 .bento-driver-standings{
@@ -19723,6 +19750,7 @@ p.news-error-api-key {
 
 .bento-split-list .bento-standings-half + .bento-standings-half{
   border-left: 2px solid var(--text-tertiary);
+  transition: border-color 0.15s ease;
   padding-left: 12px;
 }
 
@@ -19789,6 +19817,7 @@ p.news-error-api-key {
   font-family: "NumbersFont";
   color: var(--text-tertiary);
   margin-right: -5px;
+  transition: color 0.15s ease;
 }
 
 #standings2ndhalf{
@@ -19865,6 +19894,7 @@ p.news-error-api-key {
   font-family: "NumbersFont";
   color: var(--text-tertiary);
   margin-right: -5px;
+  transition: color 0.15s ease;
 }
 
 #teamStandings{
@@ -19933,6 +19963,7 @@ p.news-error-api-key {
   letter-spacing: 1px;
   user-select: none;
   line-height: 1;
+  transition: color 0.15s ease;
 }
 
 .bento-subtitle{
@@ -20116,6 +20147,7 @@ p.news-error-api-key {
   margin-left: auto;
   color: var(--text-tertiary);
   font-family: "NumbersFont";
+  transition: color 0.15s ease;
 }
 
 .round-number{

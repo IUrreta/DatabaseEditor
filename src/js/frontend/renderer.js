@@ -2656,7 +2656,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Fix game-breaking issues with ease",
         "No installation required, works in your browser",
         "Honda, for the love of god, give Alonso a good engine for once",
-        "In memory of Aloy"
+        "Discover hidden stats and secrets in your save files",
+        "Create your own custom characters",
+        "Save past season's statistics to never lose them again",
+        "Export and share your favourite created drivers with your friends",
+        "Easily pick your save from the list of recent ones",
+        "Customize the appearance of the tool to your liking",
+        "Join the discord to get notified when new features are added",
+        "Edit how good or bad a car is going to be for next season"
+    
     ];
 
     //reorder them randomly
