@@ -28,7 +28,7 @@
 - Minor style improvments
 - Redesigned patreon pop up
 
-## 29th match
+## 29th march
 - Added button to rotate bwteen sessions in Session Results in "Records" tab
 - Added button to copy calendar from past season in "Calendar" tab
 - Added button to untick all sprints from calendar in "Calendar" tab
