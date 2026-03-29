@@ -8506,6 +8506,11 @@ body.og-theme .records-list {
   height: 26px;
 }
 
+.toolbar-logo--f1cc {
+  width: 34px;
+  height: 34px;
+}
+
 .toolbar-title {
   font-size: 16px;
   display: flex;
@@ -15661,6 +15666,22 @@ a.bi-custom-patreon.close-slide-up {
 
 #ogTheme .secondary-color {
   background-color: #dedde6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#f1ccTheme .background-color {
+  background-color: #1c1c21;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#f1ccTheme .primary-color {
+  background-color: #4366bf;
+}
+
+#f1ccTheme .secondary-color {
+  background-color: #f1f1f1;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }

@@ -125,6 +125,12 @@ export const theme_colors = {
         "general_secondary": "#f1f1f1",
         "engine_upgrade_line": "#ffe16acc"
     },
+    "f1cc-theme": {
+        "labels": "#dbe5ff",
+        "grid": "#434a59",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
     "vaporwave-theme": {
         "labels": "#dedde6",
         "grid": "#5329b5",
@@ -211,6 +217,7 @@ export const themeToolbarLogos = {
     "williams-theme": { src: "../assets/images/logos/Williams_2026_logo.svg", className: "toolbar-logo--williams" },
     "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
     "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
+    "f1cc-theme": { src: "../assets/images/logos/f1cc.png", className: "toolbar-logo--f1cc" },
 };
 
 //predictions
