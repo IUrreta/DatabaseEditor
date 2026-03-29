@@ -4753,7 +4753,7 @@ DRIVERS TABLE
   mask: url('/assets/images/logos/audi.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--audi-primary);
+  background-color: var(--audi-secondary);
   width: 54px;
 }
 
