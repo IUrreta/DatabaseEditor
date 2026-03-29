@@ -4748,6 +4748,24 @@ DRIVERS TABLE
   padding: 20px 5px !important;
 }
 
+.teams-table-logo-inner.audi-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--audi-primary);
+  width: 54px;
+}
+
+.teams-table-logo-inner.sauber-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--sauber-primary);
+  width: 54px;
+}
+
 .custom-team-table-logo {
   padding: 1px !important;
 }
@@ -5023,6 +5041,18 @@ phm
   width: 16px !important;
 }
 
+.bento-grid .logo-audi-table, .session-results-row .logo-audi-table {
+  width: 24px !important;
+}
+
+.session-results-row .logo-visarb-table{
+  width: 20px;
+}
+
+.session-results-row .logo-renault-table{
+  width: 18px;
+}
+
 .bento-grid .logo-toyota-table{
   width: 20px !important;
 }
@@ -5061,12 +5091,18 @@ phm
   height: 20px;
 }
 
+.logo-audi-table{
+  width: 28px;
+  height: 18px;
+}
+
 .drivers-table-row .hahoverback, .drivers-table-row .afhoverback{
   width: 30px !important;
   height: 30px;
 }
 
 
+.drivers-table-logo-div:has(.logo-audi-table),
 .drivers-table-logo-div:has(.logo-sauber-table),
 .drivers-table-logo-div:has(.logo-toyota-table){
   display: flex;
@@ -5196,6 +5232,14 @@ phm
   background-color: var(--sauber-primary);
 }
 
+.logo-audi-table {
+  -webkit-mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--audi-primary);
+}
+
 .alhoverback {
   width: 30px;
   height: 30px;
@@ -5250,7 +5294,8 @@ phm
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
 .drivers-table-row:hover .logo-williams-2026-table,
-.drivers-table-row:hover .logo-sauber-table {
+.drivers-table-row:hover .logo-sauber-table,
+.drivers-table-row:hover .logo-audi-table {
   background-color: #f0f0f0;
 }
 
@@ -12425,6 +12470,14 @@ input[type='number'] {
   width: 40px;
   height: 40px;
   padding: 12px 2px;
+}
+
+.audilogo {
+  -webkit-mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--audi-primary);
 }
 
 .team-menu-logo .audilogo {

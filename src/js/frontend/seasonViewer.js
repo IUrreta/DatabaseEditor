@@ -902,17 +902,34 @@ function manage_teams_table_logos() {
             }
         }
         else if (logo.dataset.teamid === "9") {
-            if (alfaReplace === "alfa") {
-                logo.className = "teams-table-logo-inner merc-team-table-logo"
+            if (["audi", "sauber"].includes(alfaReplace)) {
+                if (logo.tagName === "IMG") {
+                    const newElem = document.createElement("div");
+                    newElem.className = `teams-table-logo-inner ${alfaReplace}-team-table-logo`;
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                else {
+                    logo.className = `teams-table-logo-inner ${alfaReplace}-team-table-logo`;
+                }
             }
-            else if (alfaReplace === "audi") {
-                logo.className = "teams-table-logo-inner audi-team-table-logo"
-            }
-            else if (alfaReplace === "stake") {
-                logo.className = "teams-table-logo-inner stake-team-table-logo"
-            }
-            else if (alfaReplace === "sauber") {
-                logo.className = "teams-table-logo-inner ferrari-team-table-logo"
+            else {
+                if (logo.tagName !== "IMG") {
+                    const newElem = document.createElement("img");
+                    newElem.className = "teams-table-logo-inner";
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    newElem.src = logos_disc[9];
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                if (alfaReplace === "alfa") {
+                    logo.className = "teams-table-logo-inner merc-team-table-logo"
+                }
+                else if (alfaReplace === "stake") {
+                    logo.className = "teams-table-logo-inner stake-team-table-logo"
+                }
+                logo.src = logos_disc[9];
             }
         }
         else if (logo.dataset.teamid === "10") {
@@ -1807,7 +1824,7 @@ function buildF1DriverLogoElement(teamId) {
         logo.classList.add(driversTableLogosDict[alphaReplace]);
     }
     if (teamId === 9) {
-        if (alfaReplace === "sauber") {
+        if (["audi", "sauber"].includes(alfaReplace)) {
             logo = document.createElement("div");
             logo.classList = "drivers-table-logo";
             logo.dataset.teamid = teamId;
