@@ -1,12 +1,14 @@
 import { races_map, codes_dict, weather_dict, countries_dict, invertedRacesMap } from "./config";
 import { game_version } from "./renderer";
 import { max_races } from "./head2head";
+import { Command } from "../backend/command";
 import interact from 'interactjs';
 
 let deleting = false;
 let deleted = false;
 let previewTarget = null;
 let previewPosition = null;
+const importPreviousSeasonCalendarIcon = document.getElementById("importPreviousSeasonCalendarIcon");
 
 /**
  * Positions both the div the user's moving and the one he has moved it into
@@ -262,6 +264,7 @@ function updateVisualizers(){
 }
 
 export function load_calendar(races){
+    clearDropPreview()
     document.querySelector('.main-calendar-section').innerHTML = ""
     races.forEach(function(elem){
         addRace({
@@ -316,6 +319,42 @@ function clearDropPreview() {
     }
     previewTarget = null;
     previewPosition = null;
+}
+
+function getImportedPreviousSeasonCalendar(races) {
+    return races.map(function (race) {
+        return {
+            trackId: race.trackId,
+            weatherStatePractice: 1,
+            weatherStateQualifying: 1,
+            weatherStateRace: 1,
+            weekendType: race.weekendType,
+            state: 0,
+            isF2Race: race.isF2Race,
+            isF3Race: race.isF3Race
+        }
+    })
+}
+
+async function importPreviousSeasonCalendar() {
+    const response = await new Command("previousSeasonCalendarRequest", {}).promiseExecute()
+    const races = response.content
+    if (races.length === 0) return
+    load_calendar(getImportedPreviousSeasonCalendar(races))
+}
+
+function removeCalendarSprints() {
+    document.querySelectorAll(".race-calendar .sprint-input:checked").forEach(function (input) {
+        input.click()
+    })
+}
+
+export function updatePreviousSeasonCalendarIcon(currentYear) {
+    if (!importPreviousSeasonCalendarIcon || !currentYear) return
+    const previousYear = String(Number(currentYear) - 1).padStart(4, "0")
+    importPreviousSeasonCalendarIcon.querySelectorAll("span").forEach(function (digit, index) {
+        digit.textContent = previousYear[index]
+    })
 }
 
 
@@ -435,6 +474,14 @@ document.getElementById("deleteTracks").addEventListener("click",function (btn) 
 
     deleting = !deleting
     update_numbers();
+})
+
+document.getElementById("importPreviousSeasonCalendar").addEventListener("click", function () {
+    importPreviousSeasonCalendar()
+})
+
+document.getElementById("removeCalendarSprints").addEventListener("click", function () {
+    removeCalendarSprints()
 })
 
 

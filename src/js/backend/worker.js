@@ -26,7 +26,7 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
-import { editCalendar, fetchCalendar } from "./scriptUtils/calendarUtils";
+import { editCalendar, fetchCalendar, fetchPreviousSeasonCalendar } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import {
   change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings,
@@ -1096,6 +1096,14 @@ const workerCommands = {
   calendarRefresh: (data, postMessage) => {
     const calendar = fetchCalendar();
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
+  },
+  previousSeasonCalendarRequest: (data, postMessage) => {
+    const calendar = fetchPreviousSeasonCalendar();
+    postMessage({
+      command: "previousSeasonCalendarRequest",
+      responseMessage: "Previous season calendar fetched",
+      content: calendar
+    });
   },
   changeStats: (data, postMessage) => {
     if (data.mod === "2025") {

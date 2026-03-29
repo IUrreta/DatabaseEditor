@@ -1809,6 +1809,48 @@ body.og-theme .dropdown-menu a:hover {
   pointer-events: none;
 }
 
+.icon-2-letters,
+.icon-3-letters,
+.icon-4-letters {
+  font-family: 'Formula1Dark';
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+
+.icon-2-letters,
+.icon-3-letters {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.button-with-icon:has(.icon-2-letters),
+.button-with-icon:has(.icon-3-letters){
+  align-items: baseline;
+}
+
+.icon-3-letters {
+  min-width: 32px;
+}
+
+.icon-4-letters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+  line-height: 0.8;
+  font-size: 12px;
+}
+
+.icon-4-letters span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .button-with-icon.close-modal{
   padding: 3px 7px;
 }

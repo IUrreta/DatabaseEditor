@@ -15,7 +15,7 @@ import {
     loadJuniorTeamDrivers,
     initFreeDriversElems
 } from './transfers';
-import { load_calendar } from './calendar';
+import { load_calendar, updatePreviousSeasonCalendarIcon } from './calendar';
   import {
       load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
       order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
@@ -980,6 +980,7 @@ const messageHandlers = {
     "Year fetched": (message) => {
         latestSaveYear = Number(message);
         setPerformanceCurrentSeason(message);
+        updatePreviousSeasonCalendarIcon(latestSaveYear);
         generateYearsMenu(message);
     },
     "Previous year teams standings fetched": (message) => {
