@@ -1182,6 +1182,7 @@ export function fetchCustomSeasonResultsPackage(year, formula = 1) {
 
   return {
     ...payload,
+    events: payload.events.map((eventRow) => appendSessionInfoToEventRow(eventRow, ["race"])),
     results: attachCustomSeasonDriverNationality(payload.results ?? [], year)
   };
 }
@@ -2483,6 +2484,69 @@ export function fetchEventsDoneBefore(year, day) {
   return eventsIds;
 }
 
+function getWeekendSessionOrder(weekendType) {
+  return Number(weekendType) === 1
+    ? ["fp", "sprintquali", "sprintrace", "quali", "race"]
+    : ["fp1", "fp2", "fp3", "quali", "race"];
+}
+
+function fetchAvailableSessionKeysForRace(raceId, weekendType, state) {
+  if (Number(state) === 0) return [];
+
+  const raceIdNum = Number(raceId);
+  const isSprintWeekend = Number(weekendType) === 1;
+  const hasPracticeResults = (practiceSession) => queryDB(`
+      SELECT 1
+      FROM Races_PracticeResults
+      WHERE RaceID = ?
+        AND RaceFormula = 1
+        AND PracticeSession = ?
+      LIMIT 1
+    `, [raceIdNum, practiceSession], 'singleValue') != null;
+  const hasQualifyingResults = (sprintShootout) => queryDB(`
+      SELECT 1
+      FROM Races_QualifyingResults
+      WHERE RaceID = ?
+        AND RaceFormula = 1
+        AND SprintShootout = ?
+      LIMIT 1
+    `, [raceIdNum, sprintShootout], 'singleValue') != null;
+  const hasSprintResults = queryDB(`
+      SELECT 1
+      FROM Races_SprintResults
+      WHERE RaceID = ?
+        AND RaceFormula = 1
+      LIMIT 1
+    `, [raceIdNum], 'singleValue') != null;
+  const hasRaceResults = queryDB(`
+      SELECT 1
+      FROM Races_Results
+      WHERE RaceID = ?
+      LIMIT 1
+    `, [raceIdNum], 'singleValue') != null;
+
+  const sessionAvailability = new Map();
+  if (isSprintWeekend) {
+    sessionAvailability.set("fp", hasPracticeResults(1));
+    sessionAvailability.set("sprintquali", hasQualifyingResults(1));
+    sessionAvailability.set("sprintrace", hasSprintResults);
+  }
+  else {
+    sessionAvailability.set("fp1", hasPracticeResults(1));
+    sessionAvailability.set("fp2", hasPracticeResults(2));
+    sessionAvailability.set("fp3", hasPracticeResults(3));
+  }
+  sessionAvailability.set("quali", hasQualifyingResults(0));
+  sessionAvailability.set("race", hasRaceResults);
+
+  return getWeekendSessionOrder(weekendType).filter((sessionKey) => sessionAvailability.get(sessionKey));
+}
+
+function appendSessionInfoToEventRow(eventRow, availableSessionKeys = []) {
+  const latestSessionKey = availableSessionKeys[availableSessionKeys.length - 1] || "";
+  return [...eventRow.slice(0, 6), latestSessionKey, availableSessionKeys.length, [...availableSessionKeys]];
+}
+
 export function fetchEventsFrom(year, formula = 1) {
   const seasonEventsRows = queryDB(`
       SELECT r.RaceID, r.TrackID, r.WeekendType, r.State, t.isF2Race, t.IsF3Race
@@ -2498,7 +2562,10 @@ export function fetchEventsFrom(year, formula = 1) {
   if (Number(formula) === 3) {
     return seasonEventsRows.filter(row => Number(row[5]) === 1);
   }
-  return seasonEventsRows;
+  return seasonEventsRows.map((row) => appendSessionInfoToEventRow(
+    row,
+    fetchAvailableSessionKeysForRace(row[0], row[2], row[3])
+  ));
 }
 
 export function fetchLastCompletedRaceId(year, formula = 1) {

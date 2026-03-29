@@ -20465,6 +20465,26 @@ p.news-error-api-key {
   cursor: pointer;
 }
 
+#sessionResultsSessionStepButton{
+  cursor: pointer;
+  font-family: 'Formula1';
+  min-width: 92px;
+  justify-content: center;
+}
+
+#sessionResultsSessionStepButton.is-disabled{
+  color: var(--text-dimmed);
+}
+
+#sessionResultsSessionStepButton.is-disabled:hover{
+  color: var(--text-dimmed);
+  background-color: transparent;
+}
+
+#sessionResultsSessionStepButton.is-disabled:active{
+  transform: none;
+}
+
 .session-results-table.is-compact{
   width: 55vw;
   margin-left: auto;
