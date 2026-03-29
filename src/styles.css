@@ -4753,7 +4753,7 @@ DRIVERS TABLE
   mask: url('/assets/images/logos/audi.svg') no-repeat center;
   -webkit-mask-size: contain;
   mask-size: contain;
-  background-color: var(--audi-primary);
+  background-color: var(--audi-secondary);
   width: 54px;
 }
 
@@ -20223,6 +20223,7 @@ p.news-error-api-key {
   width: 42px;
   text-align: center;
   height: 22px;
+  padding-top: 1px;
 }
 
 .season-review-team-points.diff{
