@@ -9,20 +9,15 @@ const weatherDict = {
   "5": 32
 };
 
-export function fetchCalendar() {
-  const daySeason = queryDB(`
+function getCurrentSeasonRow() {
+  return queryDB(`
     SELECT Day, CurrentSeason
     FROM Player_State
   `, [], 'singleRow');
+}
 
-  if (!daySeason) {
-    console.warn("No data found in Player_State.");
-    return [];
-  }
-
-  const currentSeason = daySeason[1];
-
-  const calendarRows = queryDB(`
+function fetchCalendarRows(seasonId) {
+  return queryDB(`
     SELECT r.TrackID,
            r.WeatherStatePractice,
            r.WeatherStateQualifying,
@@ -34,8 +29,11 @@ export function fetchCalendar() {
     FROM Races r
     LEFT JOIN Races_Tracks t ON r.TrackID = t.TrackID
     WHERE r.SeasonID = ?
-  `, [currentSeason], 'allRows') || [];
+    ORDER BY r.Day, r.RaceID
+  `, [seasonId], 'allRows') || [];
+}
 
+function mapCalendarRows(calendarRows) {
   return calendarRows.map((row) => ({
     trackId: row[0],
     weatherStatePractice: row[1],
@@ -46,6 +44,28 @@ export function fetchCalendar() {
     isF2Race: row[6] ?? 0,
     isF3Race: row[7] ?? 0,
   }));
+}
+
+export function fetchCalendar() {
+  const daySeason = getCurrentSeasonRow();
+
+  if (!daySeason) {
+    console.warn("No data found in Player_State.");
+    return [];
+  }
+
+  return mapCalendarRows(fetchCalendarRows(daySeason[1]));
+}
+
+export function fetchPreviousSeasonCalendar() {
+  const daySeason = getCurrentSeasonRow();
+
+  if (!daySeason) {
+    console.warn("No data found in Player_State.");
+    return [];
+  }
+
+  return mapCalendarRows(fetchCalendarRows(daySeason[1] - 1));
 }
 
 export function editCalendar(year_iteration, racesData) {

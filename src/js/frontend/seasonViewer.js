@@ -344,6 +344,11 @@ function updateTopPanelControlsVisibility() {
         exportBtn.classList.toggle("d-none", typeVal !== "sessionresults");
     }
 
+    const sessionStepButton = document.getElementById("sessionResultsSessionStepButton");
+    if (sessionStepButton) {
+        sessionStepButton.classList.toggle("d-none", typeVal !== "sessionresults" || !sessionResultsLastFetched);
+    }
+
     const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
     if (driversTeamsPills) {
         driversTeamsPills.classList.toggle("d-none", hideDriversTeamsPills);
@@ -366,6 +371,7 @@ function updateTopPanelControlsVisibility() {
     }
 
     updateAllTimeVisibilityForTeamsRecords();
+    syncSessionResultsSessionStepButton();
 }
 
 function shouldShowBothStandingsTables() {
@@ -896,17 +902,34 @@ function manage_teams_table_logos() {
             }
         }
         else if (logo.dataset.teamid === "9") {
-            if (alfaReplace === "alfa") {
-                logo.className = "teams-table-logo-inner merc-team-table-logo"
+            if (["audi", "sauber"].includes(alfaReplace)) {
+                if (logo.tagName === "IMG") {
+                    const newElem = document.createElement("div");
+                    newElem.className = `teams-table-logo-inner ${alfaReplace}-team-table-logo`;
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                else {
+                    logo.className = `teams-table-logo-inner ${alfaReplace}-team-table-logo`;
+                }
             }
-            else if (alfaReplace === "audi") {
-                logo.className = "teams-table-logo-inner audi-team-table-logo"
-            }
-            else if (alfaReplace === "stake") {
-                logo.className = "teams-table-logo-inner stake-team-table-logo"
-            }
-            else if (alfaReplace === "sauber") {
-                logo.className = "teams-table-logo-inner ferrari-team-table-logo"
+            else {
+                if (logo.tagName !== "IMG") {
+                    const newElem = document.createElement("img");
+                    newElem.className = "teams-table-logo-inner";
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    newElem.src = logos_disc[9];
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                if (alfaReplace === "alfa") {
+                    logo.className = "teams-table-logo-inner merc-team-table-logo"
+                }
+                else if (alfaReplace === "stake") {
+                    logo.className = "teams-table-logo-inner stake-team-table-logo"
+                }
+                logo.src = logos_disc[9];
             }
         }
         else if (logo.dataset.teamid === "10") {
@@ -1801,7 +1824,7 @@ function buildF1DriverLogoElement(teamId) {
         logo.classList.add(driversTableLogosDict[alphaReplace]);
     }
     if (teamId === 9) {
-        if (alfaReplace === "sauber") {
+        if (["audi", "sauber"].includes(alfaReplace)) {
             logo = document.createElement("div");
             logo.classList = "drivers-table-logo";
             logo.dataset.teamid = teamId;
@@ -3426,6 +3449,7 @@ export function onSessionResultsFetched(data) {
     const headerRound = document.querySelector(".session-results-title-round");
     const titleEl = document.querySelector(".session-results-title");
     const editToggle = document.getElementById("sessionResultsEditToggle");
+    const recordsButton = document.getElementById("recordsTypeButton");
     
     if (headerMain && headerSession) {
         const year = String(data?.year ?? "").trim();
@@ -3453,12 +3477,19 @@ export function onSessionResultsFetched(data) {
         headerMain.textContent = `${year} ${gpName}`.trim();
         headerSession.textContent = String(sessionLabel);
     }
+    if (recordsButton) {
+        const label = recordsButton.querySelector("span.dropdown-label");
+        if (label) {
+            label.textContent = getGpDisplayName(meta?.trackId);
+        }
+        recordsButton.dataset.value = "sessionresults";
+    }
     if (headerRound) {
         const yearKey = String(data?.year ?? "").trim();
-        const events = sessionResultsEventsCache.get(yearKey);
+        const events = sessionResultsEventsCache.get(yearKey) || [];
         const raceId = Number(data?.raceId ?? meta?.raceId);
-        const total = Array.isArray(events) ? events.length : 0;
-        const idx = Array.isArray(events) ? events.findIndex(e => Number(e?.[0]) === raceId) : -1;
+        const total = events.length;
+        const idx = events.findIndex(e => Number(e[0]) === raceId);
         headerRound.textContent = (total > 0 && idx >= 0) ? `ROUND ${idx + 1}/${total}` : "";
     }
 
@@ -3499,6 +3530,8 @@ export function onSessionResultsFetched(data) {
         const label = editToggle.querySelector("span");
         if (label) label.textContent = sessionResultsEditMode && isMainRaceSession ? "Cancel" : "Edit";
     }
+    updateTopPanelControlsVisibility();
+    syncSessionResultsSessionStepButton();
 
     const sessionResultsTable = document.querySelector(".session-results-table");
     const hasGrid = results.some((r) => {
@@ -4191,6 +4224,19 @@ function setupSessionResultsCompactToggle() {
     });
 }
 
+function setupSessionResultsSessionStepButton() {
+    const btn = document.getElementById("sessionResultsSessionStepButton");
+    if (!btn || btn.dataset.init) return;
+    btn.dataset.init = "1";
+    btn.addEventListener("click", () => {
+        const nextSessionKey = String(btn.dataset.nextSessionKey || "").toLowerCase();
+        const year = String(btn.dataset.year || "").trim();
+        const raceId = Number(btn.dataset.raceId);
+        if (!nextSessionKey || !year || raceId <= 0) return;
+        openSessionResultsForRace(year, raceId, nextSessionKey);
+    });
+}
+
 function safeJsonDownload(filename, jsonObj) {
     try {
         const content = JSON.stringify(jsonObj, null, 2);
@@ -4568,6 +4614,7 @@ function setupSessionResultsExportRltoolsButton() {
 setupSessionResultsEditToggle();
 setupSessionResultsCompactToggle();
 setupSessionResultsExportRltoolsButton();
+setupSessionResultsSessionStepButton();
 
 //time comes in seconds.miliseconds, and I want it in hh:mm:ss.sss format (if no hh, then mm:ss.sss)
 function formatLapTime(lapTimeMs) {
@@ -4613,38 +4660,106 @@ function getSessionOptionsForWeekend(weekendType) {
     const isSprint = Number(weekendType) === 1;
     if (isSprint) {
         return [
-            { key: "fp", label: "Free Practice" },
-            { key: "sprintquali", label: "Sprint Quali" },
-            { key: "sprintrace", label: "Sprint Race" },
-            { key: "quali", label: "Quali" },
-            { key: "race", label: "Race" }
+            { key: "fp", label: "Free Practice", shortLabel: "FP" },
+            { key: "sprintquali", label: "Sprint Quali", shortLabel: "Sprint Q" },
+            { key: "sprintrace", label: "Sprint Race", shortLabel: "Sprint R" },
+            { key: "quali", label: "Qualifying", shortLabel: "Qualifying" },
+            { key: "race", label: "Race", shortLabel: "Race" }
         ];
     }
     return [
-        { key: "fp1", label: "Free Practice 1" },
-        { key: "fp2", label: "Free Practice 2" },
-        { key: "fp3", label: "Free Practice 3" },
-        { key: "quali", label: "Qualifying" },
-        { key: "race", label: "Race" }
+        { key: "fp1", label: "Free Practice 1", shortLabel: "FP1" },
+        { key: "fp2", label: "Free Practice 2", shortLabel: "FP2" },
+        { key: "fp3", label: "Free Practice 3", shortLabel: "FP3" },
+        { key: "quali", label: "Qualifying", shortLabel: "Qualifying" },
+        { key: "race", label: "Race", shortLabel: "Race" }
     ];
 }
 
-function getLatestYearFromMenu() {
-    const yearMenu = document.getElementById("yearMenu");
-    const years = yearMenu
-        ? Array.from(yearMenu.querySelectorAll("a"))
-            .map(a => a.dataset.year)
-            .filter(year => /^\d+$/.test(year))
-            .map(Number)
-        : [];
-    return years.length ? Math.max(...years) : null;
+function getSessionOptionByKey(weekendType, sessionKey) {
+    const key = String(sessionKey || "").toLowerCase();
+    return getSessionOptionsForWeekend(weekendType).find((option) => option.key === key) || null;
+}
+
+function getEventAvailableSessionKeys(eventRow, weekendType) {
+    const keys = eventRow[8]
+        .map((key) => String(key || "").toLowerCase())
+        .filter(Boolean);
+    if (keys.length) return keys;
+
+    const completedSessionsCount = Number(eventRow?.[7]);
+    if (completedSessionsCount > 0) {
+        return getSessionOptionsForWeekend(weekendType)
+            .slice(0, completedSessionsCount)
+            .map((option) => option.key);
+    }
+
+    return [];
+}
+
+function buildSessionResultsGpMeta(year, eventRow) {
+    const raceId = Number(eventRow[0]);
+    const trackId = Number(eventRow[1]);
+    const weekendType = Number(eventRow[2]);
+    const availableSessionKeys = getEventAvailableSessionKeys(eventRow, weekendType);
+    const latestSessionKey = String(eventRow[6] || availableSessionKeys[availableSessionKeys.length - 1] || "").toLowerCase();
+
+    return {
+        year: String(year),
+        raceId,
+        trackId,
+        weekendType,
+        latestSessionKey,
+        availableSessionKeys
+    };
+}
+
+function getCachedSessionResultsGpMeta(year, raceId) {
+    const events = sessionResultsEventsCache.get(String(year)) || [];
+    const eventRow = events.find((event) => Number(event[0]) === Number(raceId));
+    return eventRow ? buildSessionResultsGpMeta(year, eventRow) : null;
+}
+
+function syncSessionResultsSessionStepButton() {
+    const btn = document.getElementById("sessionResultsSessionStepButton");
+    if (!btn) return;
+
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const showButton = typeVal === "sessionresults" && Boolean(sessionResultsLastFetched);
+    btn.classList.toggle("d-none", !showButton);
+    if (!showButton) return;
+
+    const meta = sessionResultsLastFetched?.meta || {};
+    const year = String(sessionResultsLastFetched?.year ?? "").trim();
+    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+    const weekendType = Number(meta?.weekendType);
+    const sessionKey = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    const sessionOption = getSessionOptionByKey(weekendType, sessionKey);
+    const cachedGpMeta = getCachedSessionResultsGpMeta(year, raceId);
+    const availableSessionKeys = cachedGpMeta?.availableSessionKeys?.length
+        ? cachedGpMeta.availableSessionKeys
+        : getSessionOptionsForWeekend(weekendType).map((option) => option.key);
+    const currentIndex = availableSessionKeys.indexOf(sessionKey);
+    const nextSessionKey = currentIndex >= 0 && availableSessionKeys.length
+        ? availableSessionKeys[(currentIndex + 1) % availableSessionKeys.length]
+        : "";
+
+    btn.querySelector("span").textContent = sessionOption?.shortLabel || sessionOption?.label || sessionKey;
+    btn.dataset.year = year;
+    btn.dataset.raceId = String(raceId);
+    btn.dataset.nextSessionKey = nextSessionKey || "";
+    btn.classList.toggle("is-disabled", !nextSessionKey || availableSessionKeys.length <= 1);
 }
 
 function openSessionResultsForRace(year, raceId, sessionKey) {
     const recordsButton = document.getElementById("recordsTypeButton");
+    const gpMeta = getCachedSessionResultsGpMeta(year, raceId);
     if (recordsButton) {
-        recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+        recordsButton.querySelector("span.dropdown-label").textContent = gpMeta ? getGpDisplayName(gpMeta.trackId) : "Session Results";
         recordsButton.dataset.value = "sessionresults";
+    }
+    if (gpMeta) {
+        sessionResultsActiveGpMeta = gpMeta;
     }
     syncRecordsTypeDropdownChecks();
     updateTopPanelControlsVisibility();
@@ -4689,22 +4804,20 @@ async function populateSessionResultsMenu() {
 
     try {
         let events = sessionResultsEventsCache.get(selectedYear);
-        if (!Array.isArray(events)) {
+        if (!events) {
             const resp = await new Command("eventsFromRequest", { year: selectedYear, formula: 1 }).promiseExecute();
             events = resp?.content?.events || [];
             sessionResultsEventsCache.set(selectedYear, events);
         }
 
         gpList.innerHTML = "";
-        const doneEvents = (Array.isArray(events) ? events : []).filter((e) => {
-            const state = Number(e?.[3]);
-            return state === 1 || state === 2;
-        });
+        const doneEvents = events.filter((eventRow) =>
+            getEventAvailableSessionKeys(eventRow, Number(eventRow?.[2])).length > 0
+        );
 
         doneEvents.forEach((evt) => {
-            const raceId = evt?.[0];
-            const trackId = evt?.[1];
-            const weekendType = evt?.[2];
+            const gpMeta = buildSessionResultsGpMeta(selectedYear, evt);
+            const { raceId, trackId, latestSessionKey } = gpMeta;
 
             const trigger = document.createElement("a");
             trigger.className = "redesigned-dropdown-item";
@@ -4719,14 +4832,14 @@ async function populateSessionResultsMenu() {
 
             trigger.addEventListener("mouseenter", () => {
                 sessionResultsActiveGpAnchor = trigger;
-                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
+                sessionResultsActiveGpMeta = gpMeta;
                 populateAndShowSessionResultsSessionMenu();
             });
 
             trigger.addEventListener("click", () => {
                 sessionResultsActiveGpAnchor = trigger;
-                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
-                openSessionResultsForRace(selectedYear, raceId, "race");
+                sessionResultsActiveGpMeta = gpMeta;
+                openSessionResultsForRace(selectedYear, raceId, latestSessionKey || "race");
             });
 
             gpList.appendChild(trigger);
@@ -4735,7 +4848,7 @@ async function populateSessionResultsMenu() {
         if (doneEvents.length === 0) {
             const item = document.createElement("a");
             item.className = "redesigned-dropdown-item";
-            item.textContent = "No completed races";
+            item.textContent = "No completed sessions";
             gpList.appendChild(item);
         }
 
@@ -4772,16 +4885,12 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
         return;
     }
 
-    const { year, raceId, weekendType } = sessionResultsActiveGpMeta;
+    const { year, raceId, weekendType, availableSessionKeys = [] } = sessionResultsActiveGpMeta;
 
     if (!opts.repositionOnly) {
         sessionMenu.innerHTML = "";
-        const optionsAll = getSessionOptionsForWeekend(weekendType);
-        const latestYear = getLatestYearFromMenu();
-        const isLatestYear = latestYear == null ? true : Number(year) === Number(latestYear);
-        const options = isLatestYear
-            ? optionsAll
-            : optionsAll.filter((o) => o.key === "race" || (o.key === "sprintrace" && Number(weekendType) === 1));
+        const options = getSessionOptionsForWeekend(weekendType)
+            .filter((option) => availableSessionKeys.includes(option.key));
 
         options.forEach((opt) => {
             const a = document.createElement("a");
@@ -4793,6 +4902,11 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
             });
             sessionMenu.appendChild(a);
         });
+
+        if (!options.length) {
+            sessionMenu.classList.remove("is-open");
+            return;
+        }
     }
 
     // Position the session menu aligned with the hovered GP row (inside the scroll container)

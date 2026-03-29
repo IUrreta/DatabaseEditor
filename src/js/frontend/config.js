@@ -125,6 +125,12 @@ export const theme_colors = {
         "general_secondary": "#f1f1f1",
         "engine_upgrade_line": "#ffe16acc"
     },
+    "f1cc-theme": {
+        "labels": "#dbe5ff",
+        "grid": "#434a59",
+        "general_secondary": "#f1f1f1",
+        "engine_upgrade_line": "#ffe16acc"
+    },
     "vaporwave-theme": {
         "labels": "#dedde6",
         "grid": "#5329b5",
@@ -211,6 +217,7 @@ export const themeToolbarLogos = {
     "williams-theme": { src: "../assets/images/logos/Williams_2026_logo.svg", className: "toolbar-logo--williams" },
     "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
     "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
+    "f1cc-theme": { src: "../assets/images/logos/f1cc.png", className: "toolbar-logo--f1cc" },
 };
 
 //predictions
@@ -244,7 +251,7 @@ export const names_full = {
 
 //seasonViewer
 export let driversTableLogosDict = {
-    "stake": "logo-stake-table", "audi": "logo-up-down-extra", "alfa": "logo-merc-table", "sauber": "logo-sauber-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
+    "stake": "logo-stake-table", "audi": "logo-audi-table", "alfa": "logo-merc-table", "sauber": "logo-sauber-table", "visarb": "logo-visarb-table", "hugo": "logo-hugo-table",
     "brawn": "logo-brawn-table", "toyota": "logo-toyota-table", "alphatauri": "logo-alphatauri-table", "porsche": "logo-porsche-table",
     "renault": "logo-renault-table", "andretti": "logo-andretti-table", "lotus": "logo-lotus-table", "alpine": "logo-alpine-table",
     "cadillac": "logo-cadillac-table", "ford": "logo-ford-table", "racingpoint": "logo-racingpoint-table", "jordan": "logo-jordan-table"

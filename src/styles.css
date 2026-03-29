@@ -1809,6 +1809,48 @@ body.og-theme .dropdown-menu a:hover {
   pointer-events: none;
 }
 
+.icon-2-letters,
+.icon-3-letters,
+.icon-4-letters {
+  font-family: 'Formula1Dark';
+  letter-spacing: 0;
+  flex-shrink: 0;
+}
+
+.icon-2-letters,
+.icon-3-letters {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.button-with-icon:has(.icon-2-letters),
+.button-with-icon:has(.icon-3-letters){
+  align-items: baseline;
+}
+
+.icon-3-letters {
+  min-width: 32px;
+}
+
+.icon-4-letters {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  place-items: center;
+  line-height: 0.8;
+  font-size: 12px;
+}
+
+.icon-4-letters span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .button-with-icon.close-modal{
   padding: 3px 7px;
 }
@@ -4706,6 +4748,24 @@ DRIVERS TABLE
   padding: 20px 5px !important;
 }
 
+.teams-table-logo-inner.audi-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--audi-primary);
+  width: 54px;
+}
+
+.teams-table-logo-inner.sauber-team-table-logo:not(img) {
+  -webkit-mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  mask: url('/assets/images/logos/sauber.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--sauber-primary);
+  width: 54px;
+}
+
 .custom-team-table-logo {
   padding: 1px !important;
 }
@@ -4981,6 +5041,18 @@ phm
   width: 16px !important;
 }
 
+.bento-grid .logo-audi-table, .session-results-row .logo-audi-table {
+  width: 24px !important;
+}
+
+.session-results-row .logo-visarb-table{
+  width: 20px;
+}
+
+.session-results-row .logo-renault-table{
+  width: 18px;
+}
+
 .bento-grid .logo-toyota-table{
   width: 20px !important;
 }
@@ -5019,12 +5091,18 @@ phm
   height: 20px;
 }
 
+.logo-audi-table{
+  width: 28px;
+  height: 18px;
+}
+
 .drivers-table-row .hahoverback, .drivers-table-row .afhoverback{
   width: 30px !important;
   height: 30px;
 }
 
 
+.drivers-table-logo-div:has(.logo-audi-table),
 .drivers-table-logo-div:has(.logo-sauber-table),
 .drivers-table-logo-div:has(.logo-toyota-table){
   display: flex;
@@ -5154,6 +5232,14 @@ phm
   background-color: var(--sauber-primary);
 }
 
+.logo-audi-table {
+  -webkit-mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--audi-primary);
+}
+
 .alhoverback {
   width: 30px;
   height: 30px;
@@ -5208,7 +5294,8 @@ phm
 .drivers-table-row:hover .logo-visarb-table,
 .drivers-table-row:hover .logo-alphatauri-table,
 .drivers-table-row:hover .logo-williams-2026-table,
-.drivers-table-row:hover .logo-sauber-table {
+.drivers-table-row:hover .logo-sauber-table,
+.drivers-table-row:hover .logo-audi-table {
   background-color: #f0f0f0;
 }
 
@@ -8462,6 +8549,11 @@ body.og-theme .records-list {
 .toolbar-logo--haas{
   width: 34px;
   height: 26px;
+}
+
+.toolbar-logo--f1cc {
+  width: 34px;
+  height: 34px;
 }
 
 .toolbar-title {
@@ -12380,6 +12472,14 @@ input[type='number'] {
   padding: 12px 2px;
 }
 
+.audilogo {
+  -webkit-mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  mask: url('/assets/images/logos/audi.svg') no-repeat center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  background-color: var(--audi-primary);
+}
+
 .team-menu-logo .audilogo {
   width: 50px;
 }
@@ -15619,6 +15719,22 @@ a.bi-custom-patreon.close-slide-up {
 
 #ogTheme .secondary-color {
   background-color: #dedde6;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+#f1ccTheme .background-color {
+  background-color: #1c1c21;
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+#f1ccTheme .primary-color {
+  background-color: #4366bf;
+}
+
+#f1ccTheme .secondary-color {
+  background-color: #f1f1f1;
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
 }
@@ -20463,6 +20579,26 @@ p.news-error-api-key {
 
 #sessionResultsCompactToggle{
   cursor: pointer;
+}
+
+#sessionResultsSessionStepButton{
+  cursor: pointer;
+  font-family: 'Formula1';
+  min-width: 92px;
+  justify-content: center;
+}
+
+#sessionResultsSessionStepButton.is-disabled{
+  color: var(--text-dimmed);
+}
+
+#sessionResultsSessionStepButton.is-disabled:hover{
+  color: var(--text-dimmed);
+  background-color: transparent;
+}
+
+#sessionResultsSessionStepButton.is-disabled:active{
+  transform: none;
 }
 
 .session-results-table.is-compact{

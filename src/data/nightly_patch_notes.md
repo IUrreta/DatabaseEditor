@@ -21,9 +21,16 @@
 - Changed Toyota logo color
 - Plus and Minus buttons on parts stats editing now icrease the values faster
 
-## 25th match
+## 25th march
 - Research is now editable with the same UI as Performance and Expertise (Upgrades)
 - Expertise (Upgrades) and Research now visible in Car Attributes bar graphs
 - Added quick Performcnae/Upgrades/Research editing through the abr graphs in Overview mode
 - Minor style improvments
 - Redesigned patreon pop up
+
+## 29th match
+- Added button to rotate bwteen sessions in Session Results in "Records" tab
+- Added button to copy calendar from past season in "Calendar" tab
+- Added button to untick all sprints from calendar in "Calendar" tab
+- Changed audi logo color to match real life
+- Adjusted logo sizes on Session results in "Records" tab
