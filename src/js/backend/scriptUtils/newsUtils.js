@@ -371,7 +371,6 @@ function applyAduoEffect(turningPointData) {
         turningPointData?.season
     );
 
-    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
     const engineDataToEdit = {};
 
     for (const engineChange of engineImprovements) {
@@ -395,7 +394,7 @@ function applyAduoEffect(turningPointData) {
             if (current === undefined || current === null) continue;
 
             const next = (current * (100 + pct)) / 100;
-            newStats[statId] = clamp(next, 0, 100);
+            newStats[statId] = next;
         }
 
         engineDataToEdit[engineId] = newStats;
