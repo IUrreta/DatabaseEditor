@@ -6,6 +6,7 @@ import { getGlobals } from "../commandGlobals.js";
 import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
 import { buildFacePath } from "./faceUtils.js";
+import { inverted_countries_abreviations } from "./countries.js";
 
 
 /**
@@ -84,6 +85,111 @@ export function getDate() {
     `, [], 'singleRow');
 
   return daySeason
+}
+
+function createCustomChildrenTableIfMissing() {
+  const tableExists = queryDB(`
+      SELECT name
+      FROM sqlite_master
+      WHERE type = 'table' AND name = 'Custom_Children'
+    `, [], 'singleRow');
+
+  if (tableExists) {
+    return false;
+  }
+
+  queryDB(`
+    CREATE TABLE Custom_Children (
+      FatherID INTEGER,
+      FatherName TEXT,
+      FatherNationality INTEGER,
+      ChildID INTEGER,
+      ChildName TEXT
+    )
+  `, [], 'run');
+
+  return true;
+}
+
+function extractLiteralNameForCustomChildren(value) {
+  const raw = String(value || "").trim();
+  const literalMatch = raw.match(/\|([^|]+)\|/);
+  return (literalMatch ? literalMatch[1] : raw).trim();
+}
+
+function getPlayerNameForCustomChildren() {
+  const row = queryDB(`SELECT FirstName, LastName FROM Player LIMIT 1`, [], 'singleRow');
+  if (!row) return "Team Principal";
+  const firstName = extractLiteralNameForCustomChildren(row[0]);
+  const lastName = extractLiteralNameForCustomChildren(row[1]);
+  return `${firstName} ${lastName}`.trim() || "Team Principal";
+}
+
+function getCountryIdFromNationalityCode(codeRaw) {
+  const code = String(codeRaw || "").trim().toUpperCase();
+  const nationalityName = inverted_countries_abreviations[code] || "";
+  const key = nationalityName.replace(/\s+/g, "");
+  if (!key) return null;
+
+  const row = queryDB(`
+    SELECT CountryID
+    FROM Countries
+    WHERE Name LIKE ?
+    LIMIT 1
+  `, [`%[Nationality_${key}]%`], 'singleRow');
+
+  return row ? row[0] : null;
+}
+
+export function checkCustomChildrenNationality() {
+  const tableWasCreated = createCustomChildrenTableIfMissing();
+  const dontAskAgain = queryDB(
+    `SELECT value FROM Custom_Save_Config WHERE key = 'dontAskTeamPrincipalNationality'`,
+    [],
+    'singleValue'
+  );
+  if (dontAskAgain === "1" || dontAskAgain === 1) {
+    console.log(`[checkCustomChildrenNationality] Custom_Children ${tableWasCreated ? "was created and " : ""}don't ask again is enabled. Result=true nationality=null`);
+    return { nationality: null, result: true };
+  }
+
+  const row = queryDB(`
+      SELECT FatherNationality
+      FROM Custom_Children
+      WHERE FatherID = -1
+      LIMIT 1
+    `, [], 'singleRow');
+
+  if (!row) {
+    console.log(`[checkCustomChildrenNationality] Custom_Children ${tableWasCreated ? "was created and " : "exists but "}no FatherID=-1 row was found. Result=false nationality=null`);
+    return { nationality: null, result: false };
+  }
+
+  const nationality = row[0];
+  console.log(`[checkCustomChildrenNationality] Found FatherID=-1 row. Result=true nationality=${nationality}`);
+  return { nationality, result: true };
+}
+
+export function saveTeamPrincipalNationality(codeRaw, dontAskAgainRaw = false) {
+  createCustomChildrenTableIfMissing();
+
+  const nationality = getCountryIdFromNationalityCode(codeRaw);
+  if (!nationality) {
+    throw new Error(`Could not resolve nationality code "${codeRaw}" to a CountryID`);
+  }
+
+  const fatherName = getPlayerNameForCustomChildren();
+  queryDB(`DELETE FROM Custom_Children WHERE FatherID = -1`, [], 'run');
+  queryDB(`
+    INSERT INTO Custom_Children (FatherID, FatherName, FatherNationality, ChildID, ChildName)
+    VALUES (-1, ?, ?, NULL, NULL)
+  `, [fatherName, nationality], 'run');
+
+  const dontAskAgain = dontAskAgainRaw ? "1" : "0";
+  setCustomSaveConfig("dontAskTeamPrincipalNationality", dontAskAgain);
+
+  console.log(`[saveTeamPrincipalNationality] Saved team principal nationality=${nationality} dontAskAgain=${dontAskAgain}`);
+  return { nationality, result: true };
 }
 
 /**

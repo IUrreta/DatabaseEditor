@@ -17,7 +17,9 @@ import {
   fetchCustomSeasonResultsPackage,
   fetchSeasonYearsForRecordsExport,
   exportSeasonsRecordsArchive,
-  importSeasonsRecordsArchive
+  importSeasonsRecordsArchive,
+  checkCustomChildrenNationality,
+  saveTeamPrincipalNationality as saveTeamPrincipalNationalityToDB
 } from "./scriptUtils/dbUtils";
 import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAttributesAllTeamsExpertise, getAttributesAllCarsExpertise, getAttributesAllTeamsNextSeasonCar, getAttributesAllCarsNextSeasonCar, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
@@ -482,6 +484,8 @@ const workerCommands = {
     }
 
     fetchSeasonResults(year, true, true, 1);
+    const customChildrenCheck = checkCustomChildrenNationality();
+    postMessage({ responseMessage: "Custom children nationality checked", content: customChildrenCheck });
 
     postMessage({ responseMessage: "Save selected finished" });
   },
@@ -1572,6 +1576,16 @@ const workerCommands = {
     postMessage({
       responseMessage: "ADUO TP enabled updated",
       noti_msg: `ADUO TP enabled set to ${enabled}`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
+  saveTeamPrincipalNationality: (data, postMessage) => {
+    const nationality = saveTeamPrincipalNationalityToDB(data.nationality, data.dontAskAgain);
+    postMessage({
+      responseMessage: "Team principal nationality saved",
+      content: nationality,
+      noti_msg: "Team principal nationality saved",
       isEditCommand: true,
       unlocksDownload: true
     });

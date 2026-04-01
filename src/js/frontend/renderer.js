@@ -41,6 +41,7 @@ import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
 import members from "../../data/members.json"
 import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacements.js";
+import { inverted_countries_abreviations } from "../backend/scriptUtils/countries.js";
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
@@ -910,6 +911,28 @@ function orderTeamTemplatesByStandings(standingsRows) {
     parent.appendChild(frag);
 }
 
+async function openTeamPrincipalNationalityPrompt(checkInfo) {
+    if (checkInfo?.result !== false) return;
+
+    const result = await confirmModal({
+        title: "Team Principal Nationality",
+        body: "Select your team principal nationality so the editor can store it for child generation logic.",
+        confirmText: "Save",
+        cancelText: "Cancel",
+        showNationalitySelector: true
+    });
+
+    if (!result?.confirmed || !result?.nationality) {
+        return;
+    }
+
+    const command = new Command("saveTeamPrincipalNationality", {
+        nationality: result.nationality,
+        dontAskAgain: !!result.dontAskAgain
+    });
+    command.execute();
+}
+
 
 const messageHandlers = {
     "ERROR": (message) => {
@@ -1029,6 +1052,9 @@ const messageHandlers = {
     "Config": (message) => {
         manage_config(message)
         document.querySelector("#transferpill").click();
+    },
+    "Custom children nationality checked": (message) => {
+        openTeamPrincipalNationalityPrompt(message);
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -3022,19 +3048,25 @@ export async function confirmModal({
     title,
     body,
     confirmText,
-    cancelText
+    cancelText,
+    showNationalitySelector = false
 }) {
     const modalEl = document.getElementById('confirmModal');
     const bsModal = new bootstrap.Modal(modalEl, { keyboard: false });
 
     // Elementos
     const confirmTitle = modalEl.querySelector('.modal-title');
-    const confirmBody = modalEl.querySelector('.modal-body p');
+    const confirmBody = modalEl.querySelector('.modal-body');
     const confirmBtn = modalEl.querySelector('.confirm-modal');
     const cancelBtn = modalEl.querySelector('.close-modal');
 
     if (confirmTitle) confirmTitle.textContent = title;
-    if (confirmBody) confirmBody.textContent = body;
+    if (confirmBody) {
+        confirmBody.innerHTML = "";
+        const paragraph = document.createElement("p");
+        paragraph.textContent = body;
+        confirmBody.appendChild(paragraph);
+    }
 
     if (confirmBtn) {
         if (confirmText) {
@@ -3058,21 +3090,142 @@ export async function confirmModal({
         let clicked = false;
         const controller = new AbortController();
         const { signal } = controller;
+        let selectedNationality = null;
+        let dontAskAgainCheckbox = null;
+
+        const resolveValue = (confirmed) => {
+            if (!showNationalitySelector) {
+                return confirmed;
+            }
+            return {
+                confirmed,
+                nationality: confirmed ? selectedNationality : null,
+                dontAskAgain: confirmed ? !!dontAskAgainCheckbox?.checked : false
+            };
+        };
+
+        if (showNationalitySelector && confirmBody) {
+            const wrapper = document.createElement("div");
+            wrapper.className = "confirm-modal-extra";
+
+            const dropdownLabel = document.createElement("div");
+            dropdownLabel.className = "confirm-modal-label";
+            dropdownLabel.textContent = "Nationality";
+
+            const dropdownGlobal = document.createElement("div");
+            dropdownGlobal.className = "dropdown-global confirm-modal-nationality";
+
+            const nationalityButton = document.createElement("button");
+            nationalityButton.type = "button";
+            nationalityButton.className = "redesigned-dropdown bold-font nationality-dropdown";
+            nationalityButton.setAttribute("aria-haspopup", "true");
+            nationalityButton.setAttribute("aria-expanded", "false");
+
+            const dropdownText = document.createElement("span");
+            dropdownText.className = "dropdown-label";
+            dropdownText.textContent = "Select nationality";
+
+            const dropdownChevron = document.createElement("div");
+            dropdownChevron.className = "redesigned-chevron";
+
+            nationalityButton.appendChild(dropdownText);
+            nationalityButton.appendChild(dropdownChevron);
+
+            const nationalityMenu = document.createElement("ul");
+            nationalityMenu.className = "redesigned-dropdown-menu";
+
+            const entries = Object.entries(inverted_countries_abreviations || {})
+                .filter(([code, name]) => !!code && !!name)
+                .sort((a, b) => String(a[1]).localeCompare(String(b[1])));
+
+            entries.forEach(([code, name]) => {
+                const item = document.createElement("a");
+                item.className = "redesigned-dropdown-item nationality-item";
+                item.href = "#";
+                item.dataset.code = code;
+
+                const img = document.createElement("img");
+                img.src = `https://flagsapi.com/${code}/flat/64.png`;
+                img.alt = code;
+
+                const text = document.createElement("span");
+                text.textContent = name;
+
+                item.appendChild(img);
+                item.appendChild(text);
+                item.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    selectedNationality = code;
+                    dropdownText.textContent = name;
+                    nationalityButton.classList.remove("open");
+                    nationalityButton.setAttribute("aria-expanded", "false");
+                    if (confirmBtn) {
+                        confirmBtn.disabled = false;
+                    }
+                }, { signal });
+
+                nationalityMenu.appendChild(item);
+            });
+
+            nationalityButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                nationalityButton.classList.toggle("open");
+                nationalityButton.setAttribute("aria-expanded", nationalityButton.classList.contains("open") ? "true" : "false");
+            }, { signal });
+
+            dropdownGlobal.addEventListener("click", (e) => {
+                e.stopPropagation();
+            }, { signal });
+
+            document.addEventListener("click", () => {
+                nationalityButton.classList.remove("open");
+                nationalityButton.setAttribute("aria-expanded", "false");
+            }, { signal });
+
+            dropdownGlobal.appendChild(nationalityButton);
+            dropdownGlobal.appendChild(nationalityMenu);
+            wrapper.appendChild(dropdownLabel);
+            wrapper.appendChild(dropdownGlobal);
+
+            const checkboxWrapper = document.createElement("label");
+            checkboxWrapper.className = "confirm-modal-checkbox";
+
+            dontAskAgainCheckbox = document.createElement("input");
+            dontAskAgainCheckbox.type = "checkbox";
+
+            const checkboxText = document.createElement("span");
+            checkboxText.textContent = "Don't ask me again";
+
+            checkboxWrapper.appendChild(dontAskAgainCheckbox);
+            checkboxWrapper.appendChild(checkboxText);
+            wrapper.appendChild(checkboxWrapper);
+            confirmBody.appendChild(wrapper);
+
+            if (confirmBtn) {
+                confirmBtn.disabled = true;
+            }
+        } else if (confirmBtn) {
+            confirmBtn.disabled = false;
+        }
 
         confirmBtn?.addEventListener('click', () => {
+            if (showNationalitySelector && !selectedNationality) {
+                return;
+            }
             clicked = true;
-            resolve(true);
+            resolve(resolveValue(true));
             bsModal.hide();
         }, { once: true, signal });
 
         cancelBtn?.addEventListener('click', () => {
             clicked = true;
-            resolve(false);
+            resolve(resolveValue(false));
             bsModal.hide();
         }, { once: true, signal });
 
         modalEl.addEventListener('hidden.bs.modal', () => {
-            if (!clicked) resolve(false);
+            if (!clicked) resolve(resolveValue(false));
             controller.abort();
         }, { once: true });
 
