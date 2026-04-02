@@ -914,6 +914,13 @@ function orderTeamTemplatesByStandings(standingsRows) {
 async function openTeamPrincipalNationalityPrompt(checkInfo) {
     if (checkInfo?.result !== false) return;
 
+    const tierInfo = window.__USER_DATA__ || await getUserTier();
+    const hasAccess = tierInfo?.isLoggedIn && (tierInfo?.tier === "Insider" || tierInfo?.tier === "Founder");
+    if (!hasAccess) {
+        // console.log("[openTeamPrincipalNationalityPrompt] Skipping modal because user is not Patreon Insider or higher.");
+        return;
+    }
+
     const result = await confirmModal({
         title: "Team Principal Nationality",
         body: "Select your team principal nationality so the editor can store it for child generation logic.",
