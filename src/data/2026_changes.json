@@ -18,12 +18,14 @@
         {
             "TrackID": 2,
             "Day": 46124,
-            "WeekendType": 0
+            "WeekendType": 0,
+            "isNotInGame": true
         },
         {
             "TrackID": 11,
             "Day": 46131,
-            "WeekendType": 0
+            "WeekendType": 0,
+            "isNotInGame": true
         },
         {
             "TrackID": 22,
@@ -448,7 +450,7 @@
             "19": 80
         },
         "rbpt": {
-            "10": 65,
+            "10": 85,
             "6": 73,
             "14": 79,
             "18": 75,
@@ -644,6 +646,14 @@
         },
         {   
             "StaffID": 15,
+            "Wins": 0,
+            "Podiums": 1,
+            "Poles": 0,
+            "FastestLaps": 0,
+            "Championships": 0
+        },
+        {   
+            "StaffID": 83,
             "Wins": 0,
             "Podiums": 1,
             "Poles": 0,

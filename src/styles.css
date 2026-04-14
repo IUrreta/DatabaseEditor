@@ -16259,7 +16259,7 @@ body:has(#modpill.active) .one-change {
 }
 
 #mods2026View .ant-change::before{
-  content: "84";
+  content: "86";
   font-family: "NumbersFont";
 }
 
@@ -16360,7 +16360,7 @@ body:has(#modpill.active) .one-change {
 }
 
 .bea-change::before {
-  content: '82';
+  content: '84';
   position: absolute;
   bottom: 2px;
   left: 0;

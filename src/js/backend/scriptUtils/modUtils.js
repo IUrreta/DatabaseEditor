@@ -3,7 +3,7 @@ import { queryDB, setMetaData, getMetadata } from "../dbManager.js";
 import { excelToDate, dateToExcel, changeDriverNumber, excelFromYMD } from "./eidtStatsUtils.js";
 import { editContract, fireDriver, hireDriver, rearrangeDriverEngineerPairings, removeFutureContract } from "./transferUtils.js";
 import { editSuperlicense } from "./eidtStatsUtils.js";
-import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats, getPerformanceAllTeams, applyExpertiseBoost, applyNextSeasonExpertiseBoost } from "./carAnalysisUtils.js";
+import { getBestParts, applyBoostToCarStats, getTyreDegStats, updateTyreDegStats, getPerformanceAllTeams, applyExpertiseBoost } from "./carAnalysisUtils.js";
 import contracts from "../../../data/contracts_2025.json"
 import changes from "../../../data/2025_changes.json"
 import changes2026 from "../../../data/2026_changes.json"
@@ -1345,15 +1345,35 @@ export function changeStats2026() {
         console.log("No performance stats start of month data found");
     }
     else {
-        tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
-            const { StaffID, StatID, Val } = entry;
-            let staffID = StaffID;
-            if (staffIDChanges[staffID]) {
-                staffID = staffIDChanges[staffID];
-            }
-            queryDB(`UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`, [Val, staffID, StatID], 'run');
-        });
-    }
+    tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
+        const { StaffID, StatID, Val } = entry;
+        let staffID = StaffID;
+
+        if (staffIDChanges[staffID]) {
+            staffID = staffIDChanges[staffID];
+        }
+
+        const existingStart = queryDB(
+            `SELECT 1 FROM Staff_Performancestats_StartOfMonth WHERE StaffID = ? AND StatID = ?`,
+            [staffID, StatID],
+            "singleRow"
+        );
+
+        if (existingStart) {
+            queryDB(
+                `UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`,
+                [Val, staffID, StatID],
+                "run"
+            );
+        } else {
+            queryDB(
+                `INSERT INTO Staff_Performancestats_StartOfMonth (StaffID, StatID, Val) VALUES (?, ?, ?)`,
+                [staffID, StatID, Val],
+                "run"
+            );
+        }
+    });
+}
     console.log("staffIDChanges at the end:", staffIDChanges);
 
 }
@@ -1377,7 +1397,78 @@ export function changeLineUps2026() {
     else {
         wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
     }
+    if (!tables2026.Staff_NarrativeData || !Array.isArray(tables2026.Staff_NarrativeData)) {
+        console.log("No narrative data found");
+    }
+    else {
+        queryDB(
+            `UPDATE Staff_NarrativeData
+            SET IsActive = 0
+            WHERE TeamID BETWEEN 1 AND 10
+            AND JobTitle = '[STAFF_TYPE_5]'`,
+            [],
+            "run"
+        );
 
+        tables2026.Staff_NarrativeData.forEach((entry) => {
+            const { StaffID, GenSource, JobTitle, TeamID, IsActive } = entry;
+
+            let staffID = StaffID;
+            if (staffIDChanges[staffID]) {
+                staffID = staffIDChanges[staffID];
+            }
+
+            const existingNarrative = queryDB(
+                `SELECT 1
+                FROM Staff_NarrativeData
+                WHERE StaffID = ?`,
+                [staffID],
+                "singleRow"
+            );
+
+            if (existingNarrative) {
+                queryDB(
+                    `UPDATE Staff_NarrativeData
+                    SET GenSource = ?, JobTitle = ?, TeamID = ?, IsActive = ?
+                    WHERE StaffID = ?`,
+                    [GenSource, JobTitle, TeamID, IsActive, staffID],
+                    "run"
+                );
+            } else {
+                queryDB(
+                    `INSERT INTO Staff_NarrativeData (StaffID, GenSource, JobTitle, TeamID, IsActive)
+                    VALUES (?, ?, ?, ?, ?)`,
+                    [staffID, GenSource, JobTitle, TeamID, IsActive],
+                    "run"
+                );
+            }
+        });
+
+        queryDB(
+            `DELETE FROM Staff_NarrativeData
+            WHERE TeamID BETWEEN 1 AND 10
+            AND JobTitle = '[STAFF_TYPE_5]'
+            AND IsActive = 0`,
+            [],
+            "run"
+        );
+
+        // Force Alan Permane for TeamID 8
+        queryDB(
+            `DELETE FROM Staff_NarrativeData
+            WHERE TeamID = 8
+            AND JobTitle = '[STAFF_TYPE_5]'`,
+            [],
+            "run"
+        );
+
+        queryDB(
+            `INSERT INTO Staff_NarrativeData (StaffID, GenSource, JobTitle, TeamID, IsActive)
+            VALUES (?, ?, ?, ?, ?)`,
+            [295, 2, "[STAFF_TYPE_5]", 8, 1],
+            "run"
+        );
+    }
     //get all StaffID from Staff_DriverData
     const driverIDs = queryDB(`SELECT StaffID FROM Staff_DriverData`, [], "allRows")
     //for each driver, get its AssignedCarNumber and FeederSeriesAssignedCarNumber from tables2026.Staff_DriverData and update the corresponding driver in the database with those values
