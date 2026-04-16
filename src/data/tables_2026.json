@@ -2072,6 +2072,21 @@
     },
     {
       "AgeType": null,
+      "CountryID": 57,
+      "DOB": 31969,
+      "DOB_ISO": "1987-07-11",
+      "FaceIndex": null,
+      "FaceType": null,
+      "FirstName": "[StaffName_Forename_Male_Laurent]",
+      "Gender": 0,
+      "IsGeneratedForCustomTeam": 0,
+      "IsGeneratedStaff": 0,
+      "LastName": "[StaffName_Surname_Mekies]",
+      "PhotoDay": 45340,
+      "StaffID": 290
+    },
+    {
+      "AgeType": null,
       "CountryID": 186,
       "DOB": 24097,
       "DOB_ISO": "1965-12-21",
@@ -3239,21 +3254,6 @@
       "LastName": "[StaffName_Surname_Vizard]",
       "PhotoDay": 45340,
       "StaffID": 395
-    },
-    {
-      "AgeType": null,
-      "CountryID": 57,
-      "DOB": 28243,
-      "DOB_ISO": "1977-04-28",
-      "FaceIndex": null,
-      "FaceType": null,
-      "FirstName": "[StaffName_Forename_Male_Laurent]",
-      "Gender": 0,
-      "IsGeneratedForCustomTeam": 0,
-      "IsGeneratedStaff": 0,
-      "LastName": "[StaffName_Surname_Mekies]",
-      "PhotoDay": 45340,
-      "StaffID": 396
     },
     {
       "AgeType": null,
@@ -53973,6 +53973,78 @@
       "RelationshipLevel": 0
     }
   ],
+  "Staff_NarrativeData": [
+    {
+      "StaffID": 323,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 1,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 324,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 2,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 290,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 3,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 326,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 4,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 676,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 5,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 328,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 6,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 412,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 7,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 295,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 8,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 291,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 9,
+      "IsActive": 1
+    },
+    {
+      "StaffID": 675,
+      "GenSource": 2,
+      "JobTitle": "[STAFF_TYPE_5]",
+      "TeamID": 10,
+      "IsActive": 1
+    }
+  ],
   "Staff_State": [
     {
       "Mentality": 38,
@@ -56989,78 +57061,6 @@
       "UnspentXP": 0,
       "XPGainedLastRace": 0,
       "XPGainedLastWeek": 0
-    }
-  ],
-  "Staff_NarrativeData": [
-    {
-      "StaffID": 323,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 1,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 324,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 2,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 396,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 3,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 326,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 4,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 676,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 5,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 328,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 6,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 412,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 7,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 295,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 8,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 291,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 9,
-      "IsActive": 1
-    },
-    {
-      "StaffID": 675,
-      "GenSource": 2,
-      "JobTitle": "[STAFF_TYPE_5]",
-      "TeamID": 10,
-      "IsActive": 1
     }
   ]
 }

@@ -6605,7 +6605,7 @@ input.engine-performance-title:focus {
 
 .engine-performance-stat {
   position: relative;
-  align-items: baseline;
+  align-items: center;
   margin: 4px 0;
 }
 

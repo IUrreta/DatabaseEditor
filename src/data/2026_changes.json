@@ -30,12 +30,14 @@
         {
             "TrackID": 22,
             "Day": 46145,
-            "WeekendType": 1
+            "WeekendType": 1,
+            "isF2Weekend": true
         },
         {
             "TrackID": 7,
             "Day": 46166,
-            "WeekendType": 1
+            "WeekendType": 1,
+            "isF2Weekend": true
         },
         {
             "TrackID": 6,
@@ -70,7 +72,8 @@
         {
             "TrackID": 23,
             "Day": 46257,
-            "WeekendType": 1
+            "WeekendType": 1,
+            "isF2Weekend": false
         },
         {
             "TrackID": 14,
