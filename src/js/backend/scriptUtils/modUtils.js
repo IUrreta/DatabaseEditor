@@ -856,8 +856,8 @@ export function updateCalendar2026(type) {
             let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, [], "singleRow")[0];
             let newRaceId = maxRaceId + 1;
             for (const entry of changes2026.Calendar) {
-                const { TrackID, Day, WeekendType, isNotInGame, isF2Weekend } = entry;
-                if (TrackID === null || isNotInGame === true) {
+                const { TrackID, Day, WeekendType, deleteIfGameAdds, isF2Weekend } = entry;
+                if (TrackID === null) {
                     continue;
                 }
                 //if it's either true or false, but not undefinded or null, then
@@ -870,55 +870,58 @@ export function updateCalendar2026(type) {
                     }
                 }
 
-                queryDB(`
-                INSERT INTO Races (
-                RaceID,
-                SeasonID,
-                TrackID,
-                Day,
-                State,
-                RainPractice,
-                TemperaturePractice,
-                WeatherStatePractice,
-                RainQualifying,
-                TemperatureQualifying,
-                WeatherStateQualifying,
-                RainRace,
-                TemperatureRace,
-                WeatherStateRace,
-                WeekendType
-                )
-                SELECT
-                ? AS RaceID,
-                2026 AS SeasonID,
-                r.TrackID,
-                ? AS Day,
-                0 AS State,                          
-                r.RainPractice,
-                r.TemperaturePractice,
-                r.WeatherStatePractice,
-                r.RainQualifying,
-                r.TemperatureQualifying,
-                r.WeatherStateQualifying,
-                r.RainRace,
-                r.TemperatureRace,
-                r.WeatherStateRace,
-                ? AS WeekendType
-                FROM Races r
-                WHERE r.SeasonID = ?
-                AND r.TrackID = ?
-                LIMIT 1
-            `, [newRaceId, Day, WeekendType, season, TrackID], 'run');
+                //if deleteIfGameAdds is true, skip the manual insert and let the trigger remove it if the game adds it
+                if (!deleteIfGameAdds) {
+                    queryDB(`
+                    INSERT INTO Races (
+                    RaceID,
+                    SeasonID,
+                    TrackID,
+                    Day,
+                    State,
+                    RainPractice,
+                    TemperaturePractice,
+                    WeatherStatePractice,
+                    RainQualifying,
+                    TemperatureQualifying,
+                    WeatherStateQualifying,
+                    RainRace,
+                    TemperatureRace,
+                    WeatherStateRace,
+                    WeekendType
+                    )
+                    SELECT
+                    ? AS RaceID,
+                    2026 AS SeasonID,
+                    r.TrackID,
+                    ? AS Day,
+                    0 AS State,                          
+                    r.RainPractice,
+                    r.TemperaturePractice,
+                    r.WeatherStatePractice,
+                    r.RainQualifying,
+                    r.TemperatureQualifying,
+                    r.WeatherStateQualifying,
+                    r.RainRace,
+                    r.TemperatureRace,
+                    r.WeatherStateRace,
+                    ? AS WeekendType
+                    FROM Races r
+                    WHERE r.SeasonID = ?
+                    AND r.TrackID = ?
+                    LIMIT 1
+                `, [newRaceId, Day, WeekendType, season, TrackID], 'run');
 
-                newRaceId++;
+                    newRaceId++;
+                }
             }
 
-            //also drop if trackid == 24
-            queryDB(`CREATE TRIGGER IF NOT EXISTS delete_duplicate_2026
+            queryDB(`DROP TRIGGER IF EXISTS delete_duplicate_2026`, [], 'run');
+            queryDB(`CREATE TRIGGER delete_duplicate_2026
             AFTER INSERT ON Races
             WHEN NEW.SeasonID = 2026
             AND (
-                NEW.TrackID = 24
+                NEW.TrackID IN (2, 11, 24)
                 OR EXISTS (
                     SELECT 1
                     FROM Races
@@ -1253,7 +1256,7 @@ export function insertStaff2026() {
                         if (table === "Staff_DriverData") {
                             keysToUpdate = keysToUpdate.filter(
                                 key => key !== "AssignedCarNumber" &&
-                                       key !== "FeederSeriesAssignedCarNumber"
+                                    key !== "FeederSeriesAssignedCarNumber"
                             );
                         }
 
@@ -1354,35 +1357,35 @@ export function changeStats2026() {
         console.log("No performance stats start of month data found");
     }
     else {
-    tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
-        const { StaffID, StatID, Val } = entry;
-        let staffID = StaffID;
+        tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
+            const { StaffID, StatID, Val } = entry;
+            let staffID = StaffID;
 
-        if (staffIDChanges[staffID]) {
-            staffID = staffIDChanges[staffID];
-        }
+            if (staffIDChanges[staffID]) {
+                staffID = staffIDChanges[staffID];
+            }
 
-        const existingStart = queryDB(
-            `SELECT 1 FROM Staff_Performancestats_StartOfMonth WHERE StaffID = ? AND StatID = ?`,
-            [staffID, StatID],
-            "singleRow"
-        );
-
-        if (existingStart) {
-            queryDB(
-                `UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`,
-                [Val, staffID, StatID],
-                "run"
+            const existingStart = queryDB(
+                `SELECT 1 FROM Staff_Performancestats_StartOfMonth WHERE StaffID = ? AND StatID = ?`,
+                [staffID, StatID],
+                "singleRow"
             );
-        } else {
-            queryDB(
-                `INSERT INTO Staff_Performancestats_StartOfMonth (StaffID, StatID, Val) VALUES (?, ?, ?)`,
-                [staffID, StatID, Val],
-                "run"
-            );
-        }
-    });
-}
+
+            if (existingStart) {
+                queryDB(
+                    `UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`,
+                    [Val, staffID, StatID],
+                    "run"
+                );
+            } else {
+                queryDB(
+                    `INSERT INTO Staff_Performancestats_StartOfMonth (StaffID, StatID, Val) VALUES (?, ?, ?)`,
+                    [staffID, StatID, Val],
+                    "run"
+                );
+            }
+        });
+    }
     console.log("staffIDChanges at the end:", staffIDChanges);
 
 }
@@ -1395,89 +1398,89 @@ export function changeLineUps2026() {
         wipeTableAndRefill("Staff_Contracts", tables2026.Staff_Contracts);
         updateSeasonModTable("change-line-ups-2026", 1, "2026");
         const globals = getGlobals();
-        if (!globals.isCreateATeam){
+        if (!globals.isCreateATeam) {
             queryDB(`DELETE FROM Staff_Contracts WHERE TeamID = 32`, [], 'run');
         }
     }
 
     if (!tables2026.Staff_RaceEngineerDriverAssignments || !Array.isArray(tables2026.Staff_RaceEngineerDriverAssignments)) {
-    console.log("No race engineer driver assignments found");
-}
-else {
-    wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
-}
+        console.log("No race engineer driver assignments found");
+    }
+    else {
+        wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
+    }
 
-if (!tables2026.Staff_NarrativeData || !Array.isArray(tables2026.Staff_NarrativeData)) {
-    console.log("No narrative data found");
-}
-else {
-    queryDB(
-        `UPDATE Staff_NarrativeData
+    if (!tables2026.Staff_NarrativeData || !Array.isArray(tables2026.Staff_NarrativeData)) {
+        console.log("No narrative data found");
+    }
+    else {
+        queryDB(
+            `UPDATE Staff_NarrativeData
          SET IsActive = 0
          WHERE TeamID BETWEEN 1 AND 10
            AND JobTitle = '[STAFF_TYPE_5]'`,
-        [],
-        "run"
-    );
-
-    tables2026.Staff_NarrativeData.forEach((entry) => {
-        const { StaffID, GenSource, JobTitle, TeamID, IsActive } = entry;
-
-        let staffID = StaffID;
-        if (staffIDChanges[staffID]) {
-            staffID = staffIDChanges[staffID];
-        }
-
-        const existingNarrative = queryDB(
-            `SELECT 1
-             FROM Staff_NarrativeData
-             WHERE StaffID = ?`,
-            [staffID],
-            "singleRow"
+            [],
+            "run"
         );
 
-        if (existingNarrative) {
-            queryDB(
-                `UPDATE Staff_NarrativeData
+        tables2026.Staff_NarrativeData.forEach((entry) => {
+            const { StaffID, GenSource, JobTitle, TeamID, IsActive } = entry;
+
+            let staffID = StaffID;
+            if (staffIDChanges[staffID]) {
+                staffID = staffIDChanges[staffID];
+            }
+
+            const existingNarrative = queryDB(
+                `SELECT 1
+             FROM Staff_NarrativeData
+             WHERE StaffID = ?`,
+                [staffID],
+                "singleRow"
+            );
+
+            if (existingNarrative) {
+                queryDB(
+                    `UPDATE Staff_NarrativeData
                  SET GenSource = ?, JobTitle = ?, TeamID = ?, IsActive = ?
                  WHERE StaffID = ?`,
-                [GenSource, JobTitle, TeamID, IsActive, staffID],
-                "run"
-            );
-        } else {
-            queryDB(
-                `INSERT INTO Staff_NarrativeData (StaffID, GenSource, JobTitle, TeamID, IsActive)
+                    [GenSource, JobTitle, TeamID, IsActive, staffID],
+                    "run"
+                );
+            } else {
+                queryDB(
+                    `INSERT INTO Staff_NarrativeData (StaffID, GenSource, JobTitle, TeamID, IsActive)
                  VALUES (?, ?, ?, ?, ?)`,
-                [staffID, GenSource, JobTitle, TeamID, IsActive],
-                "run"
-            );
-        }
-    });
+                    [staffID, GenSource, JobTitle, TeamID, IsActive],
+                    "run"
+                );
+            }
+        });
 
-    queryDB(
-        `DELETE FROM Staff_NarrativeData
+        queryDB(
+            `DELETE FROM Staff_NarrativeData
          WHERE TeamID BETWEEN 1 AND 10
            AND JobTitle = '[STAFF_TYPE_5]'
            AND IsActive = 0`,
-        [],
-        "run"
-    );
+            [],
+            "run"
+        );
 
-    queryDB(`DELETE FROM Staff_NarrativeData WHERE StaffID = ?`, [396], "run");
-    queryDB(`DELETE FROM Staff_BasicData WHERE StaffID = ?`, [396], "run");
+        queryDB(`DELETE FROM Staff_NarrativeData WHERE StaffID = ?`, [396], "run");
+        queryDB(`DELETE FROM Staff_BasicData WHERE StaffID = ?`, [396], "run");
 
-    queryDB(`DELETE FROM Staff_GameData WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_State WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_PerformanceStats WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_Performancestats_StartOfMonth WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_ContractPatience WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_Mentality_AreaOpinions WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_Mentality_Statuses WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-    queryDB(`DELETE FROM Staff_RaceRecord WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
-}
+        queryDB(`DELETE FROM Staff_GameData WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_State WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_PerformanceStats WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_Performancestats_StartOfMonth WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_ContractPatience WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_Mentality_AreaOpinions WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_Mentality_Statuses WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+        queryDB(`DELETE FROM Staff_RaceRecord WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    }
 
-//get all StaffID from Staff_DriverData
-const driverIDs = queryDB(`SELECT StaffID FROM Staff_DriverData`, [], "allRows")
+    //get all StaffID from Staff_DriverData
+    const driverIDs = queryDB(`SELECT StaffID FROM Staff_DriverData`, [], "allRows")
     //for each driver, get its AssignedCarNumber and FeederSeriesAssignedCarNumber from tables2026.Staff_DriverData and update the corresponding driver in the database with those values
     driverIDs.forEach((driverID) => {
         const driverData = tables2026.Staff_DriverData.find(driver => driver.StaffID === driverID[0]);
@@ -1572,7 +1575,7 @@ export function fixStandings(forSeason = "2025") {
 }
 
 
-export function changeAdditionalRegulations2026(){
+export function changeAdditionalRegulations2026() {
     if (!changes2026.Regulations || !Array.isArray(changes2026.Regulations)) {
         console.log("No regulations changes found");
     }
@@ -1620,7 +1623,7 @@ export function change2025Standings(mod = "2026") {
             `, [TeamID, LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID], 'run');
         }
         const globals = getGlobals();
-        if (!globals.isCreateATeam){
+        if (!globals.isCreateATeam) {
             queryDB(`DELETE FROM Races_TeamStandings WHERE TeamID = 32`, [], 'run');
         }
     }
@@ -1631,7 +1634,7 @@ export function change2025Standings(mod = "2026") {
 }
 
 
-export function fixesMod2026(){
+export function fixesMod2026() {
     //if has trhe extra drivers
     let wasError = false;
     let badStandings = false;
@@ -1653,7 +1656,7 @@ export function fixesMod2026(){
     return errorDict;
 }
 
-function updateRecordsTo2026(){
+function updateRecordsTo2026() {
     if (!changes2026.Records || !Array.isArray(changes2026.Records)) {
         console.log("No records changes found");
     }
@@ -1668,7 +1671,7 @@ function updateRecordsTo2026(){
     }
 }
 
-function updateFacilities2026(){
+function updateFacilities2026() {
     if (!changes2026.Facilities || !Array.isArray(changes2026.Facilities)) {
         console.log("No teams HQ changes found");
     }

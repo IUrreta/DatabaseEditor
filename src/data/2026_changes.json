@@ -19,13 +19,13 @@
             "TrackID": 2,
             "Day": 46124,
             "WeekendType": 0,
-            "isNotInGame": true
+            "deleteIfGameAdds": true
         },
         {
             "TrackID": 11,
             "Day": 46131,
             "WeekendType": 0,
-            "isNotInGame": true
+            "deleteIfGameAdds": true
         },
         {
             "TrackID": 22,
@@ -84,7 +84,7 @@
             "TrackID": null,
             "Day": 46278,
             "WeekendType": 0,
-            "isNotInGame": true
+            "deleteIfGameAdds": true
         },
         {
             "TrackID": 4,
