@@ -6605,7 +6605,7 @@ input.engine-performance-title:focus {
 
 .engine-performance-stat {
   position: relative;
-  align-items: baseline;
+  align-items: center;
   margin: 4px 0;
 }
 
@@ -15516,7 +15516,6 @@ body.light-theme .one-change .one-change-description {
 .one-change-description.add-results-team .add-results-points {
   font-size: 18px;
   line-height: 1;
-  letter-spacing: -2px;
   transition: color 0.15s;
 }
 
@@ -16260,7 +16259,7 @@ body:has(#modpill.active) .one-change {
 }
 
 #mods2026View .ant-change::before{
-  content: "84";
+  content: "86";
   font-family: "NumbersFont";
 }
 
@@ -16361,7 +16360,7 @@ body:has(#modpill.active) .one-change {
 }
 
 .bea-change::before {
-  content: '82';
+  content: '84';
   position: absolute;
   bottom: 2px;
   left: 0;

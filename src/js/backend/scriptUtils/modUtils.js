@@ -856,9 +856,18 @@ export function updateCalendar2026(type) {
             let maxRaceId = queryDB(`SELECT MAX(RaceID) FROM Races`, [], "singleRow")[0];
             let newRaceId = maxRaceId + 1;
             for (const entry of changes2026.Calendar) {
-                const { TrackID, Day, WeekendType } = entry;
-                if (TrackID === null) {
+                const { TrackID, Day, WeekendType, isNotInGame, isF2Weekend } = entry;
+                if (TrackID === null || isNotInGame === true) {
                     continue;
+                }
+                //if it's either true or false, but not undefinded or null, then
+                if (isF2Weekend !== null && isF2Weekend !== undefined) {
+                    if (isF2Weekend) {
+                        queryDB(`UPDATE Races_Tracks SET IsF2Race = 1 WHERE TrackID = ?`, [TrackID], 'run');
+                    }
+                    else {
+                        queryDB(`UPDATE Races_Tracks SET IsF2Race = 0 WHERE TrackID = ?`, [TrackID], 'run');
+                    }
                 }
 
                 queryDB(`
@@ -1345,15 +1354,35 @@ export function changeStats2026() {
         console.log("No performance stats start of month data found");
     }
     else {
-        tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
-            const { StaffID, StatID, Val } = entry;
-            let staffID = StaffID;
-            if (staffIDChanges[staffID]) {
-                staffID = staffIDChanges[staffID];
-            }
-            queryDB(`UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`, [Val, staffID, StatID], 'run');
-        });
-    }
+    tables2026.Staff_Performancestats_StartOfMonth.forEach((entry) => {
+        const { StaffID, StatID, Val } = entry;
+        let staffID = StaffID;
+
+        if (staffIDChanges[staffID]) {
+            staffID = staffIDChanges[staffID];
+        }
+
+        const existingStart = queryDB(
+            `SELECT 1 FROM Staff_Performancestats_StartOfMonth WHERE StaffID = ? AND StatID = ?`,
+            [staffID, StatID],
+            "singleRow"
+        );
+
+        if (existingStart) {
+            queryDB(
+                `UPDATE Staff_Performancestats_StartOfMonth SET Val = ? WHERE StaffID = ? AND StatID = ?`,
+                [Val, staffID, StatID],
+                "run"
+            );
+        } else {
+            queryDB(
+                `INSERT INTO Staff_Performancestats_StartOfMonth (StaffID, StatID, Val) VALUES (?, ?, ?)`,
+                [staffID, StatID, Val],
+                "run"
+            );
+        }
+    });
+}
     console.log("staffIDChanges at the end:", staffIDChanges);
 
 }
@@ -1372,14 +1401,83 @@ export function changeLineUps2026() {
     }
 
     if (!tables2026.Staff_RaceEngineerDriverAssignments || !Array.isArray(tables2026.Staff_RaceEngineerDriverAssignments)) {
-        console.log("No race engineer driver assignments found");
-    }
-    else {
-        wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
-    }
+    console.log("No race engineer driver assignments found");
+}
+else {
+    wipeTableAndRefill("Staff_RaceEngineerDriverAssignments", tables2026.Staff_RaceEngineerDriverAssignments);
+}
 
-    //get all StaffID from Staff_DriverData
-    const driverIDs = queryDB(`SELECT StaffID FROM Staff_DriverData`, [], "allRows")
+if (!tables2026.Staff_NarrativeData || !Array.isArray(tables2026.Staff_NarrativeData)) {
+    console.log("No narrative data found");
+}
+else {
+    queryDB(
+        `UPDATE Staff_NarrativeData
+         SET IsActive = 0
+         WHERE TeamID BETWEEN 1 AND 10
+           AND JobTitle = '[STAFF_TYPE_5]'`,
+        [],
+        "run"
+    );
+
+    tables2026.Staff_NarrativeData.forEach((entry) => {
+        const { StaffID, GenSource, JobTitle, TeamID, IsActive } = entry;
+
+        let staffID = StaffID;
+        if (staffIDChanges[staffID]) {
+            staffID = staffIDChanges[staffID];
+        }
+
+        const existingNarrative = queryDB(
+            `SELECT 1
+             FROM Staff_NarrativeData
+             WHERE StaffID = ?`,
+            [staffID],
+            "singleRow"
+        );
+
+        if (existingNarrative) {
+            queryDB(
+                `UPDATE Staff_NarrativeData
+                 SET GenSource = ?, JobTitle = ?, TeamID = ?, IsActive = ?
+                 WHERE StaffID = ?`,
+                [GenSource, JobTitle, TeamID, IsActive, staffID],
+                "run"
+            );
+        } else {
+            queryDB(
+                `INSERT INTO Staff_NarrativeData (StaffID, GenSource, JobTitle, TeamID, IsActive)
+                 VALUES (?, ?, ?, ?, ?)`,
+                [staffID, GenSource, JobTitle, TeamID, IsActive],
+                "run"
+            );
+        }
+    });
+
+    queryDB(
+        `DELETE FROM Staff_NarrativeData
+         WHERE TeamID BETWEEN 1 AND 10
+           AND JobTitle = '[STAFF_TYPE_5]'
+           AND IsActive = 0`,
+        [],
+        "run"
+    );
+
+    queryDB(`DELETE FROM Staff_NarrativeData WHERE StaffID = ?`, [396], "run");
+    queryDB(`DELETE FROM Staff_BasicData WHERE StaffID = ?`, [396], "run");
+
+    queryDB(`DELETE FROM Staff_GameData WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_State WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_PerformanceStats WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_Performancestats_StartOfMonth WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_ContractPatience WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_Mentality_AreaOpinions WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_Mentality_Statuses WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+    queryDB(`DELETE FROM Staff_RaceRecord WHERE StaffID IN (290, 291, 295, 396)`, [], "run");
+}
+
+//get all StaffID from Staff_DriverData
+const driverIDs = queryDB(`SELECT StaffID FROM Staff_DriverData`, [], "allRows")
     //for each driver, get its AssignedCarNumber and FeederSeriesAssignedCarNumber from tables2026.Staff_DriverData and update the corresponding driver in the database with those values
     driverIDs.forEach((driverID) => {
         const driverData = tables2026.Staff_DriverData.find(driver => driver.StaffID === driverID[0]);

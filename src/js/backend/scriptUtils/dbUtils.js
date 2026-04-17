@@ -3412,15 +3412,15 @@ export function check2026ModCompatibility(year_version) {
     return "NotCompatible";
   }
 
+  const edited = queryDB(`SELECT * FROM Custom_2026_SeasonMod WHERE value = 1`, [], 'allRows');
+  if (edited.length > 0) {
+    return "AlreadyEdited";
+  }
+
   //get staffID's from Staff_BasicData that have IsGeneratedForCustomTeam = 1 and StaffIDs are not 552 and 553
   const generatedStaff = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE IsGeneratedForCustomTeam = 1 AND StaffID NOT IN (552, 553)`, [], 'allRows');
   if (generatedStaff.length > 0) {
     return "NotCompatible";
-  }
-
-  const edited = queryDB(`SELECT * FROM Custom_2026_SeasonMod WHERE value = 1`, [], 'allRows');
-  if (edited.length > 0) {
-    return "AlreadyEdited";
   }
 
   if (firstRaceState2024 === 0 && currentSeason === 2024) {
