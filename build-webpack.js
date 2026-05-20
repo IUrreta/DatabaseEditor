@@ -6,17 +6,17 @@ const mode = process.argv[2] || process.env.NODE_ENV || 'development';
 process.env.NODE_ENV = mode;
 
 const config = createConfig({}, { mode });
+const compiler = webpack(config);
 
-webpack(config, (err, stats) => {
+compiler.run((err, stats) => {
   if (err) {
     console.error(err);
-    process.exit(1);
+    closeCompiler(1);
+    return;
   }
 
   const info = stats.toString({
     all: false,
-    assets: true,
-    chunks: true,
     colors: true,
     errors: true,
     warnings: true,
@@ -28,6 +28,20 @@ webpack(config, (err, stats) => {
   }
 
   if (stats.hasErrors()) {
-    process.exit(1);
+    closeCompiler(1);
+    return;
   }
+
+  closeCompiler(0);
 });
+
+function closeCompiler(exitCode) {
+  compiler.close((closeErr) => {
+    if (closeErr) {
+      console.error(closeErr);
+      process.exit(1);
+    }
+
+    process.exit(exitCode);
+  });
+}
