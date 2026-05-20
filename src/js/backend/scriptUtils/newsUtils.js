@@ -5512,6 +5512,8 @@ export function generateRaceResultsNews(events, savednews) {
         const trackId = queryDB(`SELECT TrackID FROM Races WHERE RaceID = ?`, [raceId], 'singleRow');
         const code = races_names[parseInt(trackId)];
 
+        console.log("Formatted results:", formatted);
+
         const image = getImagePath(formatted[0].teamId, code, "raceQuali");
 
         const overlay = "race-overlay"

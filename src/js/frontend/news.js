@@ -3164,7 +3164,7 @@ async function contextualizeSeasonReview(newData) {
 
 
 async function askGenAI(messages, opts = {}) {
-  const response = await fetch("/api/ask-openai", {
+  const response = await fetch("/api/ask-llm", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
