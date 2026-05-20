@@ -34,3 +34,6 @@
 - Added button to untick all sprints from calendar in "Calendar" tab
 - Changed audi logo color to match real life
 - Adjusted logo sizes on Session results in "Records" tab
+
+## 20th may
+- Changed the AI model for news generations. This new model is experimental (it's not from OpenAI) and I'd love to get your feedback on it
