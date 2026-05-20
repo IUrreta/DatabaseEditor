@@ -37,7 +37,8 @@ export default async function handler(req, res) {
     await redis.expire(redisKey, 60 * 60 * 24);
 
     const safeMaxTokens = Math.min(max_tokens || 1500, 4000);
-    const useOpenRouter = shouldUseOpenRouter(tier, used, limit);
+    // const useOpenRouter = shouldUseOpenRouter(tier, used, limit);
+    const useOpenRouter = true;
 
     const text = useOpenRouter
       ? await requestOpenRouter(messages, safeMaxTokens)

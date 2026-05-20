@@ -4,7 +4,10 @@
   "description": "A tool that will let you edit your save file from F1 Manager games",
   "main": "main.js",
   "scripts": {
-    "build": "webpack",
+    "build": "node build-webpack.js development",
+    "build:dev": "node build-webpack.js development",
+    "build:prod": "node build-webpack.js production",
+    "vercel-build": "node build-webpack.js production",
     "optimize:logos": "node scripts/optimize-team-logos.js",
     "crop:faces": "node scripts/crop-face-images.js"
   },
