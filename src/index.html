@@ -1107,6 +1107,17 @@
                       <div class="secondary-color"></div>
                     </div>
                   </div>
+                  <div class="one-theme" id="gcrTheme" data-theme="gcr-theme">
+                    <div class="theme-title">
+                      <span>GCR</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
+                  </div>
 
                 </div>
               </div>
@@ -1552,6 +1563,38 @@
             <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
             <button type="button" class="confirm-modal" id="confirmActionButton">Confirm</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal custom-modal fade" id="playerNationalityModal" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Choose your nationality</h3>
+        </div>
+        <div class="modal-body custom-body player-nationality-modal-body">
+          <p>Select your nationality. It will be saved only in this save file.</p>
+          <div class="dropdown-global player-nationality-dropdown">
+            <button type="button" class="redesigned-dropdown bold-font" id="playerNationalityButton"
+              aria-haspopup="true" aria-expanded="false" data-value="">
+              <span class="player-nationality-selection">
+                <img class="player-nationality-flag d-none" id="playerNationalityFlag" alt="">
+                <span class="dropdown-label">Select nationality</span>
+              </span>
+              <i class="redesigned-chevron"></i>
+            </button>
+            <ul class="redesigned-dropdown-menu" id="playerNationalityMenu" style="font-family: Formula1;"></ul>
+          </div>
+          <label class="player-nationality-dont-ask">
+            <input class="form-check-input" type="checkbox" id="playerNationalityDontAsk">
+            <span>Don’t ask again</span>
+          </label>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal" id="cancelPlayerNationalityButton">Cancel</button>
+          <button type="button" class="confirm-modal" id="savePlayerNationalityButton" disabled>Save</button>
         </div>
       </div>
     </div>
@@ -6292,254 +6335,6 @@
           </div>
         </div>
 
-        <div class="mods-year-view d-none" id="mods2026View">
-          <div class="mod-blocking mods-2026-blocking">
-            <div class="mod-blocking-title">Save not compatible with 2026 Season Mod</div>
-            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24, can't have generated staff, and its date must be before the first race of the 2024 season!</div>
-          </div>
-          <div class="grid-and-downloads">
-            <div class="changes-grid mods-2026-changes">
-              <div class="apply-all-button" style="--order: 10">
-                <div class="button-with-icon apply-all-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply all</span>
-                </div>
-              </div>
-              <div class="one-change" style="--order: 1">
-                <div class="one-change-title bold-font">Time travel to end of 2025</div>
-                <div class="one-change-description date-holder">
-                  <span class="date-part" id="dateDay2026">05</span>
-                  <span class="date-part" id="dateMonth2026">February</span>
-                  <span class="date-part" id="dateYear2026">2026</span>
-                </div>
-                <button class="one-change-button time-travel-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 2">
-                <div class="one-change-title bold-font">Extra drivers</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description missing-staff">Missing staff</div>
-                  <div class="one-change-description missing-f2">New F2/F3 drivers</div>
-                  <div class="one-change-description missing-academy">New F1 academy drivers</div>
-                </div>
-                <button class="one-change-button extra-drivers-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 3">
-                <div class="one-change-title bold-font">Driver Line-ups</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description lineup-team lineup-team--cadillac">
-                    <span class="lineup-team__name bold-font">PEREZ &amp; BOTTAS</span>
-                    <span class="lineup-team__logo" aria-hidden="true"></span>
-                  </div>
-                  <div class="one-change-description lineup-team lineup-team--hadjar">
-                    <span class="lineup-team__name bold-font">HADJAR</span>
-                    <span class="lineup-team__logo" aria-hidden="true"></span>
-                  </div>
-                  <div class="one-change-description lineup-team lineup-team--lindblad">
-                    <span class="lineup-team__name bold-font">LINDBLAD</span>
-                    <span class="lineup-team__logo" aria-hidden="true"></span>
-                  </div>
-                </div>
-                <button class="one-change-button change-line-ups-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 4">
-                <div class="one-change-title bold-font">Driver/staff stats</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description"><span class="bold-font had-ovr atfont">HADJAR </span> <span
-                      class="bold-font ovr-change had-change">75</span> OVR</div>
-                  <div class="one-change-description"><span class="bold-font ant-ovr">ANTONELLI </span> <span
-                      class="bold-font ovr-change ant-change">71</span> OVR</div>
-                  <div class="one-change-description"><span class="bold-font bea-ovr hafont">BEARMAN </span> <span
-                      class="bold-font ovr-change bea-change">77</span> OVR</div>
-                </div>
-                <button class="one-change-button change-stats-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 5">
-                <div class="one-change-title bold-font">Calendar</div>
-                <div class="one-change-description-group calendar-changes-2026">
-                  <div class="one-change-description">Season opener: <span class="season-change">Bahrain</span></div>
-                  <div class="one-change-description">Sprints: China, Miami, <span
-                      class="sprint-change-2026 change-1">Austria,</span>
-                  </div>
-                  <div class="one-change-description"><span class="sprint-change-2026 change-2">COTA,</span> <span
-                      class="sprint-change-2026 change-3">Brazil,</span> <span
-                      class="sprint-change-2026 change-4">Qatar</span></div>
-                </div>
-                <button class="one-change-button change-calendar-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 6">
-                <div class="one-change-title bold-font">Regulations</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description">Fastest lap <span class="fast-lap-general bold-font">+<span
-                        class="fast-lap-change">1 </span> points</span></div>
-                  <div class="one-change-description">Cost Cap <span class="cost-cap-general bold-font"><span
-                        class="cost-cap-change">139.2 M€</span></span></div>
-                </div>
-                <button class="one-change-button change-regulations-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 7">
-                <div class="one-change-title bold-font">Add 2025 Results</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description add-results-team">
-                    <div class="add-results-team__left">
-                      <img class="add-results-team__logo" src="../assets/images/logos/mclaren.png" alt="McLaren logo">
-                      <span class="bold-font">MCLAREN</span>
-                    </div>
-                    <div class="add-results-team__right">
-                      <span class="numbersFont add-results-points" data-team="mclaren" data-target="833">0</span>
-                      <span>pts</span>
-                    </div>
-                  </div>
-                  <div class="one-change-description add-results-team">
-                    <div class="add-results-team__left">
-                      <img class="add-results-team__logo" src="../assets/images/logos/mercedes.png" alt="Mercedes logo">
-                      <span class="bold-font">MERCEDES</span>
-                    </div>
-                    <div class="add-results-team__right">
-                      <span class="numbersFont add-results-points" data-team="mercedes" data-target="469">0</span>
-                      <span>pts</span>
-                    </div>
-                  </div>
-                  <div class="one-change-description add-results-team">
-                    <div class="add-results-team__left">
-                      <img class="add-results-team__logo" src="../assets/images/logos/redbull.png" alt="Red Bull logo">
-                      <span class="bold-font">RED BULL</span>
-                    </div>
-                    <div class="add-results-team__right">
-                      <span class="numbersFont add-results-points" data-team="redbull" data-target="468">0</span>
-                      <span>pts</span>
-                    </div>
-                  </div>
-                </div>
-                <button class="one-change-button add-results-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 8">
-                <div class="one-change-title bold-font">CARS & ENGINES</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description performance-year-switch">Car performance of <span
-                      class="performance-year-switch__year bold-font"></span></div>
-                  <div class="one-change-description regs-team regs-team--aston">
-                    <span class="regs-team__name bold-font">ASTON MARTIN</span>
-                    <span class="regs-team__logo" aria-hidden="true"></span>
-                  </div>
-                  <div class="one-change-description regs-team regs-team--stake">
-                    <span class="regs-team__name bold-font">STAKE SAUBER</span>
-                    <span class="regs-team__logo" aria-hidden="true"></span>
-                  </div>
-                </div>
-                <button class="one-change-button change-performance-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 9">
-                <div class="one-change-title bold-font">ENGINE UPGRADES TPS</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description">Allows engine upgrades turning points </div>
-                  <div class="one-change-description">to appear in the news section every </div>
-                  <div class="one-change-description">quarter of the season </div>
-                </div>
-                <button class="one-change-button change-aduo-tps-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-            </div>
-            <div class="recommended-downloads">
-              <div class="recommended-downloads-title bold-font">Recommended downloads</div>
-              <div class="download-links">
-                <a href="https://www.overtake.gg/downloads/2026-season-mod-facepack.82754/" target="_blank"
-                  style="--order: 1">
-                  <div class="download-link" style="--order: 1">
-                    <span class="download-link-text" data-glow="Facepack">Facepack</span>
-                  </div>
-                </a>
-                <div class="creator-separator" style="--order: 2"></div>
-                <a href="https://www.overtake.gg/downloads/2026-ui-changes.82743/" target="_blank" style="--order: 3">
-                  <div class="download-link" style="--order: 3">
-                    <span class="download-link-text" data-glow="UI mod">UI mod</span>
-                  </div>
-                </a>
-              </div>
-            </div>
-
-          </div>
-          <div class="mod-banner mods-2026-banner">
-            <div class="mod-name title-2026">
-              <img class="title-2026" src="../assets/images/f1Mlogo.svg" alt="">
-              <div class="mod-subtitle" aria-label="2026 SEASON MOD" role="text">
-                <span class="mod-subtitle-letter" style="--order: 1" aria-hidden="true">2</span>
-                <span class="mod-subtitle-letter" style="--order: 2" aria-hidden="true">0</span>
-                <span class="mod-subtitle-letter" style="--order: 3" aria-hidden="true">2</span>
-                <span class="mod-subtitle-letter" style="--order: 4" aria-hidden="true">6</span>
-                <span class="mod-subtitle-space" aria-hidden="true">&nbsp;</span>
-                <span class="mod-subtitle-letter" style="--order: 5" aria-hidden="true">S</span>
-                <span class="mod-subtitle-letter" style="--order: 6" aria-hidden="true">E</span>
-                <span class="mod-subtitle-letter" style="--order: 7" aria-hidden="true">A</span>
-                <span class="mod-subtitle-letter" style="--order: 8" aria-hidden="true">S</span>
-                <span class="mod-subtitle-letter" style="--order: 9" aria-hidden="true">O</span>
-                <span class="mod-subtitle-letter" style="--order: 10" aria-hidden="true">N</span>
-                <span class="mod-subtitle-space" aria-hidden="true">&nbsp;</span>
-                <span class="mod-subtitle-letter" style="--order: 11" aria-hidden="true">U</span>
-                <span class="mod-subtitle-letter" style="--order: 12" aria-hidden="true">P</span>
-                <span class="mod-subtitle-letter" style="--order: 13" aria-hidden="true">D</span>
-                <span class="mod-subtitle-letter" style="--order: 14" aria-hidden="true">A</span>
-                <span class="mod-subtitle-letter" style="--order: 15" aria-hidden="true">T</span>
-                <span class="mod-subtitle-letter" style="--order: 16" aria-hidden="true">E</span>
-              </div>
-              <div class="mod-creators">
-                <a class="creator thatgingerdude" style="--order: 17" href="https://www.overtake.gg/members/thatgingerdude15.3294857/"
-                  target="_blank">thatgingerdude</a>
-                <div class="creator-separator" style="--order: 18"></div>
-                <a class="creator lucas" style="--order: 19" href="https://www.overtake.gg/members/lcskpmn.2759987/" target="_blank">LCSKPMN</a>
-                <div class="creator-separator" style="--order: 20"></div>
-                <a class="creator kevintaddo" style="--order: 21" href="https://www.patreon.com/cw/kevintaddo" target="_blank">kevintaddo</a>
-                <div class="creator-separator" style="--order: 22"></div>
-                <a class="creator littleonion" style="--order: 23" href="https://linktr.ee/Little0nion"
-                  target="_blank">littleonion</a>
-                <a class="creator w1echuz" style="--order: 24" href="https://linktr.ee/w1echuz" target="_blank">w1echuz</a>
-                <div class="creator-separator" style="--order: 25"></div>
-                <a class="creator murillo" style="--order: 26" href="https://www.patreon.com/MuriloPaulocci" target="_blank">Project 212</a>
-                <div class="creator-separator" style="--order: 27"></div>
-                <a class="creator cody" style="--order: 28" href="https://www.patreon.com/cw/CMDesigns47" target="_blank">CMDesigns</a>
-                <div class="creator-separator" style="--order: 29"></div>
-                <a class="creator bonnex" style="--order: 30" href="https://www.patreon.com/u92489530"
-                  target="_blank">bonnex</a>
-                <div class="creator-separator" style="--order: 31"></div>
-                <a class="creator n4x" style="--order: 32" href="https://www.patreon.com/f1dbeditor"
-                  target="_blank">n4x</a>
-                
-              </div>
-            </div>
-            <div class="driver-and-rectangle">
-              <img class="driver-2026" src="../assets/images/driver2026.png" alt="" style="--order: 4">
-              <div class="rectangle-2026">
-                <img class="lines-2026" src="../assets/images/lines-2026.png" alt="">
-              </div>
-            </div>
-          </div>
-          <div class="glow-2026"></div>
-        </div>
       </div>
     </div>
 
