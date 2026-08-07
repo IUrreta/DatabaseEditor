@@ -7269,6 +7269,67 @@ export function getNewsFromSeason(season) {
     return { newsList: Object.values(newsMap).sort((a, b) => new Date(b.date) - new Date(a.date)), turningPointState: tpMap };
 }
 
+export function getPendingInjuryReturns() {
+    const [currentDay, currentSeason] = queryDB(
+        `SELECT Day, CurrentSeason FROM Player_State`,
+        [],
+        'singleRow'
+    ) || [];
+    const newsMap = loadNewsMapFromDB(currentSeason);
+    const pendingByInjuredDriver = new Map();
+
+    for (const news of Object.values(newsMap || {})) {
+        if (news?.type !== "turning_point_outcome_injury" || news?.turning_point_type !== "positive") continue;
+
+        const injury = news.data;
+        const injuredId = Number(injury?.driver_affected?.id);
+        const reserveId = Number(injury?.reserve_driver?.id);
+        const teamId = Number(injury?.teamId ?? injury?.driver_affected?.teamId);
+        const endDay = Number(injury?.condition?.end_date);
+        const injurySeason = Number(injury?.season);
+
+        if (!injuredId || !reserveId || !teamId || !endDay) continue;
+        if (Number(currentDay) < endDay || (injurySeason && Number(currentSeason) < injurySeason)) continue;
+
+        const injuredContract = queryDB(
+            `SELECT TeamID, PosInTeam
+             FROM Staff_Contracts
+             WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?
+             ORDER BY PosInTeam ASC
+             LIMIT 1`,
+            [injuredId, teamId],
+            'singleRow'
+        );
+        const reserveContract = queryDB(
+            `SELECT TeamID, PosInTeam
+             FROM Staff_Contracts
+             WHERE StaffID = ? AND ContractType = 0 AND TeamID = ?
+             ORDER BY PosInTeam ASC
+             LIMIT 1`,
+            [reserveId, teamId],
+            'singleRow'
+        );
+
+        // Only offer the return while the exact injury substitution is still active.
+        // This also makes the check idempotent after the player confirms the swap.
+        if (!injuredContract || !reserveContract) continue;
+        if (Number(injuredContract[1]) < 3 || Number(reserveContract[1]) > 2) continue;
+
+        pendingByInjuredDriver.set(injuredId, {
+            injuredId,
+            injuredName: injury.driver_affected?.name || `Driver ${injuredId}`,
+            reserveId,
+            reserveName: injury.reserve_driver?.name || `Driver ${reserveId}`,
+            teamId,
+            teamName: injury.team || combined_dict[teamId] || "the team",
+            endDay,
+            expectedReturnCountry: injury.condition?.expectedReturnCountry || null
+        });
+    }
+
+    return Array.from(pendingByInjuredDriver.values());
+}
+
 
 export function startInjurySwap(injuredId, reserveData, endDay) {
     const [dayNow, seasonId] = queryDB(`

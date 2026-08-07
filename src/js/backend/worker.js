@@ -46,6 +46,7 @@ import {
   deleteTurningPoints,
   getNewsAndTpYearsAvailable,
   getNewsFromSeason,
+  getPendingInjuryReturns,
   deleteNewByKey,
   checkDoublePointsBug,
   fixDoublePointsBug,
@@ -464,6 +465,10 @@ const workerCommands = {
     fetchSeasonResults(year, true, true, 1);
 
     postMessage({ responseMessage: "Save selected finished" });
+  },
+  checkPendingInjuryReturns: (data, postMessage) => {
+    const pendingReturns = getPendingInjuryReturns();
+    postMessage({ responseMessage: "Pending injury returns fetched", content: pendingReturns });
   },
   recordsExportOptions: (data, postMessage) => {
     const years = fetchSeasonYearsForRecordsExport();

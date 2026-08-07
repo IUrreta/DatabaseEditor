@@ -1118,6 +1118,7 @@ const messageHandlers = {
     },
     "Save selected finished": async (message) => {
         await migrateLegacyNewsOnce();
+        await promptPendingInjuryReturns();
         generateNews();
     },
     "Record fetched": (message) => {
@@ -1136,6 +1137,42 @@ const messageHandlers = {
         onSessionResultsFetched(message);
     }
 };
+
+async function promptPendingInjuryReturns() {
+    try {
+        const response = await new Command("checkPendingInjuryReturns", {}).promiseExecute();
+        const pendingReturns = Array.isArray(response?.content) ? response.content : [];
+
+        for (const injuryReturn of pendingReturns) {
+            const openModal = document.querySelector('.modal.show:not(#confirmModal)');
+            if (openModal) {
+                await new Promise(resolve => openModal.addEventListener('hidden.bs.modal', resolve, { once: true }));
+            }
+
+            const returnRace = injuryReturn.expectedReturnCountry
+                ? ` before the next race in ${injuryReturn.expectedReturnCountry}`
+                : "";
+            const ok = await confirmModal({
+                title: "Driver ready to return",
+                body: `${injuryReturn.injuredName} has recovered${returnRace}. Do you want to swap them back in for ${injuryReturn.reserveName} at ${injuryReturn.teamName}?`,
+                confirmText: "Make the swap",
+                cancelText: "Not now"
+            });
+
+            if (!ok) continue;
+
+            await new Command("swapDrivers", {
+                driver1ID: injuryReturn.injuredId,
+                driver2ID: injuryReturn.reserveId,
+                driver1: injuryReturn.injuredName,
+                driver2: injuryReturn.reserveName
+            }).promiseExecute();
+            new Command("driversRefresh", {}).execute();
+        }
+    } catch (error) {
+        console.error("Failed to check pending injury returns:", error);
+    }
+}
 
 function removeLegacyKeys(base) {
     const lsNewsKey = `${base}_news`;
