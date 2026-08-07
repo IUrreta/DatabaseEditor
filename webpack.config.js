@@ -21,7 +21,7 @@ module.exports = (env, argv) => {
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'bundle.js',
-      clean: !isDevelopment,
+      clean: true,
     },
 
     plugins: [

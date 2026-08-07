@@ -7,11 +7,12 @@ import {
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
   fetchJuniorTeamDriverNames,
   editEngines, updateCustomConfig, fetchCustomConfig,
-  fetch2025ModData, check2025ModCompatibility,
+  fetch2025ModData, fetch2026ModData, check2025ModCompatibility,
   fetchPointsRegulations,
   fetchSessionResults,
   getDate,
   setCustomSaveConfig,
+  check2026ModCompatibility,
   snapshotEnginePowerProgression,
   fetchCustomSeasonResultsPackage,
   fetchSeasonYearsForRecordsExport,
@@ -29,7 +30,17 @@ import { editCalendar, fetchCalendar, fetchPreviousSeasonCalendar } from "./scri
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import {
   change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings,
-  insertStaff2025, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod
+  insertStaff2025, manageFeederSeries, changeDriverEngineerPairs, updatePerofmrnace2025, fixes_mod,
+  change2025Standings,
+  updateCalendar2026,
+  changeStats2026,
+  insertStaff2026,
+  changeLineUps2026,
+  changeDriverNumbers2026,
+  apply2026EnginePerformanceChanges,
+  updatePerofmrnace2026,
+  changeAdditionalRegulations2026,
+  fixesMod2026
 } from "./scriptUtils/modUtils";
 import {
   generate_news, getOneQualiDetails, getOneRaceDetails, getTransferDetails, getTeamComparisonDetails,
@@ -450,15 +461,24 @@ const workerCommands = {
     const carNextSeasonAttributes = getAttributesAllCarsNextSeasonCar(yearData[2], getGlobals().yearIteration);
     postMessage({ responseMessage: "Cars fetched", content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes] });
 
+    const mod2026Data = fetch2026ModData();
     const mod2025Data = fetch2025ModData();
-    postMessage({ responseMessage: "Mod data fetched", content: mod2025Data });
+    postMessage({ responseMessage: "Mod data fetched", content: { ...mod2025Data, ...mod2026Data } });
 
     const mod25Compatibility = check2025ModCompatibility(yearData[0]);
     postMessage({ responseMessage: "Mod compatibility", content: mod25Compatibility });
 
+    const mod2026Compatibility = check2026ModCompatibility(yearData[0]);
+    postMessage({ responseMessage: "Mod 2026 compatibility", content: mod2026Compatibility });
+
     const wasError2025 = fixes_mod();
     if (wasError2025) {
       postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2025 DLC has been automatically fixed", unlocksDownload: true });
+    }
+
+    const wasError2026 = fixesMod2026();
+    if (wasError2026.generalWasError) {
+      postMessage({ responseMessage: "Mod fixes", content: "", noti_msg: "An error in the 2026 DLC has been automatically fixed", unlocksDownload: true });
     }
 
     fetchSeasonResults(year, true, true, 1);
@@ -1031,7 +1051,10 @@ const workerCommands = {
     });
   },
   timeTravel: (data, postMessage) => {
-    timeTravelWithData(data.dayNumber);
+    timeTravelWithData(data.dayNumber, false, data.mod);
+    if (data.mod === "2026") {
+      changeDriverNumbers2026();
+    }
     postMessage({
       responseMessage: "Time travel",
       isEditCommand: true,
@@ -1039,10 +1062,15 @@ const workerCommands = {
     });
   },
   changeLineUps: (data, postMessage) => {
-    changeDriverLineUps();
-    manageAffiliates();
-    manageFeederSeries();
-    changeDriverEngineerPairs();
+    if (data.mod === "2025") {
+      changeDriverLineUps();
+      manageAffiliates();
+      manageFeederSeries();
+      changeDriverEngineerPairs();
+    }
+    else if (data.mod === "2026") {
+      changeLineUps2026();
+    }
     postMessage({
       responseMessage: "Line ups changed",
       isEditCommand: true,
@@ -1078,7 +1106,12 @@ const workerCommands = {
     });
   },
   changeStats: (data, postMessage) => {
-    changeStats();
+    if (data.mod === "2025") {
+      changeStats();
+    }
+    else if (data.mod === "2026") {
+      changeStats2026();
+    }
     postMessage({
       responseMessage: "Stats changed",
       isEditCommand: true,
@@ -1094,7 +1127,13 @@ const workerCommands = {
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changeCfd: (data, postMessage) => {
-    change2024Standings("2025");
+    if (data.mod === "2025") {
+      change2024Standings(data.mod);
+    }
+    else if (data.mod === "2026") {
+      change2024Standings(data.mod);
+      change2025Standings(data.mod);
+    }
 
     postMessage({
       responseMessage: "CFD times changed",
@@ -1103,7 +1142,10 @@ const workerCommands = {
     });
   },
   changeRegulations: (data, postMessage) => {
-    removeFastestLap();
+    removeFastestLap(data.mod);
+    if (data.mod === "2026") {
+      changeAdditionalRegulations2026();
+    }
     postMessage({
       responseMessage: "Regulations changed",
       isEditCommand: true,
@@ -1111,7 +1153,12 @@ const workerCommands = {
     });
   },
   changeCalendar: (data, postMessage) => {
-    changeRaces(data.type);
+    if (data.mod === "2025") {
+      changeRaces(data.type);
+    }
+    else if (data.mod === "2026") {
+      updateCalendar2026(data.type);
+    }
     postMessage({
       responseMessage: "Calendar changed",
       isEditCommand: true,
@@ -1122,7 +1169,11 @@ const workerCommands = {
     postMessage({ responseMessage: "Calendar fetched", content: calendar });
   },
   extraDrivers: (data, postMessage) => {
-    insertStaff2025();
+    if (data.mod === "2025") {
+      insertStaff2025();
+    } else if (data.mod === "2026") {
+      insertStaff2026();
+    }
     postMessage({
       responseMessage: "Extra drivers added",
       isEditCommand: true,
@@ -1138,7 +1189,12 @@ const workerCommands = {
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changePerformance: (data, postMessage) => {
-    updatePerofmrnace2025();
+    if (data.mod === "2025") {
+      updatePerofmrnace2025();
+    }
+    else if (data.mod === "2026") {
+      updatePerofmrnace2026();
+    }
     postMessage({
       responseMessage: "Performance changed",
       isEditCommand: true,
@@ -1250,15 +1306,9 @@ const workerCommands = {
   },
   fixDoublePointsBug: (data, postMessage) => {
     const raceBugged = data.raceId;
-    const result = fixDoublePointsBug(raceBugged);
+    fixDoublePointsBug(raceBugged);
 
-    postMessage({
-      responseMessage: "Double points bug fixed",
-      content: result,
-      noti_msg: "Double points bug fixed successfully",
-      isEditCommand: true,
-      unlocksDownload: true
-    });
+    postMessage({ responseMessage: "Double points bug fixed", noti_msg: "Double points bug fixed successfully", unlocksDownload: true });
   },
   getNewsFromSeason: (data, postMessage) => {
     const season = data.season;
@@ -1504,37 +1554,24 @@ const workerCommands = {
     const pointsInfo = fetchPointsRegulations();
     postMessage({ responseMessage: "Points regulations fetched", content: pointsInfo });
   },
+  add2026Engines: (data, postMessage) => {
+    apply2026EnginePerformanceChanges();
+
+    const engines = fetchEngines();
+    postMessage({ responseMessage: "Engines fetched", content: engines });
+
+    postMessage({
+      responseMessage: "2026 engines added",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
   updateAduoTPEnabled: (data, postMessage) => {
     const enabled = data.enabled;
     setCustomSaveConfig("aduo_tp_enabled", enabled);
     postMessage({
       responseMessage: "ADUO TP enabled updated",
       noti_msg: `ADUO TP enabled set to ${enabled}`,
-      isEditCommand: true,
-      unlocksDownload: true
-    });
-  },
-  setPlayerNationality: (data, postMessage) => {
-    const nationality = String(data?.nationality || '').trim().toUpperCase();
-    const dontAskAgain = data?.dontAskAgain === true;
-    const hasNationality = /^[A-Z]{2}$/.test(nationality);
-
-    if (!hasNationality && !dontAskAgain) {
-      throw new Error("Invalid player nationality");
-    }
-
-    if (hasNationality) {
-      setCustomSaveConfig("playerNationality", nationality);
-    }
-    setCustomSaveConfig("playerNationalityPromptDisabled", dontAskAgain ? 1 : 0);
-
-    postMessage({
-      responseMessage: "Player nationality saved",
-      content: {
-        nationality: hasNationality ? nationality : null,
-        dontAskAgain
-      },
-      noti_msg: hasNationality ? "Player nationality saved successfully" : "Nationality prompt disabled for this save",
       isEditCommand: true,
       unlocksDownload: true
     });

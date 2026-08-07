@@ -6,7 +6,7 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
     populateSeasonReview,
-    onSessionResultsFetched, refreshRecordsAfterDataChange
+    onSessionResultsFetched
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
@@ -35,7 +35,7 @@ import {
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
-import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
+import { resetStaffIDChanges, updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
@@ -44,8 +44,7 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
-import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, updateMod2025Blocking } from './seasonMods.js';
-import { inverted_countries_abreviations } from '../backend/scriptUtils/countries.js';
+import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
 
 
 
@@ -164,10 +163,10 @@ let difcultyCustom = "default"
 export let game_version = 2023;
 export let custom_team = false;
 export let nightlyBlock = false;
+export let seasonModData = {};
 let latestSaveYear = null;
 let firstShow = false;
 let configCopy;
-let selectedPlayerNationality = null;
 
 let managingTeamChanged = false;
 let isSaveSelected = 0;
@@ -1029,15 +1028,7 @@ const messageHandlers = {
     },
     "Config": (message) => {
         manage_config(message)
-        managePlayerNationalityPrompt(message?.playerNationality, message?.playerNationalityPromptDisabled)
         document.querySelector("#transferpill").click();
-    },
-    "Player nationality saved": (message) => {
-        if (configCopy && typeof configCopy === "object") {
-            configCopy.playerNationality = message?.nationality || null;
-            configCopy.playerNationalityPromptDisabled = message?.dontAskAgain ? 1 : 0;
-        }
-        bootstrap.Modal.getInstance(document.getElementById("playerNationalityModal"))?.hide();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -1101,12 +1092,22 @@ const messageHandlers = {
         load_custom_engines(message.slice(1))
     },
     "Mod data fetched": (message) => {
+      seasonModData = message || {};
       updateEditsWithModData(message)
       syncAduoTpToggles(message?.aduo_tp_enabled);
       syncMods2025Dependencies();
+      syncMods2026Dependencies();
+      syncMods2026ApplyAllButtonState();
+      if (latestSaveYear) {
+        generateYearsMenu(latestSaveYear);
+      }
     },
     "Mod compatibility": (message) => {
         updateMod2025Blocking(message)
+    },
+    "Mod 2026 compatibility": (message) => {
+        updateMod2026Blocking(message)
+        resetStaffIDChanges();
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
@@ -1127,7 +1128,7 @@ const messageHandlers = {
         loadTeamRecordsList(message)
     },
     "Double points bug fixed": (message) => {
-        refreshRecordsAfterDataChange();
+        //TODO CLICK ON THE FIRST EYAR OF yearMenu
     },
     "Season review data fetched": (message) => {
         populateSeasonReview(message)
@@ -1439,6 +1440,8 @@ function manage_custom_team(nameColor) {
         const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
         command.execute();
 
+        document.querySelector(".lineup-team--cadillac").classList.remove("d-none")
+
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -1458,6 +1461,7 @@ function manage_custom_team(nameColor) {
     else {
         resizeWindowToHeight("10teams")
         custom_team = false
+        document.querySelector(".lineup-team--cadillac").classList.add("d-none")
         document.getElementById("customTeamTransfers").classList.add("d-none")
         document.getElementById("customTeamPerformance").classList.add("d-none")
         document.getElementById("customTeamDropdown").classList.add("d-none")
@@ -1534,112 +1538,6 @@ document.querySelector(".gear-container").addEventListener("click", function () 
     })
     configDetailModal.show()
 })
-
-function resetPlayerNationalityPrompt() {
-    selectedPlayerNationality = null;
-
-    const button = document.getElementById("playerNationalityButton");
-    const flag = document.getElementById("playerNationalityFlag");
-    const saveButton = document.getElementById("savePlayerNationalityButton");
-    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
-
-    button.dataset.value = "";
-    button.classList.remove("open");
-    button.querySelector(".dropdown-label").textContent = "Select nationality";
-    flag.src = "";
-    flag.alt = "";
-    flag.classList.add("d-none");
-    dontAskCheckbox.checked = false;
-    saveButton.disabled = true;
-    saveButton.textContent = "Save";
-}
-
-function initPlayerNationalityPrompt() {
-    const menu = document.getElementById("playerNationalityMenu");
-    const button = document.getElementById("playerNationalityButton");
-    const flag = document.getElementById("playerNationalityFlag");
-    const saveButton = document.getElementById("savePlayerNationalityButton");
-    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
-    if (!menu || !button || !flag || !saveButton || !dontAskCheckbox) return;
-
-    const syncSaveButtonState = () => {
-        saveButton.disabled = !selectedPlayerNationality && !dontAskCheckbox.checked;
-    };
-
-    const countries = Object.entries(inverted_countries_abreviations || {})
-        .filter(([code, name]) => /^[A-Z]{2}$/.test(code) && name)
-        .sort((a, b) => String(a[1]).localeCompare(String(b[1])));
-
-    const fragment = document.createDocumentFragment();
-    countries.forEach(([code, name]) => {
-        const item = document.createElement("a");
-        item.className = "redesigned-dropdown-item";
-        item.dataset.value = code;
-
-        const itemFlag = document.createElement("img");
-        itemFlag.src = `https://flagsapi.com/${code}/flat/64.png`;
-        itemFlag.alt = code;
-
-        const label = document.createElement("span");
-        label.textContent = name;
-
-        item.append(itemFlag, label);
-        item.addEventListener("click", () => {
-            selectedPlayerNationality = code;
-            button.dataset.value = code;
-            button.querySelector(".dropdown-label").textContent = name;
-            button.classList.remove("open");
-            flag.src = itemFlag.src;
-            flag.alt = code;
-            flag.classList.remove("d-none");
-            syncSaveButtonState();
-        });
-        fragment.appendChild(item);
-    });
-    menu.replaceChildren(fragment);
-
-    dontAskCheckbox.addEventListener("change", syncSaveButtonState);
-
-    saveButton.addEventListener("click", async () => {
-        const dontAskAgain = dontAskCheckbox.checked;
-        if (!selectedPlayerNationality && !dontAskAgain) return;
-
-        saveButton.disabled = true;
-        saveButton.textContent = "Saving...";
-
-        try {
-            await new Command("setPlayerNationality", {
-                nationality: selectedPlayerNationality || "",
-                dontAskAgain
-            }).promiseExecute();
-        } catch (error) {
-            console.error("Failed to save player nationality:", error);
-            syncSaveButtonState();
-            saveButton.textContent = "Save";
-            new_update_notifications("Could not save the player nationality", "error");
-        }
-    });
-}
-
-function managePlayerNationalityPrompt(nationality, promptDisabled) {
-    const modalElement = document.getElementById("playerNationalityModal");
-    if (!modalElement) return;
-
-    const normalizedNationality = String(nationality || "").trim().toUpperCase();
-    const neverAskAgain = promptDisabled === true || Number(promptDisabled) === 1;
-    if (/^[A-Z]{2}$/.test(normalizedNationality) || neverAskAgain) {
-        bootstrap.Modal.getInstance(modalElement)?.hide();
-        return;
-    }
-
-    resetPlayerNationalityPrompt();
-    bootstrap.Modal.getOrCreateInstance(modalElement, {
-        backdrop: "static",
-        keyboard: false
-    }).show();
-}
-
-initPlayerNationalityPrompt();
 
 function manage_config(info, year_config = false) {
     document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
@@ -2975,17 +2873,6 @@ function updateToolbarThemeLogo() {
     const logoImg = document.querySelector(".toolbar-logo");
     if (!logoImg) return;
 
-    const titleSpans = document.querySelectorAll(".toolbar-title > span");
-    const setToolbarTitle = (lines = ["DB", "EDITOR"]) => {
-        titleSpans.forEach((span, index) => {
-            span.textContent = lines[index] || "";
-        });
-    };
-
-    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
-    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
-    setToolbarTitle();
-
     Object.values(themeToolbarLogos).forEach((meta) => {
         if (meta?.className) logoImg.classList.remove(meta.className);
     });
@@ -2995,12 +2882,14 @@ function updateToolbarThemeLogo() {
         return;
     }
 
+    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
+    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
+
     const themeKey = Object.keys(themeToolbarLogos).find((key) => appliedTheme.includes(key.replace("-theme", "")));
     if (themeKey) {
         const meta = themeToolbarLogos[themeKey];
         logoImg.src = meta.src;
         if (meta.className) logoImg.classList.add(meta.className);
-        if (meta.titleLines) setToolbarTitle(meta.titleLines);
         return;
     }
 

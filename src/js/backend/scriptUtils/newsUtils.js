@@ -18,6 +18,25 @@ const _seasonResultsCache = new Map();
 export const _standingsCache = new Map();
 const _dropsCache = new Map();
 
+function isTimeTravel2026Enabled() {
+    try {
+        const exists = queryDB(
+            `SELECT name FROM sqlite_master WHERE type='table' AND name='Custom_2026_SeasonMod'`,
+            [],
+            'singleRow'
+        );
+        if (!exists) return false;
+        const value = queryDB(
+            `SELECT value FROM Custom_2026_SeasonMod WHERE key = 'time-travel-2026'`,
+            [],
+            'singleValue'
+        );
+        return value === "1" || value === 1;
+    } catch {
+        return false;
+    }
+}
+
 function loadTurningPointsFrequencyConfig() {
     try {
         const presetRaw = queryDB(
@@ -71,6 +90,12 @@ export function rebuildStandingsUntilCached(season, seasonResults, raceId, inclu
 
 export function generate_news(savednews, turningPointState) {
     const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
+    if (isTimeTravel2026Enabled() && Number(daySeason?.[1]) < 2026) {
+        const existingList = Object.entries(savednews || {}).map(([id, n]) => ({ id, ...n }));
+        existingList.sort((a, b) => (Number(b.date) || 0) - (Number(a.date) || 0));
+        return { newsList: existingList, turningPointState };
+    }
+
     const racesDone = fetchEventsDoneFrom(daySeason[1]);
     const tpConfig = loadTurningPointsFrequencyConfig();
     // const potentialChampionTestRaceId = 216; // Set to null for normal operation.
@@ -6703,75 +6728,21 @@ export function checkDoublePointsBug(turningPointState){
 
 export function fixDoublePointsBug(raceId) {
     const rows = queryDB(`
-        SELECT DriverID, TeamID, Points, Season
+        SELECT DriverID, Points 
         FROM Races_Results
         WHERE RaceID = ? AND Points > 0
     `, [raceId], 'allRows');
 
-    if (!rows.length) {
-        return { raceId, season: null, correctedDrivers: 0 };
-    }
-
-    const season = Number(rows[0][3]);
-    const teamDeltas = new Map();
-
-    for (const [driverIdRaw, teamIdRaw, pointsRaw] of rows) {
-        const driverId = Number(driverIdRaw);
-        const teamId = Number(teamIdRaw);
-        const originalPoints = Number(pointsRaw);
-        const fixedPoints = Math.floor(originalPoints / 2);
-        const delta = fixedPoints - originalPoints;
-
+    for (let i = 0; i < rows.length; i++) {
+        let driverId = rows[i][0];
+        let champPoints = Number(rows[i][1]);
+        let fixedPoints = Math.floor(champPoints / 2);
         queryDB(`
             UPDATE Races_Results SET Points = ?
             WHERE RaceID = ? AND DriverID = ?
         `, [fixedPoints, raceId, driverId], 'run');
-
-        queryDB(`
-            UPDATE Races_DriverStandings
-            SET Points = Points + ?
-            WHERE SeasonID = ? AND DriverID = ? AND RaceFormula = 1
-        `, [delta, season, driverId], 'run');
-
-        teamDeltas.set(teamId, (teamDeltas.get(teamId) || 0) + delta);
     }
-
-    for (const [teamId, delta] of teamDeltas) {
-        queryDB(`
-            UPDATE Races_TeamStandings
-            SET Points = Points + ?
-            WHERE SeasonID = ? AND TeamID = ? AND RaceFormula = 1
-        `, [delta, season, teamId], 'run');
-    }
-
-    queryDB(`
-        WITH ranked AS (
-            SELECT DriverID,
-                   ROW_NUMBER() OVER (ORDER BY Points DESC, DriverID ASC) AS position
-            FROM Races_DriverStandings
-            WHERE SeasonID = ? AND RaceFormula = 1
-        )
-        UPDATE Races_DriverStandings
-        SET Position = (SELECT position FROM ranked WHERE ranked.DriverID = Races_DriverStandings.DriverID)
-        WHERE SeasonID = ? AND RaceFormula = 1
-    `, [season, season], 'run');
-
-    queryDB(`
-        WITH ranked AS (
-            SELECT TeamID,
-                   ROW_NUMBER() OVER (ORDER BY Points DESC, TeamID ASC) AS position
-            FROM Races_TeamStandings
-            WHERE SeasonID = ? AND RaceFormula = 1
-        )
-        UPDATE Races_TeamStandings
-        SET Position = (SELECT position FROM ranked WHERE ranked.TeamID = Races_TeamStandings.TeamID)
-        WHERE SeasonID = ? AND RaceFormula = 1
-    `, [season, season], 'run');
-
-    _seasonResultsCache.clear();
-    _standingsCache.clear();
-
-    return { raceId, season, correctedDrivers: rows.length };
+    
 }
 
 /**
@@ -7245,6 +7216,7 @@ export function getTurningPointsStructure() {
 }
 
 export function getNewsAndTpYearsAvailable() {
+    const minYear = isTimeTravel2026Enabled() ? 2026 : 0;
     const yearsSet = new Set();
     const editorStateRows = queryDB(
         `SELECT key FROM Custom_News_State WHERE key LIKE '%_news' OR key LIKE '%_turning_points'`,
@@ -7255,7 +7227,9 @@ export function getNewsAndTpYearsAvailable() {
         const match = key.match(/^(\d{4})_(news|turning_points)$/);
         if (match) {
             const year = Number(match[1]);
-            yearsSet.add(year);
+            if (year >= minYear) {
+                yearsSet.add(year);
+            }
         }
     }
     const years = Array.from(yearsSet);
