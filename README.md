@@ -108,7 +108,7 @@
 
 ### Seasonal Mods
 
-Update your freshly created save to the 2025 or 2026 seasons with a complete database overhaul with **driver transfers**, **car and engine performance**, **driver ratings**, **calendars**, **regulations** and even **FREE TURNING POINTS** for engine development in the 2026 Season Update! (also available in Settings -> Editor)
+Update your freshly created save to the 2025 season with a complete database overhaul including **driver transfers**, **car performance**, **driver ratings**, **calendar** and **regulations** changes. (also available in Settings -> Editor)
 
 <p align="center">
   <img width="45%" src="https://github.com/user-attachments/assets/288239ee-0cee-4ffe-8c8e-34462eadf38f" />

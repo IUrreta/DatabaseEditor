@@ -202,6 +202,12 @@ export const theme_colors = {
         "grid": "#5a3a5f",
         "general_secondary": "#f1f1f1",
         "engine_upgrade_line": "#ffe16acc"
+    },
+    "gcr-theme": {
+        "labels": "#f0f2f5",
+        "grid": "#1d3e62",
+        "general_secondary": "#35eeff",
+        "engine_upgrade_line": "#ffd166fa"
     }
 }
 
@@ -218,6 +224,11 @@ export const themeToolbarLogos = {
     "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
     "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
     "f1cc-theme": { src: "../assets/images/logos/f1cc.png", className: "toolbar-logo--f1cc" },
+    "gcr-theme": {
+        src: "../assets/images/logos/gcr.png",
+        className: "toolbar-logo--gcr",
+        titleLines: ["GRAND", "CHELEM"]
+    },
 };
 
 //predictions
