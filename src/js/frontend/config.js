@@ -640,6 +640,12 @@ export function getParamMap(data) {
         109: {
             manufacturers: data.manufacturers,
             number_period: data.quarterString
+        },
+        110: {
+            team: data.team,
+            old_engine: data.oldEngineName,
+            new_engine: data.newEngineName,
+            reason: data.reason
         }
     };
 }
@@ -751,6 +757,11 @@ export const turningPointsTuningByType = {
     },
     youngDrivers: {
         chance: [0.25, 0.5, 1, 1, 1],
+        max: [1, 1, 1, 1, 1],
+    },
+    preseasonEngineSwitch: {
+        // One fixed preseason roll; the requested 59% is not frequency-scaled.
+        chance: [0.59, 0.59, 0.59, 0.59, 0.59],
         max: [1, 1, 1, 1, 1],
     },
 };

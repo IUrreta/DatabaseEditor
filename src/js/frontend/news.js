@@ -688,6 +688,12 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
         const commandEngines = new Command("enginesRefresh", {});
         commandEngines.execute();
       }
+      else if (news.type === "turning_point_preseason_engine_switch") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+        const commandPerformance = new Command("performanceRefresh", {});
+        commandPerformance.execute();
+      }
       else if (news.type === "turning_point_aduo") {
         const commandEngines = new Command("enginesRefresh", {});
         commandEngines.execute();
@@ -1568,6 +1574,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
     turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
+    turning_point_preseason_engine_switch: (nd) => contextualizeTurningPointPreseasonEngineSwitch(nd, nd.turning_point_type),
     turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
     turning_point_aduo: (nd) => contextualizeTurningPointAduo(nd, nd.turning_point_type),
   };
@@ -2117,6 +2124,40 @@ async function contextualizeTurningPointEngineRegulation(newData, turningPointTy
   return {
     instruction: prompt,
     context: contextData
+  };
+}
+
+async function contextualizeTurningPointPreseasonEngineSwitch(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 110);
+  if (!promptTemplateEntry) {
+    console.warn("Missing preseason engine switch prompt template (new_type 110).");
+    return;
+  }
+
+  let prompt = promptTemplateEntry.prompt;
+  if (turningPointType?.includes("positive")) prompt = promptTemplateEntry.positive_prompt;
+  else if (turningPointType?.includes("negative")) prompt = promptTemplateEntry.negative_prompt;
+
+  const data = newData.data || {};
+  prompt = prompt
+    .replace(/{{\s*team\s*}}/g, data.team || "the team")
+    .replace(/{{\s*old_engine\s*}}/g, data.oldEngineName || "its planned supplier")
+    .replace(/{{\s*new_engine\s*}}/g, data.newEngineName || "a rival supplier")
+    .replace(/{{\s*reason\s*}}/g, data.reason || "late technical and logistical complications")
+    .replace(/{{\s*chassis_adaptability\s*}}/g, data.chassisAdaptability || "the chassis was designed to accommodate a late supplier change");
+
+  const command = new Command("fullChampionshipDetailsRequest", { season: data.season });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching championship context for preseason engine switch:", err);
+    return;
+  }
+
+  return {
+    instruction: prompt,
+    context: buildContextualPrompt(resp.content, { seasonYear: data.season })
   };
 }
 

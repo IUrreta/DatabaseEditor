@@ -364,5 +364,27 @@
             "How much will {{manufacturers}} gain from the {{number_period}} ADUO window? Insiders weigh in",
             "‘It’s a great opportunity’ – {{manufacturers}} on the potential impact of the {{number_period}} ADUO window"
         ]
+    },
+    {
+        "id": "preseason_engine_switch",
+        "new_type": 110,
+        "turning_titles": [
+            "{{team}} weighs shock late switch from {{old_engine}} to {{new_engine}}",
+            "Preseason supplier crisis could push {{team}} towards {{new_engine}}",
+            "{{team}} holds late talks with {{new_engine}} after {{old_engine}} complications",
+            "Engine rethink: adaptable chassis gives {{team}} a late alternative"
+        ],
+        "positive_titles": [
+            "Confirmed: {{team}} completes late switch from {{old_engine}} to {{new_engine}}",
+            "{{team}} signs with {{new_engine}} on eve of new season",
+            "Adaptable chassis enables {{team}}'s last-minute {{new_engine}} deal",
+            "{{team}} abandons {{old_engine}} plan and confirms {{new_engine}} power"
+        ],
+        "negative_titles": [
+            "{{team}} abandons late {{new_engine}} talks and stays with {{old_engine}}",
+            "Continuity wins as {{team}} confirms {{old_engine}} power",
+            "Proposed {{team}} switch to {{new_engine}} falls through",
+            "{{team}} resolves supplier crisis without leaving {{old_engine}}"
+        ]
     }
 ]

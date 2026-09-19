@@ -12,6 +12,7 @@ import { unitValueToValue } from "./carConstants";
 import { track } from "@vercel/analytics";
 import LZString from "lz-string";
 import { enrichDriversWithHistory, fetchDriverHistoryRecords } from "./recordUtils";
+import { manage_engine_change } from "./editTeamUtils";
 const USE_COMPRESSION = false;
 
 const _seasonResultsCache = new Map();
@@ -119,6 +120,7 @@ export function generate_news(savednews, turningPointState) {
     const driverInjuryTurningPointNews = generateDriverInjuryTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
     const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
+    const preseasonEngineSwitchTurningPointNews = generatePreseasonEngineSwitchTurningPointNews(savednews, turningPointState, tpConfig);
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
     let aduoTPsEnabled = queryDB(`SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`, [], 'singleValue');
@@ -138,7 +140,7 @@ export function generate_news(savednews, turningPointState) {
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...juniorSeasonReviewNews || [], ...dsqTurningPointNews || [], 
     ...midSeasonTransfersTurningPointNews || [], ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
     ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
-    ...enginesTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
+    ...enginesTurningPointNews || [], ...preseasonEngineSwitchTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
 
     // Include saved news entries that are not produced by the current generation logic (e.g. custom-created entries).
     // Otherwise, those entries would exist in the DB but not appear in the current-season view.
@@ -303,6 +305,23 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             type: "turning_point_outcome_engine_regulation"
         }
         maxDate += 1;
+    }
+    else if (type === "turning_point_preseason_engine_switch") {
+        if (outcome === "positive") {
+            manage_engine_change(turningPointData.teamId, turningPointData.newEngineId);
+        }
+        const entryId = `turning_point_outcome_preseason_engine_switch_${turningPointData.season}`;
+        const title = generateTurningPointTitle(turningPointData, 110, outcome);
+        const image = getImagePath(null, "engine", "engine") || "null.png";
+        newEntry = {
+            id: entryId,
+            title,
+            image,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_preseason_engine_switch"
+        };
     }
     else if (type === "turning_point_young_drivers") {
         if (outcome === "positive") {
@@ -1293,6 +1312,97 @@ function generateEnginesTurningPointNews(currentMonth, savednews = {}, turningPo
 
     newsList.push(newsEntry);
 
+    return newsList;
+}
+
+function generatePreseasonEngineSwitchTurningPointNews(savednews = {}, turningPointState = {}, tpConfig = null) {
+    const [currentDay, season] = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow") || [];
+    const newsList = [];
+    const entryId = `turning_point_preseason_engine_switch_${season}`;
+
+    if (savednews[entryId]) {
+        newsList.push({ id: entryId, ...savednews[entryId] });
+        return newsList;
+    }
+
+    const firstRaceDay = queryDB(
+        `SELECT MIN(Day) FROM Races WHERE SeasonID = ?`,
+        [season],
+        "singleValue"
+    );
+    const racesDone = queryDB(
+        `SELECT COUNT(*) FROM Races WHERE SeasonID = ? AND State = 2`,
+        [season],
+        "singleValue"
+    );
+
+    // Roll exactly once per season, and only while the championship is still in preseason.
+    if (turningPointState.preseasonEngineSwitch !== undefined || firstRaceDay == null ||
+        Number(currentDay) >= Number(firstRaceDay) || Number(racesDone) > 0) {
+        return newsList;
+    }
+
+    if (Math.random() >= getTurningPointChance("preseasonEngineSwitch", tpConfig)) {
+        turningPointState.preseasonEngineSwitch = "None";
+        return newsList;
+    }
+
+    const engines = queryDB(
+        `SELECT engineId, name FROM Custom_Engines_List ORDER BY engineId`,
+        [],
+        "allRows"
+    ) || [];
+    const engineNameById = Object.fromEntries(engines.map(([engineId, name]) => [String(engineId), name]));
+    const allocations = queryDB(
+        `SELECT teamId, engineId FROM Custom_Engine_Allocations
+         WHERE (teamId BETWEEN 1 AND 10 OR teamId = 32)
+           AND teamId NOT IN (1, 4)`,
+        [],
+        "allRows"
+    ) || [];
+    const eligibleTeams = allocations.filter(([, oldEngineId]) =>
+        engines.some(([engineId]) => Number(engineId) !== Number(oldEngineId))
+    );
+
+    if (!eligibleTeams.length) {
+        turningPointState.preseasonEngineSwitch = "None";
+        return newsList;
+    }
+
+    const [teamId, oldEngineId] = randomPick(eligibleTeams);
+    const replacementEngines = engines.filter(([engineId]) => Number(engineId) !== Number(oldEngineId));
+    const [newEngineId, newEngineName] = randomPick(replacementEngines);
+    const reasons = [
+        "a late contractual dispute with the planned supplier",
+        "unresolved homologation and legal complications",
+        "a breakdown in preseason power-unit delivery logistics",
+        "cooling and integration problems discovered during final assembly",
+        "reliability concerns uncovered in the last validation tests",
+        "unexpected manufacturing delays affecting the planned power unit"
+    ];
+    const reason = randomPick(reasons);
+    const data = {
+        season: Number(season),
+        teamId: Number(teamId),
+        team: combined_dict[teamId] || `Team ${teamId}`,
+        oldEngineId: Number(oldEngineId),
+        oldEngineName: engineNameById[String(oldEngineId)] || `Engine ${oldEngineId}`,
+        newEngineId: Number(newEngineId),
+        newEngineName,
+        reason,
+        chassisAdaptability: "the chassis was deliberately designed around unusually flexible mounting, cooling and packaging interfaces"
+    };
+
+    turningPointState.preseasonEngineSwitch = data;
+    newsList.push({
+        id: entryId,
+        title: generateTurningPointTitle(data, 110, "original"),
+        image: getImagePath(null, "engine", "engine"),
+        data,
+        date: Number(currentDay),
+        turning_point_type: "original",
+        type: "turning_point_preseason_engine_switch"
+    });
     return newsList;
 }
 
