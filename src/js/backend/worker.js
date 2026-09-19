@@ -18,11 +18,11 @@ import {
   exportSeasonsRecordsArchive,
   importSeasonsRecordsArchive
 } from "./scriptUtils/dbUtils";
-import { getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAttributesAllTeamsExpertise, getAttributesAllCarsExpertise, getAttributesAllTeamsNextSeasonCar, getAttributesAllCarsNextSeasonCar, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
+import { getPerformanceAllTeams, getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAttributesAllTeamsExpertise, getAttributesAllCarsExpertise, getAttributesAllTeamsNextSeasonCar, getAttributesAllCarsNextSeasonCar, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget, copyTeamPerformance } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar, fetchPreviousSeasonCalendar } from "./scriptUtils/calendarUtils";
@@ -60,7 +60,7 @@ import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
-import { deleteProblematicTriggers } from "./scriptUtils/triggerUtils.js";
+import { deleteProblematicTriggers, editFreezeDevelopment } from "./scriptUtils/triggerUtils.js";
 import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename, fetchRandomStaffAttributes, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 
@@ -845,6 +845,15 @@ const workerCommands = {
     };
     postMessage(carPerformanceResponse);
   },
+  editFreezeDevelopment: (data, postMessage) => {
+    editFreezeDevelopment(data.state);
+    postMessage({
+      responseMessage: "Car development freeze updated",
+      noti_msg: parseInt(data.state) === 1 ? "AI car development frozen" : "AI car development active",
+      isEditCommand: true,
+      unlocksDownload: true
+    });
+  },
   editTargetOverall: (data, postMessage) => {
     let globals = getGlobals();
     const yearData = checkYearSave();
@@ -884,16 +893,49 @@ const workerCommands = {
     const mode = data.mode || "performance";
     const targets = Array.isArray(data.targets) ? data.targets : [];
     const modeLabel = mode === "nextSeasonCar" ? "next season car" : mode;
+    let referenceTeam = null;
 
-    targets.forEach((target) => {
-      adjustTeamOverallToTarget(
-        target.teamID,
-        target.targetOverall,
-        mode,
-        globals.isCreateATeam,
-        globals.yearIteration
-      );
-    });
+    if (data.refreshFreezeDevelopment) editFreezeDevelopment(0);
+    try {
+      if (data.copyFastestCar && mode === "performance" && targets.length) {
+        const currentPerformance = getPerformanceAllTeams(null, null, globals.isCreateATeam);
+        referenceTeam = targets.reduce((fastest, target) =>
+          currentPerformance[target.teamID] > currentPerformance[fastest.teamID] ? target : fastest
+        );
+
+        adjustTeamOverallToTarget(
+          referenceTeam.teamID,
+          referenceTeam.targetOverall,
+          mode,
+          globals.isCreateATeam,
+          globals.yearIteration
+        );
+
+        targets.forEach((target) => {
+          if (target.teamID === referenceTeam.teamID) return;
+          copyTeamPerformance(
+            referenceTeam.teamID,
+            target.teamID,
+            globals.isCreateATeam,
+            globals.yearIteration
+          );
+        });
+      }
+      else {
+        targets.forEach((target) => {
+          adjustTeamOverallToTarget(
+            target.teamID,
+            target.targetOverall,
+            mode,
+            globals.isCreateATeam,
+            globals.yearIteration
+          );
+        });
+      }
+    }
+    finally {
+      if (data.refreshFreezeDevelopment) editFreezeDevelopment(1);
+    }
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
     const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
@@ -902,7 +944,10 @@ const workerCommands = {
     const attributes = getAttributesAllTeams(yearData[2]);
     const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], globals.yearIteration);
     const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], globals.yearIteration);
-    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes, expertiseAttributes, nextSeasonCarAttributes] });
+    const currentPerformance = referenceTeam
+      ? getPerformanceAllTeams(null, null, globals.isCreateATeam)
+      : performance[performance.length - 1];
+    postMessage({ responseMessage: "Performance fetched", content: [currentPerformance, attributes, expertiseAttributes, nextSeasonCarAttributes] });
 
     const carPerformance = getPerformanceAllCars(yearData[2]);
     const carAttributes = getAttributesAllCars(yearData[2]);
@@ -911,12 +956,15 @@ const workerCommands = {
     postMessage({
       responseMessage: "Cars fetched",
       content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes],
-      noti_msg: `Applied ${targets.length} team ${modeLabel} overall targets`,
+      noti_msg: referenceTeam
+        ? `Matched ${targets.length} cars to ${referenceTeam.teamName}'s adjusted performance`
+        : `Applied ${targets.length} team ${modeLabel} overall targets`,
       isEditCommand: true,
       unlocksDownload: true
     });
   },
   editEngine: (data, postMessage) => {
+    const globals = getGlobals();
     snapshotEnginePowerProgression(Object.keys(data?.engines || {}), 'pre_engine_edit');
     editEngines(data.engines)
     postMessage({
@@ -932,9 +980,10 @@ const workerCommands = {
     postMessage({ responseMessage: "Season performance fetched", content: [performance, races, engineUpgradeRaceIds] });
 
     const attributes = getAttributesAllTeams(yearData[2]);
-    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], getGlobals().yearIteration);
-    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], getGlobals().yearIteration);
-    postMessage({ responseMessage: "Performance fetched", content: [performance[performance.length - 1], attributes, expertiseAttributes, nextSeasonCarAttributes] });
+    const expertiseAttributes = getAttributesAllTeamsExpertise(yearData[2], globals.yearIteration);
+    const nextSeasonCarAttributes = getAttributesAllTeamsNextSeasonCar(yearData[2], globals.yearIteration);
+    const currentPerformance = getPerformanceAllTeams(null, null, globals.isCreateATeam);
+    postMessage({ responseMessage: "Performance fetched", content: [currentPerformance, attributes, expertiseAttributes, nextSeasonCarAttributes] });
   },
   editContract: (data, postMessage) => {
     const year = getGlobals().yearIteration;
@@ -1524,7 +1573,7 @@ const workerCommands = {
     const dontAskAgain = data?.dontAskAgain === true;
     const hasNationality = /^[A-Z]{2}$/.test(nationality);
 
-    if (!hasNationality && !dontAskAgain) {
+    if (!hasNationality && (!dontAskAgain || nationality)) {
       throw new Error("Invalid player nationality");
     }
 
@@ -1539,7 +1588,7 @@ const workerCommands = {
         nationality: hasNationality ? nationality : null,
         dontAskAgain
       },
-      noti_msg: hasNationality ? "Player nationality saved successfully" : "Nationality prompt disabled for this save",
+      noti_msg: hasNationality ? "Player nationality saved successfully" : "Player nationality prompt disabled for this save",
       isEditCommand: true,
       unlocksDownload: true
     });

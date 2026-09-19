@@ -843,22 +843,6 @@
                         <label class="form-check-label" style="margin-left: -10px;">Active</label>
                       </div>
                     </div>
-                    <div class="only-development d-none">
-                      <div class="modal-subtitle bold-font">Car development <span class="option-state default"
-                          id="developmentSpan">Active</span></div>
-                      <div class="modal-text">
-                        Freezing development prevents AI teams from progressing or starting new parts while your save is
-                        loaded.
-                      </div>
-                      <div class="mentality-selector">
-                        <label class="form-check-label">Active</label>
-                        <div class="form-check form-switch freeze-mentality">
-                          <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                            id="freezeDevelopmentToggle">
-                        </div>
-                        <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
-                      </div>
-                    </div>
                   </div>
                   <div class="difficulty-changes">
                     <div class="difficulty-options">
@@ -1575,7 +1559,7 @@
           <h3 class="modal-title bold-font">Choose your nationality</h3>
         </div>
         <div class="modal-body custom-body player-nationality-modal-body">
-          <p>Select your nationality. It will be saved only in this save file.</p>
+          <p>Select your nationality. Your name is read from this save file.</p>
           <div class="dropdown-global player-nationality-dropdown">
             <button type="button" class="redesigned-dropdown bold-font" id="playerNationalityButton"
               aria-haspopup="true" aria-expanded="false" data-value="">
@@ -4699,6 +4683,56 @@
               <input class="form-check-input custom-toggle" type="checkbox" role="switch"
                 id="performanceAnnotationsToggle" checked>
               <label class="form-check-label" for="performanceAnnotationsToggle">Annotations</label>
+            </div>
+            <div class="dropdown-global performance-more-options">
+              <button type="button" class="redesigned-dropdown button-with-icon bold-font"
+                id="performanceMoreOptionsButton">
+                <span>More options</span>
+                <i class="bi bi-sliders"></i>
+              </button>
+              <div class="redesigned-dropdown-menu performance-options-menu" id="performanceMoreOptionsMenu">
+                <div class="performance-option-row">
+                  <div>
+                    <div class="bold-font">Freeze Car Dev <span class="option-state inactive"
+                        id="developmentSpan">Inactive</span></div>
+                    <div class="modal-text performance-option-description">
+                      AI teams can create parts, but their car performance and expertise cannot improve.
+                    </div>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                      id="freezeDevelopmentToggle">
+                  </div>
+                </div>
+                <hr>
+                <div class="bold-font">Equal Cars</div>
+                <div class="modal-text performance-option-description">
+                  Adjust the fastest car to the target, then copy its parts to every team. Engines stay unchanged.
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="0" max="100" step="1" value="50"
+                    id="equalCarsSlider">
+                  <span class="option-state default" id="equalCarsValue">50%</span>
+                  <button type="button" class="confirm-modal" id="equalCarsApplyButton">Apply</button>
+                </div>
+                <hr>
+                <div class="bold-font">Equal Engines</div>
+                <div class="modal-text performance-option-description">
+                  Set every engine to the same power. Other engine stats stay unchanged unless selected below.
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="0" max="150" step="1" value="90"
+                    id="equalEnginesSlider">
+                  <span class="option-state default" id="equalEnginesValue">90%</span>
+                  <button type="button" class="confirm-modal" id="equalEnginesApplyButton">Apply</button>
+                </div>
+                <label class="performance-equal-checkbox">
+                  <input class="form-check-input" type="checkbox" id="equalEngineStatsCheckbox">
+                  <span>
+                    <span>Equal all other stats</span>
+                  </span>
+                </label>
+              </div>
             </div>
             <ul class="nav nav-pills">
               <li class="nav-item">

@@ -701,6 +701,16 @@ function buildPerformancePayload(teamId, statsDict) {
     return performancePayload;
 }
 
+export function copyTeamPerformance(sourceTeamId, targetTeamId, customTeam = false, yearIteration = null) {
+    const sourceStats = getUnitValueFromParts(getPartsFromTeam(sourceTeamId));
+    overwritePerformanceTeam(
+        targetTeamId,
+        buildPerformancePayload(targetTeamId, sourceStats),
+        customTeam,
+        yearIteration
+    );
+}
+
 function convertPartWeightUnitValueToValue(partType, unitValue) {
     const standardWeight = Number(carConstants.standardWeightPerPart?.[partType]);
     const minimalWeight = Number(carConstants.minimalWeightPerPart?.[partType]);

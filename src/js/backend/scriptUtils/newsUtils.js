@@ -1,11 +1,11 @@
-import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines, createCustomEngineProgressionTable, snapshotEnginePowerProgression } from "./dbUtils";
+import { fetchEventsDoneFrom, formatNamesSimple, fetchEventsDoneBefore, fetchPointsRegulations, computeDriverOfTheDayFromRows, getDoDTopNForRace, editEngines, fetchEngines, createCustomEngineProgressionTable, snapshotEnginePowerProgression, setCustomSaveConfig } from "./dbUtils";
 import { races_names, countries_dict, countries_data, getParamMap, team_dict, combined_dict, opinionDict, part_full_names, continentDict, contintntRacesRegions, defaultTurningPointsFrequencyPreset, turningPointsTuningByType } from "../../frontend/config";
 import newsTitleTemplates from "../../../data/news/news_titles_templates.json";
 import turningPointsTitleTemplates from "../../../data/news/turning_points_titles_templates.json";
 import { fetchSeasonResults, fetchQualiResults } from "./dbUtils";
 import { queryDB } from "../dbManager";
 import { excelToDate, dateToExcel, driverStats } from "./eidtStatsUtils";
-import { getTier, getDriverOverall, fireDriver, hireDriver, swapDrivers } from "./transferUtils";
+import { getTier, getDriverOverall, fireDriver, hireDriver, swapDrivers, transferJuniorDriver } from "./transferUtils";
 import { getPerformanceAllTeamsSeason, getAllPartsFromTeam, getPerformanceAllTeams } from "./carAnalysisUtils";
 import { getGlobals } from "../commandGlobals";
 import { unitValueToValue } from "./carConstants";
@@ -13,6 +13,7 @@ import { track } from "@vercel/analytics";
 import LZString from "lz-string";
 import { enrichDriversWithHistory, fetchDriverHistoryRecords } from "./recordUtils";
 import { manage_engine_change } from "./editTeamUtils";
+import { createDraftStaff, fetchRandomStaffDraft } from "./createStaffUtils";
 const USE_COMPRESSION = false;
 
 const _seasonResultsCache = new Map();
@@ -121,6 +122,7 @@ export function generate_news(savednews, turningPointState) {
 
     const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
     const preseasonEngineSwitchTurningPointNews = generatePreseasonEngineSwitchTurningPointNews(savednews, turningPointState, tpConfig);
+    const playerChildTurningPointNews = generatePlayerChildTurningPointNews(savednews, turningPointState);
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
     let aduoTPsEnabled = queryDB(`SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`, [], 'singleValue');
@@ -140,7 +142,7 @@ export function generate_news(savednews, turningPointState) {
     ...potentialChampionNewsList || [], ...sillySeasonNews || [], ...juniorSeasonReviewNews || [], ...dsqTurningPointNews || [], 
     ...midSeasonTransfersTurningPointNews || [], ...turningPointOutcomes || [], ...technicalDirectiveTurningPointNews || [], ...investmentTurningPointNews || [],
     ...raceSubstitutionTurningPointNews || [], ...driverInjuryTurningPointNews || [], ...raceReactions || [], ...nextSeasonGridNews || [],
-    ...enginesTurningPointNews || [], ...preseasonEngineSwitchTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
+    ...enginesTurningPointNews || [], ...preseasonEngineSwitchTurningPointNews || [], ...playerChildTurningPointNews || [], ...youngDriversTurningPointNews || [], ...aduoTurningPointNews || []];
 
     // Include saved news entries that are not produced by the current generation logic (e.g. custom-created entries).
     // Otherwise, those entries would exist in the DB but not appear in the current-season view.
@@ -321,6 +323,21 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
             date: maxDate + 1,
             turning_point_type: outcome,
             type: "turning_point_outcome_preseason_engine_switch"
+        };
+    }
+    else if (type === "turning_point_player_child") {
+        if (outcome === "positive") {
+            createPlayerChildDriver(turningPointData);
+        }
+        setCustomSaveConfig("playerChildTurningPointStatus", outcome === "positive" ? "accepted" : "declined");
+        newEntry = {
+            id: `turning_point_outcome_player_child_${turningPointData.season}`,
+            title: generateTurningPointTitle(turningPointData, 111, outcome),
+            image: turningPointData.childDraft.facePath,
+            data: turningPointData,
+            date: maxDate + 1,
+            turning_point_type: outcome,
+            type: "turning_point_outcome_player_child"
         };
     }
     else if (type === "turning_point_young_drivers") {
@@ -1404,6 +1421,128 @@ function generatePreseasonEngineSwitchTurningPointNews(savednews = {}, turningPo
         type: "turning_point_preseason_engine_switch"
     });
     return newsList;
+}
+
+function generatePlayerChildTurningPointNews(savednews = {}, turningPointState = {}) {
+    const [currentDay, season] = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow") || [];
+    const entryId = `turning_point_player_child_${season}`;
+    if (savednews[entryId]) return [{ id: entryId, ...savednews[entryId] }];
+
+    const status = queryDB(
+        `SELECT value FROM Custom_Save_Config WHERE key = 'playerChildTurningPointStatus'`,
+        [],
+        "singleValue"
+    );
+    const nationality = queryDB(
+        `SELECT value FROM Custom_Save_Config WHERE key = 'playerNationality'`,
+        [],
+        "singleValue"
+    );
+    const [playerFirstName, playerLastName, playerTeamId] = queryDB(
+        `SELECT FirstName, LastName, TeamID FROM Player`,
+        [],
+        "singleRow"
+    );
+    const firstRaceDay = queryDB(
+        `SELECT MIN(Day) FROM Races WHERE SeasonID = ?`,
+        [season],
+        "singleValue"
+    );
+
+    if (status || !nationality || firstRaceDay == null || Number(currentDay) >= Number(firstRaceDay)) {
+        return [];
+    }
+
+    const seats = queryDB(`
+        SELECT con.StaffID, con.TeamID, con.PosInTeam, bas.FirstName, bas.LastName
+        FROM Staff_Contracts con
+        JOIN Staff_BasicData bas ON bas.StaffID = con.StaffID
+        WHERE con.ContractType = 0
+          AND con.TeamID BETWEEN 22 AND 31
+          AND con.PosInTeam BETWEEN 1 AND 3
+    `, [], "allRows");
+    if (!seats.length) return [];
+
+    const [replacedDriverId, teamId, posInTeam, firstName, lastName] = randomPick(seats);
+    const [replacedDriverName] = formatNamesSimple([firstName, lastName]);
+    const childDraft = fetchRandomStaffDraft(0, getGlobals().yearIteration, {
+        nationality: String(nationality).toUpperCase(),
+        lastName: playerLastName,
+        gender: 0,
+        age: 18
+    });
+    const reason = randomPick([
+        "a late academy reshuffle after winter testing",
+        "a contractual dispute involving the incumbent driver",
+        "the team's decision to prioritise a long-term development prospect",
+        "unexpected sponsorship complications around the existing line-up",
+        "strong simulator and private-testing feedback from the new prospect"
+    ]);
+    const data = {
+        season: Number(season),
+        playerName: `${playerFirstName} ${playerLastName}`,
+        playerTeam: combined_dict[playerTeamId] || `Team ${playerTeamId}`,
+        childName: childDraft.name,
+        childNationality: childDraft.countryName,
+        f3Team: combined_dict[teamId] || `Team ${teamId}`,
+        teamId: Number(teamId),
+        posInTeam: Number(posInTeam),
+        replacedDriver: {
+            id: Number(replacedDriverId),
+            name: news_insert_space(replacedDriverName)
+        },
+        reason,
+        childDraft
+    };
+
+    turningPointState.playerChild = data;
+    setCustomSaveConfig("playerChildTurningPointStatus", "offered");
+    return [{
+        id: entryId,
+        title: generateTurningPointTitle(data, 111, "original"),
+        image: childDraft.facePath,
+        data,
+        date: Number(currentDay),
+        turning_point_type: "original",
+        type: "turning_point_player_child"
+    }];
+}
+
+function createPlayerChildDriver(turningPointData) {
+    const existingDriverId = queryDB(
+        `SELECT value FROM Custom_Save_Config WHERE key = 'playerChildDriverId'`,
+        [],
+        "singleValue"
+    );
+    if (existingDriverId) {
+        turningPointData.childDriverId = Number(existingDriverId);
+        return;
+    }
+
+    const draft = turningPointData.childDraft;
+    queryDB("BEGIN TRANSACTION", [], "run");
+    try {
+        const created = createDraftStaff({
+            ...draft,
+            typeStaff: "0",
+            retirementAge: draft.retirement_age,
+            statsArray: Array.isArray(draft.statsArray) ? draft.statsArray.join(" ") : draft.statsArray,
+            driverCode: draft.driver_code,
+            wantsChampionDriverNumber: draft.wants1
+        });
+        queryDB(
+            `DELETE FROM Races_DriverStandings WHERE SeasonID = ? AND DriverID = ? AND RaceFormula = 3`,
+            [turningPointData.season, turningPointData.replacedDriver.id],
+            "run"
+        );
+        transferJuniorDriver(created.staffId, turningPointData.teamId, turningPointData.posInTeam, getGlobals().yearIteration);
+        setCustomSaveConfig("playerChildDriverId", created.staffId);
+        turningPointData.childDriverId = Number(created.staffId);
+        queryDB("COMMIT", [], "run");
+    } catch (error) {
+        queryDB("ROLLBACK", [], "run");
+        throw error;
+    }
 }
 
 function generateAduoTurningPointsNews(currentMonth, savednews = {}, turningPointState = {}, tpConfig = null, aduoTPsEnabled = false) {

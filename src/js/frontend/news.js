@@ -666,7 +666,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       place_turning_outcome(newResp.content, newsList);
 
       if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" ||
-        news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
+        news.type === "turning_point_young_drivers" || news.type === "turning_point_player_child") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -1575,6 +1575,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
     turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
     turning_point_preseason_engine_switch: (nd) => contextualizeTurningPointPreseasonEngineSwitch(nd, nd.turning_point_type),
+    turning_point_player_child: (nd) => contextualizeTurningPointPlayerChild(nd, nd.turning_point_type),
     turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
     turning_point_aduo: (nd) => contextualizeTurningPointAduo(nd, nd.turning_point_type),
   };
@@ -2159,6 +2160,36 @@ async function contextualizeTurningPointPreseasonEngineSwitch(newData, turningPo
     instruction: prompt,
     context: buildContextualPrompt(resp.content, { seasonYear: data.season })
   };
+}
+
+async function contextualizeTurningPointPlayerChild(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 111);
+  if (!promptTemplateEntry) return;
+
+  let prompt = promptTemplateEntry.prompt;
+  if (turningPointType?.includes("positive")) prompt = promptTemplateEntry.positive_prompt;
+  else if (turningPointType?.includes("negative")) prompt = promptTemplateEntry.negative_prompt;
+
+  const data = newData.data || {};
+  prompt = prompt
+    .replace(/{{\s*child_name\s*}}/g, data.childName || "the young driver")
+    .replace(/{{\s*nationality\s*}}/g, data.childNationality || "")
+    .replace(/{{\s*player_name\s*}}/g, data.playerName || "the team principal")
+    .replace(/{{\s*player_team\s*}}/g, data.playerTeam || "the player's team")
+    .replace(/{{\s*f3_team\s*}}/g, data.f3Team || "the Formula 3 team")
+    .replace(/{{\s*replaced_driver\s*}}/g, data.replacedDriver?.name || "the incumbent driver")
+    .replace(/{{\s*reason\s*}}/g, data.reason || "a late line-up review");
+
+  let context = "";
+  try {
+    const response = await new Command("fullFeederSeriesDetailsRequest", { season: data.season }).promiseExecute();
+    context = buildContextualPrompt(response.content?.f3 || {}, { seasonYear: data.season });
+  } catch (error) {
+    console.error("Error fetching Formula 3 context for player child turning point:", error);
+  }
+
+  context += `\n\n${data.childName} is the son of ${data.playerName}, team principal at ${data.playerTeam}. Proposed F3 change: ${data.childName} would join ${data.f3Team} in car ${data.posInTeam}, replacing ${data.replacedDriver?.name}. Reason: ${data.reason}.`;
+  return { instruction: prompt, context };
 }
 
 async function contextualizeTurningPointAduo(newData, turningPointType) {

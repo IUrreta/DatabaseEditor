@@ -681,7 +681,7 @@ function performanceModeHandler() {
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
-        document.querySelectorAll(".part-performance").forEach(function (elem) {
+        document.querySelectorAll(".part-performance[data-partid]").forEach(function (elem) {
             let part = elem.dataset.part;
             let partID = elem.dataset.partid;
             let loadout1 = elem.dataset.loadout1;
@@ -1038,6 +1038,7 @@ const messageHandlers = {
             configCopy.playerNationalityPromptDisabled = message?.dontAskAgain ? 1 : 0;
         }
         bootstrap.Modal.getInstance(document.getElementById("playerNationalityModal"))?.hide();
+        if (message?.nationality) generateNews();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -1670,6 +1671,9 @@ function managePlayerNationalityPrompt(nationality, promptDisabled) {
     }
 
     resetPlayerNationalityPrompt();
+    if (/^[A-Z]{2}$/.test(normalizedNationality)) {
+        document.querySelector(`#playerNationalityMenu [data-value="${normalizedNationality}"]`)?.click();
+    }
     bootstrap.Modal.getOrCreateInstance(modalElement, {
         backdrop: "static",
         keyboard: false
@@ -2469,6 +2473,7 @@ function update_refurbish_span(value) {
 document.getElementById("freezeDevelopmentToggle").addEventListener("change", function () {
     let value = this.checked;
     update_development_span(value)
+    new Command("editFreezeDevelopment", { state: value ? 1 : 0 }).execute()
 });
 
 function update_development_span(value) {
@@ -2477,8 +2482,8 @@ function update_development_span(value) {
         span.className = "option-state frozen"
         span.textContent = "Frozen"
     } else {
-        span.className = "option-state default"
-        span.textContent = "Active"
+        span.className = "option-state inactive"
+        span.textContent = "Inactive"
     }
 }
 
@@ -2803,7 +2808,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Easily pick your save from the list of recent ones",
         "Customize the appearance of the tool to your liking",
         "Join the discord to get notified when new features are added",
-        "Edit how good or bad a car is going to be for next season"
+        "Edit how good or bad a car is going to be for next season",
+        "F*ck thermodynamics"
     
     ];
 

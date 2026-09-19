@@ -19,16 +19,22 @@ const STAFF_TYPE_NAMES = {
   4: "Sporting directors"
 };
 
-export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24") {
+export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24", overrides = {}) {
   const typeStaff = normalizeStaffType(typeStaffRaw);
-  const nationality = pickRandomNationality(gameYear);
-  const gender = randomInt(0, 1);
+  const nationalityCode = String(overrides.nationality || "").toUpperCase();
+  const gender = overrides.gender ?? randomInt(0, 1);
+  const nationality = nationalityCode
+    ? { ...fetchCountryLocaleWithFace(nationalityCode), name: inverted_countries_abreviations[nationalityCode] }
+    : pickRandomNationality(gameYear);
   const faceData = buildRandomFaceForLocale(gender, nationality.staffNameLocale, typeStaff);
   const firstNameLocKey = pickRandomForename(gender, nationality.staffNameLocale);
-  const lastNameLocKey = pickRandomSurname(nationality.staffNameLocale);
+  const fixedLastName = String(overrides.lastName || "").trim();
+  const lastNameLocKey = fixedLastName ? `[STRING_LITERAL:Value=|${fixedLastName}|]` : pickRandomSurname(nationality.staffNameLocale);
   const firstName = extractNameToken(firstNameLocKey);
-  const lastName = extractNameToken(lastNameLocKey);
-  const { age, retirementAge } = buildAgeDetails(typeStaff);
+  const lastName = fixedLastName || extractNameToken(lastNameLocKey);
+  const ageDetails = buildAgeDetails(typeStaff);
+  const age = overrides.age ?? ageDetails.age;
+  const retirementAge = Math.max(Number(age) + 4, ageDetails.retirementAge);
   const stats = buildRandomStats(typeStaff);
   const driverCode = typeStaff === 0 ? buildDriverCode(firstName, lastName) : "";
   const driverNumber = typeStaff === 0 ? pickAvailableDriverNumber() : 0;

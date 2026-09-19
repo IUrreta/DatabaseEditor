@@ -3974,12 +3974,16 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
       }
 
     }
-    const valueERS = engine_unitValueToValue[18](stats[18]);
-    const unitValueERS = stats[18];
-    const valueGearbox = engine_unitValueToValue[19](stats[19]);
-    const unitValueGearbox = stats[19];
-    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueERS, unitValueERS, teamERSId], 'run');
-    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueGearbox, unitValueGearbox, teamGearboxId], 'run');
+    if (Object.hasOwn(stats, 18)) {
+      const unitValueERS = stats[18];
+      const valueERS = engine_unitValueToValue[18](unitValueERS);
+      queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueERS, unitValueERS, teamERSId], 'run');
+    }
+    if (Object.hasOwn(stats, 19)) {
+      const unitValueGearbox = stats[19];
+      const valueGearbox = engine_unitValueToValue[19](unitValueGearbox);
+      queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueGearbox, unitValueGearbox, teamGearboxId], 'run');
+    }
   });
 
 

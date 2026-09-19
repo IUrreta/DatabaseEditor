@@ -16,6 +16,14 @@ const teamsDiv = document.getElementById("teamsDiv");
 const enginesDiv = document.getElementById("enginesDiv");
 const engineConditionEditor = document.getElementById("teamEngineConditionEditor");
 const engineManufacturerList = document.getElementById("engineManufacturerList");
+const performanceMoreOptionsMenu = document.getElementById("performanceMoreOptionsMenu");
+const equalCarsSlider = document.getElementById("equalCarsSlider");
+const equalCarsValue = document.getElementById("equalCarsValue");
+const equalCarsApplyButton = document.getElementById("equalCarsApplyButton");
+const equalEnginesSlider = document.getElementById("equalEnginesSlider");
+const equalEnginesValue = document.getElementById("equalEnginesValue");
+const equalEnginesApplyButton = document.getElementById("equalEnginesApplyButton");
+const equalEngineStatsCheckbox = document.getElementById("equalEngineStatsCheckbox");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
 
@@ -1391,6 +1399,73 @@ function saveTeamOverallTargets() {
         targets: targets
     });
     command.execute();
+}
+
+if (performanceMoreOptionsMenu) {
+    performanceMoreOptionsMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+    });
+}
+
+if (equalCarsSlider && equalCarsValue) {
+    equalCarsSlider.addEventListener("input", function () {
+        equalCarsValue.textContent = `${this.value}%`;
+    });
+}
+
+if (equalCarsApplyButton && equalCarsSlider) {
+    equalCarsApplyButton.addEventListener("click", function () {
+        const targetOverall = Number(equalCarsSlider.value);
+        const targets = [];
+
+        document.querySelectorAll("#teamsDiv .team-performance:not(.d-none)").forEach(function (teamElem) {
+            targets.push({
+                teamID: teamElem.dataset.teamid,
+                teamName: teamElem.dataset.teamname,
+                targetOverall: targetOverall
+            });
+        });
+
+        new Command("editTargetOveralls", {
+            mode: "performance",
+            targets: targets,
+            copyFastestCar: true,
+            refreshFreezeDevelopment: document.getElementById("freezeDevelopmentToggle").checked
+        }).execute();
+        document.getElementById("performanceMoreOptionsButton").classList.remove("open");
+    });
+}
+
+if (equalEnginesSlider && equalEnginesValue) {
+    equalEnginesSlider.addEventListener("input", function () {
+        equalEnginesValue.textContent = `${this.value}%`;
+    });
+}
+
+if (equalEnginesApplyButton && equalEnginesSlider) {
+    equalEnginesApplyButton.addEventListener("click", function () {
+        const targetPower = Number(equalEnginesSlider.value);
+        const targetOtherStats = Math.max(0, Math.min(100, targetPower - 10));
+        const engines = {};
+
+        document.querySelectorAll("#enginesPerformance .engine-performance").forEach(function (engine) {
+            engines[engine.dataset.engineid] = { 10: targetPower };
+            if (equalEngineStatsCheckbox.checked) {
+                engine.querySelectorAll(".engine-performance-stat").forEach(function (stat) {
+                    if (stat.dataset.attribute !== "10") engines[engine.dataset.engineid][stat.dataset.attribute] = targetOtherStats;
+                });
+            }
+        });
+        document.querySelectorAll("#enginesPerformance .engine-performance-stat").forEach(function (stat) {
+            if (stat.dataset.attribute !== "10" && !equalEngineStatsCheckbox.checked) return;
+            const value = stat.dataset.attribute === "10" ? targetPower : targetOtherStats;
+            stat.querySelector(".custom-input-number").value = value.toFixed(1);
+            setBarWidth(stat.querySelector(".engine-performance-progress"), value);
+        });
+
+        new Command("editEngine", { engines: engines }).execute();
+        document.getElementById("performanceMoreOptionsButton").classList.remove("open");
+    });
 }
 
 function changeTeamOverallFromControl(teamElem, delta) {

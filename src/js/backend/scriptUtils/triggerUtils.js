@@ -426,28 +426,218 @@ export function editFreezeMentality(state) {
 
 export function editFreezeDevelopment(state) {
   queryDB("DROP TRIGGER IF EXISTS freeze_development", [], 'run');
-  if (parseInt(state) === 1) {
-    queryDB(`
-        CREATE TRIGGER freeze_development
-        AFTER UPDATE ON Parts_Designs
-        FOR EACH ROW
-        WHEN NEW.TeamID != (SELECT TeamID FROM Player)
-        AND NEW.PartType BETWEEN 3 AND 8
-        AND (
-          NEW.DesignWork != OLD.DesignWork OR
-          NEW.DayCompleted != OLD.DayCompleted OR
-          NEW.ValidFrom != OLD.ValidFrom OR
-          NEW.DayCreated != OLD.DayCreated
-        )
-        BEGIN
-          UPDATE Parts_Designs
-          SET 
-            DesignWork = OLD.DesignWork,
-            DayCompleted = OLD.DayCompleted,
-            ValidFrom = OLD.ValidFrom,
-            DayCreated = OLD.DayCreated
-          WHERE rowid = NEW.rowid;
-        END;
-      `, [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS freeze_development_stats_update", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS freeze_development_expertise_insert", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS freeze_development_expertise_update", [], 'run');
+
+  if (parseInt(state) !== 1) {
+    queryDB("DROP TABLE IF EXISTS Custom_Frozen_Car_Development", [], 'run');
+    return;
   }
+
+  queryDB(`
+    CREATE TABLE IF NOT EXISTS Custom_Frozen_Car_Development (
+      TeamID INTEGER NOT NULL,
+      PartType INTEGER NOT NULL,
+      PartStat INTEGER NOT NULL,
+      Value decimal (8, 4) NOT NULL,
+      UnitValue decimal (8, 4) NOT NULL,
+      Expertise decimal (8, 4) NOT NULL,
+      NextSeasonExpertise decimal (8, 4) NOT NULL,
+      SeasonStartExpertise decimal (8, 4) NOT NULL,
+      PRIMARY KEY (TeamID, PartType, PartStat)
+    )
+  `, [], 'run');
+
+  queryDB(`
+    DELETE FROM Custom_Frozen_Car_Development
+    WHERE TeamID = (SELECT TeamID FROM Player)
+  `, [], 'run');
+
+  queryDB(`
+    INSERT OR IGNORE INTO Custom_Frozen_Car_Development
+      (TeamID, PartType, PartStat, Value, UnitValue, Expertise, NextSeasonExpertise, SeasonStartExpertise)
+    SELECT
+      design.TeamID,
+      design.PartType,
+      stats.PartStat,
+      stats.Value,
+      stats.UnitValue,
+      COALESCE(expertise.Expertise, 0),
+      COALESCE(expertise.NextSeasonExpertise, 0),
+      COALESCE(expertise.SeasonStartExpertise, 0)
+    FROM Parts_Designs design
+    JOIN Parts_Designs_StatValues stats ON stats.DesignID = design.DesignID
+    LEFT JOIN Parts_TeamExpertise expertise
+      ON expertise.TeamID = design.TeamID
+      AND expertise.PartType = design.PartType
+      AND expertise.PartStat = stats.PartStat
+    WHERE design.TeamID != (SELECT TeamID FROM Player)
+      AND design.PartType BETWEEN 3 AND 8
+      AND design.ValidFrom = (SELECT CurrentSeason FROM Player_State)
+      AND (design.DayCompleted > 0 OR design.DayCreated < 0)
+      AND design.DesignID = (
+        SELECT MAX(previous.DesignID)
+        FROM Parts_Designs previous
+        WHERE previous.TeamID = design.TeamID
+          AND previous.PartType = design.PartType
+          AND previous.ValidFrom = design.ValidFrom
+          AND (previous.DayCompleted > 0 OR previous.DayCreated < 0)
+      )
+  `, [], 'run');
+
+  queryDB(`
+    CREATE TRIGGER freeze_development
+    AFTER INSERT ON Parts_Designs_StatValues
+    FOR EACH ROW
+    WHEN EXISTS (
+      SELECT 1
+      FROM Parts_Designs design
+      JOIN Custom_Frozen_Car_Development frozen
+        ON frozen.TeamID = design.TeamID
+        AND frozen.PartType = design.PartType
+        AND frozen.PartStat = NEW.PartStat
+      WHERE design.DesignID = NEW.DesignID
+        AND design.TeamID != (SELECT TeamID FROM Player)
+    )
+    BEGIN
+      UPDATE Parts_Designs_StatValues
+      SET
+        Value = (
+          SELECT frozen.Value
+          FROM Parts_Designs design
+          JOIN Custom_Frozen_Car_Development frozen
+            ON frozen.TeamID = design.TeamID
+            AND frozen.PartType = design.PartType
+            AND frozen.PartStat = NEW.PartStat
+          WHERE design.DesignID = NEW.DesignID
+        ),
+        UnitValue = (
+          SELECT frozen.UnitValue
+          FROM Parts_Designs design
+          JOIN Custom_Frozen_Car_Development frozen
+            ON frozen.TeamID = design.TeamID
+            AND frozen.PartType = design.PartType
+            AND frozen.PartStat = NEW.PartStat
+          WHERE design.DesignID = NEW.DesignID
+        ),
+        ExpertiseGain = 0,
+        ExpertiseEffect = 0
+      WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat;
+    END;
+  `, [], 'run');
+
+  queryDB(`
+    CREATE TRIGGER freeze_development_stats_update
+    AFTER UPDATE OF Value, UnitValue, ExpertiseGain, ExpertiseEffect ON Parts_Designs_StatValues
+    FOR EACH ROW
+    WHEN EXISTS (
+      SELECT 1
+      FROM Parts_Designs design
+      JOIN Custom_Frozen_Car_Development frozen
+        ON frozen.TeamID = design.TeamID
+        AND frozen.PartType = design.PartType
+        AND frozen.PartStat = NEW.PartStat
+      WHERE design.DesignID = NEW.DesignID
+        AND design.TeamID != (SELECT TeamID FROM Player)
+        AND (
+          NEW.Value != frozen.Value OR
+          NEW.UnitValue != frozen.UnitValue OR
+          NEW.ExpertiseGain != 0 OR
+          NEW.ExpertiseEffect != 0
+        )
+    )
+    BEGIN
+      UPDATE Parts_Designs_StatValues
+      SET
+        Value = (
+          SELECT frozen.Value
+          FROM Parts_Designs design
+          JOIN Custom_Frozen_Car_Development frozen
+            ON frozen.TeamID = design.TeamID
+            AND frozen.PartType = design.PartType
+            AND frozen.PartStat = NEW.PartStat
+          WHERE design.DesignID = NEW.DesignID
+        ),
+        UnitValue = (
+          SELECT frozen.UnitValue
+          FROM Parts_Designs design
+          JOIN Custom_Frozen_Car_Development frozen
+            ON frozen.TeamID = design.TeamID
+            AND frozen.PartType = design.PartType
+            AND frozen.PartStat = NEW.PartStat
+          WHERE design.DesignID = NEW.DesignID
+        ),
+        ExpertiseGain = 0,
+        ExpertiseEffect = 0
+      WHERE DesignID = NEW.DesignID AND PartStat = NEW.PartStat;
+    END;
+  `, [], 'run');
+
+  queryDB(`
+    CREATE TRIGGER freeze_development_expertise_insert
+    AFTER INSERT ON Parts_TeamExpertise
+    FOR EACH ROW
+    WHEN NEW.TeamID != (SELECT TeamID FROM Player)
+      AND EXISTS (
+        SELECT 1
+        FROM Custom_Frozen_Car_Development frozen
+        WHERE frozen.TeamID = NEW.TeamID
+          AND frozen.PartType = NEW.PartType
+          AND frozen.PartStat = NEW.PartStat
+      )
+    BEGIN
+      UPDATE Parts_TeamExpertise
+      SET
+        Expertise = (
+          SELECT Expertise FROM Custom_Frozen_Car_Development
+          WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat
+        ),
+        NextSeasonExpertise = (
+          SELECT NextSeasonExpertise FROM Custom_Frozen_Car_Development
+          WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat
+        ),
+        SeasonStartExpertise = (
+          SELECT SeasonStartExpertise FROM Custom_Frozen_Car_Development
+          WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat
+        )
+      WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat;
+    END;
+  `, [], 'run');
+
+  queryDB(`
+    CREATE TRIGGER freeze_development_expertise_update
+    AFTER UPDATE OF Expertise, NextSeasonExpertise, SeasonStartExpertise ON Parts_TeamExpertise
+    FOR EACH ROW
+    WHEN NEW.TeamID != (SELECT TeamID FROM Player)
+      AND EXISTS (
+        SELECT 1
+        FROM Custom_Frozen_Car_Development frozen
+        WHERE frozen.TeamID = NEW.TeamID
+          AND frozen.PartType = NEW.PartType
+          AND frozen.PartStat = NEW.PartStat
+          AND (
+            NEW.Expertise != frozen.Expertise OR
+            NEW.NextSeasonExpertise != frozen.NextSeasonExpertise OR
+            NEW.SeasonStartExpertise != frozen.SeasonStartExpertise
+          )
+      )
+    BEGIN
+      UPDATE Parts_TeamExpertise
+      SET
+        Expertise = (
+          SELECT Expertise FROM Custom_Frozen_Car_Development
+          WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat
+        ),
+        NextSeasonExpertise = (
+          SELECT NextSeasonExpertise FROM Custom_Frozen_Car_Development
+          WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat
+        ),
+        SeasonStartExpertise = (
+          SELECT SeasonStartExpertise FROM Custom_Frozen_Car_Development
+          WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat
+        )
+      WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat;
+    END;
+  `, [], 'run');
 }

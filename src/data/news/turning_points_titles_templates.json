@@ -386,5 +386,27 @@
             "Proposed {{team}} switch to {{new_engine}} falls through",
             "{{team}} resolves supplier crisis without leaving {{old_engine}}"
         ]
+    },
+    {
+        "id": "player_child_f3_seat",
+        "new_type": 111,
+        "turning_titles": [
+            "{{child_name}} in line for {{f3_team}} F3 seat",
+            "{{f3_team}} considers {{child_name}} as replacement for {{replaced_driver}}",
+            "A family name enters the F3 conversation at {{f3_team}}",
+            "{{child_name}} could join F3 after late {{f3_team}} reshuffle"
+        ],
+        "positive_titles": [
+            "Confirmed: {{child_name}} takes {{f3_team}} F3 seat",
+            "{{f3_team}} signs {{child_name}} to replace {{replaced_driver}}",
+            "{{child_name}} accepts Formula 3 opportunity with {{f3_team}}",
+            "New chapter begins as {{child_name}} joins the F3 grid"
+        ],
+        "negative_titles": [
+            "{{f3_team}} keeps {{replaced_driver}} as {{child_name}} move falls through",
+            "Proposed F3 debut for {{child_name}} will not go ahead",
+            "{{child_name}} misses out on late {{f3_team}} opportunity",
+            "Continuity wins at {{f3_team}} after junior-seat talks"
+        ]
     }
 ]

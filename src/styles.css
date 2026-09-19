@@ -13273,6 +13273,10 @@ input[type="range"]::-moz-range-track {
   transition: color 0.15s;
 }
 
+.option-state.inactive {
+  color: var(--text-muted);
+}
+
 #turningPointsFrequencyLabel.tp-default {
   color: var(--modal-text);
 }
@@ -18390,6 +18394,71 @@ p.news-error-api-key {
 .dropdown-global:has(.redesigned-dropdown.open) .redesigned-dropdown-menu {
   transform: translateY(0);
   pointer-events: auto;
+}
+
+.performance-more-options .redesigned-dropdown.open i {
+  transform: none;
+}
+
+.performance-options-menu {
+  right: 0;
+  width: 360px;
+  padding: 14px;
+  color: var(--white-general);
+}
+
+.performance-options-menu hr {
+  border-color: var(--separator);
+  margin: 12px 0;
+}
+
+.performance-option-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.performance-option-description {
+  color: var(--text-secondary);
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.performance-equal-controls {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#equalCarsValue,
+#equalEnginesValue {
+  color: var(--new-primary);
+  width: 48px;
+  text-align: center;
+}
+
+.performance-equal-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.performance-equal-checkbox .form-check-input {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.performance-equal-checkbox .form-check-input:checked {
+  background-color: var(--new-primary);
+  border-color: var(--new-primary);
+}
+
+.performance-equal-checkbox .performance-option-description {
+  display: block;
 }
 
 /*svg image*/

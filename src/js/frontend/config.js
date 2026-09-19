@@ -646,6 +646,14 @@ export function getParamMap(data) {
             old_engine: data.oldEngineName,
             new_engine: data.newEngineName,
             reason: data.reason
+        },
+        111: {
+            child_name: data.childName,
+            player_team: data.playerTeam,
+            f3_team: data.f3Team,
+            replaced_driver: data.replacedDriver?.name,
+            nationality: data.childNationality,
+            reason: data.reason
         }
     };
 }
