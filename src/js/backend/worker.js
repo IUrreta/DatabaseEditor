@@ -67,6 +67,10 @@ import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
 
+function getTeamName(data) {
+  return combined_dict[data.teamID] || teamReplaceDict[data.teamName];
+}
+
 function getCustomDriverSeasonPoints(driver) {
   const races = driver.races || [];
   return races.reduce((sum, race) => {
@@ -590,7 +594,7 @@ const workerCommands = {
     updateTeamPowerUnitCondition(data.items);
     postMessage({
       responseMessage: "Engine conditions updated",
-      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s engine part condition`,
+      noti_msg: `Succesfully edited ${getTeamName(data)}'s engine part condition`,
       isEditCommand: true,
       unlocksDownload: true
     });
@@ -603,7 +607,7 @@ const workerCommands = {
     updateTeamExpertise(data.teamID, data.expertise, globals.yearIteration);
     postMessage({
       responseMessage: "Expertise updated",
-      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s expertise`,
+      noti_msg: `Succesfully edited ${getTeamName(data)}'s expertise`,
       isEditCommand: true,
       unlocksDownload: true
     });
@@ -615,7 +619,7 @@ const workerCommands = {
     updateTeamNextSeasonExpertise(data.teamID, data.expertise, globals.yearIteration);
     postMessage({
       responseMessage: "Next season expertise updated",
-      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s ${Number(fetchYear()) + 1} car`,
+      noti_msg: `Succesfully edited ${getTeamName(data)}'s ${Number(fetchYear()) + 1} car`,
       isEditCommand: true,
       unlocksDownload: true
     });
@@ -657,7 +661,7 @@ const workerCommands = {
     editTeam(data);
     postMessage({
       responseMessage: "Team updated",
-      noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s details`,
+      noti_msg: `Succesfully edited ${getTeamName(data)}'s details`,
       isEditCommand: true,
       unlocksDownload: true
     });
@@ -824,7 +828,7 @@ const workerCommands = {
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
     const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
-    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds], noti_msg: `Succesfully edited ${teamReplaceDict[data.teamName]}'s car performance` };
+    const performanceResponse = { responseMessage: "Season performance fetched", content: [performance, races, aduoEngineUpgradeRaceIds], noti_msg: `Succesfully edited ${getTeamName(data)}'s car performance` };
     postMessage(performanceResponse);
 
     const attibutes = getAttributesAllTeams(yearData[2]);
@@ -882,7 +886,7 @@ const workerCommands = {
     postMessage({
       responseMessage: "Cars fetched",
       content: [carPerformance, carAttributes, carExpertiseAttributes, carNextSeasonAttributes],
-      noti_msg: `Adjusted ${teamReplaceDict[data.teamName]}'s ${mode} overall to ${result.achieved.toFixed(2)}%`,
+      noti_msg: `Adjusted ${getTeamName(data)}'s ${mode} overall to ${result.achieved.toFixed(2)}%`,
       isEditCommand: true,
       unlocksDownload: true
     });

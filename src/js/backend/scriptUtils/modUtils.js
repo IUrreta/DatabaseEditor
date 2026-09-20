@@ -489,7 +489,7 @@ export function change2024Standings(mod = "2025") {
     if (!changes.TeamStandings || !Array.isArray(changes.TeamStandings)) {
         console.error("No team standings found");
     } else {
-        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2024`, [], 'run');
+        queryDB(`DELETE FROM Races_TeamStandings WHERE RaceFormula = 1 AND SeasonID = 2024 AND TeamID BETWEEN 1 AND 10`, [], 'run');
         for (const entry of changes.TeamStandings) {
             const { LastPointsChange, LastPositionChange, Points, Position, RaceFormula, SeasonID, TeamID } = entry;
 

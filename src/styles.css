@@ -18424,6 +18424,52 @@ p.news-error-api-key {
   margin-top: 4px;
 }
 
+.performance-option-info {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  font-size: 15px;
+  font-style: normal;
+  vertical-align: 1px;
+}
+
+.performance-option-info::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 200;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  width: 280px;
+  padding: 9px 11px;
+  border: 1px solid var(--separator);
+  border-radius: 7px;
+  background: var(--dropdown-back);
+  box-shadow: var(--shadow-m);
+  color: var(--text-general);
+  font-family: 'Formula1';
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 4px);
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.performance-option-info:hover::after,
+.performance-option-info:focus-visible::after {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.performance-option-info-bottom::after {
+  top: calc(100% + 10px);
+  bottom: auto;
+  transform: translate(-50%, -4px);
+}
+
 .performance-equal-controls {
   display: grid;
   grid-template-columns: 1fr auto auto;
