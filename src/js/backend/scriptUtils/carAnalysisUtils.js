@@ -1400,6 +1400,18 @@ export function setMinPowerUnitCondition(minCondition = 0.75) {
     return itemsToRepair;
 }
 
+export function setAllPowerUnitCondition(condition) {
+    queryDB(`
+        UPDATE Parts_Items
+        SET Condition = ?
+        WHERE DesignID IN (
+            SELECT DesignID
+            FROM Parts_Designs
+            WHERE PartType IN (0, 1, 2)
+        )
+    `, [condition], "run");
+}
+
 export function updateTeamPowerUnitCondition(items) {
     for (const item of items) {
         queryDB(`

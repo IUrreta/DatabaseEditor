@@ -18,7 +18,7 @@ import {
   exportSeasonsRecordsArchive,
   importSeasonsRecordsArchive
 } from "./scriptUtils/dbUtils";
-import { getPerformanceAllTeams, getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAttributesAllTeamsExpertise, getAttributesAllCarsExpertise, getAttributesAllTeamsNextSeasonCar, getAttributesAllCarsNextSeasonCar, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
+import { getPerformanceAllTeams, getPerformanceAllTeamsSeason, getAttributesAllTeams, getPerformanceAllCars, getAttributesAllCars, getAttributesAllTeamsExpertise, getAttributesAllCarsExpertise, getAttributesAllTeamsNextSeasonCar, getAttributesAllCarsNextSeasonCar, getAduoEngineUpgradeRaceIds, setMinPowerUnitCondition, setAllPowerUnitCondition } from "./scriptUtils/carAnalysisUtils"
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
@@ -601,6 +601,15 @@ const workerCommands = {
 
     const engineConditions = getTeamPowerUnitConditionData(data.teamID);
     postMessage({ responseMessage: "Engine conditions fetched", content: engineConditions });
+  },
+  setAllPowerUnitCondition: (data, postMessage) => {
+    setAllPowerUnitCondition(data.condition);
+    postMessage({
+      responseMessage: "Engine conditions updated",
+      noti_msg: `Set every engine, ERS and gearbox to ${Math.round(data.condition * 100)}% condition`,
+      isEditCommand: true,
+      unlocksDownload: true
+    });
   },
   editExpertise: (data, postMessage) => {
     const globals = getGlobals();

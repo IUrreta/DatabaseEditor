@@ -63,7 +63,6 @@ const modPill = document.getElementById("modpill")
 export const editorPill = document.getElementById("editorPill")
 export const gamePill = document.getElementById("gamePill")
 const patreonPill = document.getElementById("patreonPill")
-const recordsPill = document.getElementById("recordsPill")
 
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
@@ -87,6 +86,8 @@ const panicDownloadButton = document.getElementById("panicDownloadButton");
 const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
 const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
 const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
+const migrateResultsButton = document.getElementById("migrateResultsButton");
+const migrateResultsMenu = document.getElementById("migrateResultsMenu");
 const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
 const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
 const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
@@ -2204,14 +2205,14 @@ function loadRecordsExportOptions() {
         });
 }
 
-if (recordsPill) {
-    recordsPill.addEventListener("click", function () {
-        document.querySelector("#patreonChanges").classList.add("d-none")
-        document.querySelector("#editorChanges").classList.add("d-none")
-        document.querySelector("#gameChanges").classList.add("d-none")
-        document.querySelector("#recordsChanges").classList.remove("d-none")
-        loadRecordsExportOptions();
-    })
+if (migrateResultsButton && migrateResultsMenu) {
+    migrateResultsButton.addEventListener("click", function () {
+        // Runs before the generic dropdown toggle, so "open" is not set yet when opening
+        if (!this.classList.contains("open")) loadRecordsExportOptions();
+    });
+    migrateResultsMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+    });
 }
 
 if (exportRecordsSeasonsButton) {
@@ -2228,6 +2229,7 @@ if (exportRecordsSeasonsButton) {
             const blob = new Blob([JSON.stringify(response.content, null, 2)], { type: "application/json" });
             saveAs(blob, filename);
             new_update_notifications("Seasons records exported", "success");
+            migrateResultsButton.classList.remove("open");
         });
     });
 }
@@ -2247,7 +2249,7 @@ if (importRecordsSeasonsButton && importRecordsSeasonsInput) {
             const command = new Command("importRecordsSeasons", { archive });
             command.promiseExecute().then(() => {
                 new Command("saveSelected", {}).execute();
-                loadRecordsExportOptions();
+                migrateResultsButton.classList.remove("open");
             });
         };
         reader.readAsText(file);
@@ -2413,21 +2415,18 @@ gamePill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.remove("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
-    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 editorPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.remove("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
-    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 patreonPill.addEventListener("click", function () {
     document.querySelector("#patreonChanges").classList.remove("d-none")
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
-    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 if (turningPointsFrequencySlider) {
@@ -3239,7 +3238,8 @@ document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
         e.stopPropagation();
 
         document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
-            if (openDropdown !== dropdown) {
+            // Keep a parent dropdown open when the clicked dropdown lives inside its menu
+            if (openDropdown !== dropdown && !openDropdown.parentElement.contains(dropdown)) {
                 openDropdown.classList.remove("open");
             }
         });

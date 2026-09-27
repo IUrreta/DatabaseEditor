@@ -24,6 +24,9 @@ const equalEnginesSlider = document.getElementById("equalEnginesSlider");
 const equalEnginesValue = document.getElementById("equalEnginesValue");
 const equalEnginesApplyButton = document.getElementById("equalEnginesApplyButton");
 const equalEngineStatsCheckbox = document.getElementById("equalEngineStatsCheckbox");
+const engineLifeSlider = document.getElementById("engineLifeSlider");
+const engineLifeValue = document.getElementById("engineLifeValue");
+const engineLifeApplyButton = document.getElementById("engineLifeApplyButton");
 
 const divsTeamsArray = [teamsDiv, enginesDiv]
 
@@ -1464,6 +1467,19 @@ if (equalEnginesApplyButton && equalEnginesSlider) {
         });
 
         new Command("editEngine", { engines: engines }).execute();
+        document.getElementById("performanceMoreOptionsButton").classList.remove("open");
+    });
+}
+
+if (engineLifeSlider && engineLifeValue) {
+    engineLifeSlider.addEventListener("input", function () {
+        engineLifeValue.textContent = `${this.value}%`;
+    });
+}
+
+if (engineLifeApplyButton && engineLifeSlider) {
+    engineLifeApplyButton.addEventListener("click", function () {
+        new Command("setAllPowerUnitCondition", { condition: Number(engineLifeSlider.value) / 100 }).execute();
         document.getElementById("performanceMoreOptionsButton").classList.remove("open");
     });
 }

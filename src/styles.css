@@ -1488,7 +1488,8 @@ input[type="checkbox"]:focus {
 .quali-comparison::-webkit-scrollbar,
 .race-comparison::-webkit-scrollbar,
 .script-view::-webkit-scrollbar,
-#yearMenu::-webkit-scrollbar {
+#yearMenu::-webkit-scrollbar,
+#recordsSeasonExportMenu::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -1519,7 +1520,8 @@ input[type="checkbox"]:focus {
 .quali-comparison::-webkit-scrollbar-thumb,
 .race-comparison::-webkit-scrollbar-thumb,
 .script-view::-webkit-scrollbar-thumb,
-#yearMenu::-webkit-scrollbar-thumb {
+#yearMenu::-webkit-scrollbar-thumb,
+#recordsSeasonExportMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -1551,7 +1553,8 @@ input[type="checkbox"]:focus {
 .quali-comparison::-webkit-scrollbar-thumb:hover,
 .race-comparison::-webkit-scrollbar-thumb:hover,
 .script-view::-webkit-scrollbar-thumb:hover,
-#yearMenu::-webkit-scrollbar-thumb:hover {
+#yearMenu::-webkit-scrollbar-thumb:hover,
+#recordsSeasonExportMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -14722,18 +14725,6 @@ a.bi-custom-patreon.close-slide-up {
   gap: 5px;
 }
 
-#recordsChanges{
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-}
-
-.dropdown-and-button-export{
-  display: flex;
-  flex-direction: row;
-  gap: 5px;
-}
-
 #patreonChanges>.api-key-section {
   margin-top: 10px;
   padding-top: 5px;
@@ -18286,8 +18277,21 @@ p.news-error-api-key {
   pointer-events: auto;
 }
 
-.performance-more-options .redesigned-dropdown.open i {
+.performance-more-options > .redesigned-dropdown.open i {
   transform: none;
+}
+
+#performanceMoreOptionsButton,
+#migrateResultsButton {
+  color: var(--text-secondary);
+}
+
+#performanceMoreOptionsButton:hover,
+#performanceMoreOptionsButton.open,
+#migrateResultsButton:hover,
+#migrateResultsButton.open {
+  color: var(--new-primary);
+  background-color: var(--new-primary-transparent);
 }
 
 .performance-options-menu {
@@ -18369,7 +18373,8 @@ p.news-error-api-key {
 }
 
 #equalCarsValue,
-#equalEnginesValue {
+#equalEnginesValue,
+#engineLifeValue {
   color: var(--new-primary);
   width: 48px;
   text-align: center;
@@ -20091,10 +20096,45 @@ p.news-error-api-key {
   object-fit: contain;
 }
 
-#exportRecordsSeasonsButton, #importRecordsSeasonsButton{
-  width: max-content;
+#migrateResultsMenu {
+  width: 320px;
 }
 
-#recordsSeasonExportButton{
-  max-width: 260px;
+/* The generic :has() dropdown rules also match nested menus, so scope visibility by id */
+.performance-more-options:has(> #migrateResultsButton.open) > #migrateResultsMenu,
+.records-export-dropdown:has(> #recordsSeasonExportButton.open) > #recordsSeasonExportMenu {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.performance-more-options:has(> #migrateResultsButton:not(.open)) > #migrateResultsMenu,
+.records-export-dropdown:has(> #recordsSeasonExportButton:not(.open)) > #recordsSeasonExportMenu {
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+}
+
+.dropdown-and-button-export {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+#recordsSeasonExportButton {
+  max-width: 200px;
+}
+
+#recordsSeasonExportMenu {
+  min-width: 140px;
+  max-height: 240px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#importRecordsSeasonsButton {
+  display: block;
+  margin: 10px 0 0 auto;
 }
