@@ -1489,7 +1489,8 @@ input[type="checkbox"]:focus {
 .race-comparison::-webkit-scrollbar,
 .script-view::-webkit-scrollbar,
 #yearMenu::-webkit-scrollbar,
-#recordsSeasonExportMenu::-webkit-scrollbar {
+#recordsSeasonExportMenu::-webkit-scrollbar,
+#regulations .regulations-table-body::-webkit-scrollbar {
   width: 4px;
 }
 
@@ -1521,7 +1522,8 @@ input[type="checkbox"]:focus {
 .race-comparison::-webkit-scrollbar-thumb,
 .script-view::-webkit-scrollbar-thumb,
 #yearMenu::-webkit-scrollbar-thumb,
-#recordsSeasonExportMenu::-webkit-scrollbar-thumb {
+#recordsSeasonExportMenu::-webkit-scrollbar-thumb,
+#regulations .regulations-table-body::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
@@ -1554,7 +1556,8 @@ input[type="checkbox"]:focus {
 .race-comparison::-webkit-scrollbar-thumb:hover,
 .script-view::-webkit-scrollbar-thumb:hover,
 #yearMenu::-webkit-scrollbar-thumb:hover,
-#recordsSeasonExportMenu::-webkit-scrollbar-thumb:hover {
+#recordsSeasonExportMenu::-webkit-scrollbar-thumb:hover,
+#regulations .regulations-table-body::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
 
@@ -3892,162 +3895,129 @@ body.og-theme .main-calendar-section {
   flex-direction: column;
 }
 
-#regulations .main-viewer-section.points-and-cfd{
-  margin-left: 0px;
-  flex-grow: 1;
-}
-
-#regulations .custom-input-number{
-  padding: 0 3px;
-}
-
-#regulations .small-regulations .custom-input-number{
-  max-width: 25px;
-}
-
-#regulations .main-viewer-section.small-regulations{
-  width: 36%;
-}
-
-#regulations .main-viewer-section.small-regulations .viewer-element{
-  height: 56px;
-}
-
 #regulations .regulations-main {
   flex: 1;
   min-height: 0;
-  gap: 14px;
   max-height: calc(100% - 110px);
-}
-
-#regulations .regulations-panels {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(260px, 0.9fr) minmax(340px, 1.2fr);
   gap: 14px;
+  padding: 0 14px;
+}
+
+#regulations .regulations-card {
   min-height: 0;
-}
-
-#regulations .regulations-panels .viewer-details {
-  min-height: 0;
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-#regulations .viewer-details {
-  padding: 14px;
-  display: flex;
-  flex-direction: column;
   gap: 12px;
-}
-
-#regulations .viewer-title {
-  font-family: 'Formula1Bold';
-  font-size: 18px;
-  color: var(--white-general);
-}
-
-#regulations .viewer-title-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-#regulations .viewer-element {
-  background-color: var(--elements);
-  border-radius: 10px;
-  padding: 10px 12px;
-  box-shadow: var(--shadow-s);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-#regulations .viewer-element-name {
-  color: var(--text-secondary);
-  font-size: 16px;
-}
-
-#regulations .viewer-element .stat-number {
-  gap: 6px;
-  margin: 0px !important;
-}
-
-#regulations .regulations-table-wrap {
-  overflow-x: auto;
-}
-
-#regulations .regulations-grid {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.regulations-grid-resources .regulations-grid-header,
-.regulations-grid-resources .regulations-row,
-.regulations-grid-points .regulations-grid-header,
-.regulations-grid-points .regulations-row {
-  justify-content: space-between;
-}
-
-#regulations .regulations-grid-header {
-  display: flex;
-  gap: 8px;
-  padding: 0 10px 6px;
-}
-
-#regulations .regulations-grid-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-#regulations .regulations-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background-color: color-mix(in srgb, var(--background) 55%, transparent);
-  border-radius: 8px;
-  padding: 8px 10px;
-}
-
-#regulations .regulations-cell {
   color: var(--text-general);
 }
 
-#regulations .regulations-colheader {
-  font-family: 'Formula1Bold';
+/* Keep titles static: the Records Hub bento hover colors don't apply here */
+#regulations .regulations-card:hover .bento-title {
+  color: var(--text-general);
+}
+
+#regulations .regulations-card:hover .bento-subtitle {
+  color: var(--text-tertiary);
+}
+
+#regulations .regulations-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#regulations .regulations-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#regulations .regulations-card-actions .button-with-icon {
+  font-size: 14px;
+  gap: 6px;
+}
+
+#regulations .regulations-label {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+#regulations .regulations-section-label {
+  margin-top: 6px;
   font-size: 12px;
   text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+/* Sporting rules */
+#regulations .regulations-cost-cap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--background) 45%, transparent);
+}
+
+#regulations .regulations-cost-cap .custom-input-number {
+  max-width: 180px;
+  font-size: 22px;
+}
+
+#regulations .regulations-cost-cap .unit-label {
+  font-size: 16px;
   color: var(--text-secondary);
-  white-space: nowrap;
 }
 
-#regulations .regulations-keycell {
-  font-family: 'Formula1Bold';
-  color: var(--white-general);
-  white-space: nowrap;
-  text-align: center;
-  width: 45px;
-  text-align: center;
-  cursor: default;
+#regulations .regulations-limits {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
 }
 
-#regulations #regPointSchemeBody input.custom-input-number,
-#regulations #regResourcePackageBody input.custom-input-number,
-.regulations-grid-resources .regulations-grid-header .regulations-colheader,
-.regulations-grid-points .regulations-grid-header .regulations-colheader {
-  width: 45px;
-  text-align: center;
+#regulations .regulations-limit {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--background) 45%, transparent);
 }
 
-.wind-tunnel-header, .points-header {
-  width: min-content !important;
+#regulations .regulations-limit .stat-number {
+  justify-content: space-between;
+  margin: 0 !important;
 }
 
-#regulations #regSpendingCap.custom-input-number {
-  max-width: 155px;
+#regulations .regulations-limit .custom-input-number {
+  max-width: 40px;
+  font-size: 22px;
+  text-align: left;
+}
+
+#regulations .regulations-toggle-list {
+  display: flex;
+  flex-direction: column;
+}
+
+#regulations .regulations-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--separator) 60%, transparent);
+  color: var(--text-general);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#regulations .regulations-toggle-row:last-child {
+  border-bottom: none;
 }
 
 #regulations .regulations-switch.form-switch {
@@ -4056,12 +4026,103 @@ body.og-theme .main-calendar-section {
   align-items: center;
 }
 
-.form-check{
-  margin-bottom: 0px !important;
-}
-
 #regulations .regulations-switch .form-check-input {
   margin: 0;
+  font-size: 1.3rem;
+}
+
+#regulations .regulations-switch .form-check-input::after {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+#regulations .regulations-switch .form-check-input:checked::after {
+  left: calc(100% - 1.05rem - 0.01rem);
+}
+
+/* Points and resources tables */
+#regulations .regulations-table {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+#regulations .regulations-table-header,
+#regulations .regulations-table-row {
+  display: grid;
+  align-items: center;
+  gap: 12px;
+}
+
+#regulations .regulations-table-points .regulations-table-header,
+#regulations .regulations-table-points .regulations-table-row {
+  grid-template-columns: 32px 1fr;
+}
+
+#regulations .regulations-table-resources .regulations-table-header,
+#regulations .regulations-table-resources .regulations-table-row {
+  grid-template-columns: 32px 1fr 1fr;
+}
+
+#regulations .regulations-table-points .regulations-table-header span:nth-child(2) {
+  display: none;
+}
+
+#regulations .regulations-table-points .regulations-table-header span:last-child {
+  text-align: right;
+}
+
+#regulations .regulations-table-header {
+  padding: 0 4px 6px;
+  border-bottom: 1px solid var(--separator);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+#regulations .regulations-table-body {
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+#regulations .regulations-table-row {
+  padding: 5px 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--separator) 40%, transparent);
+}
+
+#regulations .regulations-pos {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+#regulations .regulations-bar-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+#regulations .regulations-bar-cell .one-stat-bar {
+  flex: 1;
+  height: 4px;
+}
+
+#regulations .regulations-bar-cell[data-col="cfd"] .one-stat-progress {
+  background-color: color-mix(in srgb, var(--new-primary) 55%, var(--text-secondary));
+}
+
+#regulations .regulations-bar-cell .custom-input-number {
+  width: 56px;
+  flex-shrink: 0;
+  padding: 0 3px;
+  text-align: right;
+}
+
+.form-check{
+  margin-bottom: 0px !important;
 }
 
 #probText {
@@ -17741,7 +17802,7 @@ p.news-error-api-key {
   width: 0;
   height: 2px;
   background-color: currentColor;
-  transition: width 0.15s;
+  transition: width 0.35s ease-out;
   pointer-events: none;
 }
 
