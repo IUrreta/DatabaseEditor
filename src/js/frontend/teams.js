@@ -177,6 +177,13 @@ function updateGaugeVisual(container, value) {
     container.style.setProperty('--perc', value);
 }
 
+document.querySelector("#refurbishAllButton").addEventListener("click", function () {
+    document.querySelectorAll("#edit_teams .gauge-container").forEach(function (gauge) {
+        gauge.querySelector(".gauge-indicator").innerText = "100%";
+        updateGaugeVisual(gauge, 100);
+    });
+});
+
 
 
 /**

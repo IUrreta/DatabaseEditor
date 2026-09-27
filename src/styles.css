@@ -11771,6 +11771,18 @@ input[type='number'] {
   min-height: 0;
 }
 
+#edit_teams .team-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+#edit_teams .team-card-header .button-with-icon {
+  font-size: 14px;
+  gap: 6px;
+}
+
 #edit_teams .team-card:has(.pit-crew-details) {
   flex: 1;
 }
@@ -11852,7 +11864,7 @@ input[type='number'] {
 
 #edit_teams .facility {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 170px 180px;
+  grid-template-columns: minmax(0, 1fr) 170px 190px;
   align-items: center;
   gap: 16px;
   height: auto;
@@ -11929,7 +11941,7 @@ input[type='number'] {
 #edit_teams .gauge-indicator {
   position: static;
   transform: none;
-  width: 42px;
+  width: 50px;
   text-align: right;
   font-size: 15px;
   color: var(--condition-color);
