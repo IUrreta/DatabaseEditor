@@ -1922,9 +1922,6 @@
     <div class="main-panel">
       <div class="blocking-div drop-div" id="blockDiv">
         <div class="hero-section">
-          <span class="badge-version" data-bs-toggle="modal" data-bs-target="#patchModal">
-            version 3.4.0-dev
-          </span>
           <h1 class="hero-title">
             DB Editor Online<br>
             <span class="gradient-text">F1 Manager</span>
@@ -1935,6 +1932,9 @@
               <span class="fake-text">Edit your F1 Manager save files directly in your browser.</span>
             </div>
           </div>
+          <span class="hero-version" data-bs-toggle="modal" data-bs-target="#patchModal">
+            <span id="heroVersionText"></span> | patch notes
+          </span>
         </div>
         <div id="dropDiv" class="drop-zone">
           <div id="idle-state" class="idle-content">
@@ -6379,65 +6379,34 @@
   </div>
   <div class="patreon-slide-up">
     <div class="patreon-slide-up-header">
-      <div class="patreon-slide-up-copy">
-        <span class="patreon-slide-up-kicker">Patreon</span>
-        <span class="slide-up-title bold-font">Your save has a story worth telling.</span>
-      </div>
+      <span class="slide-up-title bold-font">Your save has a story worth telling</span>
       <i class="bi bi-x" id="patreonSlideUpClose"></i>
     </div>
     <div class="patreon-slide-up-lede">
-      Unlock AI news, transfer rumours, and live drama, all based on what&apos;s actually happening in your season.
+      Support the editor on Patreon and unlock AI news based on what&apos;s actually happening in your season.
     </div>
-    <div class="patreon-plan-grid">
-      <div class="patreon-plan-card">
-        <div class="patreon-plan-price-block">
-          <span class="patreon-plan-price bold-font">€3</span>
-          <span class="patreon-plan-period">/mo</span>
-        </div>
-        <div class="patreon-plan-heading">
-          <span class="patreon-plan-name bold-font">Backer</span>
-          <span class="patreon-plan-tagline">Your save, brought to life</span>
-        </div>
-        <p class="patreon-plan-description">
-          Generate AI news articles about your season: race reports, transfer rumours, team drama.
-        </p>
+    <div class="patreon-plan-list">
+      <div class="patreon-plan-row">
+        <span class="patreon-plan-name bold-font">Backer</span>
+        <span class="patreon-plan-description">AI news articles about your season</span>
+        <span class="patreon-plan-price bold-font">€3/mo</span>
       </div>
-      <div class="patreon-plan-card patreon-plan-card-featured">
-        <span class="patreon-plan-badge bold-font">Most popular</span>
-        <div class="patreon-plan-price-block">
-          <span class="patreon-plan-price bold-font">€6</span>
-          <span class="patreon-plan-period">/mo</span>
-        </div>
-        <div class="patreon-plan-heading">
-          <span class="patreon-plan-name bold-font">Insider</span>
-          <span class="patreon-plan-tagline">Decide how events unfold</span>
-        </div>
-        <p class="patreon-plan-description">
-          Unlock turning points: disqualifications, mid-season transfers, race cancellations. You choose the outcome.
-        </p>
+      <div class="patreon-plan-row">
+        <span class="patreon-plan-name bold-font">Insider</span>
+        <span class="patreon-plan-description">+ Turning points, you pick the outcome</span>
+        <span class="patreon-plan-price bold-font">€6/mo</span>
       </div>
-      <div class="patreon-plan-card">
-        <div class="patreon-plan-price-block">
-          <span class="patreon-plan-price bold-font">€10</span>
-          <span class="patreon-plan-period">/mo</span>
-        </div>
-        <div class="patreon-plan-heading">
-          <span class="patreon-plan-name bold-font">Founder</span>
-          <span class="patreon-plan-tagline">Be the hand of god</span>
-        </div>
-        <p class="patreon-plan-description">
-          Spawn any news or turning point at will, at any moment. Complete control over your season&apos;s story.
-        </p>
+      <div class="patreon-plan-row">
+        <span class="patreon-plan-name bold-font">Founder</span>
+        <span class="patreon-plan-description">+ Spawn any news or turning point</span>
+        <span class="patreon-plan-price bold-font">€10/mo</span>
       </div>
     </div>
-    <div class="patreon-slide-up-actions">
-      <a class="patreon-button patreon-popup-button" href="https://www.patreon.com/cw/f1dbeditor/membership"
-        target="_blank" rel="noreferrer">
-        <div class="patreon-button-logo"></div>
-        <span class="patreon-button-text bold-font">See membership options</span>
-      </a>
-      <span class="patreon-slide-up-note">Pick the tier that matches how much control you want over your season.</span>
-    </div>
+    <a class="patreon-button patreon-popup-button" href="https://www.patreon.com/cw/f1dbeditor/membership"
+      target="_blank" rel="noreferrer">
+      <div class="patreon-button-logo"></div>
+      <span class="patreon-button-text bold-font">See membership options</span>
+    </a>
     <div class="patreon-paragraph d-none">
       <span class="">
         The Database Editor will <span class="important-text bold-font ">remain free</span>, and no core features

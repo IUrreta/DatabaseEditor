@@ -189,7 +189,7 @@ let newsAvailable = {
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
-const versionBadge = document.querySelector('.badge-version');
+const heroVersionText = document.getElementById('heroVersionText');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 let notificationsQueue = [];
@@ -2776,7 +2776,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
-    versionBadge.textContent = `Version ${versionNow}`;
+    heroVersionText.textContent = `v${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     getPatchNotes()
 
