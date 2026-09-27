@@ -122,7 +122,7 @@ export function generate_news(savednews, turningPointState) {
 
     const enginesTurningPointNews = generateEnginesTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
     const preseasonEngineSwitchTurningPointNews = generatePreseasonEngineSwitchTurningPointNews(savednews, turningPointState, tpConfig);
-    const playerChildTurningPointNews = generatePlayerChildTurningPointNews(savednews, turningPointState);
+    const playerChildTurningPointNews = generatePlayerChildTurningPointNews(savednews, turningPointState, tpConfig);
     const youngDriversTurningPointNews = generateYoungDriversTurningPointNews(currentMonth, savednews, turningPointState, tpConfig);
 
     let aduoTPsEnabled = queryDB(`SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`, [], 'singleValue');
@@ -329,11 +329,11 @@ export function generateTurningResponse(turningPointData, type, maxDate, outcome
         if (outcome === "positive") {
             createPlayerChildDriver(turningPointData);
         }
-        setCustomSaveConfig("playerChildTurningPointStatus", outcome === "positive" ? "accepted" : "declined");
+        setCustomSaveConfig(`playerChildTurningPointStatus_${turningPointData.season}`, outcome === "positive" ? "accepted" : "declined");
         newEntry = {
             id: `turning_point_outcome_player_child_${turningPointData.season}`,
             title: generateTurningPointTitle(turningPointData, 111, outcome),
-            image: turningPointData.childDraft.facePath,
+            image: getImagePath(null, null, "young"),
             data: turningPointData,
             date: maxDate + 1,
             turning_point_type: outcome,
@@ -1423,13 +1423,19 @@ function generatePreseasonEngineSwitchTurningPointNews(savednews = {}, turningPo
     return newsList;
 }
 
-function generatePlayerChildTurningPointNews(savednews = {}, turningPointState = {}) {
+function generatePlayerChildTurningPointNews(savednews = {}, turningPointState = {}, tpConfig = null) {
     const [currentDay, season] = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], "singleRow") || [];
     const entryId = `turning_point_player_child_${season}`;
     if (savednews[entryId]) return [{ id: entryId, ...savednews[entryId] }];
 
-    const status = queryDB(
-        `SELECT value FROM Custom_Save_Config WHERE key = 'playerChildTurningPointStatus'`,
+    const seasonStatus = queryDB(
+        `SELECT value FROM Custom_Save_Config WHERE key = ?`,
+        [`playerChildTurningPointStatus_${season}`],
+        "singleValue"
+    );
+    // Offers are capped per save (legacy key without season counts as one)
+    const offersCount = queryDB(
+        `SELECT COUNT(*) FROM Custom_Save_Config WHERE key LIKE 'playerChildTurningPointStatus%'`,
         [],
         "singleValue"
     );
@@ -1449,7 +1455,15 @@ function generatePlayerChildTurningPointNews(savednews = {}, turningPointState =
         "singleValue"
     );
 
-    if (status || !nationality || firstRaceDay == null || Number(currentDay) >= Number(firstRaceDay)) {
+    // Roll exactly once per season, and only while the championship is still in preseason.
+    if (turningPointState.playerChild !== undefined || seasonStatus ||
+        offersCount >= getTurningPointMax("playerChild", tpConfig) || !nationality ||
+        firstRaceDay == null || Number(currentDay) >= Number(firstRaceDay)) {
+        return [];
+    }
+
+    if (Math.random() >= getTurningPointChance("playerChild", tpConfig)) {
+        turningPointState.playerChild = "None";
         return [];
     }
 
@@ -1469,7 +1483,13 @@ function generatePlayerChildTurningPointNews(savednews = {}, turningPointState =
         nationality: String(nationality).toUpperCase(),
         lastName: playerLastName,
         gender: 0,
-        age: 18
+        age: 18,
+        statsProfile: {
+            base: [62, 74],
+            stats: [55, 85],
+            improvability: [70, 95],
+            marketabilityBonus: 10
+        }
     });
     const reason = randomPick([
         "a late academy reshuffle after winter testing",
@@ -1496,11 +1516,11 @@ function generatePlayerChildTurningPointNews(savednews = {}, turningPointState =
     };
 
     turningPointState.playerChild = data;
-    setCustomSaveConfig("playerChildTurningPointStatus", "offered");
+    setCustomSaveConfig(`playerChildTurningPointStatus_${season}`, "offered");
     return [{
         id: entryId,
         title: generateTurningPointTitle(data, 111, "original"),
-        image: childDraft.facePath,
+        image: getImagePath(null, null, "young"),
         data,
         date: Number(currentDay),
         turning_point_type: "original",
@@ -1510,8 +1530,8 @@ function generatePlayerChildTurningPointNews(savednews = {}, turningPointState =
 
 function createPlayerChildDriver(turningPointData) {
     const existingDriverId = queryDB(
-        `SELECT value FROM Custom_Save_Config WHERE key = 'playerChildDriverId'`,
-        [],
+        `SELECT value FROM Custom_Save_Config WHERE key = ?`,
+        [`playerChildDriverId_${turningPointData.season}`],
         "singleValue"
     );
     if (existingDriverId) {
@@ -1536,7 +1556,7 @@ function createPlayerChildDriver(turningPointData) {
             "run"
         );
         transferJuniorDriver(created.staffId, turningPointData.teamId, turningPointData.posInTeam, getGlobals().yearIteration);
-        setCustomSaveConfig("playerChildDriverId", created.staffId);
+        setCustomSaveConfig(`playerChildDriverId_${turningPointData.season}`, created.staffId);
         turningPointData.childDriverId = Number(created.staffId);
         queryDB("COMMIT", [], "run");
     } catch (error) {

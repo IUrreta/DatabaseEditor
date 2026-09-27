@@ -772,6 +772,11 @@ export const turningPointsTuningByType = {
         chance: [0.59, 0.59, 0.59, 0.59, 0.59],
         max: [1, 1, 1, 1, 1],
     },
+    playerChild: {
+        // One preseason roll per season; max is the total number of child offers per save.
+        chance: [0.05, 0.1, 0.2, 0.35, 0.5],
+        max: [2, 2, 2, 2, 2],
+    },
 };
 
 export const defaultColors = {

@@ -35,7 +35,7 @@ export function fetchRandomStaffDraft(typeStaffRaw, gameYear = "24", overrides =
   const ageDetails = buildAgeDetails(typeStaff);
   const age = overrides.age ?? ageDetails.age;
   const retirementAge = Math.max(Number(age) + 4, ageDetails.retirementAge);
-  const stats = buildRandomStats(typeStaff);
+  const stats = buildRandomStats(typeStaff, overrides.statsProfile);
   const driverCode = typeStaff === 0 ? buildDriverCode(firstName, lastName) : "";
   const driverNumber = typeStaff === 0 ? pickAvailableDriverNumber() : 0;
   const statsArray = (typeStaff === 0)
@@ -360,17 +360,24 @@ function buildAgeDetails(typeStaff) {
   return { age, retirementAge };
 }
 
-function buildRandomStats(typeStaff) {
+// profile (optional): { base: [min, max], stats: [min, max], improvability: [min, max], marketabilityBonus }
+function buildRandomStats(typeStaff, profile = {}) {
   const statIDs = typeStaff === 0 ? DRIVER_STAT_IDS : STAFF_STAT_IDS[typeStaff];
-  const base = pickBaseRating(typeStaff);
+  const [baseMin, baseMax] = profile.base || [64, typeStaff === 0 ? 92 : 90];
+  const [statMin, statMax] = profile.stats || [64, 100];
+  const base = pickBaseRating(baseMin, baseMax);
   const spread = typeStaff === 0 ? 12 : 10;
-  const values = statIDs.map(() => statAroundBase(base, spread, { min: 64, max: 100 }));
+  const values = statIDs.map(() => statAroundBase(base, spread, { min: statMin, max: statMax }));
+  const improvability = profile.improvability
+    ? randomInt(profile.improvability[0], profile.improvability[1])
+    : statAroundBase(base, 22, { min: 0, max: 100 });
+  const marketabilityBase = base + (profile.marketabilityBonus || 0);
 
   return {
     values,
-    improvability: typeStaff === 0 ? statAroundBase(base, 22, { min: 0, max: 100 }) : undefined,
+    improvability: typeStaff === 0 ? improvability : undefined,
     aggression: typeStaff === 0 ? statAroundBase(base, 22, { min: 0, max: 100 }) : undefined,
-    marketability: typeStaff === 0 ? statAroundBase(base, 25, { min: 0, max: 100 }) : undefined
+    marketability: typeStaff === 0 ? statAroundBase(marketabilityBase, 25, { min: 0, max: 100 }) : undefined
   };
 }
 
@@ -518,9 +525,7 @@ function clampInt(n, min, max) {
   return Math.max(min, Math.min(max, Math.round(n)));
 }
 
-function pickBaseRating(typeStaff) {
-  const min = 64;
-  const max = typeStaff === 0 ? 92 : 90;
+function pickBaseRating(min, max) {
   const u = (Math.random() + Math.random()) / 2;
   return clampInt(min + u * (max - min), min, max);
 }
