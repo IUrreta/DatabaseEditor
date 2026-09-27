@@ -6227,12 +6227,6 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
   width: 100px;
 }
 
-.pit-crew-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 10px;
-}
 
 .pit-crew-details {
   display: flex;
@@ -11599,19 +11593,349 @@ input[type='number'] {
   padding-top: 5px;
 }
 
-.team-viewer {
+/* Team editor */
+#edit_teams .team-viewer {
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100% - 110px);
   display: flex;
-  flex-direction: row;
-  padding: 15px 20px;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0 14px;
 }
 
-.team-separator{
-  width: 2px;
-  background-color: var(--separator-light);
-  height: 620px;
+#edit_teams .team-viewer.d-none {
+  display: none;
 }
+
+#edit_teams .bento-item {
+  color: var(--text-general);
+}
+
+/* Keep titles static: the Records Hub bento hover colors don't apply here */
+#edit_teams .bento-item:hover .bento-title {
+  color: var(--text-general);
+}
+
+#edit_teams .bento-item:hover .bento-subtitle {
+  color: var(--text-tertiary);
+}
+
+#edit_teams .team-section-label {
+  margin: 6px 0 2px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+}
+
+#edit_teams .team-field-label {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+#edit_teams .custom-input-number {
+  max-width: none;
+  padding: 0 4px;
+  font-size: 18px;
+  text-align: left;
+}
+
+#edit_teams .input-buttons {
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Header */
+#edit_teams .team-hero {
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 14px 18px;
+  overflow: visible;
+}
+
+/* Same gradient as one side of the driver comparison header, in the team color.
+   The team color only exists as a background class, so the fade is done with a mask */
+#edit_teams .team-hero-accent {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  -webkit-mask-image: linear-gradient(to right, black -39%, transparent 36%);
+  mask-image: linear-gradient(to right, black -39%, transparent 36%);
+  opacity: 0.45;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#edit_teams .team-hero-identity,
+#edit_teams .team-hero-stats {
+  position: relative;
+  z-index: 1;
+}
+
+#edit_teams .team-hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+#edit_teams .team-hero-logo {
+  height: 38px;
+  width: 38px;
+  object-fit: contain;
+}
+
+#edit_teams .team-hero-logo-masked {
+  -webkit-mask: url('/assets/images/logos/mclaren.svg') no-repeat center / contain;
+  mask: url('/assets/images/logos/mclaren.svg') no-repeat center / contain;
+  background-color: var(--mclaren-primary);
+}
+
+#edit_teams .team-hero-name {
+  font-size: 28px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#edit_teams .team-hero-stats {
+  display: flex;
+  align-items: stretch;
+  margin-left: auto;
+}
+
+#edit_teams .team-hero-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 18px;
+  border-left: 1px solid var(--separator);
+}
+
+#edit_teams .team-hero-stat.d-none {
+  display: none;
+}
+
+#edit_teams #confidence {
+  align-items: flex-end;
+  padding-right: 0;
+}
+
+#edit_teams #confidenceInput {
+  text-align: right;
+}
+
+#edit_teams .team-hero-stat .input-and-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#edit_teams .team-hero-stat .custom-input-number {
+  font-size: 22px;
+}
+
+#edit_teams #teamBudgetInput,
+#edit_teams #costCapInput {
+  min-width: 0;
+  width: 150px;
+}
+
+#edit_teams #confidenceInput {
+  min-width: 0 !important;
+  width: 48px;
+}
+
+/* Body */
+#edit_teams .team-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: 14px;
+}
+
+#edit_teams .team-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 0;
+}
+
+#edit_teams .team-card {
+  gap: 10px;
+  min-height: 0;
+}
+
+#edit_teams .team-card:has(.pit-crew-details) {
+  flex: 1;
+}
+
+/* Objectives */
+#edit_teams .team-objective {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--separator) 60%, transparent);
+}
+
+#edit_teams .team-objective:last-child {
+  border-bottom: none;
+}
+
+#edit_teams .team-objective .input-and-buttons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#edit_teams #seasonObjectiveInput {
+  width: 36px;
+}
+
+#edit_teams #longTermInput {
+  min-width: 0;
+  width: 62px;
+}
+
+#edit_teams #objAndYear {
+  gap: 10px;
+}
+
+/* Pit crew */
+#edit_teams .pit-crew-details {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: space-evenly;
+  gap: 14px 22px;
+}
+
+#edit_teams .pit-crew-details .one-stat-panel {
+  width: auto;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+#edit_teams .pit-crew-details .one-stat-panel input {
+  width: 52px;
+  padding: 0;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* Facilities */
+#edit_teams .team-facilities {
+  min-height: 0;
+}
+
+#edit_teams .main-second-viewer {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+#edit_teams .facility-group:not(:first-child) {
+  margin-top: 10px;
+}
+
+#edit_teams .facility {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 170px 180px;
+  align-items: center;
+  gap: 16px;
+  height: auto;
+  margin: 0;
+  padding: 6px 2px;
+  border-bottom: 1px solid color-mix(in srgb, var(--separator) 40%, transparent);
+}
+
+#edit_teams .facility-name {
+  width: auto;
+  font-size: 15px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+#edit_teams .facility-level-number {
+  font-family: "NumbersFont";
+  font-size: 14px;
+  color: var(--text-tertiary);
+}
+
+#edit_teams .facility-level {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+#edit_teams .facility-level-indicator {
+  margin: 0;
+  padding: 0;
+  gap: 4px;
+}
+
+#edit_teams .level {
+  height: 6px;
+  border-radius: 1px;
+}
+
+#edit_teams .facility .bi-chevron-right {
+  margin-right: 0;
+}
+
+#edit_teams .gauge-and-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 0;
+}
+
+/* Condition: the gauge container is drawn as a horizontal bar from --perc,
+   colored from the app red (0%) to the app green (100%), passing through yellow */
+#edit_teams .gauge-container {
+  --condition-color: color-mix(in hsl, var(--positive-general) calc(var(--perc) * 1%), var(--negative-general));
+  flex: 1;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: inherit;
+}
+
+#edit_teams .gauge-container::before {
+  content: '';
+  flex: 1;
+  height: 4px;
+  border-radius: 1px;
+  background: linear-gradient(to right,
+      var(--condition-color) calc(var(--perc) * 1%),
+      var(--background) calc(var(--perc) * 1%));
+  transition: background 0.15s;
+}
+
+#edit_teams .gauge-indicator {
+  position: static;
+  transform: none;
+  width: 42px;
+  text-align: right;
+  font-size: 15px;
+  color: var(--condition-color);
+  font-family: "Formula1Bold";
+}
+
 
 #teamBudgetInput {
   min-width: 130px;
@@ -11627,27 +11951,9 @@ input[type='number'] {
   width: 100%;
 }
 
-.component-and-title {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  gap: 5px;
-}
 
-.component-and-title:has(.pit-crew-details) {
-  gap: 0px;
-}
 
-.viewer-component {
-  display: flex;
-  flex-direction: row;
-}
 
-.facility-component {
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-}
 
 .facility,
 .facility-level-indicator,
@@ -11841,19 +12147,7 @@ input[type='number'] {
   padding: 0;
 }
 
-#viewer-first {
-  width: 49%;
-  padding-right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
 
-#viewer-second {
-  width: 50%;
-  padding-left: 20px;
-  align-self: flex-start;
-}
 
 .separator {
   width: 2px;
@@ -11953,8 +12247,6 @@ input[type='number'] {
   background-color: var(--white-general) !important;
 }
 
-.viewer-component .custom-input-number,
-.facility-component .custom-input-number,
 .facility-component-lg .custom-input-number {
   background-color: transparent !important;
   text-align: center;
@@ -12012,26 +12304,9 @@ input[type='number'] {
   text-align: center;
 }
 
-.component-title {
-  font-size: 20px;
-  color: var(--text-secondary);
-}
 
-.first-component,
-.second-component {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 3px;
-}
 
-.first-component{
-  width: 35%;
-}
 
-.second-component{
-  flex-grow: 1;
-}
 
 #editorPill {
   width: 81px;
@@ -18501,17 +18776,7 @@ p.news-error-api-key {
   font-size: 18px;
 }
 
-.pit-crew-middle {
-  border-left: 2px solid var(--separator-light);
-  border-radius: 0;
-  border-right: 2px solid var(--separator-light);
-  padding: 0 12px;
-}
 
-.pit-crew-group .one-stat-panel {
-  padding: 0 12px;
-  border-radius: 0;
-}
 
 .team-viewer .bar-container {
   height: auto;
@@ -18535,30 +18800,9 @@ p.news-error-api-key {
   font-family: sans-serif;
 }
 
-.gauge-svg {
-  width: 100%;
-  height: 100%;
-  transform: rotate(135deg);
-}
 
-.gauge-circle {
-  fill: none;
-  stroke-width: 8;
-  stroke-linecap: round;
-}
 
-.gauge-bg {
-  stroke: var(--separator-light);
-  stroke-dasharray: 212 283;
-}
 
-.gauge-progress {
-  stroke: var(--positive-general);
-  transition: stroke-dashoffset 0.15s ease;
-
-  stroke-dasharray: 212 283;
-  stroke-dashoffset: calc(212 - (212 * var(--perc) / 100));
-}
 
 .gauge-indicator{
   position: absolute;

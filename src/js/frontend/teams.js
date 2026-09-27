@@ -1,7 +1,7 @@
-import { team_dict } from "./config";
+import { team_dict, logos_disc } from "./config";
 import { Command } from "../backend/command.js";
 import { manage_stat_bar } from "./stats";
-import { attachHold } from "./renderer.js";
+import { attachHold, custom_team } from "./renderer.js";
 
 export let teamCod;
 let currYear;
@@ -15,8 +15,10 @@ const MAX_ARC_LENGTH = 212;
  */
 document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem) {
     elem.addEventListener("click", function () {
-        document.querySelector("#teamButton span").innerText = elem.querySelector(".team-menu-name").innerText;
+        const teamName = elem.querySelector(".team-menu-name").innerText;
+        document.querySelector("#teamButton span").innerText = teamName;
         teamCod = elem.dataset.teamid;
+        fillTeamHero(teamName);
         let data = {
             teamID: teamCod,
         }
@@ -31,6 +33,21 @@ document.querySelector("#teamMenu").querySelectorAll("a").forEach(function (elem
 
 })
 
+
+/**
+ * Fills the header with the selected team's name, logo and color
+ */
+function fillTeamHero(teamName) {
+    document.querySelector("#teamHeroName").innerText = teamName;
+    document.querySelector("#teamHeroAccent").className = "team-hero-accent " + team_dict[teamCod] + "bar-primary";
+
+    const logoImg = document.querySelector("#teamHeroLogo");
+    const logoMasked = document.querySelector("#teamHeroLogoMask");
+    // McLaren's logo is a masked svg colored with the team color, like in Attributes
+    logoMasked.classList.toggle("d-none", teamCod !== "2");
+    logoImg.classList.toggle("d-none", teamCod === "2");
+    logoImg.src = logos_disc[teamCod];
+}
 
 /**
  * Listener for the objective menu dropdown
@@ -74,12 +91,16 @@ function addContinuousListener(element, selector, incrementCallback, decrementCa
     });
 }
 
-attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-plus"), document.querySelector("#longTermInput"), +1, { min: 2023, max: 2023 + 1000 });
-attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-dash"), document.querySelector("#longTermInput"), -1, { min: 2023, max: 2023 + 1000 });
+// Long-term objective can't end before the current season
+const getLongTermMin = () => Number(currYear ?? 2023);
+attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-plus"), document.querySelector("#longTermInput"), +1, { min: getLongTermMin, max: 2023 + 1000 });
+attachHold(document.querySelector("#objAndYear .input-and-buttons .bi-dash"), document.querySelector("#longTermInput"), -1, { min: getLongTermMin, max: 2023 + 1000 });
 
 
-attachHold(document.querySelector("#seasonObjective .bi-plus"), document.querySelector("#seasonObjectiveInput"), -1, { min: 1, max: 10 });
-attachHold(document.querySelector("#seasonObjective .bi-dash"), document.querySelector("#seasonObjectiveInput"), +1, { min: 1, max: 10 });
+// Season objective is a finishing position, limited by the number of teams on the grid
+const getGridSize = () => (custom_team ? 11 : 10);
+attachHold(document.querySelector("#seasonObjective .bi-plus"), document.querySelector("#seasonObjectiveInput"), -1, { min: 1, max: getGridSize });
+attachHold(document.querySelector("#seasonObjective .bi-dash"), document.querySelector("#seasonObjectiveInput"), +1, { min: 1, max: getGridSize });
 
 
 attachHold(document.querySelector("#confidence .bi-plus"), document.querySelector("#confidence input"), +5, { min: 0, max: 100 });
@@ -154,13 +175,6 @@ document.querySelectorAll(".gauge-and-buttons .bi-dash").forEach(btn => {
 
 function updateGaugeVisual(container, value) {
     container.style.setProperty('--perc', value);
-    //if value is 100 set font-size to 12px
-    const textSpan = container.querySelector('.gauge-indicator');
-    if (value === 100) {
-        textSpan.style.fontSize = '10px';
-    } else {
-        textSpan.style.fontSize = '';
-    }
 }
 
 
@@ -187,14 +201,10 @@ export function fillLevels(teamData) {
             if (gaugeText) {
                 gaugeText.innerText = percentage + '%';
             }
-            if (percentage === 100) {
-                gaugeText.style.fontSize = '10px';
-            } else {
-                gaugeText.style.fontSize = '';
-            }
         }
 
         indicator.dataset.value = level
+        updateLevelNumber(indicator)
         let value = level
         let levels = indicator.querySelectorAll('.level');
 
@@ -308,6 +318,10 @@ function manageConfidence(data) {
     }
 }
 
+function updateLevelNumber(indicator) {
+    indicator.closest(".facility").querySelector(".facility-level-number").innerText = indicator.dataset.value;
+}
+
 /**
  * Listeners for the level indicators for each facility
  */
@@ -320,6 +334,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-right").forE
         }
 
         indicator.setAttribute('data-value', value);
+        updateLevelNumber(indicator);
         let levels = indicator.querySelectorAll('.level');
 
         if (value <= levels.length) {
@@ -337,6 +352,7 @@ document.querySelector("#edit_teams").querySelectorAll(".bi-chevron-left").forEa
         }
 
         indicator.setAttribute('data-value', value);
+        updateLevelNumber(indicator);
         let levels = indicator.querySelectorAll('.level');
 
         if (value < levels.length) {

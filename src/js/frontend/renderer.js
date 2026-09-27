@@ -3255,8 +3255,9 @@ document.addEventListener("click", function () {
 });
 
 export function attachHold(btn, el, step = 1, opts = {}) {
-    const min = opts.min ?? -Infinity;
-    const max = opts.max ?? Infinity;
+    // min/max can be functions when the limit depends on the loaded save
+    const getMin = () => (typeof opts.min === 'function' ? opts.min() : (opts.min ?? -Infinity));
+    const getMax = () => (typeof opts.max === 'function' ? opts.max() : (opts.max ?? Infinity));
     const progressEl = opts.progressEl ?? null;
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
@@ -3311,7 +3312,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     };
 
     const setNum = (val) => {
-        const clamped = Math.max(min, Math.min(max, val));
+        const clamped = Math.max(getMin(), Math.min(getMax(), val));
         setText(clamped);
         updateProgress(clamped);
         onChange(clamped, currentPercent(clamped)); // Devuelve el valor numérico limpio
@@ -3364,6 +3365,8 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
+        const min = getMin();
+        const max = getMax();
         if (max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
