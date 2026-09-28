@@ -23,6 +23,11 @@
   src: url("../assets/fonts/Formula1-Display-Black.ttf") format('truetype');
 }
 
+@font-face {
+  font-family: 'Figtree';
+  src: url("../assets/fonts/Figtree.ttf") format('truetype');
+  font-weight: 300 900;
+}
 .bold-font {
   font-family: 'Formula1Bold' !important;
 }
@@ -18240,6 +18245,132 @@ p.news-error-api-key {
 
 .socials-container a.bi-custom-patreon::before {
   background-color: var(--text-muted);
+}
+
+/* --- GRAND CHELEM RACING PROMO --- */
+.gcr-promo {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 24px;
+  z-index: 2;
+  width: 330px;
+  height: fit-content;
+  margin: auto 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--text-general);
+  text-align: left;
+  background-color: var(--superficials);
+  border-radius: 16px;
+  box-shadow: var(--shadow-m);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeIn 0.8s ease-out 0.4s forwards;
+}
+
+.gcr-promo-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gcr-promo-icon {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 12px;
+}
+
+.gcr-promo-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.gcr-promo-title {
+  font-family: 'Figtree', system-ui, sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--hero-title);
+}
+
+.gcr-promo-desc {
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--text-muted);
+}
+
+.gcr-promo-stores {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.gcr-store-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 10px;
+  background-color: var(--elements);
+  color: var(--text-general);
+  text-decoration: none;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+}
+
+.gcr-store-button:hover {
+  color: var(--new-primary);
+  background-color: color-mix(in srgb, var(--new-primary) 18%, var(--elements));
+}
+
+.gcr-store-button i {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.gcr-store-button:hover i {
+  transform: scale(1.1);
+}
+
+.gcr-store-button:active {
+  transform: scale(0.98);
+}
+
+.gcr-store-button span {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.gcr-store-button small {
+  font-size: 8px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 1200px) {
+  .gcr-promo {
+    position: static;
+    margin-top: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gcr-promo {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .icon-circle {
