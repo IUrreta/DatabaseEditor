@@ -429,6 +429,7 @@ export function editFreezeDevelopment(state) {
   queryDB("DROP TRIGGER IF EXISTS freeze_development_stats_update", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS freeze_development_expertise_insert", [], 'run');
   queryDB("DROP TRIGGER IF EXISTS freeze_development_expertise_update", [], 'run');
+  queryDB("DROP TRIGGER IF EXISTS freeze_development_design_complete", [], 'run');
 
   if (parseInt(state) !== 1) {
     queryDB("DROP TABLE IF EXISTS Custom_Frozen_Car_Development", [], 'run');
@@ -449,6 +450,8 @@ export function editFreezeDevelopment(state) {
     )
   `, [], 'run');
 
+  // Every team is stored (the player's one refreshed here), so a team stays frozen if the player
+  // leaves it mid-season. Triggers skip whichever team the player currently manages.
   queryDB(`
     DELETE FROM Custom_Frozen_Car_Development
     WHERE TeamID = (SELECT TeamID FROM Player)
@@ -472,8 +475,7 @@ export function editFreezeDevelopment(state) {
       ON expertise.TeamID = design.TeamID
       AND expertise.PartType = design.PartType
       AND expertise.PartStat = stats.PartStat
-    WHERE design.TeamID != (SELECT TeamID FROM Player)
-      AND design.PartType BETWEEN 3 AND 8
+    WHERE design.PartType BETWEEN 3 AND 8
       AND design.ValidFrom = (SELECT CurrentSeason FROM Player_State)
       AND (design.DayCompleted > 0 OR design.DayCreated < 0)
       AND design.DesignID = (
@@ -640,4 +642,58 @@ export function editFreezeDevelopment(state) {
       WHERE TeamID = NEW.TeamID AND PartType = NEW.PartType AND PartStat = NEW.PartStat;
     END;
   `, [], 'run');
+
+  // Designs whose stats were written before their Parts_Designs row existed skip the insert trigger,
+  // so stats are also forced to the frozen values when the design is completed.
+  queryDB(`
+    CREATE TRIGGER freeze_development_design_complete
+    AFTER UPDATE OF DayCompleted ON Parts_Designs
+    FOR EACH ROW
+    WHEN NEW.TeamID != (SELECT TeamID FROM Player)
+      AND NEW.DayCompleted > 0
+    BEGIN
+      UPDATE Parts_Designs_StatValues
+      SET
+        Value = (
+          SELECT frozen.Value FROM Custom_Frozen_Car_Development frozen
+          WHERE frozen.TeamID = NEW.TeamID AND frozen.PartType = NEW.PartType
+            AND frozen.PartStat = Parts_Designs_StatValues.PartStat
+        ),
+        UnitValue = (
+          SELECT frozen.UnitValue FROM Custom_Frozen_Car_Development frozen
+          WHERE frozen.TeamID = NEW.TeamID AND frozen.PartType = NEW.PartType
+            AND frozen.PartStat = Parts_Designs_StatValues.PartStat
+        ),
+        ExpertiseGain = 0,
+        ExpertiseEffect = 0
+      WHERE DesignID = NEW.DesignID
+        AND PartStat IN (
+          SELECT frozen.PartStat FROM Custom_Frozen_Car_Development frozen
+          WHERE frozen.TeamID = NEW.TeamID AND frozen.PartType = NEW.PartType
+        );
+    END;
+  `, [], 'run');
+}
+
+// Old versions created freeze_development on Parts_Designs, which reverted every DesignWork/DayCompleted
+// change of AI designs, so they could never finish parts (not even the new season car).
+export function repairLegacyFreezeDevelopment() {
+  const triggerTable = queryDB(
+    "SELECT tbl_name FROM sqlite_master WHERE type='trigger' AND name='freeze_development'",
+    [], 'singleValue'
+  );
+  if (triggerTable !== "Parts_Designs") return;
+
+  queryDB("DROP TRIGGER freeze_development", [], 'run');
+  // Designs that already have built items were finished by the game but reverted by the old trigger.
+  queryDB(`
+    UPDATE Parts_Designs
+    SET DayCompleted = DayCreated,
+        DesignWork = DesignWorkMax
+    WHERE PartType BETWEEN 3 AND 8
+      AND DayCompleted = -1
+      AND DayCreated > 0
+      AND EXISTS (SELECT 1 FROM Parts_Items items WHERE items.DesignID = Parts_Designs.DesignID)
+  `, [], 'run');
+  editFreezeDevelopment(1);
 }

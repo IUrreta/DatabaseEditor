@@ -724,33 +724,53 @@
 
               </div>
             </div>
-            <div class="mt-3 d-none" id="turningPointsFrequencyConfig">
-              <h5 class="modal-subtitle bold-font">Turning Points Frequency</h5>
-              <div class="modal-text">
-                Scales the chance and seasonal cap for all Turning Points.
+            <div class="editor-settings-grid mt-3">
+              <div>
+                <h5 class="modal-subtitle bold-font">Your nationality</h5>
+                <div class="modal-text">
+                  Used by the news to write about you. It is saved only for this save file.
+                </div>
+                <div class="dropdown-global player-nationality-dropdown">
+                  <button type="button" class="redesigned-dropdown bold-font" id="settingsNationalityButton"
+                    aria-haspopup="true" aria-expanded="false" data-value="">
+                    <span class="player-nationality-selection">
+                      <img class="player-nationality-flag d-none" id="settingsNationalityFlag" alt="">
+                      <span class="dropdown-label">Select nationality</span>
+                    </span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu player-nationality-menu" id="settingsNationalityMenu"
+                    style="font-family: Formula1;"></ul>
+                </div>
               </div>
-              <div class="slider-and-label">
-                <input class="form-range" type="range" min="0" max="4" step="1" value="2"
-                  id="turningPointsFrequencySlider">
-                <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
+              <div class="d-none" id="turningPointsFrequencyConfig">
+                <h5 class="modal-subtitle bold-font">Turning Points Frequency</h5>
+                <div class="modal-text">
+                  Scales the chance and seasonal cap for all Turning Points.
+                </div>
+                <div class="slider-and-label">
+                  <input class="form-range" type="range" min="0" max="4" step="1" value="2"
+                    id="turningPointsFrequencySlider">
+                  <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
+                </div>
               </div>
-            </div>
-            <div class="mt-3">
-              <h5 class="modal-subtitle bold-font">Panic download</h5>
-              <div class="modal-text">
-                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in
-                the db. It might fix some issues.
+              <div>
+                <h5 class="modal-subtitle bold-font">Panic download</h5>
+                <div class="modal-text">
+                  Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in
+                  the db. It might fix some issues.
+                </div>
+                <div class="button-with-icon" id="panicDownloadButton">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <span>Panic download</span>
+                </div>
               </div>
-              <div class="button-with-icon" id="panicDownloadButton">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <span>Panic download</span>
-              </div>
-            </div>
-            <div class="mt-3">
-              <h5 class="modal-subtitle bold-font">Engine upgrades turning points</h5>
-              <div class="form-check form-switch aduo-tp-toggle-settings">
-                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="aduoTPSToggleSettings">
-                <label class="form-check-label" for="aduoTPSToggleSettings">Engine upgrades TPs</label>
+              <div>
+                <h5 class="modal-subtitle bold-font">Engine upgrades turning points</h5>
+                <div class="form-check form-switch aduo-tp-toggle-settings">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="aduoTPSToggleSettings">
+                  <label class="form-check-label" for="aduoTPSToggleSettings">Engine upgrades TPs</label>
+                </div>
               </div>
             </div>
           </div>
@@ -1533,7 +1553,7 @@
               </span>
               <i class="redesigned-chevron"></i>
             </button>
-            <ul class="redesigned-dropdown-menu" id="playerNationalityMenu" style="font-family: Formula1;"></ul>
+            <ul class="redesigned-dropdown-menu player-nationality-menu" id="playerNationalityMenu" style="font-family: Formula1;"></ul>
           </div>
           <label class="player-nationality-dont-ask">
             <input class="form-check-input" type="checkbox" id="playerNationalityDontAsk">
@@ -1947,7 +1967,7 @@
             </div>
           </div>
           <div class="gcr-promo-stores">
-            <a class="gcr-store-button" href="https://apps.apple.com/app/id0000000000" target="_blank" rel="noopener">
+            <a class="gcr-store-button" href="https://apps.apple.com/us/app/grand-chelem-racing/id6778924618" target="_blank" rel="noopener">
               <i class="bi bi-apple"></i>
               <span><small>Download on the</small>App Store</span>
             </a>
@@ -4647,6 +4667,12 @@
                   <span class="option-state default" id="equalCarsValue">50%</span>
                   <button type="button" class="confirm-modal" id="equalCarsApplyButton">Apply</button>
                 </div>
+                <label class="performance-equal-checkbox">
+                  <input class="form-check-input" type="checkbox" id="equalCarsAllPartsCheckbox">
+                  <span>
+                    <span>Also update older parts</span>
+                  </span>
+                </label>
                 <hr>
                 <div class="bold-font">Equal Engines
                   <i class="info-titles performance-option-info" tabindex="0"

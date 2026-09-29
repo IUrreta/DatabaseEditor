@@ -22,7 +22,7 @@ import { getPerformanceAllTeams, getPerformanceAllTeamsSeason, getAttributesAllT
 import { setDatabase, getMetadata, getDatabase } from "./dbManager";
 import { fetchHead2Head, fetchHead2HeadTeam } from "./scriptUtils/head2head";
 import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
-import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget, copyTeamPerformance } from "./scriptUtils/carAnalysisUtils";
+import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget, copyTeamPerformance, syncSeasonDesignsToLatest } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
 import { editCalendar, fetchCalendar, fetchPreviousSeasonCalendar } from "./scriptUtils/calendarUtils";
@@ -60,7 +60,7 @@ import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
-import { deleteProblematicTriggers, editFreezeDevelopment } from "./scriptUtils/triggerUtils.js";
+import { deleteProblematicTriggers, editFreezeDevelopment, repairLegacyFreezeDevelopment } from "./scriptUtils/triggerUtils.js";
 import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename, fetchRandomStaffAttributes, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 
@@ -396,6 +396,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Game Year", content: yearData });
 
     checkCustomTables(yearData[0]);
+    repairLegacyFreezeDevelopment();
 
     if (yearData[1] !== null) {
       setGlobals({ createTeam: true });
@@ -933,6 +934,10 @@ const workerCommands = {
             globals.yearIteration
           );
         });
+
+        if (data.updateOlderParts) {
+          targets.forEach((target) => syncSeasonDesignsToLatest(target.teamID));
+        }
       }
       else {
         targets.forEach((target) => {

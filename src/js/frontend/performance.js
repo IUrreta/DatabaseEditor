@@ -1433,6 +1433,7 @@ if (equalCarsApplyButton && equalCarsSlider) {
             mode: "performance",
             targets: targets,
             copyFastestCar: true,
+            updateOlderParts: document.getElementById("equalCarsAllPartsCheckbox").checked,
             refreshFreezeDevelopment: document.getElementById("freezeDevelopmentToggle").checked
         }).execute();
         document.getElementById("performanceMoreOptionsButton").classList.remove("open");

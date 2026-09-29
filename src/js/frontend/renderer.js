@@ -1571,6 +1571,7 @@ document.querySelector(".gear-container").addEventListener("click", function () 
     let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
         keyboard: false
     })
+    syncSettingsNationality()
     configDetailModal.show()
 })
 
@@ -1593,18 +1594,7 @@ function resetPlayerNationalityPrompt() {
     saveButton.textContent = "Save";
 }
 
-function initPlayerNationalityPrompt() {
-    const menu = document.getElementById("playerNationalityMenu");
-    const button = document.getElementById("playerNationalityButton");
-    const flag = document.getElementById("playerNationalityFlag");
-    const saveButton = document.getElementById("savePlayerNationalityButton");
-    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
-    if (!menu || !button || !flag || !saveButton || !dontAskCheckbox) return;
-
-    const syncSaveButtonState = () => {
-        saveButton.disabled = !selectedPlayerNationality && !dontAskCheckbox.checked;
-    };
-
+function populateNationalityMenu(menu, button, flag, onSelect) {
     const countries = Object.entries(inverted_countries_abreviations || {})
         .filter(([code, name]) => /^[A-Z]{2}$/.test(code) && name)
         .sort((a, b) => String(a[1]).localeCompare(String(b[1])));
@@ -1624,18 +1614,55 @@ function initPlayerNationalityPrompt() {
 
         item.append(itemFlag, label);
         item.addEventListener("click", () => {
-            selectedPlayerNationality = code;
             button.dataset.value = code;
             button.querySelector(".dropdown-label").textContent = name;
             button.classList.remove("open");
             flag.src = itemFlag.src;
             flag.alt = code;
             flag.classList.remove("d-none");
-            syncSaveButtonState();
+            onSelect(code);
         });
         fragment.appendChild(item);
     });
     menu.replaceChildren(fragment);
+}
+
+function initSettingsNationality() {
+    const menu = document.getElementById("settingsNationalityMenu");
+    const button = document.getElementById("settingsNationalityButton");
+    const flag = document.getElementById("settingsNationalityFlag");
+    populateNationalityMenu(menu, button, flag, () => { });
+}
+
+function syncSettingsNationality() {
+    const button = document.getElementById("settingsNationalityButton");
+    const flag = document.getElementById("settingsNationalityFlag");
+    const nationality = configCopy?.playerNationality || "";
+    const item = nationality ? document.querySelector(`#settingsNationalityMenu [data-value="${nationality}"]`) : null;
+
+    button.dataset.value = item ? nationality : "";
+    button.querySelector(".dropdown-label").textContent = item ? item.textContent : "Select nationality";
+    flag.src = item ? item.querySelector("img").src : "";
+    flag.alt = item ? nationality : "";
+    flag.classList.toggle("d-none", !item);
+}
+
+function initPlayerNationalityPrompt() {
+    const menu = document.getElementById("playerNationalityMenu");
+    const button = document.getElementById("playerNationalityButton");
+    const flag = document.getElementById("playerNationalityFlag");
+    const saveButton = document.getElementById("savePlayerNationalityButton");
+    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
+    if (!menu || !button || !flag || !saveButton || !dontAskCheckbox) return;
+
+    const syncSaveButtonState = () => {
+        saveButton.disabled = !selectedPlayerNationality && !dontAskCheckbox.checked;
+    };
+
+    populateNationalityMenu(menu, button, flag, (code) => {
+        selectedPlayerNationality = code;
+        syncSaveButtonState();
+    });
 
     dontAskCheckbox.addEventListener("change", syncSaveButtonState);
 
@@ -1682,6 +1709,7 @@ function managePlayerNationalityPrompt(nationality, promptDisabled) {
 }
 
 initPlayerNationalityPrompt();
+initSettingsNationality();
 
 function manage_config(info, year_config = false) {
     document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
@@ -2016,6 +2044,14 @@ export function applyConfigFromEditorUI(overrides = {}) {
         }
         if (playerTeam !== -1) {
             configCopy.playerTeam = Number(playerTeam);
+        }
+
+        const nationality = document.getElementById("settingsNationalityButton").dataset.value;
+        if (nationality && nationality !== configCopy.playerNationality) {
+            new Command("setPlayerNationality", {
+                nationality,
+                dontAskAgain: configCopy.playerNationalityPromptDisabled === 1
+            }).execute();
         }
     }
 }

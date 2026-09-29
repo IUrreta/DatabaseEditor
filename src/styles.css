@@ -16205,6 +16205,14 @@ body:has(#modpill.active) .one-change {
   color: transparent;
 }
 
+.bor-change,
+.ant-change,
+.pia-change {
+  position: relative;
+  overflow: hidden;
+  color: transparent;
+}
+
 .bor-change::before {
   content: '78';
   position: absolute;
@@ -17264,25 +17272,38 @@ body.default-theme .news-article-date {
   margin: 0;
 }
 
-.player-nationality-dropdown,
-#playerNationalityButton {
-  width: 100%;
+.editor-settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 28px;
 }
 
-#playerNationalityButton {
+@media (max-width: 700px) {
+  .editor-settings-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.player-nationality-dropdown {
+  width: 260px;
+  max-width: 100%;
+}
+
+.player-nationality-dropdown .redesigned-dropdown {
+  width: 100%;
   justify-content: space-between;
   min-height: 38px;
 }
 
 .player-nationality-selection,
-#playerNationalityMenu .redesigned-dropdown-item {
+.player-nationality-menu .redesigned-dropdown-item {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
 }
 
-#playerNationalityMenu {
+.player-nationality-menu {
   width: 100%;
   max-height: 280px;
   overflow-y: auto;
@@ -17290,7 +17311,7 @@ body.default-theme .news-article-date {
   scrollbar-color: var(--white-general) transparent;
 }
 
-#playerNationalityMenu .redesigned-dropdown-item {
+.player-nationality-menu .redesigned-dropdown-item {
   justify-content: flex-start;
 }
 
@@ -17314,7 +17335,7 @@ body.default-theme .news-article-date {
 }
 
 .player-nationality-flag,
-#playerNationalityMenu img {
+.player-nationality-menu img {
   width: 28px;
   height: 18px;
   border-radius: 3px;

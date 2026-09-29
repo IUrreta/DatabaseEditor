@@ -711,6 +711,48 @@ export function copyTeamPerformance(sourceTeamId, targetTeamId, customTeam = fal
     );
 }
 
+export function syncSeasonDesignsToLatest(teamId) {
+    const season = queryDB("SELECT CurrentSeason FROM Player_State", [], "singleValue");
+    const designs = getPartsFromTeam(teamId);
+
+    for (let partType = 3; partType < 9; partType++) {
+        const latestDesign = designs?.[partType]?.[0]?.[0];
+        if (!latestDesign) continue;
+
+        // Older designs from this season can still be fitted by the AI,
+        // so they get the same stats as the latest design.
+        queryDB(`
+            UPDATE Parts_Designs_StatValues
+            SET Value = (
+                    SELECT latest.Value
+                    FROM Parts_Designs_StatValues latest
+                    WHERE latest.DesignID = ?
+                      AND latest.PartStat = Parts_Designs_StatValues.PartStat
+                ),
+                UnitValue = (
+                    SELECT latest.UnitValue
+                    FROM Parts_Designs_StatValues latest
+                    WHERE latest.DesignID = ?
+                      AND latest.PartStat = Parts_Designs_StatValues.PartStat
+                )
+            WHERE DesignID IN (
+                    SELECT DesignID
+                    FROM Parts_Designs
+                    WHERE TeamID = ?
+                      AND PartType = ?
+                      AND ValidFrom = ?
+                      AND DesignID != ?
+                      AND (DayCompleted > 0 OR DayCreated < 0)
+                )
+              AND PartStat IN (
+                    SELECT PartStat
+                    FROM Parts_Designs_StatValues
+                    WHERE DesignID = ?
+                )
+        `, [latestDesign, latestDesign, teamId, partType, season, latestDesign, latestDesign], 'run');
+    }
+}
+
 function convertPartWeightUnitValueToValue(partType, unitValue) {
     const standardWeight = Number(carConstants.standardWeightPerPart?.[partType]);
     const minimalWeight = Number(carConstants.minimalWeightPerPart?.[partType]);
