@@ -42,6 +42,25 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="generatedStaffFaceGalleryModal" data-bs-keyboard="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal generated-face-gallery-modal">
+        <div class="modal-header custom-header">
+          <div class="generated-face-gallery-heading">
+            <h4 class="modal-title bold-font generated-face-gallery-title"></h4>
+            <p class="generated-face-gallery-subtitle"></p>
+          </div>
+        </div>
+        <div class="modal-body custom-body">
+          <div class="generated-face-gallery-status d-none"></div>
+          <div class="generated-face-gallery-grid"></div>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="contractModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -604,7 +623,9 @@
                           <div class="">SAUBER</div>
                         </a>
                         <a class="redesigned-dropdown-item bold-font" data-value="audi">
-                          <img src="../assets/images/logos/audi.png" class="audilogo">
+                          <div class="team-menu-logo">
+                            <div class="audilogo"></div>
+                          </div>
                           <div class="">AUDI</div>
                         </a>
                       </ul>
@@ -705,33 +726,53 @@
 
               </div>
             </div>
-            <div class="mt-3 d-none" id="turningPointsFrequencyConfig">
-              <h5 class="modal-subtitle bold-font">Turning Points Frequency</h5>
-              <div class="modal-text">
-                Scales the chance and seasonal cap for all Turning Points.
+            <div class="editor-settings-grid mt-3">
+              <div>
+                <h5 class="modal-subtitle bold-font">Your nationality</h5>
+                <div class="modal-text">
+                  Used by the news to write about you. It is saved only for this save file.
+                </div>
+                <div class="dropdown-global player-nationality-dropdown">
+                  <button type="button" class="redesigned-dropdown bold-font" id="settingsNationalityButton"
+                    aria-haspopup="true" aria-expanded="false" data-value="">
+                    <span class="player-nationality-selection">
+                      <img class="player-nationality-flag d-none" id="settingsNationalityFlag" alt="">
+                      <span class="dropdown-label">Select nationality</span>
+                    </span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu player-nationality-menu" id="settingsNationalityMenu"
+                    style="font-family: Formula1;"></ul>
+                </div>
               </div>
-              <div class="slider-and-label">
-                <input class="form-range" type="range" min="0" max="4" step="1" value="2"
-                  id="turningPointsFrequencySlider">
-                <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
+              <div class="d-none" id="turningPointsFrequencyConfig">
+                <h5 class="modal-subtitle bold-font">Turning Points Frequency</h5>
+                <div class="modal-text">
+                  Scales the chance and seasonal cap for all Turning Points.
+                </div>
+                <div class="slider-and-label">
+                  <input class="form-range" type="range" min="0" max="4" step="1" value="2"
+                    id="turningPointsFrequencySlider">
+                  <span class="option-state default" id="turningPointsFrequencyLabel">Default</span>
+                </div>
               </div>
-            </div>
-            <div class="mt-3">
-              <h5 class="modal-subtitle bold-font">Panic download</h5>
-              <div class="modal-text">
-                Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in
-                the db. It might fix some issues.
+              <div>
+                <h5 class="modal-subtitle bold-font">Panic download</h5>
+                <div class="modal-text">
+                  Click this if your save is stuck or bugged to download a version of your save with less fancy stuff in
+                  the db. It might fix some issues.
+                </div>
+                <div class="button-with-icon" id="panicDownloadButton">
+                  <i class="bi bi-exclamation-triangle-fill"></i>
+                  <span>Panic download</span>
+                </div>
               </div>
-              <div class="button-with-icon" id="panicDownloadButton">
-                <i class="bi bi-exclamation-triangle-fill"></i>
-                <span>Panic download</span>
-              </div>
-            </div>
-            <div class="mt-3">
-              <h5 class="modal-subtitle bold-font">Engine upgrades turning points</h5>
-              <div class="form-check form-switch aduo-tp-toggle-settings">
-                <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="aduoTPSToggleSettings">
-                <label class="form-check-label" for="aduoTPSToggleSettings">Engine upgrades TPs</label>
+              <div>
+                <h5 class="modal-subtitle bold-font">Engine upgrades turning points</h5>
+                <div class="form-check form-switch aduo-tp-toggle-settings">
+                  <input class="form-check-input custom-toggle" type="checkbox" role="switch" id="aduoTPSToggleSettings">
+                  <label class="form-check-label" for="aduoTPSToggleSettings">Engine upgrades TPs</label>
+                </div>
               </div>
             </div>
           </div>
@@ -815,22 +856,6 @@
                             id="refurbishingToggle">
                         </div>
                         <label class="form-check-label" style="margin-left: -10px;">Active</label>
-                      </div>
-                    </div>
-                    <div class="only-development d-none">
-                      <div class="modal-subtitle bold-font">Car development <span class="option-state default"
-                          id="developmentSpan">Active</span></div>
-                      <div class="modal-text">
-                        Freezing development prevents AI teams from progressing or starting new parts while your save is
-                        loaded.
-                      </div>
-                      <div class="mentality-selector">
-                        <label class="form-check-label">Active</label>
-                        <div class="form-check form-switch freeze-mentality">
-                          <input class="form-check-input custom-toggle" type="checkbox" role="switch"
-                            id="freezeDevelopmentToggle">
-                        </div>
-                        <label class="form-check-label" style="margin-left: -10px;">Frozen</label>
                       </div>
                     </div>
                   </div>
@@ -930,6 +955,17 @@
                   <div class="one-theme" id="ogTheme" data-theme="og-theme">
                     <div class="theme-title">
                       <span>OG</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
+                  </div>
+                  <div class="one-theme" id="f1ccTheme" data-theme="f1cc-theme">
+                    <div class="theme-title">
+                      <span>F1CC</span>
                       <i class="bi bi-check-lg"></i>
                     </div>
                     <div class="theme-colors">
@@ -1062,6 +1098,17 @@
                   <div class="one-theme" id="alpineTheme" data-theme="alpine-theme">
                     <div class="theme-title">
                       <span>Alpine</span>
+                      <i class="bi bi-check-lg"></i>
+                    </div>
+                    <div class="theme-colors">
+                      <div class="background-color"></div>
+                      <div class="primary-color"></div>
+                      <div class="secondary-color"></div>
+                    </div>
+                  </div>
+                  <div class="one-theme" id="gcrTheme" data-theme="gcr-theme">
+                    <div class="theme-title">
+                      <span>GCR</span>
                       <i class="bi bi-check-lg"></i>
                     </div>
                     <div class="theme-colors">
@@ -1490,6 +1537,38 @@
       </div>
     </div>
   </div>
+  <div class="modal custom-modal fade" id="playerNationalityModal" data-bs-backdrop="static"
+    data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h3 class="modal-title bold-font">Choose your nationality</h3>
+        </div>
+        <div class="modal-body custom-body player-nationality-modal-body">
+          <p>Select your nationality. Your name is read from this save file.</p>
+          <div class="dropdown-global player-nationality-dropdown">
+            <button type="button" class="redesigned-dropdown bold-font" id="playerNationalityButton"
+              aria-haspopup="true" aria-expanded="false" data-value="">
+              <span class="player-nationality-selection">
+                <img class="player-nationality-flag d-none" id="playerNationalityFlag" alt="">
+                <span class="dropdown-label">Select nationality</span>
+              </span>
+              <i class="redesigned-chevron"></i>
+            </button>
+            <ul class="redesigned-dropdown-menu player-nationality-menu" id="playerNationalityMenu" style="font-family: Formula1;"></ul>
+          </div>
+          <label class="player-nationality-dont-ask">
+            <input class="form-check-input" type="checkbox" id="playerNationalityDontAsk">
+            <span>Don’t ask again</span>
+          </label>
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal" id="cancelPlayerNationalityButton">Cancel</button>
+          <button type="button" class="confirm-modal" id="savePlayerNationalityButton" disabled>Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="newsContextModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-sm modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
@@ -1829,9 +1908,6 @@
     <div class="main-panel">
       <div class="blocking-div drop-div" id="blockDiv">
         <div class="hero-section">
-          <span class="badge-version" data-bs-toggle="modal" data-bs-target="#patchModal">
-            version 3.4.0-dev
-          </span>
           <h1 class="hero-title">
             DB Editor Online<br>
             <span class="gradient-text">F1 Manager</span>
@@ -1842,6 +1918,9 @@
               <span class="fake-text">Edit your F1 Manager save files directly in your browser.</span>
             </div>
           </div>
+          <span class="hero-version" data-bs-toggle="modal" data-bs-target="#patchModal">
+            <span id="heroVersionText"></span> | patch notes
+          </span>
         </div>
         <div id="dropDiv" class="drop-zone">
           <div id="idle-state" class="idle-content">
@@ -1881,6 +1960,26 @@
             </div>
           </div>
         </div>
+        <aside class="gcr-promo" aria-label="Grand Chelem Racing mobile game">
+          <div class="gcr-promo-head">
+            <img src="../assets/images/gcr-icon.webp" class="gcr-promo-icon" alt="">
+            <div class="gcr-promo-text">
+              <span class="gcr-promo-title">Grand Chelem Racing</span>
+              <span class="gcr-promo-desc">F1 career management on your phone</span>
+            </div>
+          </div>
+          <div class="gcr-promo-stores">
+            <a class="gcr-store-button" href="https://apps.apple.com/us/app/grand-chelem-racing/id6778924618" target="_blank" rel="noopener">
+              <i class="bi bi-apple"></i>
+              <span><small>Download on the</small>App Store</span>
+            </a>
+            <a class="gcr-store-button" href="https://play.google.com/store/apps/details?id=com.grandchelem.racing"
+              target="_blank" rel="noopener">
+              <i class="bi bi-google-play"></i>
+              <span><small>Get it on</small>Google Play</span>
+            </a>
+          </div>
+        </aside>
       </div>
       <div class="script-view hide unloaded" id="news">
         <div class="general-top-panel">
@@ -2139,7 +2238,7 @@
       </div>
       <div class="script-view hide unloaded" id="season_viewer">
         <div class="general-top-panel">
-          <div class="title-buttons-right" id="recordsSettings">
+          <div class="title-buttons-right" id="standingsSettings">
             <div class="button-with-icon d-none" id="sessionResultsCompactToggle">
               <i class="bi bi-arrows-collapse-vertical"></i>
               <span>Compact</span>
@@ -2148,9 +2247,7 @@
               <i class="bi bi-pencil-fill"></i>
               <span>Edit</span>
             </div>
-          </div>
-          <div class="title-buttons-right" id="standingsSettings">
-            <div class="hide-historic-drivers">
+            <div class="hide-historic-drivers button-with-icon">
               <i class="bi bi-eye"></i>
               <i class="bi bi-eye-slash"></i>
               <span class="">Hide historic drivers</span>
@@ -2188,6 +2285,37 @@
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="qualipill"
                   data-value="quali">Qualifying</a>
               </ul>
+            </div>
+            <div class="dropdown-global performance-more-options">
+              <button type="button" class="redesigned-dropdown button-with-icon" id="migrateResultsButton">
+                <span>Migrate results</span>
+                <i class="bi bi-arrow-left-right"></i>
+              </button>
+              <div class="redesigned-dropdown-menu performance-options-menu" id="migrateResultsMenu">
+                <div class="bold-font">Export seasons
+                  <i class="info-titles performance-option-info performance-option-info-bottom" tabindex="0"
+                    aria-label="The game eventually stops keeping old season results. Export them to a JSON file so you can import them back into a future save."
+                    data-tooltip="The game eventually stops keeping old season results. Export them to a JSON file so you can import them back into a future save.">?</i>
+                </div>
+                <div class="dropdown-and-button-export">
+                  <div class="dropdown-global records-export-dropdown">
+                    <button class="redesigned-dropdown bold-font" id="recordsSeasonExportButton" data-value="none">
+                      <span class="dropdown-label">Select seasons</span>
+                      <i class="redesigned-chevron"></i>
+                    </button>
+                    <ul class="redesigned-dropdown-menu" id="recordsSeasonExportMenu"></ul>
+                  </div>
+                  <button type="button" class="confirm-modal" id="exportRecordsSeasonsButton">Export</button>
+                </div>
+                <hr>
+                <div class="bold-font">Import seasons
+                  <i class="info-titles performance-option-info" tabindex="0"
+                    aria-label="Import seasons exported from another save. They become available in the Records Hub."
+                    data-tooltip="Import seasons exported from another save. They become available in the Records Hub.">?</i>
+                </div>
+                <input type="file" id="importRecordsSeasonsInput" class="d-none" accept="application/json,.json">
+                <button type="button" class="confirm-modal records-migrate-action" id="importRecordsSeasonsButton">Import JSON</button>
+              </div>
             </div>
           </div>
           <div class="title bold-font">
@@ -2244,16 +2372,19 @@
                 <a class="redesigned-dropdown-item" style="cursor: pointer;" id="racespill" data-value="races">Races</a>
               </ul>
             </div>
-            <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font" id="yearButton" aria-haspopup="true" aria-expanded="false">
-                <span class="dropdown-label">Year</span>
-                <i class="redesigned-chevron"></i>
-              </button>
-              <ul class="redesigned-dropdown-menu" id="yearMenu" style="font-family: Formula1;">
-              </ul>
+              <div class="dropdown-global">
+                <button class="redesigned-dropdown bold-font" id="yearButton" aria-haspopup="true" aria-expanded="false">
+                  <span class="dropdown-label">Year</span>
+                  <i class="redesigned-chevron"></i>
+                </button>
+                <ul class="redesigned-dropdown-menu" id="yearMenu" style="font-family: Formula1;">
+                </ul>
+              </div>
+              <div class="button-with-icon d-none" id="sessionResultsSessionStepButton">
+                <span>Race</span>
+              </div>
+  
             </div>
-
-          </div>
         </div>
         <div class="main-viewer-section">
           <div class="drivers-table d-none">
@@ -2750,22 +2881,12 @@
               <ul class="redesigned-dropdown-menu" id="staffMenu" style="font-family: Formula1;">
                 <a class="redesigned-dropdown-item" data-list="fulldriverlist" data-spaceStats="driverStats"
                   id="driverStatsDrop">Drivers</a>
-                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical
-                  Chiefs</a>
-                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race
-                  Engineers</a>
-                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of
-                  Aerodynamics</a>
+                <a class="redesigned-dropdown-item" data-list="fullTechnicalList" data-spaceStats="chiefStats">Technical chiefs</a>
+                <a class="redesigned-dropdown-item" data-list="fullEngineerList" data-spaceStats="engineerStats">Race engineers</a>
+                <a class="redesigned-dropdown-item" data-list="fullAeroList" data-spaceStats="aeroStats">H. of aerodynamics</a>
                 <a class="redesigned-dropdown-item" data-list="fullDirectorList"
-                  data-spaceStats="directorStats">Sporting
-                  Directors</a>
+                  data-spaceStats="directorStats">Sporting directors</a>
               </ul>
-            </div>
-            <div class="stats-add-controls">
-              <div id="addStaffButton" class="button-with-icon d-none">
-                <i class="bi bi-person-plus"></i>
-                <span class="button-text">Add driver/staff</span>
-              </div>
             </div>
             <div class="filter-container">
               <i class="bi bi-filter-circle filter-icon" id="filterIcon"></i>
@@ -2797,6 +2918,18 @@
           </div>
           <div class="title bold-font">
             Attributes
+          </div>
+          <div class="title-buttons-right">
+            <div class="stats-add-controls">
+              <div id="importStaffButton" class="button-with-icon">
+                <i class="bi bi-box-arrow-in-down"></i>
+                <span class="button-text">Import</span>
+              </div>
+              <div id="addStaffButton" class="button-with-icon">
+                <i class="bi bi-person-plus"></i>
+                <span class="button-text">Add driver/staff</span>
+              </div>
+            </div>
           </div>
         </div>
         <div class="d-flex">
@@ -2930,22 +3063,10 @@
                       <div class="title-and-stats">
                         <div class="attributes-title bold-font"
                           style="display: flex; justify-content: space-between; align-items: center;">
-                          <div style="display:flex; align-items:center; gap:10px;">
-                            <span id="attributesTitleText">Driver Attributes</span>
-                            <div class="dropdown-global d-none" id="draftStaffTypeControl">
-                              <button type="button" class="redesigned-dropdown bold-font draft-staff-type-dropdown"
-                                id="addStaffTypeDropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="dropdown-label">Drivers</span>
-                                <i class="redesigned-chevron"></i>
-                              </button>
-                              <ul class="redesigned-dropdown-menu" id="addStaffTypeMenu" style="font-family: Formula1;">
-                                <a class="redesigned-dropdown-item" data-staff-type="0">Drivers</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="1">Technical Chiefs</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="2">Race Engineers</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="3">H. of Aerodynamics</a>
-                                <a class="redesigned-dropdown-item" data-staff-type="4">Sporting Directors</a>
-                              </ul>
-                            </div>
+                          <span id="attributesTitleText">Attributes</span>
+                          <div id="exportStaffButton" class="button-with-icon d-none">
+                            <i class="bi bi-box-arrow-up"></i>
+                            <span class="button-text">Export</span>
                           </div>
                           <div id="compareButton" class="button-with-icon">
                             <i class="bi bi-arrow-left-right"></i>
@@ -3707,120 +3828,119 @@
               data-bs-target="#teammodal">?</i>
           </div>
         </div>
-        <div class="main-viewer-section team-viewer d-none">
-          <div id="viewer-first">
-            <div class="component-and-title">
-              <div class="component-title bold-font">Objectives</div>
-              <div class="viewer-component">
-                <div class="first-component" id="seasonObjective">
-                  <div class="bold-font">Season Objective</div>
-                  <div class="input-and-buttons">
-                    <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
-                    <div class="input-buttons">
-                      <i class="bi bi-plus new-augment-button"></i>
-                      <i class="bi bi-dash new-augment-button"></i>
-                    </div>
+        <div class="team-viewer d-none">
+          <div class="bento-item team-hero">
+            <div class="team-hero-accent" id="teamHeroAccent"></div>
+            <div class="team-hero-identity">
+              <img class="team-hero-logo" id="teamHeroLogo" alt="">
+              <div class="team-hero-logo team-hero-logo-masked d-none" id="teamHeroLogoMask"></div>
+              <span class="team-hero-name bold-font" id="teamHeroName"></span>
+            </div>
+            <div class="team-hero-stats">
+              <div class="team-hero-stat" id="teamBudget">
+                <div class="stats-title">Balance</div>
+                <div class="input-and-buttons">
+                  <div class="unit-and-input">
+                    <span class="unit-label">$</span>
+                    <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
+                  </div>
+                  <div class="input-buttons">
+                    <i class="bi bi-plus new-augment-button"></i>
+                    <i class="bi bi-dash new-augment-button"></i>
                   </div>
                 </div>
-                <div class="second-component">
-                  <div class="bold-font">Long-term Objective</div>
-                  <div id="objAndYear">
-                    <div class="dropdown-global">
-                      <button class="redesigned-dropdown" id="objectiveButton" aria-haspopup="true"
-                        aria-expanded="false">
-                        <span class="objective-label dropdown-label">Constructor's champion</span>
-                        <i class="bi bi-chevron-down"></i>
-                      </button>
-                      <ul class="redesigned-dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
-                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
-                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
-                        <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
-                      </ul>
-                    </div>
+              </div>
+              <div class="team-hero-stat" id="costCap">
+                <div class="stats-title">Cost cap spent</div>
+                <div class="input-and-buttons">
+                  <div class="unit-and-input">
+                    <span class="unit-label">$</span>
+                    <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
+                  </div>
+                  <div class="input-buttons">
+                    <i class="bi bi-plus new-augment-button"></i>
+                    <i class="bi bi-dash new-augment-button"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="team-hero-stat" id="engineSelector">
+                <div class="stats-title">Engine</div>
+                <div class="dropdown-global">
+                  <button class="redesigned-dropdown bold-font" id="engineButton" aria-haspopup="true" aria-expanded="false"
+                    data-value="0">
+                    <span class="dropdown-label" id="engineLabel">Engine</span>
+                    <i class="redesigned-chevron"></i>
+                  </button>
+                  <ul class="redesigned-dropdown-menu" id="engineMenu" style="font-family: Formula1;">
+                    <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
+                    <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="4">Red Bull
+                      Powertrains</a>
+                    <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="7">Mercedes</a>
+                    <a class="redesigned-dropdown-item renault-engine-menu-item" style="cursor: pointer;"
+                      data-engine="10">Renault</a>
+                  </ul>
+                </div>
+              </div>
+              <div class="team-hero-stat" id="confidence">
+                <div class="stats-title">Board confidence</div>
+                <div class="input-and-buttons">
+                  <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
+                  <div class="input-buttons">
+                    <i class="bi bi-plus new-augment-button"></i>
+                    <i class="bi bi-dash new-augment-button"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="team-body">
+            <div class="team-column">
+              <div class="bento-item team-card">
+                <div class="bento-title bold-font">Objectives <span class="bento-subtitle">Board targets</span></div>
+                <div class="team-objectives">
+                  <div class="team-objective" id="seasonObjective">
+                    <span class="team-field-label">Season finish</span>
                     <div class="input-and-buttons">
-                      <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                      <span class="unit-label">P</span>
+                      <input type="number" class="custom-input-number" id="seasonObjectiveInput" value="4"></input>
                       <div class="input-buttons">
                         <i class="bi bi-plus new-augment-button"></i>
                         <i class="bi bi-dash new-augment-button"></i>
                       </div>
                     </div>
-
                   </div>
-
-                </div>
-              </div>
-            </div>
-            <div class="component-and-title">
-              <div class="component-title bold-font">Economy</div>
-              <div class="viewer-component">
-                <div class="first-component" id="teamBudget">
-                  <div class="bold-font">Balance</div>
-                  <div class="input-and-buttons">
-                    <div class="unit-and-input">
-                      <span class="unit-label">$</span>
-                      <input type="string" class="custom-input-number" id="teamBudgetInput" value="40000000"></input>
-                    </div>
-
-                    <div class="input-buttons">
-                      <i class="bi bi-plus new-augment-button"></i>
-                      <i class="bi bi-dash new-augment-button"></i>
-                    </div>
-                  </div>
-                </div>
-                <div class="second-component" id="costCap">
-                  <div class="bold-font">Cost cap spent</div>
-                  <div class="input-and-buttons">
-                    <div class="unit-and-input">
-                      <span class="unit-label">$</span>
-                      <input type="string" class="custom-input-number" id="costCapInput" value="120000000"></input>
-                    </div>
-                    <div class="input-buttons">
-                      <i class="bi bi-plus new-augment-button"></i>
-                      <i class="bi bi-dash new-augment-button"></i>
+                  <div class="team-objective">
+                    <span class="team-field-label">Long-term</span>
+                    <div id="objAndYear">
+                      <div class="dropdown-global">
+                        <button class="redesigned-dropdown bold-font" id="objectiveButton" aria-haspopup="true"
+                          aria-expanded="false">
+                          <span class="objective-label dropdown-label">Constructor's champion</span>
+                          <i class="redesigned-chevron"></i>
+                        </button>
+                        <ul class="redesigned-dropdown-menu" id="objectiveMenu" style="font-family: Formula1;">
+                          <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj0">Constructor's champion</a>
+                          <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj1">Podium contender</a>
+                          <a class="redesigned-dropdown-item" style="cursor: pointer;" id="longTermObj2">Points contender</a>
+                        </ul>
+                      </div>
+                      <span class="unit-label">by</span>
+                      <div class="input-and-buttons">
+                        <input type="number" class="custom-input-number" id="longTermInput" value="2024"></input>
+                        <div class="input-buttons">
+                          <i class="bi bi-plus new-augment-button"></i>
+                          <i class="bi bi-dash new-augment-button"></i>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="component-and-title">
-              <div class="component-title bold-font">Others</div>
-              <div class="viewer-component">
-                <div class="first-component" id="engineSelector">
-                  <div class="bold-font">Engine</div>
-                  <div class="dropdown-global">
-                    <button class="redesigned-dropdown" id="engineButton" aria-haspopup="true" aria-expanded="false"
-                      data-value="0">
-                      <span class="objective-label dropdown-label" id="engineLabel">Engine</span>
-                      <i class="bi bi-chevron-down"></i>
-                    </button>
-                    <ul class="redesigned-dropdown-menu" id="engineMenu" style="font-family: Formula1;">
-                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="1">Ferrari</a>
-                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="4">Red Bull
-                        Powertrains</a>
-                      <a class="redesigned-dropdown-item" style="cursor: pointer;" data-engine="7">Mercedes</a>
-                      <a class="redesigned-dropdown-item renault-engine-menu-item" style="cursor: pointer;"
-                        data-engine="10">Renault</a>
-                    </ul>
-                  </div>
-                </div>
-                <div class="second-component" id="confidence">
-                  <div class="bold-font">Board confidence</div>
-                  <div class="input-and-buttons">
-                    <input type="number" class="custom-input-number" id="confidenceInput" value="48"></input>
-                    <div class="input-buttons">
-                      <i class="bi bi-plus new-augment-button"></i>
-                      <i class="bi bi-dash new-augment-button"></i>
-                    </div>
-                  </div>
-                </div>
 
-              </div>
-            </div>
-
-            <div class="component-and-title">
-              <div class="component-title bold-font">Pit crew</div>
-              <div class="pit-crew-details">
-                <div class="pit-crew-group">
+              <div class="bento-item team-card">
+                <div class="bento-title bold-font">Pit crew <span class="bento-subtitle">Performance</span></div>
+                <div class="pit-crew-details">
                   <div class="one-stat-panel" data-crewStat="32">
                     <div class="name-and-stat">
                       <span class="bold-font">Jacks</span>
@@ -3836,7 +3956,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="one-stat-panel pit-crew-middle" data-crewStat="34">
+                  <div class="one-stat-panel" data-crewStat="34">
                     <div class="name-and-stat">
                       <span class="bold-font">Wing replace</span>
                       <div class="stat-number">
@@ -3866,8 +3986,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="pit-crew-group mt-1">
                   <div class="one-stat-panel" data-crewStat="36">
                     <div class="name-and-stat">
                       <span class="bold-font">Speed</span>
@@ -3883,7 +4001,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="one-stat-panel pit-crew-middle" data-crewStat="38">
+                  <div class="one-stat-panel" data-crewStat="38">
                     <div class="name-and-stat">
                       <span class="bold-font">Fatigue</span>
                       <div class="stat-number">
@@ -3913,8 +4031,6 @@
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="pit-crew-group mt-1">
                   <div class="one-stat-panel" data-crewStat="40">
                     <div class="name-and-stat">
                       <span class="bold-font">Wheel gun</span>
@@ -3930,7 +4046,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="one-stat-panel pit-crew-middle" data-crewStat="41">
+                  <div class="one-stat-panel" data-crewStat="41">
                     <div class="name-and-stat">
                       <span class="bold-font">Tyres off</span>
                       <div class="stat-number">
@@ -3964,15 +4080,20 @@
               </div>
             </div>
 
-          </div>
-          <div class="team-separator"></div>
-          <div id="viewer-second">
-            <div class="facility-component-lg">
+            <div class="bento-item team-card team-facilities">
+              <div class="team-card-header">
+                <div class="bento-title bold-font">Facilities <span class="bento-subtitle">Level &amp; condition</span></div>
+                <div class="button-with-icon" id="refurbishAllButton">
+                  <i class="bi bi-magic"></i>
+                  <span>Refurbish all</span>
+                </div>
+              </div>
               <div class="main-second-viewer">
-                <div class="facility-group show" id="carDevCollapse">
-                  <div class="group-title component-title bold-font">Car Development</div>
-                  <div class="facility " id="facility3">
-                    <div class="facility-name">Factory</div>
+              <div class="facility-group" id="carDevCollapse">
+                <div class="team-section-label">Car development</div>
+                <div class="facility" id="facility3">
+                  <div class="facility-name">Factory <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
                     <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
@@ -3982,156 +4103,18 @@
                       <div class="level"></div>
                     </div>
                     <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
                   </div>
-                  <div class="facility " id="facility2">
-                    <div class="facility-name">Design centre</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
                     </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility5">
-                    <div class="facility-name">Wind tunnel</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility6">
-                    <div class="facility-name">CFD simulator</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility7">
-                    <div class="facility-name">Suspension simulator</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility8">
-                    <div class="facility-name">Car part test centre</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
                   </div>
                 </div>
-                <div class="facility-group" id="operationCollapse">
-                  <div class="group-title component-title bold-font">Operations</div>
-                  <div class="facility " id="facility15">
-                    <div class="facility-name">Board room</div>
+                <div class="facility" id="facility2">
+                  <div class="facility-name">Design centre <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
                     <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
@@ -4141,156 +4124,18 @@
                       <div class="level"></div>
                     </div>
                     <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
                   </div>
-                  <div class="facility " id="facility13">
-                    <div class="facility-name">Hospitality centre</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
                     </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility1">
-                    <div class="facility-name">Weather centre</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility10">
-                    <div class="facility-name">Helipad</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility " id="facility11">
-                    <div class="facility-name">Memorabilia Room</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="facility" id="facility12">
-                    <div class="facility-name">Tour centre</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                    </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
                   </div>
                 </div>
-                <div class="facility-group" id="staffCollapse">
-                  <div class="group-title component-title bold-font">Staff Facilities</div>
-                  <div class="facility " id="facility9">
-                    <div class="facility-name">Team hub</div>
+                <div class="facility" id="facility5">
+                  <div class="facility-name">Wind tunnel <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
                     <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
@@ -4300,49 +4145,18 @@
                       <div class="level"></div>
                     </div>
                     <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
                   </div>
-                  <div class="facility " id="facility14">
-                    <div class="facility-name">Scouting department</div>
-                    <i class="bi bi-chevron-left new-augment-button"></i>
-                    <div class="facility-level-indicator" data-value="3">
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
-                      <div class="level"></div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
                     </div>
-                    <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
-                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
                   </div>
-                  <div class="facility " id="facility4">
-                    <div class="facility-name">Race simulator</div>
+                </div>
+                <div class="facility" id="facility6">
+                  <div class="facility-name">CFD simulator <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
                     <i class="bi bi-chevron-left new-augment-button"></i>
                     <div class="facility-level-indicator" data-value="3">
                       <div class="level"></div>
@@ -4352,26 +4166,256 @@
                       <div class="level"></div>
                     </div>
                     <i class="bi bi-chevron-right new-augment-button"></i>
-                    <div class="stats-header-separator"></div>
-                    <div class="gauge-and-buttons">
-                      <div class="gauge-container" style="--perc: 0">
-                        <svg class="gauge-svg" viewBox="0 0 100 100">
-                          <circle class="gauge-circle gauge-bg" cx="50" cy="50" r="45"></circle>
-                          <circle class="gauge-circle gauge-progress" cx="50" cy="50" r="45"></circle>
-                          <span class="gauge-indicator">50%</span>
-                        </svg>
-                      </div>
-                      <div class="input-buttons">
-                        <i class="bi bi-plus new-augment-button"></i>
-                        <i class="bi bi-dash new-augment-button"></i>
-                      </div>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
                     </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility7">
+                  <div class="facility-name">Suspension simulator <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility8">
+                  <div class="facility-name">Car part test centre <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
                   </div>
                 </div>
               </div>
+              <div class="facility-group" id="operationCollapse">
+                <div class="team-section-label">Operations</div>
+                <div class="facility" id="facility15">
+                  <div class="facility-name">Board room <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility13">
+                  <div class="facility-name">Hospitality centre <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility1">
+                  <div class="facility-name">Weather centre <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility10">
+                  <div class="facility-name">Helipad <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility11">
+                  <div class="facility-name">Memorabilia room <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility12">
+                  <div class="facility-name">Tour centre <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="facility-group" id="staffCollapse">
+                <div class="team-section-label">Staff facilities</div>
+                <div class="facility" id="facility9">
+                  <div class="facility-name">Team hub <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility14">
+                  <div class="facility-name">Scouting department <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+                <div class="facility" id="facility4">
+                  <div class="facility-name">Race simulator <span class="facility-level-number"></span></div>
+                  <div class="facility-level">
+                    <i class="bi bi-chevron-left new-augment-button"></i>
+                    <div class="facility-level-indicator" data-value="3">
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                      <div class="level"></div>
+                    </div>
+                    <i class="bi bi-chevron-right new-augment-button"></i>
+                  </div>
+                  <div class="gauge-and-buttons">
+                    <i class="bi bi-dash new-augment-button"></i>
+                    <div class="gauge-container" style="--perc: 0">
+                      <span class="gauge-indicator">50%</span>
+                    </div>
+                    <i class="bi bi-plus new-augment-button"></i>
+                  </div>
+                </div>
+              </div>
+              </div>
             </div>
           </div>
-
         </div>
       </div>
       <div class="script-view hide unloaded" id="custom_calendar">
@@ -4399,6 +4443,21 @@
               <i class="info-titles bold-font" id="calendarinfo" data-bs-toggle="modal"
                 data-bs-target="#calendarmodal">?</i>
             </div>
+            <div class="title-buttons-right">
+              <div class="button-with-icon" id="importPreviousSeasonCalendar">
+                <span class="icon-4-letters" id="importPreviousSeasonCalendarIcon" aria-hidden="true">
+                  <span>0</span>
+                  <span>0</span>
+                  <span>0</span>
+                  <span>0</span>
+                </span>
+                <span>Copy previous season</span>
+              </div>
+              <div class="button-with-icon" id="removeCalendarSprints">
+                <span class="icon-2-letters" aria-hidden="true">SR</span>
+                <span>Remove sprints</span>
+              </div>
+            </div>
           </div>
           <div class="main-calendar-section" id="officialCalendarList">
           </div>
@@ -4412,94 +4471,85 @@
           </div>
         </div>
 
-        <div class="d-flex regulations-main">
-          <div class="main-viewer-section small-regulations">
-            <div class="viewer-details">
-              <div class="viewer-title bold-font">Sporting regulations</div>
-              <div class="viewer-element">
-                <div class="viewer-element-name bold-font">Cost cap</div>
-                <div class="input-and-buttons stat-number">
-                  <div class="unit-and-input">
-                    <span class="unit-label">$</span>
-                    <input type="string" class="custom-input-number" id="regSpendingCap"></input>
-                  </div>
-                  <div class="input-buttons">
-                    <i class="bi bi-plus new-augment-button transparent"></i>
-                    <i class="bi bi-dash new-augment-button transparent"></i>
-                  </div>
+        <div class="regulations-main">
+          <div class="bento-item regulations-card">
+            <div class="bento-title bold-font">Sporting <span class="bento-subtitle">Rules</span></div>
+            <div class="regulations-cost-cap">
+              <span class="regulations-label">Cost cap</span>
+              <div class="input-and-buttons stat-number">
+                <div class="unit-and-input">
+                  <span class="unit-label">$</span>
+                  <input type="string" class="custom-input-number" id="regSpendingCap"></input>
+                </div>
+                <div class="input-buttons">
+                  <i class="bi bi-plus new-augment-button"></i>
+                  <i class="bi bi-dash new-augment-button"></i>
                 </div>
               </div>
-
-              <div class="viewer-element">
-                <div class="viewer-element-name bold-font">Season engine limit</div>
+            </div>
+            <div class="regulations-section-label">Season part limits</div>
+            <div class="regulations-limits">
+              <div class="regulations-limit">
+                <span class="regulations-label">Engines</span>
                 <div class="input-and-buttons stat-number">
                   <input type="text" class="custom-input-number" id="regEngineLimit">
                   <div class="input-buttons">
-                    <i class="bi bi-plus new-augment-button transparent"></i>
-                    <i class="bi bi-dash new-augment-button transparent"></i>
+                    <i class="bi bi-plus new-augment-button"></i>
+                    <i class="bi bi-dash new-augment-button"></i>
                   </div>
                 </div>
               </div>
-
-              <div class="viewer-element">
-                <div class="viewer-element-name bold-font">Season ERS limit</div>
+              <div class="regulations-limit">
+                <span class="regulations-label">ERS</span>
                 <div class="input-and-buttons stat-number">
                   <input type="text" class="custom-input-number" id="regErsLimit">
                   <div class="input-buttons">
-                    <i class="bi bi-plus new-augment-button transparent"></i>
-                    <i class="bi bi-dash new-augment-button transparent"></i>
+                    <i class="bi bi-plus new-augment-button"></i>
+                    <i class="bi bi-dash new-augment-button"></i>
                   </div>
                 </div>
               </div>
-
-              <div class="viewer-element">
-                <div class="viewer-element-name bold-font">Season gearbox limit</div>
+              <div class="regulations-limit">
+                <span class="regulations-label">Gearboxes</span>
                 <div class="input-and-buttons stat-number">
                   <input type="text" class="custom-input-number" id="regGearboxLimit">
                   <div class="input-buttons">
-                    <i class="bi bi-plus new-augment-button transparent"></i>
-                    <i class="bi bi-dash new-augment-button transparent"></i>
+                    <i class="bi bi-plus new-augment-button"></i>
+                    <i class="bi bi-dash new-augment-button"></i>
                   </div>
                 </div>
               </div>
-
-              <div class="viewer-element">
-                <label class="viewer-element-name bold-font" for="regDoubleLastRacePoints">Double points for last
-                  race</label>
+            </div>
+            <div class="regulations-section-label">Points bonuses</div>
+            <div class="regulations-toggle-list">
+              <label class="regulations-toggle-row" for="regDoubleLastRacePoints">
+                <span>Double points for last race</span>
                 <div class="form-switch regulations-switch">
                   <input class="form-check-input custom-toggle" type="checkbox" role="switch"
                     id="regDoubleLastRacePoints">
                 </div>
-              </div>
-              <div class="viewer-element">
-                <label class="viewer-element-name bold-font" for="regFastestLapBonusPoint">1 point for fastest
-                  lap</label>
+              </label>
+              <label class="regulations-toggle-row" for="regFastestLapBonusPoint">
+                <span>1 point for fastest lap</span>
                 <div class="form-switch regulations-switch">
                   <input class="form-check-input custom-toggle" type="checkbox" role="switch"
                     id="regFastestLapBonusPoint">
                 </div>
-              </div>
-              <div class="viewer-element">
-                <label class="viewer-element-name bold-font" for="regPolePositionBonusPoint">1 point for pole
-                  position</label>
+              </label>
+              <label class="regulations-toggle-row" for="regPolePositionBonusPoint">
+                <span>1 point for pole position</span>
                 <div class="form-switch regulations-switch">
                   <input class="form-check-input custom-toggle" type="checkbox" role="switch"
                     id="regPolePositionBonusPoint">
                 </div>
-              </div>
+              </label>
             </div>
           </div>
 
-          <div class="main-viewer-section points-and-cfd">
-            <div class="regulations-panels">
-              <div class="viewer-details">
-                <div class="viewer-title-row">
-                  <div class="viewer-title bold-font">Points system</div>
-                  <div class="button-with-icon" id="regCreatePointScheme">
-                    <i class="bi bi-plus-circle"></i>
-                    <span class="">Create point system</span>
-                  </div>
-                </div>
+          <div class="bento-item regulations-card">
+            <div class="regulations-card-header">
+              <div class="bento-title bold-font">Points <span class="bento-subtitle">System</span></div>
+              <div class="regulations-card-actions">
                 <div class="dropdown-global">
                   <button class="redesigned-dropdown bold-font" id="regPointSchemeButton" aria-haspopup="true"
                     aria-expanded="false">
@@ -4508,25 +4558,26 @@
                   </button>
                   <ul class="redesigned-dropdown-menu" id="regPointSchemeMenu" style="font-family: Formula1;"></ul>
                 </div>
-                <div class="viewer-element regulations-table-wrap">
-                  <div class="regulations-grid regulations-grid-points">
-                    <div class="regulations-grid-header">
-                      <div class="regulations-colheader">Pos</div>
-                      <div class="regulations-colheader points-header">Points</div>
-                    </div>
-                    <div class="regulations-grid-body" id="regPointSchemeBody"></div>
-                  </div>
+                <div class="button-with-icon" id="regCreatePointScheme">
+                  <i class="bi bi-plus-circle"></i>
+                  <span>New</span>
                 </div>
               </div>
+            </div>
+            <div class="regulations-table regulations-table-points">
+              <div class="regulations-table-header">
+                <span>Pos</span>
+                <span></span>
+                <span>Pts</span>
+              </div>
+              <div class="regulations-table-body" id="regPointSchemeBody"></div>
+            </div>
+          </div>
 
-              <div class="viewer-details">
-                <div class="viewer-title-row">
-                  <div class="viewer-title bold-font">Wind tunnel &amp; CFD</div>
-                  <div class="button-with-icon" id="regCreateResourcePackage">
-                    <i class="bi bi-plus-circle"></i>
-                    <span class="">Create resource package</span>
-                  </div>
-                </div>
+          <div class="bento-item regulations-card">
+            <div class="regulations-card-header">
+              <div class="bento-title bold-font">Resources <span class="bento-subtitle">Wind tunnel &amp; CFD</span></div>
+              <div class="regulations-card-actions">
                 <div class="dropdown-global">
                   <button class="redesigned-dropdown bold-font" id="regResourcePackageButton" aria-haspopup="true"
                     aria-expanded="false">
@@ -4535,17 +4586,19 @@
                   </button>
                   <ul class="redesigned-dropdown-menu" id="regResourcePackageMenu" style="font-family: Formula1;"></ul>
                 </div>
-                <div class="viewer-element regulations-table-wrap">
-                  <div class="regulations-grid regulations-grid-resources">
-                    <div class="regulations-grid-header">
-                      <div class="regulations-colheader">Pos</div>
-                      <div class="regulations-colheader wind-tunnel-header">Wind tunnel</div>
-                      <div class="regulations-colheader">CFD</div>
-                    </div>
-                    <div class="regulations-grid-body" id="regResourcePackageBody"></div>
-                  </div>
+                <div class="button-with-icon" id="regCreateResourcePackage">
+                  <i class="bi bi-plus-circle"></i>
+                  <span>New</span>
                 </div>
               </div>
+            </div>
+            <div class="regulations-table regulations-table-resources">
+              <div class="regulations-table-header">
+                <span>Pos</span>
+                <span>Wind tunnel</span>
+                <span>CFD</span>
+              </div>
+              <div class="regulations-table-body" id="regResourcePackageBody"></div>
             </div>
           </div>
         </div>
@@ -4553,26 +4606,6 @@
       <div class="script-view hide unloaded" id="car_performance">
         <div class="general-top-panel">
           <div class="title-buttons-left" id="carAttributeSelector">
-            <div class="dropdown-global">
-              <button class="redesigned-dropdown bold-font" id="attributeButton" aria-haspopup="true"
-                aria-expanded="false">
-                <span class="dropdown-label">Overall</span>
-                <i class="redesigned-chevron"></i>
-              </button>
-              <ul class="redesigned-dropdown-menu" id="attributeMenu" style="font-family: Formula1;">
-                <a class="redesigned-dropdown-item" data-attribute="top_speed">Top speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="acceleration">Acceleration</a>
-                <a class="redesigned-dropdown-item" data-attribute="low_speed">Low speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="medium_speed">Medium speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="high_speed">High speed</a>
-                <a class="redesigned-dropdown-item" data-attribute="drs">DRS Effectiveness</a>
-                <a class="redesigned-dropdown-item" data-attribute="dirty_air">Dirty air tolerance</a>
-                <a class="redesigned-dropdown-item brake-cooling-replace" data-attribute="brake_cooling">Brake
-                  cooling</a>
-                <a class="redesigned-dropdown-item" data-attribute="engine_cooling">Engine cooling</a>
-                <a class="redesigned-dropdown-item" data-attribute="overall">Overall</a>
-              </ul>
-            </div>
             <div class="button-with-icon" id="teamsCarsButton" data-value="teams">
               <i class="bi bi-people-fill"></i>
               <span>Teams</span>
@@ -4588,6 +4621,10 @@
             <div class="fit-button d-none" id="fitButton">Fit latest designs</div>
           </div>
           <div class="title-buttons-left d-none" id="customEnginesButtonContainer">
+            <div class="button-with-icon d-none" id="engineViewModeButton" data-value="performance">
+              <i class="bi bi-speedometer2"></i>
+              <span>Performance</span>
+            </div>
             <div class="button-with-icon" id="customEngines">
               <i class="bi bi-plus-circle"></i>
               <span class="">Add custom engine</span>
@@ -4599,11 +4636,95 @@
                 id="performanceAnnotationsToggle" checked>
               <label class="form-check-label" for="performanceAnnotationsToggle">Annotations</label>
             </div>
+            <div class="dropdown-global performance-more-options">
+              <button type="button" class="redesigned-dropdown button-with-icon"
+                id="performanceMoreOptionsButton">
+                <span>More options</span>
+                <i class="bi bi-sliders"></i>
+              </button>
+              <div class="redesigned-dropdown-menu performance-options-menu" id="performanceMoreOptionsMenu">
+                <div class="performance-option-row">
+                  <div>
+                    <div class="bold-font">Freeze Car Dev
+                      <i class="info-titles performance-option-info performance-option-info-bottom" tabindex="0"
+                        aria-label="AI teams can create parts, but their car performance and expertise cannot improve."
+                        data-tooltip="AI teams can create parts, but their car performance and expertise cannot improve.">?</i>
+                      <span class="option-state inactive" id="developmentSpan">Inactive</span>
+                    </div>
+                  </div>
+                  <div class="form-check form-switch">
+                    <input class="form-check-input custom-toggle" type="checkbox" role="switch"
+                      id="freezeDevelopmentToggle">
+                  </div>
+                </div>
+                <hr>
+                <div class="bold-font">Equal Cars
+                  <i class="info-titles performance-option-info" tabindex="0"
+                    aria-label="Adjust the fastest car to the target, then copy its parts to every team. Engines stay unchanged."
+                    data-tooltip="Adjust the fastest car to the target, then copy its parts to every team. Engines stay unchanged.">?</i>
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="0" max="100" step="1" value="50"
+                    id="equalCarsSlider">
+                  <span class="option-state default" id="equalCarsValue">50%</span>
+                  <button type="button" class="confirm-modal" id="equalCarsApplyButton">Apply</button>
+                </div>
+                <label class="performance-equal-checkbox">
+                  <input class="form-check-input" type="checkbox" id="equalCarsAllPartsCheckbox">
+                  <span>
+                    <span>Also update older parts</span>
+                  </span>
+                </label>
+                <hr>
+                <div class="bold-font">Grid Spread
+                  <i class="info-titles performance-option-info" tabindex="0"
+                    aria-label="Move every car's performance toward the grid average (left) or away from it (right)."
+                    data-tooltip="Move every car's performance toward the grid average (left) or away from it (right).">?</i>
+                  <span class="option-state inactive" id="spreadGridState">Neutral</span>
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="-100" max="100" step="1" value="0"
+                    id="spreadGridSlider">
+                  <span class="option-state default" id="spreadGridValue">0%</span>
+                  <button type="button" class="confirm-modal" id="spreadGridApplyButton">Apply</button>
+                </div>
+                <hr>
+                <div class="bold-font">Equal Engines
+                  <i class="info-titles performance-option-info" tabindex="0"
+                    aria-label="Set every engine to the same power. Other engine stats stay unchanged unless selected below."
+                    data-tooltip="Set every engine to the same power. Other engine stats stay unchanged unless selected below.">?</i>
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="0" max="150" step="1" value="90"
+                    id="equalEnginesSlider">
+                  <span class="option-state default" id="equalEnginesValue">90%</span>
+                  <button type="button" class="confirm-modal" id="equalEnginesApplyButton">Apply</button>
+                </div>
+                <label class="performance-equal-checkbox">
+                  <input class="form-check-input" type="checkbox" id="equalEngineStatsCheckbox">
+                  <span>
+                    <span>Equal all other stats</span>
+                  </span>
+                </label>
+                <hr>
+                <div class="bold-font">Engine Components Life
+                  <i class="info-titles performance-option-info" tabindex="0"
+                    aria-label="Set the condition of every engine, ERS and gearbox of all teams to this value."
+                    data-tooltip="Set the condition of every engine, ERS and gearbox of all teams to this value.">?</i>
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="0" max="100" step="1" value="100"
+                    id="engineLifeSlider">
+                  <span class="option-state default" id="engineLifeValue">100%</span>
+                  <button type="button" class="confirm-modal" id="engineLifeApplyButton">Apply</button>
+                </div>
+              </div>
+            </div>
             <ul class="nav nav-pills">
               <li class="nav-item">
                 <a class="nav-link bold-font categoryPills generalPills active" data-bs-toggle="pill"
                   data-section=".teams-section" id="teamsPill">
-                  <div class="basic-label bold-font">Teams</div>
+                  <div class="basic-label bold-font">Cars</div>
                   <div class="pill-line"></div>
                 </a>
               </li>
@@ -4632,6 +4753,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name redbull-name">RED BULL</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4647,6 +4769,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name">FERRARI</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4662,6 +4785,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name">MERCEDES</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4677,6 +4801,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name alpine-name">ALPINE</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4692,6 +4817,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name">MCLAREN</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4707,6 +4833,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name alfa-name">ALFA ROMEO</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4722,6 +4849,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name aston-name">ASTON MARTIN</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4737,6 +4865,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name haas-name">HAAS</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4752,6 +4881,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name at-name complete">ALPHA TAURI</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4767,6 +4897,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name williams-name">WILLIAMS</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -4782,6 +4913,7 @@
                   <div class="col main-car">
                     <div class="team-title">
                       <span class="team-title-name ct-replace">CUSTOM TEAM</span>
+                      <span class="engine-label"></span>
                       <span class="team-title-value"></span>
                     </div>
                     <div class="performance-bar">
@@ -5595,376 +5727,437 @@
                 </div>
               </div>
               <div class="performance-show overview-show d-none" id="performanceOverview"></div>
+              <div class="main-columns-drag-section engines-show d-none" id="enginesPerformance">
+                <div class="engine-condition-editor d-none" id="teamEngineConditionEditor">
+                  <div class="engine-condition-grid">
+                    <div class="part-performance engine-condition-part" data-car="1" data-slot="engine">
+                      <div class="part-performance-title">
+                        <div class="part-name-buttons">
+                          <span>Engine</span>
+                          <span class="part-subtitle">Car 1</span>
+                        </div>
+                      </div>
+                      <div class="engine-performance-stats"></div>
+                    </div>
+                    <div class="part-performance engine-condition-part" data-car="1" data-slot="ers">
+                      <div class="part-performance-title">
+                        <div class="part-name-buttons">
+                          <span>ERS</span>
+                          <span class="part-subtitle">Car 1</span>
+                        </div>
+                      </div>
+                      <div class="engine-performance-stats"></div>
+                    </div>
+                    <div class="part-performance engine-condition-part" data-car="1" data-slot="gearbox">
+                      <div class="part-performance-title">
+                        <div class="part-name-buttons">
+                          <span>Gearbox</span>
+                          <span class="part-subtitle">Car 1</span>
+                        </div>
+                      </div>
+                      <div class="engine-performance-stats"></div>
+                    </div>
+                    <div class="part-performance engine-condition-part" data-car="2" data-slot="engine">
+                      <div class="part-performance-title">
+                        <div class="part-name-buttons">
+                          <span>Engine</span>
+                          <span class="part-subtitle">Car 2</span>
+                        </div>
+                      </div>
+                      <div class="engine-performance-stats"></div>
+                    </div>
+                    <div class="part-performance engine-condition-part" data-car="2" data-slot="ers">
+                      <div class="part-performance-title">
+                        <div class="part-name-buttons">
+                          <span>ERS</span>
+                          <span class="part-subtitle">Car 2</span>
+                        </div>
+                      </div>
+                      <div class="engine-performance-stats"></div>
+                    </div>
+                    <div class="part-performance engine-condition-part" data-car="2" data-slot="gearbox">
+                      <div class="part-performance-title">
+                        <div class="part-name-buttons">
+                          <span>Gearbox</span>
+                          <span class="part-subtitle">Car 2</span>
+                        </div>
+                      </div>
+                      <div class="engine-performance-stats"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="engine-manufacturer-list" id="engineManufacturerList">
+                <div class="engine-performance" data-engineid="1">
+                  <div class="engine-performance-title engine-fe">
+                    <img class="engine-performance-logo" src="../assets/images/logos/ferrari.png" alt="Ferrari logo">
+                    FERRARI
+                  </div>
+                  <div class="engine-performance-stats">
+                    <div class="engine-performance-stat" data-attribute="10">
+                      <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="6">
+                      <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="11">
+                      <div class="part-performance-stat-title">Performance threshold <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="12">
+                      <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="14">
+                      <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="18">
+                      <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="19">
+                      <div class="part-performance-stat-title">Gearbox durability <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="engine-performance" data-engineid="4">
+                  <div class="engine-performance-title engine-rb">
+                    <img class="engine-performance-logo" src="../assets/images/logos/redbull.png" alt="Red Bull logo">
+                    RED BULL POWERTRAINS
+                  </div>
+                  <div class="engine-performance-stats">
+                    <div class="engine-performance-stat" data-attribute="10">
+                      <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="6">
+                      <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="11">
+                      <div class="part-performance-stat-title">Performance threshold <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="12">
+                      <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="14">
+                      <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="18">
+                      <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="19">
+                      <div class="part-performance-stat-title">Gearbox durability <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="engine-performance" data-engineid="7">
+                  <div class="engine-performance-title engine-me">
+                    <img class="engine-performance-logo" src="../assets/images/logos/mercedes.png" alt="Mercedes logo">
+                    MERCEDES
+                  </div>
+                  <div class="engine-performance-stats">
+                    <div class="engine-performance-stat" data-attribute="10">
+                      <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="6">
+                      <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="11">
+                      <div class="part-performance-stat-title">Performance threshold <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="12">
+                      <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="14">
+                      <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="18">
+                      <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="19">
+                      <div class="part-performance-stat-title">Gearbox durability <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="engine-performance" data-engineid="10">
+                  <div class="engine-performance-title engine-re renault-engine-title">
+                    <img class="engine-performance-logo renault-engine-logo" src="../assets/images/logos/renault.png"
+                      alt="Renault logo">
+                    <span class="renault-engine-title-text">RENAULT</span>
+                  </div>
+                  <div class="engine-performance-stats">
+                    <div class="engine-performance-stat" data-attribute="10">
+                      <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="6">
+                      <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="11">
+                      <div class="part-performance-stat-title">Performance threshold <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat engine24" data-attribute="12">
+                      <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="14">
+                      <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="18">
+                      <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
+                      </div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                    <div class="engine-performance-stat" data-attribute="19">
+                      <div class="part-performance-stat-title">Gearbox durability <span
+                          class="unit-measure bold-font">%</span></div>
+                      <div class="stat-number">
+                        <i class="bi bi-dash new-augment-button transparent"></i>
+                        <input type="text" class="custom-input-number">
+                        <i class="bi bi-plus new-augment-button transparent"></i>
+                      </div>
+                      <div class="engine-performance-bar">
+                        <div class="engine-performance-progress"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-        <div class="main-columns-drag-section engines-show d-none" id="enginesPerformance">
-          <div class="engine-performance" data-engineid="1">
-            <div class="engine-performance-title engine-fe">
-              <img class="engine-performance-logo" src="../assets/images/logos/ferrari.png" alt="Ferrari logo">
-              FERRARI
-            </div>
-            <div class="engine-performance-stats">
-              <div class="engine-performance-stat" data-attribute="10">
-                <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="engine-performance" data-engineid="4">
-            <div class="engine-performance-title engine-rb">
-              <img class="engine-performance-logo" src="../assets/images/logos/redbull.png" alt="Red Bull logo">
-              RED BULL POWERTRAINS
-            </div>
-            <div class="engine-performance-stats">
-              <div class="engine-performance-stat" data-attribute="10">
-                <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="engine-performance" data-engineid="7">
-            <div class="engine-performance-title engine-me">
-              <img class="engine-performance-logo" src="../assets/images/logos/mercedes.png" alt="Mercedes logo">
-              MERCEDES
-            </div>
-            <div class="engine-performance-stats">
-              <div class="engine-performance-stat" data-attribute="10">
-                <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="engine-performance" data-engineid="10">
-            <div class="engine-performance-title engine-re renault-engine-title">
-              <img class="engine-performance-logo renault-engine-logo" src="../assets/images/logos/renault.png"
-                alt="Renault logo">
-              <span class="renault-engine-title-text">RENAULT</span>
-            </div>
-            <div class="engine-performance-stats">
-              <div class="engine-performance-stat" data-attribute="10">
-                <div class="part-performance-stat-title">Power <span class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="6">
-                <div class="part-performance-stat-title">Fuel efficiency <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="11">
-                <div class="part-performance-stat-title">Performance threshold <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat engine24" data-attribute="12">
-                <div class="part-performance-stat-title">Performance loss <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="14">
-                <div class="part-performance-stat-title">Engine durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="18">
-                <div class="part-performance-stat-title">ERS durability <span class="unit-measure bold-font">%</span>
-                </div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-              <div class="engine-performance-stat" data-attribute="19">
-                <div class="part-performance-stat-title">Gearbox durability <span
-                    class="unit-measure bold-font">%</span></div>
-                <div class="stat-number">
-                  <i class="bi bi-dash new-augment-button transparent"></i>
-                  <input type="text" class="custom-input-number">
-                  <i class="bi bi-plus new-augment-button transparent"></i>
-                </div>
-                <div class="engine-performance-bar">
-                  <div class="engine-performance-progress"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+
 
       </div>
       <div class="script-view hide unloaded" id="season_mods">
@@ -6162,284 +6355,42 @@
           </div>
         </div>
 
-        <div class="mods-year-view d-none" id="mods2026View">
-          <div class="mod-blocking mods-2026-blocking">
-            <div class="mod-blocking-title">Save not compatible with 2026 Season Mod</div>
-            <div class="mod-blocking-subtitle">Your save must be from F1 Manager 24 can't have generated staff, and its date must be before the first race of the 2024 season!</div>
-          </div>
-          <div class="grid-and-downloads">
-            <div class="changes-grid mods-2026-changes">
-              <div class="apply-all-button" style="--order: 10">
-                <div class="button-with-icon apply-all-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply all</span>
-                </div>
-              </div>
-              <div class="one-change" style="--order: 1">
-                <div class="one-change-title bold-font">Time travel to end of 2025</div>
-                <div class="one-change-description date-holder">
-                  <span class="date-part" id="dateDay2026">05</span>
-                  <span class="date-part" id="dateMonth2026">February</span>
-                  <span class="date-part" id="dateYear2026">2026</span>
-                </div>
-                <button class="one-change-button time-travel-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 2">
-                <div class="one-change-title bold-font">Extra drivers</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description missing-staff">Missing staff</div>
-                  <div class="one-change-description missing-f2">New F2/F3 drivers</div>
-                  <div class="one-change-description missing-academy">New F1 academy drivers</div>
-                </div>
-                <button class="one-change-button extra-drivers-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 3">
-                <div class="one-change-title bold-font">Driver Line-ups</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description lineup-team lineup-team--cadillac">
-                    <span class="lineup-team__name bold-font">PEREZ &amp; BOTTAS</span>
-                    <span class="lineup-team__logo" aria-hidden="true"></span>
-                  </div>
-                  <div class="one-change-description lineup-team lineup-team--hadjar">
-                    <span class="lineup-team__name bold-font">HADJAR</span>
-                    <span class="lineup-team__logo" aria-hidden="true"></span>
-                  </div>
-                  <div class="one-change-description lineup-team lineup-team--lindblad">
-                    <span class="lineup-team__name bold-font">LINDBLAD</span>
-                    <span class="lineup-team__logo" aria-hidden="true"></span>
-                  </div>
-                </div>
-                <button class="one-change-button change-line-ups-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 4">
-                <div class="one-change-title bold-font">Driver/staff stats</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description"><span class="bold-font had-ovr atfont">HADJAR </span> <span
-                      class="bold-font ovr-change had-change">75</span> OVR</div>
-                  <div class="one-change-description"><span class="bold-font ant-ovr">ANTONELLI </span> <span
-                      class="bold-font ovr-change ant-change">71</span> OVR</div>
-                  <div class="one-change-description"><span class="bold-font bea-ovr hafont">BEARMAN </span> <span
-                      class="bold-font ovr-change bea-change">77</span> OVR</div>
-                </div>
-                <button class="one-change-button change-stats-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 5">
-                <div class="one-change-title bold-font">Calendar</div>
-                <div class="one-change-description-group calendar-changes-2026">
-                  <div class="one-change-description">Season opener: <span class="season-change">Bahrain</span></div>
-                  <div class="one-change-description">Sprints: China, Miami, <span
-                      class="sprint-change-2026 change-1">Austria,</span>
-                  </div>
-                  <div class="one-change-description"><span class="sprint-change-2026 change-2">COTA,</span> <span
-                      class="sprint-change-2026 change-3">Brazil,</span> <span
-                      class="sprint-change-2026 change-4">Qatar</span></div>
-                </div>
-                <button class="one-change-button change-calendar-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 6">
-                <div class="one-change-title bold-font">Regulations</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description">Fastest lap <span class="fast-lap-general bold-font">+<span
-                        class="fast-lap-change">1 </span> points</span></div>
-                  <div class="one-change-description">Cost Cap <span class="cost-cap-general bold-font"><span
-                        class="cost-cap-change">139.2 M€</span></span></div>
-                </div>
-                <button class="one-change-button change-regulations-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 7">
-                <div class="one-change-title bold-font">Add 2025 Results</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description add-results-team">
-                    <div class="add-results-team__left">
-                      <img class="add-results-team__logo" src="../assets/images/logos/mclaren.png" alt="McLaren logo">
-                      <span class="bold-font">MCLAREN</span>
-                    </div>
-                    <div class="add-results-team__right">
-                      <span class="numbersFont add-results-points" data-team="mclaren" data-target="833">0</span>
-                      <span>pts</span>
-                    </div>
-                  </div>
-                  <div class="one-change-description add-results-team">
-                    <div class="add-results-team__left">
-                      <img class="add-results-team__logo" src="../assets/images/logos/mercedes.png" alt="Mercedes logo">
-                      <span class="bold-font">MERCEDES</span>
-                    </div>
-                    <div class="add-results-team__right">
-                      <span class="numbersFont add-results-points" data-team="mercedes" data-target="469">0</span>
-                      <span>pts</span>
-                    </div>
-                  </div>
-                  <div class="one-change-description add-results-team">
-                    <div class="add-results-team__left">
-                      <img class="add-results-team__logo" src="../assets/images/logos/redbull.png" alt="Red Bull logo">
-                      <span class="bold-font">RED BULL</span>
-                    </div>
-                    <div class="add-results-team__right">
-                      <span class="numbersFont add-results-points" data-team="redbull" data-target="468">0</span>
-                      <span>pts</span>
-                    </div>
-                  </div>
-                </div>
-                <button class="one-change-button add-results-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 8">
-                <div class="one-change-title bold-font">CARS & ENGINES</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description performance-year-switch">Car performance of <span
-                      class="performance-year-switch__year bold-font"></span></div>
-                  <div class="one-change-description regs-team regs-team--aston">
-                    <span class="regs-team__name bold-font">ASTON MARTIN</span>
-                    <span class="regs-team__logo" aria-hidden="true"></span>
-                  </div>
-                  <div class="one-change-description regs-team regs-team--stake">
-                    <span class="regs-team__name bold-font">STAKE SAUBER</span>
-                    <span class="regs-team__logo" aria-hidden="true"></span>
-                  </div>
-                </div>
-                <button class="one-change-button change-performance-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-              <div class="one-change" style="--order: 9">
-                <div class="one-change-title bold-font">ENGINE UPGRADES TPS</div>
-                <div class="one-change-description-group">
-                  <div class="one-change-description">Allows engine upgrades turning points </div>
-                  <div class="one-change-description">to appear in the news section every </div>
-                  <div class="one-change-description">quarter of the season </div>
-                </div>
-                <button class="one-change-button change-aduo-tps-2026">
-                  <i class="bi bi-check-lg icon-hidden"></i>
-                  <span>Apply</span>
-                </button>
-              </div>
-            </div>
-            <div class="recommended-downloads">
-              <div class="recommended-downloads-title bold-font">Recommended downloads</div>
-              <div class="download-links">
-                <a href="https://www.overtake.gg/downloads/2026-season-mod-facepack.82754/" target="_blank"
-                  style="--order: 1">
-                  <div class="download-link" style="--order: 1">
-                    <span class="download-link-text" data-glow="Facepack">Facepack</span>
-                  </div>
-                </a>
-                <div class="creator-separator" style="--order: 2"></div>
-                <a href="https://www.overtake.gg/downloads/2026-ui-changes.82743/" target="_blank" style="--order: 3">
-                  <div class="download-link" style="--order: 3">
-                    <span class="download-link-text" data-glow="UI mod">UI mod</span>
-                  </div>
-                </a>
-                <div class="creator-separator" style="--order: 4"></div>
-                <a href="https://www.overtake.gg/downloads/2026-season-update.83636/" target="_blank" style="--order: 5">
-                  <div class="download-link" style="--order: 5">
-                    <span class="download-link-text" data-glow="2026 Season Update">2026 Season Update</span>
-                  </div>
-                </a>
-                <div class="creator-separator" style="--order: 6"></div>
-                <a href="https://www.overtake.gg/downloads/2026-season-update-myteam-livery-pack-add-on.83637/" target="_blank"
-                  style="--order: 7">
-                  <div class="download-link" style="--order: 7">
-                    <span class="download-link-text" data-glow="Custom Team Liveries">Custom Team Liveries</span>
-                  </div>
-                </a>
-              </div>
-            </div>
-
-          </div>
-          <div class="mod-banner mods-2026-banner">
-            <div class="mod-name title-2026">
-              <img class="title-2026" src="../assets/images/f1Mlogo.svg" alt="">
-              <div class="mod-subtitle" aria-label="2026 SEASON MOD" role="text">
-                <span class="mod-subtitle-letter" style="--order: 1" aria-hidden="true">2</span>
-                <span class="mod-subtitle-letter" style="--order: 2" aria-hidden="true">0</span>
-                <span class="mod-subtitle-letter" style="--order: 3" aria-hidden="true">2</span>
-                <span class="mod-subtitle-letter" style="--order: 4" aria-hidden="true">6</span>
-                <span class="mod-subtitle-space" aria-hidden="true">&nbsp;</span>
-                <span class="mod-subtitle-letter" style="--order: 5" aria-hidden="true">S</span>
-                <span class="mod-subtitle-letter" style="--order: 6" aria-hidden="true">E</span>
-                <span class="mod-subtitle-letter" style="--order: 7" aria-hidden="true">A</span>
-                <span class="mod-subtitle-letter" style="--order: 8" aria-hidden="true">S</span>
-                <span class="mod-subtitle-letter" style="--order: 9" aria-hidden="true">O</span>
-                <span class="mod-subtitle-letter" style="--order: 10" aria-hidden="true">N</span>
-                <span class="mod-subtitle-space" aria-hidden="true">&nbsp;</span>
-                <span class="mod-subtitle-letter" style="--order: 11" aria-hidden="true">U</span>
-                <span class="mod-subtitle-letter" style="--order: 12" aria-hidden="true">P</span>
-                <span class="mod-subtitle-letter" style="--order: 13" aria-hidden="true">D</span>
-                <span class="mod-subtitle-letter" style="--order: 14" aria-hidden="true">A</span>
-                <span class="mod-subtitle-letter" style="--order: 15" aria-hidden="true">T</span>
-                <span class="mod-subtitle-letter" style="--order: 16" aria-hidden="true">E</span>
-              </div>
-              <div class="mod-creators">
-                <a class="creator thatgingerdude" style="--order: 17" href="https://www.overtake.gg/members/thatgingerdude15.3294857/"
-                  target="_blank">thatgingerdude</a>
-                <div class="creator-separator" style="--order: 18"></div>
-                <a class="creator lucas" style="--order: 19" href="https://www.overtake.gg/members/lcskpmn.2759987/" target="_blank">LCSKPMN</a>
-                <div class="creator-separator" style="--order: 20"></div>
-                <a class="creator kevintaddo" style="--order: 21" href="https://www.patreon.com/cw/kevintaddo" target="_blank">kevintaddo</a>
-                <div class="creator-separator" style="--order: 22"></div>
-                <a class="creator littleonion" style="--order: 23" href="https://linktr.ee/Little0nion"
-                  target="_blank">littleonion</a>
-                <div class="creator-separator" style="--order: 24"></div>
-                <a class="creator w1echuz" style="--order: 25" href="https://linktr.ee/w1echuz" target="_blank">w1echuz</a>
-                <div class="creator-separator" style="--order: 26"></div>
-                <a class="creator murillo" style="--order: 27" href="https://www.patreon.com/MuriloPaulocci" target="_blank">Project 212</a>
-                <div class="creator-separator" style="--order: 28"></div>
-                <a class="creator cody" style="--order: 29" href="https://www.patreon.com/cw/CMDesigns47" target="_blank">CMDesigns</a>
-                <div class="creator-separator" style="--order: 30"></div>
-                <a class="creator bonnex" style="--order: 31" href="https://www.patreon.com/u92489530"
-                  target="_blank">bonnex</a>
-                <div class="creator-separator" style="--order: 32"></div>
-                <a class="creator n4x" style="--order: 33" href="https://www.patreon.com/f1dbeditor"
-                  target="_blank">n4x</a>
-                <div class="creator-separator" style="--order: 34"></div>
-                <a class="creator nexus" style="--order: 35" href="https://www.overtake.gg/members/thefir3nexus.1772538/"
-                  target="_blank">thefir3nexus</a>
-                
-              </div>
-            </div>
-            <div class="driver-and-rectangle">
-              <img class="driver-2026" src="../assets/images/driver2026.png" alt="" style="--order: 4">
-              <div class="rectangle-2026">
-                <img class="lines-2026" src="../assets/images/lines-2026.png" alt="">
-              </div>
-            </div>
-          </div>
-          <div class="glow-2026"></div>
-        </div>
       </div>
     </div>
 
   </div>
   </div>
   <div class="patreon-slide-up">
-    <div class="slide-up-title-and-x bold-font">
-      <span class="slide-up-title">
-        Support the project
-      </span>
+    <div class="patreon-slide-up-header">
+      <span class="slide-up-title bold-font">Your save has a story worth telling</span>
       <i class="bi bi-x" id="patreonSlideUpClose"></i>
     </div>
-    <div class="patreon-paragraph">
+    <div class="patreon-slide-up-lede">
+      Support the editor on Patreon and unlock AI news based on what&apos;s actually happening in your season.
+    </div>
+    <div class="patreon-plan-list">
+      <div class="patreon-plan-row">
+        <span class="patreon-plan-name bold-font">Backer</span>
+        <span class="patreon-plan-description">AI news articles about your season</span>
+        <span class="patreon-plan-price bold-font">€3/mo</span>
+      </div>
+      <div class="patreon-plan-row">
+        <span class="patreon-plan-name bold-font">Insider</span>
+        <span class="patreon-plan-description">+ Turning points, you pick the outcome</span>
+        <span class="patreon-plan-price bold-font">€6/mo</span>
+      </div>
+      <div class="patreon-plan-row">
+        <span class="patreon-plan-name bold-font">Founder</span>
+        <span class="patreon-plan-description">+ Spawn any news or turning point</span>
+        <span class="patreon-plan-price bold-font">€10/mo</span>
+      </div>
+    </div>
+    <a class="patreon-button patreon-popup-button" href="https://www.patreon.com/cw/f1dbeditor/membership"
+      target="_blank" rel="noreferrer">
+      <div class="patreon-button-logo"></div>
+      <span class="patreon-button-text bold-font">See membership options</span>
+    </a>
+    <div class="patreon-paragraph d-none">
       <span class="">
         The Database Editor will <span class="important-text bold-font ">remain free</span>, and no core features
         will

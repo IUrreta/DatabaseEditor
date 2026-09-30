@@ -21,7 +21,7 @@ export const logos_configs = {
     "visarb": "../assets/images/logos/visarb.png", "toyota": "../assets/images/logos/toyota.svg", "hugo": "../assets/images/logos/hugoboss.png", "alphatauri": "../assets/images/logos/alphatauri.png",
     "brawn": "../assets/images/logos/brawn.png", "porsche": "../assets/images/logos/porsche.png",
     "alpine": "../assets/images/logos/alpine.png", "renault": "../assets/images/logos/renault.png", "andretti": "../assets/images/logos/andretti.png", "lotus": "../assets/images/logos/lotus.png",
-    "cadillac": "../assets/images/logos/cadillac.png", "alfa": "../assets/images/logos/alfaromeo.png", "audi": "../assets/images/logos/audi.png", "sauber": "../assets/images/logos/sauber.svg",
+    "cadillac": "../assets/images/logos/cadillac.png", "alfa": "../assets/images/logos/alfaromeo.png", "audi": "../assets/images/logos/audi.svg", "sauber": "../assets/images/logos/sauber.svg",
     "stake": "../assets/images/logos/kick.png", "williams": "../assets/images/logos/Williams_2026_logo.svg", "bmw": "../assets/images/logos/bmw.png", "haas": "../assets/images/logos/haas.png",
     "redbull": "../assets/images/logos/redbull.png", "ford": "../assets/images/logos/ford.png", "aston": "../assets/images/logos/astonMartin.png", "racingpoint": "../assets/images/logos/racingpoint.png",
     "jordan": "../assets/images/logos/jordan.png"
@@ -397,11 +397,11 @@ export function createTeamReplacers(deps) {
             if (info !== "alfa") {
                 document.querySelectorAll(".alfalogo-replace").forEach(function (elem) {
                     if (!elem.classList.contains("non-changable")) {
-                        const isMaskLogo = info === "sauber";
+                        const isMaskLogo = info === "audi" || info === "sauber";
                         if (isMaskLogo) {
                             const newElem = document.createElement("div");
                             newElem.className = elem.className;
-                            newElem.classList.remove("alfaromeologo");
+                            newElem.classList.remove("alfalogo");
                             newElem.classList.remove("audilogo");
                             newElem.classList.remove("sauberlogo");
                             newElem.classList.add(logos_classes_configs[info]);
@@ -416,7 +416,7 @@ export function createTeamReplacers(deps) {
                             elem = newElem;
                         }
                         elem.src = logos_configs[info];
-                        elem.classList.remove("alfaromeologo");
+                        elem.classList.remove("alfalogo");
                         elem.classList.remove("audilogo");
                         elem.classList.remove("sauberlogo");
                         elem.classList.add(logos_classes_configs[info]);

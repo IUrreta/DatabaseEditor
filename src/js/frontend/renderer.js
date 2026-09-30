@@ -6,7 +6,7 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
     populateSeasonReview,
-    onSessionResultsFetched
+    onSessionResultsFetched, refreshRecordsAfterDataChange
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
@@ -15,16 +15,18 @@ import {
     loadJuniorTeamDrivers,
     initFreeDriversElems
 } from './transfers';
-import { load_calendar } from './calendar';
+import { load_calendar, updatePreviousSeasonCalendarIcon } from './calendar';
   import {
       load_performance, load_performance_graph, load_attributes, manage_engineStats, load_cars, load_custom_engines,
       order_by, load_car_attributes, viewingGraph, load_parts_stats, load_parts_list, update_max_design, teamsEngine, load_one_part,
-      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, gather_team_expertise_data, performanceDetailsMode
+      teamSelected, gather_engines_data, gather_custom_engines_data, reload_performance_graph, load_team_expertise, load_team_next_season_car, gather_team_expertise_data, performanceDetailsMode, setPerformanceCurrentSeason, load_engine_conditions, gather_engine_condition_data,
+      updateEngineLabels
   } from './performance';
 import {
     removeStatsDrivers, place_drivers_editStats, place_staff_editStats, typeOverall, setStatPanelShown, setTypeOverall,
     typeEdit, setTypeEdit, change_elegibles, getName, calculateOverall, listenersStaffGroups,
-    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyDraftCountryLocale
+    initStatsDrivers, loadNumbers, loadRandomStaffDraft, isDraftProfileSelected, applyDraftForenameUpdate, applyCountryLocaleUpdate,
+    getDraftCreateData, applyDraftBasicDataCreated, applyDraftRandomAttributes, selectPendingCreatedStaff
 } from './stats';
 import {
     resetH2H, hideComp, colors_dict, load_drivers_h2h, sprintsListeners, racePaceListener, qualiPaceListener, manage_h2h_bars, load_labels_initialize_graphs,
@@ -33,7 +35,7 @@ import {
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
-import { resetStaffIDChanges, updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
+import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
@@ -42,7 +44,8 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
-import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
+import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, updateMod2025Blocking } from './seasonMods.js';
+import { inverted_countries_abreviations } from '../backend/scriptUtils/countries.js';
 
 
 
@@ -79,33 +82,25 @@ const patreonLogoutButton = document.getElementById('patreonLogoutButton');
 const patreonToolLoginButton = document.getElementById('patreonToolLoginButton');
 const userToolButton = document.getElementById('userToolButton');
 const saveFileButton = document.getElementById('saveFileButton');
+const panicDownloadButton = document.getElementById("panicDownloadButton");
+const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
+const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
+const migrateResultsButton = document.getElementById("migrateResultsButton");
+const migrateResultsMenu = document.getElementById("migrateResultsMenu");
+const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
+const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
+const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
+
+let recordsExportSelectedSeasons = new Set();
 
 const scriptsArray = [newsDiv, h2hDiv, viewDiv, driverTransferDiv, editStatsDiv, teamsDiv, customCalendarDiv, regulationsDiv, carPerformanceDiv, seasonModsDiv]
 initSeasonMods();
-
-document.addEventListener("random-staff-requested", function (event) {
-    const data = event.detail || {};
-    const command = new Command("fetchRandomStaffDraft", data);
-    command.execute();
-});
-
-document.addEventListener("random-forename-requested", function (event) {
-    const data = event.detail || {};
-    const command = new Command("fetchRandomDraftForename", data);
-    command.execute();
-});
-
-document.addEventListener("draft-nationality-selected", function (event) {
-    const data = event.detail || {};
-    const command = new Command("fetchCountryLocaleForCode", data);
-    command.execute();
-});
 
 const dropDownMenu = document.getElementById("dropdownMenu");
 
 const notificationPanel = document.getElementById("notificationPanel");
 
-const logButton = document.getElementById("logFileButton");
 const patreonLogo = document.querySelector(".footer .bi-custom-patreon");
 const patreonSlideUp = document.querySelector(".patreon-slide-up");
 const slideUpClose = document.getElementById("patreonSlideUpClose")
@@ -140,7 +135,7 @@ function updateTurningPointsFrequencyUI() {
 
 const fileInput = document.getElementById('fileInput');
 const saveFileInput = document.getElementById('saveFileInput');
-const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
+const noNotifications = ["Custom Engines fetched", "Cars fetched", "Part values fetched", "Parts stats fetched", "Team expertise fetched", "Team next season expertise fetched", "Expertise updated", "Next season expertise updated", "24 Year", "Game Year", "Performance fetched", "Season performance fetched", "Config", "ERROR", "Montecarlo fetched", "TeamData Fetched", "Progress", "JIC", "Calendar fetched", "Contract fetched", "Staff Fetched", "Engines fetched", "Results fetched", "Year fetched", "Numbers fetched", "H2H fetched", "DriversH2H fetched", "H2HDriver fetched", "Retirement fetched", "Prediction Fetched", "Events to Predict Fetched", "Events to Predict Modal Fetched"]
 const glowSpot = document.querySelector('.glow-spot');
 const blockDiv = document.getElementById('blockDiv');
 
@@ -170,10 +165,10 @@ let difcultyCustom = "default"
 export let game_version = 2023;
 export let custom_team = false;
 export let nightlyBlock = false;
-export let seasonModData = {};
 let latestSaveYear = null;
 let firstShow = false;
 let configCopy;
+let selectedPlayerNationality = null;
 
 let managingTeamChanged = false;
 let isSaveSelected = 0;
@@ -195,7 +190,7 @@ let newsAvailable = {
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
-const versionBadge = document.querySelector('.badge-version');
+const heroVersionText = document.getElementById('heroVersionText');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 let notificationsQueue = [];
@@ -203,35 +198,6 @@ let isShowingNotification = false;
 
 const repoOwner = 'IUrreta';
 const repoName = 'DatabaseEditor';
-
-
-
-(function () {
-    const originalLog = console.log;
-    const originalError = console.error;
-
-    const logArray = [];
-
-    console.log = function (...args) {
-        logArray.push({
-            type: 'log',
-            message: args,
-            timestamp: new Date()
-        });
-        originalLog.apply(console, args);
-    };
-
-    console.error = function (...args) {
-        logArray.push({
-            type: 'error',
-            message: args,
-            timestamp: new Date()
-        });
-        originalError.apply(console, args);
-    };
-
-    window.getLogEntries = () => logArray;
-})();
 
 
 export function setSaveName(name) {
@@ -362,8 +328,6 @@ async function handleLogout() {
         const response = await fetch('/api/auth/patreon/logout');
 
         if (response.ok) {
-            console.log("Logout successful");
-
             updatePatreonUI({ isLoggedIn: false, tier: 'Free', tierNumber: 0, whitelisted: false, paidMember: false });
 
             window.location.reload();
@@ -408,7 +372,6 @@ async function validateSession() {
         // Only force an OAuth refresh when an existing cookie is detected but invalid/legacy.
         // Not having a cookie simply means "not logged in" and should not redirect.
         if (data.valid === false && data.hasCookie === true) {
-            console.log("Old Patreon cookie → redirecting to login");
             window.location.href = "/api/auth/patreon/login";
             return false;
         }
@@ -426,7 +389,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
 
 if (code) {
-    console.log("There is code")
     // Clear the code from URL to prevent re-submission on refresh
     window.history.replaceState({}, document.title, window.location.pathname);
 
@@ -467,8 +429,6 @@ function maybeReloadForNightlyAccess(tierInfo) {
 function updatePatreonUI(tier) {
     hasPatreonThemeAccess = !!tier.paidMember;
     init_colors_dict(selectedTheme)
-
-    console.log("Updating Patreon UI with tier:", tier);
 
     if (tier.paidMember) {
         patreonUnlockables.classList.remove("d-none");
@@ -521,7 +481,8 @@ function updatePatreonUI(tier) {
 
 function editModeHandler() {
     if (isDraftProfileSelected()) {
-        new_update_notifications("Draft creation is not implemented yet. For now, this button only generates editable random values.", "error");
+        const command = new Command("createDraftStaff", getDraftCreateData());
+        command.execute();
         return;
     }
 
@@ -617,6 +578,13 @@ function editModeHandler() {
         marketability: marketability,
         newName: newName,
         newCode: newCode,
+        isGeneratedStaff: document.querySelector(".clicked").dataset.isGeneratedStaff,
+        nationality: document.querySelector(".clicked").dataset.nationality ?? "",
+        gender: document.querySelector(".clicked").dataset.gender ?? "",
+        countryId: document.querySelector(".clicked").dataset.countryId ?? "",
+        faceType: document.querySelector(".clicked").dataset.faceType ?? "",
+        faceIndex: document.querySelector(".clicked").dataset.faceIndex ?? "",
+        ageType: document.querySelector(".clicked").dataset.ageType ?? "",
     };
 
 
@@ -701,10 +669,20 @@ function performanceModeHandler() {
             command.execute();
             return;
         }
+        if (performanceDetailsMode === "nextSeasonCar") {
+            data = {
+                teamID: teamSelected,
+                expertise: gather_team_expertise_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editNextSeasonExpertise", data);
+            command.execute();
+            return;
+        }
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
-        document.querySelectorAll(".part-performance").forEach(function (elem) {
+        document.querySelectorAll(".part-performance[data-partid]").forEach(function (elem) {
             let part = elem.dataset.part;
             let partID = elem.dataset.partid;
             let loadout1 = elem.dataset.loadout1;
@@ -738,6 +716,17 @@ function performanceModeHandler() {
         command.execute();
     }
     else if (teamsEngine === "engines") {
+        if (document.getElementById("teamEngineConditionEditor") && !document.getElementById("teamEngineConditionEditor").classList.contains("d-none")) {
+            data = {
+                teamID: teamSelected,
+                items: gather_engine_condition_data(),
+                teamName: document.querySelector(".selected").dataset.teamname
+            }
+            const command = new Command("editEngineCondition", data);
+            command.execute();
+            return;
+        }
+
         const engineData = gather_engines_data()
         const officialEngines = {}
         for (let engineId in engineData) {
@@ -771,7 +760,7 @@ export function first_show_animation() {
     }
 }
 
-let saveButtonCustomHandler = null;
+var saveButtonCustomHandler = null;
 
 export function manageSaveButton(show, mode, customHandler) {
     let button = document.querySelector(".save-button")
@@ -814,8 +803,8 @@ export function manageSaveButton(show, mode, customHandler) {
 }
 
 export async function updateFront(data) {
-    console.log("UPDATING FRONT")
-    console.log(data)
+    console.log("Received data from backend:", data);
+    console.log(data);
     let responseTyppe = data.responseMessage
     let message = data.content
     let handler = messageHandlers[responseTyppe];
@@ -947,6 +936,7 @@ const messageHandlers = {
         place_drivers_editStats(message);
         initFreeDriversElems();
         initStatsDrivers();
+        selectPendingCreatedStaff();
     },
     "Staff fetched": (message) => {
         remove_drivers(true);
@@ -956,6 +946,7 @@ const messageHandlers = {
         place_staff_editStats(message);
         initFreeDriversElems();
         initStatsDrivers();
+        selectPendingCreatedStaff();
     },
     "Random staff draft fetched": (message) => {
         loadRandomStaffDraft(message);
@@ -963,8 +954,14 @@ const messageHandlers = {
     "Random draft forename fetched": (message) => {
         applyDraftForenameUpdate(message);
     },
+    "Random staff attributes fetched": (message) => {
+        applyDraftRandomAttributes(message);
+    },
     "Draft country locale fetched": (message) => {
-        applyDraftCountryLocale(message);
+        applyCountryLocaleUpdate(message);
+    },
+    "Draft basic data created": (message) => {
+        applyDraftBasicDataCreated(message);
     },
     "Calendar fetched": (message) => {
         load_calendar(message)
@@ -984,6 +981,8 @@ const messageHandlers = {
     },
     "Year fetched": (message) => {
         latestSaveYear = Number(message);
+        setPerformanceCurrentSeason(message);
+        updatePreviousSeasonCalendarIcon(latestSaveYear);
         generateYearsMenu(message);
     },
     "Previous year teams standings fetched": (message) => {
@@ -1031,7 +1030,16 @@ const messageHandlers = {
     },
     "Config": (message) => {
         manage_config(message)
+        managePlayerNationalityPrompt(message?.playerNationality, message?.playerNationalityPromptDisabled)
         document.querySelector("#transferpill").click();
+    },
+    "Player nationality saved": (message) => {
+        if (configCopy && typeof configCopy === "object") {
+            configCopy.playerNationality = message?.nationality || null;
+            configCopy.playerNationalityPromptDisabled = message?.dontAskAgain ? 1 : 0;
+        }
+        bootstrap.Modal.getInstance(document.getElementById("playerNationalityModal"))?.hide();
+        if (message?.nationality) generateNews();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -1039,6 +1047,12 @@ const messageHandlers = {
     "Performance fetched": (message) => {
         load_performance(message[0])
         load_attributes(message[1])
+        if (message[2]) {
+            load_attributes(message[2], "expertise")
+        }
+        if (message[3]) {
+            load_attributes(message[3], "nextSeasonCar")
+        }
         //wait 100 ms
         setTimeout(function () {
             order_by("overall")
@@ -1055,6 +1069,12 @@ const messageHandlers = {
         if (message[3]) {
             load_team_expertise(message[3])
         }
+        if (message[4]) {
+            load_team_next_season_car(message[4])
+        }
+    },
+    "Engine conditions fetched": (message) => {
+        load_engine_conditions(message)
     },
     "Game Year": (message) => {
         manage_game_year(message)
@@ -1065,31 +1085,30 @@ const messageHandlers = {
     "Team expertise fetched": (message) => {
         load_team_expertise(message)
     },
+    "Team next season expertise fetched": (message) => {
+        load_team_next_season_car(message)
+    },
     "Cars fetched": (message) => {
         load_cars(message[0])
         load_car_attributes(message[1])
+        if (message[2]) {
+            load_car_attributes(message[2], "expertise")
+        }
+        if (message[3]) {
+            load_car_attributes(message[3], "nextSeasonCar")
+        }
         order_by("overall")
     },
     "Custom Engines fetched": (message) => {
         load_custom_engines(message.slice(1))
     },
     "Mod data fetched": (message) => {
-      seasonModData = message || {};
       updateEditsWithModData(message)
       syncAduoTpToggles(message?.aduo_tp_enabled);
       syncMods2025Dependencies();
-      syncMods2026Dependencies();
-      syncMods2026ApplyAllButtonState();
-      if (latestSaveYear) {
-        generateYearsMenu(latestSaveYear);
-      }
     },
     "Mod compatibility": (message) => {
         updateMod2025Blocking(message)
-    },
-    "Mod 2026 compatibility": (message) => {
-        updateMod2026Blocking(message)
-        resetStaffIDChanges();
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
@@ -1101,6 +1120,7 @@ const messageHandlers = {
     },
     "Save selected finished": async (message) => {
         await migrateLegacyNewsOnce();
+        await promptPendingInjuryReturns();
         generateNews();
     },
     "Record fetched": (message) => {
@@ -1110,7 +1130,7 @@ const messageHandlers = {
         loadTeamRecordsList(message)
     },
     "Double points bug fixed": (message) => {
-        //TODO CLICK ON THE FIRST EYAR OF yearMenu
+        refreshRecordsAfterDataChange();
     },
     "Season review data fetched": (message) => {
         populateSeasonReview(message)
@@ -1120,11 +1140,46 @@ const messageHandlers = {
     }
 };
 
+async function promptPendingInjuryReturns() {
+    try {
+        const response = await new Command("checkPendingInjuryReturns", {}).promiseExecute();
+        const pendingReturns = Array.isArray(response?.content) ? response.content : [];
+
+        for (const injuryReturn of pendingReturns) {
+            const openModal = document.querySelector('.modal.show:not(#confirmModal)');
+            if (openModal) {
+                await new Promise(resolve => openModal.addEventListener('hidden.bs.modal', resolve, { once: true }));
+            }
+
+            const returnRace = injuryReturn.expectedReturnCountry
+                ? ` before the next race in ${injuryReturn.expectedReturnCountry}`
+                : "";
+            const ok = await confirmModal({
+                title: "Driver ready to return",
+                body: `${injuryReturn.injuredName} has recovered${returnRace}. Do you want to swap them back in for ${injuryReturn.reserveName} at ${injuryReturn.teamName}?`,
+                confirmText: "Make the swap",
+                cancelText: "Not now"
+            });
+
+            if (!ok) continue;
+
+            await new Command("swapDrivers", {
+                driver1ID: injuryReturn.injuredId,
+                driver2ID: injuryReturn.reserveId,
+                driver1: injuryReturn.injuredName,
+                driver2: injuryReturn.reserveName
+            }).promiseExecute();
+            new Command("driversRefresh", {}).execute();
+        }
+    } catch (error) {
+        console.error("Failed to check pending injury returns:", error);
+    }
+}
+
 function removeLegacyKeys(base) {
     const lsNewsKey = `${base}_news`;
     const lsTPKey = `${base}_tps`;
     try {
-        console.log("[migrate] Deleting legacy localStorage keys:", lsNewsKey, lsTPKey);
         localStorage.removeItem(lsNewsKey);
         localStorage.removeItem(lsTPKey);
     } catch (e) {
@@ -1328,6 +1383,7 @@ function update_engine_allocations(message) {
     window.__ENGINE_NAMES__ = { ...engine_names }
 
     reloadTables()
+    updateEngineLabels()
 }
 
 
@@ -1422,8 +1478,6 @@ function manage_custom_team(nameColor) {
         const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
         command.execute();
 
-        document.querySelector(".lineup-team--cadillac").classList.remove("d-none")
-
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -1443,7 +1497,6 @@ function manage_custom_team(nameColor) {
     else {
         resizeWindowToHeight("10teams")
         custom_team = false
-        document.querySelector(".lineup-team--cadillac").classList.add("d-none")
         document.getElementById("customTeamTransfers").classList.add("d-none")
         document.getElementById("customTeamPerformance").classList.add("d-none")
         document.getElementById("customTeamDropdown").classList.add("d-none")
@@ -1518,8 +1571,145 @@ document.querySelector(".gear-container").addEventListener("click", function () 
     let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
         keyboard: false
     })
+    syncSettingsNationality()
     configDetailModal.show()
 })
+
+function resetPlayerNationalityPrompt() {
+    selectedPlayerNationality = null;
+
+    const button = document.getElementById("playerNationalityButton");
+    const flag = document.getElementById("playerNationalityFlag");
+    const saveButton = document.getElementById("savePlayerNationalityButton");
+    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
+
+    button.dataset.value = "";
+    button.classList.remove("open");
+    button.querySelector(".dropdown-label").textContent = "Select nationality";
+    flag.src = "";
+    flag.alt = "";
+    flag.classList.add("d-none");
+    dontAskCheckbox.checked = false;
+    saveButton.disabled = true;
+    saveButton.textContent = "Save";
+}
+
+function populateNationalityMenu(menu, button, flag, onSelect) {
+    const countries = Object.entries(inverted_countries_abreviations || {})
+        .filter(([code, name]) => /^[A-Z]{2}$/.test(code) && name)
+        .sort((a, b) => String(a[1]).localeCompare(String(b[1])));
+
+    const fragment = document.createDocumentFragment();
+    countries.forEach(([code, name]) => {
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.dataset.value = code;
+
+        const itemFlag = document.createElement("img");
+        itemFlag.src = `https://flagsapi.com/${code}/flat/64.png`;
+        itemFlag.alt = code;
+
+        const label = document.createElement("span");
+        label.textContent = name;
+
+        item.append(itemFlag, label);
+        item.addEventListener("click", () => {
+            button.dataset.value = code;
+            button.querySelector(".dropdown-label").textContent = name;
+            button.classList.remove("open");
+            flag.src = itemFlag.src;
+            flag.alt = code;
+            flag.classList.remove("d-none");
+            onSelect(code);
+        });
+        fragment.appendChild(item);
+    });
+    menu.replaceChildren(fragment);
+}
+
+function initSettingsNationality() {
+    const menu = document.getElementById("settingsNationalityMenu");
+    const button = document.getElementById("settingsNationalityButton");
+    const flag = document.getElementById("settingsNationalityFlag");
+    populateNationalityMenu(menu, button, flag, () => { });
+}
+
+function syncSettingsNationality() {
+    const button = document.getElementById("settingsNationalityButton");
+    const flag = document.getElementById("settingsNationalityFlag");
+    const nationality = configCopy?.playerNationality || "";
+    const item = nationality ? document.querySelector(`#settingsNationalityMenu [data-value="${nationality}"]`) : null;
+
+    button.dataset.value = item ? nationality : "";
+    button.querySelector(".dropdown-label").textContent = item ? item.textContent : "Select nationality";
+    flag.src = item ? item.querySelector("img").src : "";
+    flag.alt = item ? nationality : "";
+    flag.classList.toggle("d-none", !item);
+}
+
+function initPlayerNationalityPrompt() {
+    const menu = document.getElementById("playerNationalityMenu");
+    const button = document.getElementById("playerNationalityButton");
+    const flag = document.getElementById("playerNationalityFlag");
+    const saveButton = document.getElementById("savePlayerNationalityButton");
+    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
+    if (!menu || !button || !flag || !saveButton || !dontAskCheckbox) return;
+
+    const syncSaveButtonState = () => {
+        saveButton.disabled = !selectedPlayerNationality && !dontAskCheckbox.checked;
+    };
+
+    populateNationalityMenu(menu, button, flag, (code) => {
+        selectedPlayerNationality = code;
+        syncSaveButtonState();
+    });
+
+    dontAskCheckbox.addEventListener("change", syncSaveButtonState);
+
+    saveButton.addEventListener("click", async () => {
+        const dontAskAgain = dontAskCheckbox.checked;
+        if (!selectedPlayerNationality && !dontAskAgain) return;
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+
+        try {
+            await new Command("setPlayerNationality", {
+                nationality: selectedPlayerNationality || "",
+                dontAskAgain
+            }).promiseExecute();
+        } catch (error) {
+            console.error("Failed to save player nationality:", error);
+            syncSaveButtonState();
+            saveButton.textContent = "Save";
+            new_update_notifications("Could not save the player nationality", "error");
+        }
+    });
+}
+
+function managePlayerNationalityPrompt(nationality, promptDisabled) {
+    const modalElement = document.getElementById("playerNationalityModal");
+    if (!modalElement) return;
+
+    const normalizedNationality = String(nationality || "").trim().toUpperCase();
+    const neverAskAgain = promptDisabled === true || Number(promptDisabled) === 1;
+    if (/^[A-Z]{2}$/.test(normalizedNationality) || neverAskAgain) {
+        bootstrap.Modal.getInstance(modalElement)?.hide();
+        return;
+    }
+
+    resetPlayerNationalityPrompt();
+    if (/^[A-Z]{2}$/.test(normalizedNationality)) {
+        document.querySelector(`#playerNationalityMenu [data-value="${normalizedNationality}"]`)?.click();
+    }
+    bootstrap.Modal.getOrCreateInstance(modalElement, {
+        backdrop: "static",
+        keyboard: false
+    }).show();
+}
+
+initPlayerNationalityPrompt();
+initSettingsNationality();
 
 function manage_config(info, year_config = false) {
     document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
@@ -1680,7 +1870,6 @@ document.querySelectorAll(".color-reader").forEach(function (elem) {
 })
 
 function update_difficulty_info(triggerList) {
-    console.log("TRIGGER LIST", triggerList)
     //iterate through the objetc
     for (let key in triggerList) {
         let value = triggerList[key];
@@ -1698,7 +1887,6 @@ function update_difficulty_info(triggerList) {
             value = 0;
         }
         status.dataset.value = value;
-        console.log("UPDATING DIFFICULTY", key, value, options[value])
         status.textContent = options[value].text;
         status.className = `dif-status ${options[value].className}`;
     }
@@ -1857,6 +2045,14 @@ export function applyConfigFromEditorUI(overrides = {}) {
         if (playerTeam !== -1) {
             configCopy.playerTeam = Number(playerTeam);
         }
+
+        const nationality = document.getElementById("settingsNationalityButton").dataset.value;
+        if (nationality && nationality !== configCopy.playerNationality) {
+            new Command("setPlayerNationality", {
+                nationality,
+                dontAskAgain: configCopy.playerNationalityPromptDisabled === 1
+            }).execute();
+        }
     }
 }
 
@@ -1973,8 +2169,129 @@ function finishDownloadSaveProgress() {
     window.setTimeout(() => resetDownloadSaveProgress(), hideDelayMs);
 }
 
-const panicDownloadButton = document.getElementById("panicDownloadButton");
-const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
+
+
+function refreshRecordsExportCheckIcons() {
+    if (!recordsSeasonExportMenu) return;
+
+    recordsSeasonExportMenu.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
+        const isSelected = recordsExportSelectedSeasons.has(Number(item.dataset.year));
+        item.classList.toggle("active", isSelected);
+        item.querySelector("i.bi-check")?.classList.toggle("unactive", !isSelected);
+    });
+}
+
+function updateRecordsExportButtonLabel() {
+    if (!recordsSeasonExportButton) return;
+
+    const selected = Array.from(recordsExportSelectedSeasons).sort((a, b) => Number(b) - Number(a));
+    const label = recordsSeasonExportButton.querySelector(".dropdown-label");
+    if (!label) return;
+
+    label.textContent = selected.length ? selected.join(", ") : "Select seasons";
+}
+
+function renderRecordsExportSeasonOptions(seasons) {
+    if (!recordsSeasonExportMenu) return;
+
+    recordsSeasonExportMenu.innerHTML = "";
+    recordsExportSelectedSeasons = new Set();
+    updateRecordsExportButtonLabel();
+
+    seasons.forEach((season) => {
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.href = "#";
+        item.style.cursor = "pointer";
+        item.dataset.year = String(season);
+        const text = document.createElement("span");
+        text.textContent = String(season);
+        const icon = document.createElement("i");
+        icon.classList.add("bi", "bi-check", "unactive");
+        item.append(text, icon);
+
+        item.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (recordsExportSelectedSeasons.has(season)) {
+                recordsExportSelectedSeasons.delete(season);
+            }
+            else {
+                recordsExportSelectedSeasons.add(season);
+            }
+            updateRecordsExportButtonLabel();
+            refreshRecordsExportCheckIcons();
+        });
+
+        recordsSeasonExportMenu.appendChild(item);
+    });
+
+    refreshRecordsExportCheckIcons();
+}
+
+function loadRecordsExportOptions() {
+    const command = new Command("recordsExportOptions", {});
+    command.promiseExecute()
+        .then((response) => {
+            renderRecordsExportSeasonOptions(response.content || []);
+        })
+        .catch(() => {
+            renderRecordsExportSeasonOptions([]);
+        });
+}
+
+if (migrateResultsButton && migrateResultsMenu) {
+    migrateResultsButton.addEventListener("click", function () {
+        // Runs before the generic dropdown toggle, so "open" is not set yet when opening
+        if (!this.classList.contains("open")) loadRecordsExportOptions();
+    });
+    migrateResultsMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+    });
+}
+
+if (exportRecordsSeasonsButton) {
+    exportRecordsSeasonsButton.addEventListener("click", function () {
+        const selectedSeasons = Array.from(recordsExportSelectedSeasons).sort((a, b) => Number(b) - Number(a));
+        if (!selectedSeasons.length) {
+            new_update_notifications("Select at least one season to export", "error");
+            return;
+        }
+
+        const command = new Command("exportRecordsSeasons", { seasons: selectedSeasons });
+        command.promiseExecute().then((response) => {
+            const filename = `records-seasons-${new Date().toISOString().slice(0, 10)}.json`;
+            const blob = new Blob([JSON.stringify(response.content, null, 2)], { type: "application/json" });
+            saveAs(blob, filename);
+            new_update_notifications("Seasons records exported", "success");
+            migrateResultsButton.classList.remove("open");
+        });
+    });
+}
+
+if (importRecordsSeasonsButton && importRecordsSeasonsInput) {
+    importRecordsSeasonsButton.addEventListener("click", function () {
+        importRecordsSeasonsInput.click();
+    });
+
+    importRecordsSeasonsInput.addEventListener("change", function () {
+        const file = this.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+            const archive = JSON.parse(String(reader.result || "{}"));
+            const command = new Command("importRecordsSeasons", { archive });
+            command.promiseExecute().then(() => {
+                new Command("saveSelected", {}).execute();
+                migrateResultsButton.classList.remove("open");
+            });
+        };
+        reader.readAsText(file);
+        this.value = "";
+    });
+}
 
 function downloadExportedSave(command) {
     if (isDownloadingSave) return;
@@ -2191,6 +2508,7 @@ function update_refurbish_span(value) {
 document.getElementById("freezeDevelopmentToggle").addEventListener("change", function () {
     let value = this.checked;
     update_development_span(value)
+    new Command("editFreezeDevelopment", { state: value ? 1 : 0 }).execute()
 });
 
 function update_development_span(value) {
@@ -2199,8 +2517,8 @@ function update_development_span(value) {
         span.className = "option-state frozen"
         span.textContent = "Frozen"
     } else {
-        span.className = "option-state default"
-        span.textContent = "Active"
+        span.className = "option-state inactive"
+        span.textContent = "Inactive"
     }
 }
 
@@ -2493,7 +2811,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
-    versionBadge.textContent = `Version ${versionNow}`;
+    heroVersionText.textContent = `v${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     getPatchNotes()
 
@@ -2518,7 +2836,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Fix game-breaking issues with ease",
         "No installation required, works in your browser",
         "Honda, for the love of god, give Alonso a good engine for once",
-        "In memory of Aloy"
+        "Discover hidden stats and secrets in your save files",
+        "Create your own custom characters",
+        "Save past season's statistics to never lose them again",
+        "Export and share your favourite created drivers with your friends",
+        "Easily pick your save from the list of recent ones",
+        "Customize the appearance of the tool to your liking",
+        "Join the discord to get notified when new features are added",
+        "Edit how good or bad a car is going to be for next season",
+        "F*ck thermodynamics"
+    
     ];
 
     //reorder them randomly
@@ -2726,6 +3053,17 @@ function updateToolbarThemeLogo() {
     const logoImg = document.querySelector(".toolbar-logo");
     if (!logoImg) return;
 
+    const titleSpans = document.querySelectorAll(".toolbar-title > span");
+    const setToolbarTitle = (lines = ["DB", "EDITOR"]) => {
+        titleSpans.forEach((span, index) => {
+            span.textContent = lines[index] || "";
+        });
+    };
+
+    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
+    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
+    setToolbarTitle();
+
     Object.values(themeToolbarLogos).forEach((meta) => {
         if (meta?.className) logoImg.classList.remove(meta.className);
     });
@@ -2735,14 +3073,12 @@ function updateToolbarThemeLogo() {
         return;
     }
 
-    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
-    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
-
     const themeKey = Object.keys(themeToolbarLogos).find((key) => appliedTheme.includes(key.replace("-theme", "")));
     if (themeKey) {
         const meta = themeToolbarLogos[themeKey];
         logoImg.src = meta.src;
         if (meta.className) logoImg.classList.add(meta.className);
+        if (meta.titleLines) setToolbarTitle(meta.titleLines);
         return;
     }
 
@@ -2844,83 +3180,6 @@ function loadTheme() {
     reload_h2h_graphs()
 }
 
-document.getElementById('logButton').addEventListener('click', function () {
-    const logs = window.getLogEntries();
-
-    const logWindow = window.open('', '_blank');
-    const doc = logWindow.document;
-
-    const style = `
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .log { color: green; }
-        .error { color: red; }
-        pre { white-space: pre-wrap; word-break: break-word; max-width: 600px; }
-    `;
-
-    const head = doc.createElement('head');
-    const title = doc.createElement('title');
-    title.textContent = 'Log Console';
-
-    const styleTag = doc.createElement('style');
-    styleTag.textContent = style;
-
-    head.appendChild(title);
-    head.appendChild(styleTag);
-    doc.head.appendChild(head);
-
-    const body = doc.createElement('body');
-    const heading = document.createElement('h2');
-    heading.textContent = 'Logs';
-
-    const table = document.createElement('table');
-    const thead = document.createElement('thead');
-    const headerRow = document.createElement('tr');
-    ['Type', 'Message', 'Timestamp'].forEach(text => {
-        const th = document.createElement('th');
-        th.textContent = text;
-        headerRow.appendChild(th);
-    });
-    thead.appendChild(headerRow);
-
-    const tbody = document.createElement('tbody');
-
-    logs.forEach(log => {
-        const row = document.createElement('tr');
-
-        const typeCell = document.createElement('td');
-        typeCell.textContent = log.type.toUpperCase();
-        typeCell.classList.add(log.type);
-
-        const messageCell = document.createElement('td');
-        const pre = document.createElement('pre');
-
-        // Si el mensaje es un objeto, lo formateamos como JSON
-        pre.textContent = log.message.map(msg =>
-            typeof msg === 'object' ? JSON.stringify(msg, null, 2) : msg
-        ).join(' ');
-
-        messageCell.appendChild(pre);
-
-        const timestampCell = document.createElement('td');
-        timestampCell.textContent = new Date(log.timestamp).toLocaleString();
-
-        row.appendChild(typeCell);
-        row.appendChild(messageCell);
-        row.appendChild(timestampCell);
-        tbody.appendChild(row);
-    });
-
-    table.appendChild(thead);
-    table.appendChild(tbody);
-
-    body.appendChild(heading);
-    body.appendChild(table);
-    doc.body.appendChild(body);
-});
-
 /**
  * Verifies if the patch modal should be shown
  * @param {string|null} storedVersion - Version stored in localStorage
@@ -3015,7 +3274,8 @@ document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
         e.stopPropagation();
 
         document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
-            if (openDropdown !== dropdown) {
+            // Keep a parent dropdown open when the clicked dropdown lives inside its menu
+            if (openDropdown !== dropdown && !openDropdown.parentElement.contains(dropdown)) {
                 openDropdown.classList.remove("open");
             }
         });
@@ -3031,12 +3291,14 @@ document.addEventListener("click", function () {
 });
 
 export function attachHold(btn, el, step = 1, opts = {}) {
-    const min = opts.min ?? -Infinity;
-    const max = opts.max ?? Infinity;
+    // min/max can be functions when the limit depends on the loaded save
+    const getMin = () => (typeof opts.min === 'function' ? opts.min() : (opts.min ?? -Infinity));
+    const getMax = () => (typeof opts.max === 'function' ? opts.max() : (opts.max ?? Infinity));
     const progressEl = opts.progressEl ?? null;
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
     const onChange = typeof opts.onChange === 'function' ? opts.onChange : () => { };
+    const getStep = typeof opts.getStep === 'function' ? opts.getStep : (() => step);
 
     // NUEVO: Permitimos pasar una función de formateo
     const format = opts.format || ((v) => v);
@@ -3086,7 +3348,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     };
 
     const setNum = (val) => {
-        const clamped = Math.max(min, Math.min(max, val));
+        const clamped = Math.max(getMin(), Math.min(getMax(), val));
         setText(clamped);
         updateProgress(clamped);
         onChange(clamped, currentPercent(clamped)); // Devuelve el valor numérico limpio
@@ -3139,6 +3401,8 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
+        const min = getMin();
+        const max = getMax();
         if (max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;
@@ -3154,23 +3418,23 @@ export function attachHold(btn, el, step = 1, opts = {}) {
         progressEl.ariaValueNow = String(p);
     };
 
-    const tick = () => {
+    const tick = (heldMs = 0) => {
         if (values) {
             const cur = findCurrentIndex();
             setIndex(cur + (step >= 0 ? +1 : -1));
         } else {
             const cur = getNum();
-            setNum(cur + step);
+            setNum(cur + getStep(heldMs, step));
         }
     };
 
     const startLoop = () => {
         start = performance.now();
-        tick();
+        tick(0);
         const loopFn = () => {
             const held = performance.now() - start;
             timer = setTimeout(() => {
-                tick();
+                tick(held);
                 loopFn();
             }, pickInterval(held));
         };

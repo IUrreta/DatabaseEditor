@@ -125,7 +125,6 @@ export function format_name(fullName, nameSplitted, spanName, spanLastName, only
  * @param {Object} driversArray List of drivers
  */
 export function place_drivers(driversArray) {
-    console.log("DRIVERS ARRAY", driversArray)
     let divPosition;
     driversArray.forEach((driver) => {
         let newDiv = document.createElement("div");
@@ -346,7 +345,6 @@ function manage_staff_drivers(value) {
 }
 
 function add_future_team_noti(driverDiv, teamInfo) {
-    console.log("ADDING NOTI FOR FUTURE TEAM ", teamInfo)
     let notiDiv = document.createElement("div")
     notiDiv.className = `future-contract-noti noti-${team_dict[teamInfo.teamId]}${teamInfo.posInTeam > 2 ? "-affiliate" : ""}`
     driverDiv.appendChild(notiDiv)
@@ -734,7 +732,7 @@ export function manage_modal(info) {
         })
     }
 
-    ensureJuniorTeamDropdownBuilt();
+    buildJuniorTeamDropdown();
 
     const juniorPill = document.querySelector(".contract-category.junior-contract");
     if (info[2] !== null) {
@@ -881,7 +879,7 @@ function renderJuniorDriversList() {
     }
 }
 
-function ensureJuniorTeamDropdownBuilt() {
+function buildJuniorTeamDropdown() {
     const menu = document.getElementById("juniorTeamContractMenu");
     if (!menu) return;
 
@@ -1361,8 +1359,6 @@ function editContract() {
 
     const command = new Command("editContract", data);
     command.execute();
-
-    console.log("FUTURE TEAM: ", future_team)
 
     let teamInfo = {
         teamId: future_team,

@@ -74,13 +74,11 @@ function isBlankContractValue(value) {
 function toContractInt(value, fallback) {
   if (isBlankContractValue(value)) return fallback;
   const parsed = Number.parseInt(String(value), 10);
-  return Number.isFinite(parsed) ? parsed : fallback;
+  return parsed || parsed === 0 ? parsed : fallback;
 }
 
 function sanitizeContractPayload(payload = {}) {
-  console.log(getGlobals().currentDate);
   const seasonYear = getGlobals().currentDate[1];
-  console.log("Sanitizing contract payload:", payload);
   let staffID = toContractInt(payload.staffID, 0);
   if (staffID < 0) staffID = 0;
 
@@ -150,7 +148,6 @@ export function checkAndFixContract(driverID, teamID) {
     [safeDriverID, safeTeamID],
     "singleRow"
   );
-  console.log("Checking contract for DriverID:", safeDriverID, "TeamID:", safeTeamID, "Result:", row);
   if (!row) return null;
 
   const current = {
@@ -167,7 +164,6 @@ export function checkAndFixContract(driverID, teamID) {
   };
 
   const sanitized = sanitizeContractPayload(current);
-  console.log("Sanitized contract values:", sanitized);
   const changed = (
     current.teamID !== sanitized.teamID ||
     current.posInTeam !== sanitized.posInTeam ||
@@ -179,7 +175,6 @@ export function checkAndFixContract(driverID, teamID) {
     current.raceBonusTargetPos !== sanitized.raceBonusTargetPos
   );
 
-  console.log("Contract values changed:", changed);
 
   if (changed) {
     queryDB(

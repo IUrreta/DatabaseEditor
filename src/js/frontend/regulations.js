@@ -132,6 +132,55 @@ function updateMenus() {
     });
 }
 
+// Bars are relative to the highest value of their column in the current table
+function refreshBars(body) {
+  const cells = [...body.querySelectorAll(".regulations-bar-cell")];
+  const maxByCol = {};
+  for (const cell of cells) {
+    const value = Number(cell.querySelector("input").value) || 0;
+    maxByCol[cell.dataset.col] = Math.max(maxByCol[cell.dataset.col] || 0, value);
+  }
+  for (const cell of cells) {
+    const value = Number(cell.querySelector("input").value) || 0;
+    const max = maxByCol[cell.dataset.col];
+    cell.querySelector(".one-stat-progress").style.width = max ? `${(value / max) * 100}%` : "0%";
+  }
+}
+
+function createBarCell(body, col, value, onChange) {
+  const cell = document.createElement("div");
+  cell.className = "regulations-bar-cell";
+  cell.dataset.col = col;
+
+  const bar = document.createElement("div");
+  bar.className = "one-stat-bar";
+  const progress = document.createElement("div");
+  progress.className = "one-stat-progress";
+  bar.appendChild(progress);
+
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "0";
+  input.step = "1";
+  input.value = String(value ?? 0);
+  input.className = "custom-input-number";
+  input.addEventListener("input", () => {
+    onChange(parseIntSafe(input.value, 0));
+    refreshBars(body);
+  });
+
+  cell.appendChild(bar);
+  cell.appendChild(input);
+  return cell;
+}
+
+function createPosCell(pos) {
+  const cell = document.createElement("div");
+  cell.className = "regulations-pos bold-font";
+  cell.textContent = String(pos);
+  return cell;
+}
+
 function renderPointSchemeTable() {
   if (!regulationsState || !pointSchemeBody) return;
   const schemeId = getSelectedPointScheme();
@@ -140,30 +189,14 @@ function renderPointSchemeTable() {
   pointSchemeBody.innerHTML = "";
   for (const row of rows) {
     const wrapper = document.createElement("div");
-    wrapper.className = "regulations-row";
-
-    const pos = document.createElement("div");
-    pos.className = "regulations-cell regulations-keycell";
-    pos.textContent = String(row.RacePos);
-
-    const pointsCell = document.createElement("div");
-    pointsCell.className = "regulations-cell";
-    const input = document.createElement("input");
-    input.type = "number";
-    input.min = "0";
-    input.step = "1";
-    input.value = String(row.Points ?? 0);
-    input.className = "custom-input-number";
-    input.addEventListener("input", () => {
-      row.Points = parseIntSafe(input.value, 0);
-      regulationsState.pointSchemes[schemeId] = rows;
-    });
-    pointsCell.appendChild(input);
-
-    wrapper.appendChild(pos);
-    wrapper.appendChild(pointsCell);
+    wrapper.className = "regulations-table-row";
+    wrapper.appendChild(createPosCell(row.RacePos));
+    wrapper.appendChild(createBarCell(pointSchemeBody, "points", row.Points, (value) => {
+      row.Points = value;
+    }));
     pointSchemeBody.appendChild(wrapper);
   }
+  refreshBars(pointSchemeBody);
 }
 
 function renderResourcePackageTable() {
@@ -174,45 +207,17 @@ function renderResourcePackageTable() {
   resourcePackageBody.innerHTML = "";
   for (const row of rows) {
     const wrapper = document.createElement("div");
-    wrapper.className = "regulations-row";
-
-    const pos = document.createElement("div");
-    pos.className = "regulations-cell regulations-keycell";
-    pos.textContent = String(row.StandingPos);
-
-    const windCell = document.createElement("div");
-    windCell.className = "regulations-cell";
-    const windInput = document.createElement("input");
-    windInput.type = "number";
-    windInput.min = "0";
-    windInput.step = "1";
-    windInput.value = String(row.WindTunnelBlocks ?? 0);
-    windInput.className = "custom-input-number";
-    windInput.addEventListener("input", () => {
-      row.WindTunnelBlocks = parseIntSafe(windInput.value, 0);
-      regulationsState.partResources[packageId] = rows;
-    });
-    windCell.appendChild(windInput);
-
-    const cfdCell = document.createElement("div");
-    cfdCell.className = "regulations-cell";
-    const cfdInput = document.createElement("input");
-    cfdInput.type = "number";
-    cfdInput.min = "0";
-    cfdInput.step = "1";
-    cfdInput.value = String(row.CfdBlocks ?? 0);
-    cfdInput.className = "custom-input-number";
-    cfdInput.addEventListener("input", () => {
-      row.CfdBlocks = parseIntSafe(cfdInput.value, 0);
-      regulationsState.partResources[packageId] = rows;
-    });
-    cfdCell.appendChild(cfdInput);
-
-    wrapper.appendChild(pos);
-    wrapper.appendChild(windCell);
-    wrapper.appendChild(cfdCell);
+    wrapper.className = "regulations-table-row";
+    wrapper.appendChild(createPosCell(row.StandingPos));
+    wrapper.appendChild(createBarCell(resourcePackageBody, "wind", row.WindTunnelBlocks, (value) => {
+      row.WindTunnelBlocks = value;
+    }));
+    wrapper.appendChild(createBarCell(resourcePackageBody, "cfd", row.CfdBlocks, (value) => {
+      row.CfdBlocks = value;
+    }));
     resourcePackageBody.appendChild(wrapper);
   }
+  refreshBars(resourcePackageBody);
 }
 
 function initHoldControlsOnce() {

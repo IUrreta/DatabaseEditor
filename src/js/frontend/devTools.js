@@ -59,6 +59,11 @@ if (isLocalhost) {
     statsButton.type = "button";
     statsButton.textContent = "Set all drivers stats to 85";
 
+    const powerUnitConditionButton = document.createElement("button");
+    powerUnitConditionButton.className = "devtools-action";
+    powerUnitConditionButton.type = "button";
+    powerUnitConditionButton.textContent = "Repair all engines/ERS/gearboxes to 75%";
+
     const downloadButton = document.createElement("button");
     downloadButton.className = "devtools-action";
     downloadButton.type = "button";
@@ -73,6 +78,7 @@ if (isLocalhost) {
     headerEl.appendChild(closeButton);
     bodyEl.appendChild(hintEl);
     bodyEl.appendChild(statsButton);
+    bodyEl.appendChild(powerUnitConditionButton);
     bodyEl.appendChild(downloadButton);
     windowEl.appendChild(headerEl);
     windowEl.appendChild(bodyEl);
@@ -96,6 +102,24 @@ if (isLocalhost) {
       setTimeout(() => {
         statsButton.disabled = false;
         statsButton.textContent = "Set all drivers stats to 85";
+      }, 1200);
+    });
+
+    powerUnitConditionButton.addEventListener("click", async () => {
+      powerUnitConditionButton.disabled = true;
+      powerUnitConditionButton.textContent = "Repairing...";
+
+      try {
+        await new Command("devSetMinPowerUnitCondition75", {}).promiseExecute();
+        powerUnitConditionButton.textContent = "Repaired";
+      } catch (error) {
+        console.error(error);
+        powerUnitConditionButton.textContent = "Repair failed";
+      }
+
+      setTimeout(() => {
+        powerUnitConditionButton.disabled = false;
+        powerUnitConditionButton.textContent = "Repair all engines/ERS/gearboxes to 75%";
       }, 1200);
     });
 

@@ -666,7 +666,7 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       place_turning_outcome(newResp.content, newsList);
 
       if (news.type === "turning_point_transfer" || news.type === "turning_point_injury" ||
-        news.type === "turning_point_young_drivers" || news.type === "turning_point_young_drivers") {
+        news.type === "turning_point_young_drivers" || news.type === "turning_point_player_child") {
         const commandDrivers = new Command("driversRefresh", {});
         commandDrivers.execute();
       }
@@ -687,6 +687,12 @@ function manageTurningPointButtons(news, newsList, maxDate, newsBody, readbutton
       else if (news.type === "turning_point_engine_regulation") {
         const commandEngines = new Command("enginesRefresh", {});
         commandEngines.execute();
+      }
+      else if (news.type === "turning_point_preseason_engine_switch") {
+        const commandEngines = new Command("enginesRefresh", {});
+        commandEngines.execute();
+        const commandPerformance = new Command("performanceRefresh", {});
+        commandPerformance.execute();
       }
       else if (news.type === "turning_point_aduo") {
         const commandEngines = new Command("enginesRefresh", {});
@@ -1568,6 +1574,8 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
     turning_point_race_substitution: (nd) => contextualizeTurningPointRaceSubstitution(nd, nd.turning_point_type),
     turning_point_injury: (nd) => contextualizeTurningPointInjury(nd, nd.turning_point_type),
     turning_point_engine_regulation: (nd) => contextualizeTurningPointEngineRegulation(nd, nd.turning_point_type),
+    turning_point_preseason_engine_switch: (nd) => contextualizeTurningPointPreseasonEngineSwitch(nd, nd.turning_point_type),
+    turning_point_player_child: (nd) => contextualizeTurningPointPlayerChild(nd, nd.turning_point_type),
     turning_point_young_drivers: (nd) => contextualizeTurningPointYoungDrivers(nd, nd.turning_point_type),
     turning_point_aduo: (nd) => contextualizeTurningPointAduo(nd, nd.turning_point_type),
   };
@@ -1618,7 +1626,11 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         `\n\nAdd any quote you find apporpiate from the drivers or team principals if involved in the article. ` +
         `\n\nThe title of the article is: "${newData.title}"`;
 
-      finalInstruction += `\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Use bullet points or numbered lists if needed. Do not include any raw HTML or code blocks.\nThe final output must be valid Markdown ready to render as HTML.\n`;
+      //list of 9 or 10 different personalities to chose from so each article has a different tone
+      const randomPersonalitiesForAI = ["Positive", "Negative", "Neutral", "Sarcastic", "Optimistic", "Pessimistic", "Humorous", "Serious", "Dramatic", "Inspirational"];
+      const persoonality = randomPersonalitiesForAI[Math.floor(Math.random() * randomPersonalitiesForAI.length)];
+
+      finalInstruction += `\n\nAvoid GPT-isms or the typical AI writing format/language, have a ${persoonality} personality.\n\nEvery time a name has (team name) after it, it means their team.\n\nUse **Markdown** formatting in your response for better readability:\n- Use "#" or "##" for main and secondary titles.\n- Always use **bold** driver names and important phrases.\n- ALWAYS use *italics* for quotes or emotional emphasis.\n- Avoid bullet points or lists. Do not include any raw HTML or code blocks\nThe final output must be valid Markdown ready to render as HTML.\n`;
 
       if (expectsJson) {
         finalInstruction += `\n\nReturn ONLY a JSON object with exactly two keys: "title" and "body".` +
@@ -1656,7 +1668,7 @@ async function manageRead(newData, newsList, barProgressDiv, interval, opts = {}
         content: finalInstruction
       });
 
-      // Ensure {{language}} placeholders are always substituted in every prompt message
+      // Keep {{language}} placeholders substituted in every prompt message
       messages = messages.map(m => ({
         ...m,
         content: replaceLanguagePlaceholder(m.content, selectedLanguage)
@@ -2114,6 +2126,70 @@ async function contextualizeTurningPointEngineRegulation(newData, turningPointTy
     instruction: prompt,
     context: contextData
   };
+}
+
+async function contextualizeTurningPointPreseasonEngineSwitch(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 110);
+  if (!promptTemplateEntry) {
+    console.warn("Missing preseason engine switch prompt template (new_type 110).");
+    return;
+  }
+
+  let prompt = promptTemplateEntry.prompt;
+  if (turningPointType?.includes("positive")) prompt = promptTemplateEntry.positive_prompt;
+  else if (turningPointType?.includes("negative")) prompt = promptTemplateEntry.negative_prompt;
+
+  const data = newData.data || {};
+  prompt = prompt
+    .replace(/{{\s*team\s*}}/g, data.team || "the team")
+    .replace(/{{\s*old_engine\s*}}/g, data.oldEngineName || "its planned supplier")
+    .replace(/{{\s*new_engine\s*}}/g, data.newEngineName || "a rival supplier")
+    .replace(/{{\s*reason\s*}}/g, data.reason || "late technical and logistical complications")
+    .replace(/{{\s*chassis_adaptability\s*}}/g, data.chassisAdaptability || "the chassis was designed to accommodate a late supplier change");
+
+  const command = new Command("fullChampionshipDetailsRequest", { season: data.season });
+  let resp;
+  try {
+    resp = await command.promiseExecute();
+  } catch (err) {
+    console.error("Error fetching championship context for preseason engine switch:", err);
+    return;
+  }
+
+  return {
+    instruction: prompt,
+    context: buildContextualPrompt(resp.content, { seasonYear: data.season })
+  };
+}
+
+async function contextualizeTurningPointPlayerChild(newData, turningPointType) {
+  const promptTemplateEntry = turningPointsTemplates.find(t => t.new_type === 111);
+  if (!promptTemplateEntry) return;
+
+  let prompt = promptTemplateEntry.prompt;
+  if (turningPointType?.includes("positive")) prompt = promptTemplateEntry.positive_prompt;
+  else if (turningPointType?.includes("negative")) prompt = promptTemplateEntry.negative_prompt;
+
+  const data = newData.data || {};
+  prompt = prompt
+    .replace(/{{\s*child_name\s*}}/g, data.childName || "the young driver")
+    .replace(/{{\s*nationality\s*}}/g, data.childNationality || "")
+    .replace(/{{\s*player_name\s*}}/g, data.playerName || "the team principal")
+    .replace(/{{\s*player_team\s*}}/g, data.playerTeam || "the player's team")
+    .replace(/{{\s*f3_team\s*}}/g, data.f3Team || "the Formula 3 team")
+    .replace(/{{\s*replaced_driver\s*}}/g, data.replacedDriver?.name || "the incumbent driver")
+    .replace(/{{\s*reason\s*}}/g, data.reason || "a late line-up review");
+
+  let context = "";
+  try {
+    const response = await new Command("fullFeederSeriesDetailsRequest", { season: data.season }).promiseExecute();
+    context = buildContextualPrompt(response.content?.f3 || {}, { seasonYear: data.season });
+  } catch (error) {
+    console.error("Error fetching Formula 3 context for player child turning point:", error);
+  }
+
+  context += `\n\n${data.childName} is the son of ${data.playerName}, team principal at ${data.playerTeam}. Proposed F3 change: ${data.childName} would join ${data.f3Team} in car ${data.posInTeam}, replacing ${data.replacedDriver?.name}. Reason: ${data.reason}.`;
+  return { instruction: prompt, context };
 }
 
 async function contextualizeTurningPointAduo(newData, turningPointType) {
@@ -3160,7 +3236,7 @@ async function contextualizeSeasonReview(newData) {
 
 
 async function askGenAI(messages, opts = {}) {
-  const response = await fetch("/api/ask-openai", {
+  const response = await fetch("/api/ask-llm", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -3367,7 +3443,7 @@ function buildEmergencyOverlay() {
   return overlayDiv;
 }
 
-function ensureEmergencyOverlay(imageContainer) {
+function addEmergencyOverlay(imageContainer) {
   if (!imageContainer.querySelector('.breaking-news-overlay')) {
     imageContainer.prepend(buildEmergencyOverlay());
   }
@@ -3707,12 +3783,12 @@ function manage_overlay(imageContainer, overlay, data, image) {
         : (typeof image === 'string' ? image : null);
 
     if (!url) {
-      ensureEmergencyOverlay(imageContainer);
+      addEmergencyOverlay(imageContainer);
       return;
     }
     const probe = new Image();
     probe.onload = () => { /* ok, no hacemos nada */ };
-    probe.onerror = () => { ensureEmergencyOverlay(imageContainer); };
+    probe.onerror = () => { addEmergencyOverlay(imageContainer); };
     probe.src = url;
   } catch {
     console.warn('Image probe failed unexpectedly');
@@ -5810,7 +5886,6 @@ export function updateNewsYearsButton(message) {
     item.dataset.value = year;
     item.innerText = year;
     item.addEventListener("click", function (e) {
-      console.log("Selected news year:", year);
       newsYearsButton.querySelector("span").innerText = year;
       const command = new Command("getNewsFromSeason", { season: year });
       command.execute();

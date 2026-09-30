@@ -1,6 +1,6 @@
 import { races_names, names_full, team_dict, codes_dict, countries_data, combined_dict, logos_disc, races_map, driversTableLogosDict, f1_teams, f2_teams, f3_teams } from "./config";
 import { resetH2H, queueAutoCompareDrivers } from './head2head';
-import { game_version, custom_team, manageSaveButton, new_update_notifications, seasonModData, updateFront } from "./renderer";
+import { game_version, custom_team, manageSaveButton, new_update_notifications, updateFront } from "./renderer";
 import { insert_space, manageColor, setCurrentSeason, format_name } from "./transfers";
 import { news_insert_space } from "../backend/scriptUtils/newsUtils.js";
 import { Command } from "../backend/command.js";
@@ -28,7 +28,7 @@ let racesLeftCount = 0, sprintsLeft = 0;
 export let engine_allocations;
 let driverCells;
 let teamCells;
-let standingsDetailsEnabled = false;
+let standingsDetailsMode = 0;
 let qualifyingHeightListenerAttached = false;
 let winsHeightListenerAttached = false;
 let driversStandingsHeightListenerAttached = false;
@@ -45,8 +45,9 @@ let sessionResultsDragY = 0;
 let sessionResultsPointsInfo = null;
 let sessionResultsPointsInfoPromise = null;
 let sessionResultsCompactMode = false;
+let sessionResultsYearSelectionToken = 0;
 
-function ensureDropdownCheckIcons(menuEl) {
+function addDropdownCheckIcons(menuEl) {
     if (!menuEl) return;
     menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
         if (item.dataset.noCheck === "1") return;
@@ -60,7 +61,7 @@ function ensureDropdownCheckIcons(menuEl) {
 
 function syncDropdownCheckIcons(menuEl, isSelected) {
     if (!menuEl || typeof isSelected !== "function") return;
-    ensureDropdownCheckIcons(menuEl);
+    addDropdownCheckIcons(menuEl);
     menuEl.querySelectorAll(".redesigned-dropdown-item").forEach((item) => {
         const selected = Boolean(isSelected(item));
         item.querySelector("i.bi-check")?.classList.toggle("unactive", !selected);
@@ -94,20 +95,36 @@ function applyStandingsDetailsState() {
     const seasonViewer = document.getElementById("season_viewer");
     const button = document.getElementById("standingsDetailsButton");
     const label = button?.querySelector("span");
-    const eyeIcon = button?.querySelector("i.bi-eye");
-    const eyeSlashIcon = button?.querySelector("i.bi-eye-slash");
+    const icons = button?.querySelectorAll("i");
+    const mainIcon = icons?.[0];
+    const slashIcon = icons?.[1];
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const detailsEnabled = standingsDetailsMode === 1 || standingsDetailsMode === 2;
+    const compactEnabled = standingsDetailsMode === 2;
 
-    if (seasonViewer) {
-        seasonViewer.classList.toggle("standings-details-enabled", standingsDetailsEnabled);
+    seasonViewer.classList.toggle("standings-details-enabled", detailsEnabled);
+    seasonViewer.classList.toggle("standings-compact-mode", compactEnabled);
+
+    button.classList.toggle("compact-mode", compactEnabled);
+
+    if (standingsDetailsMode === 0) {
+        label.textContent = "Show details";
+    }
+    else if (standingsDetailsMode === 1) {
+        label.textContent = "Compact table";
+    }
+    else {
+        label.textContent = "Reset table";
     }
 
-    if (label) {
-        label.textContent = standingsDetailsEnabled ? "Hide details" : "Show details";
+    if (mainIcon && slashIcon) {
+        mainIcon.className = compactEnabled ? "bi bi-layout-sidebar-inset" : "bi bi-eye";
+        mainIcon.style.display = standingsDetailsMode === 0 ? "none" : "inline";
+        slashIcon.style.display = standingsDetailsMode === 0 ? "inline" : "none";
     }
 
-    if (eyeIcon && eyeSlashIcon) {
-        eyeIcon.style.display = standingsDetailsEnabled ? "inline" : "none";
-        eyeSlashIcon.style.display = standingsDetailsEnabled ? "none" : "inline";
+    if (typeVal === "standings") {
+        manage_show_tables();
     }
 }
 
@@ -155,8 +172,42 @@ function updateStandingsPointsGaps(rows, leaderPoints) {
     });
 }
 
+function hasLastRaceDoublePoints(pointsInfo) {
+    return Number(pointsInfo?.isLastRaceDouble ?? pointsInfo?.isLastraceDouble) === 1;
+}
+
+function getRemainingStandingsPoints(events, lastCompletedRaceId, pointsInfo, maxRacePoints, maxSprintPoints) {
+    if (!Array.isArray(events) || events.length === 0) {
+        return { racesLeft: 0, sprintsLeft: 0, pointsRemaining: 0 };
+    }
+
+    const lastRaceIndex = events.findIndex(event => Number(event?.[0]) === Number(lastCompletedRaceId));
+    if (lastRaceIndex < 0) {
+        return { racesLeft: 0, sprintsLeft: 0, pointsRemaining: 0 };
+    }
+
+    const remainingEvents = events.slice(lastRaceIndex + 1);
+    const racesLeft = remainingEvents.length;
+    const sprintsLeftLocal = remainingEvents.filter(event => Number(event?.[2]) === 1).length;
+    const finalRaceStillRemaining = remainingEvents.length > 0;
+    const isDoublePoints = hasLastRaceDoublePoints(pointsInfo);
+    const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
+    const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+
+    const pointsRemaining = racesLeft * maxRacePoints + sprintsLeftLocal * maxSprintPoints +
+        (isDoublePoints && finalRaceStillRemaining ? maxRacePoints : 0) +
+        (fastestLapBonus ? racesLeft : 0) +
+        (poleBonus ? racesLeft : 0);
+
+    return {
+        racesLeft,
+        sprintsLeft: sprintsLeftLocal,
+        pointsRemaining
+    };
+}
+
 document.getElementById("standingsDetailsButton").addEventListener("click", function () {
-    standingsDetailsEnabled = !standingsDetailsEnabled;
+    standingsDetailsMode = (standingsDetailsMode + 1) % 3;
     applyStandingsDetailsState();
 });
 applyStandingsDetailsState();
@@ -294,6 +345,11 @@ function updateTopPanelControlsVisibility() {
         exportBtn.classList.toggle("d-none", typeVal !== "sessionresults");
     }
 
+    const sessionStepButton = document.getElementById("sessionResultsSessionStepButton");
+    if (sessionStepButton) {
+        sessionStepButton.classList.toggle("d-none", !shouldShowSessionResultsSessionStepButton(typeVal));
+    }
+
     const driversTeamsPills = document.querySelector("#season_viewer .drivers-teams-pills");
     if (driversTeamsPills) {
         driversTeamsPills.classList.toggle("d-none", hideDriversTeamsPills);
@@ -316,6 +372,12 @@ function updateTopPanelControlsVisibility() {
     }
 
     updateAllTimeVisibilityForTeamsRecords();
+    syncSessionResultsSessionStepButton();
+}
+
+function shouldShowBothStandingsTables() {
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    return typeVal === "standings" && standingsDetailsMode === 2 && isYearSelected;
 }
 
 
@@ -328,7 +390,11 @@ function manage_show_tables() {
     const seasonReviewBento = document.querySelector(".season-review-bento")
     seasonReviewBento.classList.add("d-none")
     if (isYearSelected) {
-        if (driverOrTeams === "drivers") {
+        if (shouldShowBothStandingsTables()) {
+            document.querySelector(".teams-table").classList.remove("d-none")
+            document.querySelector(".drivers-table").classList.remove("d-none")
+        }
+        else if (driverOrTeams === "drivers") {
             document.querySelector(".teams-table").classList.add("d-none")
             document.querySelector(".drivers-table").classList.remove("d-none")
         }
@@ -518,6 +584,32 @@ function formatDriverCellValue(value, type) {
         return "-"
     }
     return manage_dataset_info_driver(value, undefined, type)
+}
+
+function isRaceDnf(entry, useSprint = false) {
+    if (!entry) return false
+    if (useSprint) {
+        return Number(entry?.sprintPoints) === -1 || Number(entry?.sprintPos) === -1
+    }
+    return Boolean(entry?.dnf) || Number(entry?.points) === -1 || Number(entry?.finishingPos) === -1
+}
+
+function hasFastestLapMark(race, allRaces = []) {
+    if (!race) return false
+    if (typeof race?.fastestLapWinner === "boolean") {
+        return race.fastestLapWinner
+    }
+
+    const fastestLap = Number(race?.fastestLap ?? 0)
+    if (fastestLap > 1) {
+        const bestLap = allRaces
+            .map((entry) => Number(entry?.fastestLap ?? 0))
+            .filter((value) => value > 1)
+            .reduce((best, value) => (best == null || value < best ? value : best), null)
+        return bestLap != null && Math.abs(fastestLap - bestLap) < 1e-6
+    }
+
+    return Boolean(race?.fastestLap)
 }
 
 function syncFormulaFromCalendar(formula) {
@@ -811,17 +903,34 @@ function manage_teams_table_logos() {
             }
         }
         else if (logo.dataset.teamid === "9") {
-            if (alfaReplace === "alfa") {
-                logo.className = "teams-table-logo-inner merc-team-table-logo"
+            if (["audi", "sauber"].includes(alfaReplace)) {
+                if (logo.tagName === "IMG") {
+                    const newElem = document.createElement("div");
+                    newElem.className = `teams-table-logo-inner ${alfaReplace}-team-table-logo`;
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                else {
+                    logo.className = `teams-table-logo-inner ${alfaReplace}-team-table-logo`;
+                }
             }
-            else if (alfaReplace === "audi") {
-                logo.className = "teams-table-logo-inner audi-team-table-logo"
-            }
-            else if (alfaReplace === "stake") {
-                logo.className = "teams-table-logo-inner stake-team-table-logo"
-            }
-            else if (alfaReplace === "sauber") {
-                logo.className = "teams-table-logo-inner ferrari-team-table-logo"
+            else {
+                if (logo.tagName !== "IMG") {
+                    const newElem = document.createElement("img");
+                    newElem.className = "teams-table-logo-inner";
+                    newElem.dataset.teamid = logo.dataset.teamid;
+                    newElem.src = logos_disc[9];
+                    logo.replaceWith(newElem);
+                    logo = newElem;
+                }
+                if (alfaReplace === "alfa") {
+                    logo.className = "teams-table-logo-inner merc-team-table-logo"
+                }
+                else if (alfaReplace === "stake") {
+                    logo.className = "teams-table-logo-inner stake-team-table-logo"
+                }
+                logo.src = logos_disc[9];
             }
         }
         else if (logo.dataset.teamid === "10") {
@@ -1029,20 +1138,13 @@ export function new_load_drivers_table(data) {
 function checkIfDriverIsChampion(driver1, driver1Points, driver2Points, pointsInfo, driverRows = []) {
     if (driver1 !== undefined) {
         const lastRaceDone = driver1["races"][driver1["races"].length - 1]["raceId"];
-        const lastRaceIndex = calendarData.findIndex(x => x[0] === lastRaceDone);
-        racesLeftCount = calendarData.length - (lastRaceIndex + 1);
-        sprintsLeft = calendarData.filter(x => x[2] === 1 && x[0] >= lastRaceDone).length
-
         const maxRacePoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
-        const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
-        const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
-        const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
+        const remainingInfo = getRemainingStandingsPoints(calendarData, lastRaceDone, pointsInfo, maxRacePoints, 8);
+        racesLeftCount = remainingInfo.racesLeft;
+        sprintsLeft = remainingInfo.sprintsLeft;
 
         const pointsDif = driver1Points - driver2Points
-        let pointsRemaining = racesLeftCount * maxRacePoints + sprintsLeft * 8 +
-            (isDoublePoints ? maxRacePoints : 0) +
-            (fastestLapBonus ? racesLeftCount : 0) +
-            (poleBonus ? racesLeftCount : 0)
+        let pointsRemaining = remainingInfo.pointsRemaining;
 
         const firstDriverPos = document.querySelector(".drivers-table-data .drivers-table-position")
         const firstDriverPoints = document.querySelector(".drivers-table-data .drivers-table-points")
@@ -1260,14 +1362,10 @@ function checkIfTeamIsChamp(team1Points, team2Points, pointsInfo, teamRows = [])
     const maxFirstPoints = Number(pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? pointsInfo?.twoBiggestPoints?.[0] ?? 0);
     const maxSecondPoints = Number(pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? pointsInfo?.twoBiggestPoints?.[1] ?? 0);
     const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
-    const isDoublePoints = Number(pointsInfo?.isLastRaceDouble) === 1;
-    const fastestLapBonus = Number(pointsInfo?.fastestLapBonusPoint) === 1;
-    const poleBonus = Number(pointsInfo?.poleBonusPoint) === 1;
-
     let pointsRemaining = racesLeftCount * maxTeamRacePoints + sprintsLeft * 15 +
-        (isDoublePoints ? maxTeamRacePoints : 0) +
-        (fastestLapBonus ? racesLeftCount : 0) +
-        (poleBonus ? racesLeftCount : 0)
+        (hasLastRaceDoublePoints(pointsInfo) && racesLeftCount > 0 ? maxTeamRacePoints : 0) +
+        (Number(pointsInfo?.fastestLapBonusPoint) === 1 ? racesLeftCount : 0) +
+        (Number(pointsInfo?.poleBonusPoint) === 1 ? racesLeftCount : 0)
 
 
     const firstTeamRow = document.querySelector(
@@ -1451,8 +1549,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
                 const d1Points = d1 ? (safePoints(d1.points) + safePoints(d1.qualifyingPoints)) : 0;
                 const d2Points = d2 ? (safePoints(d2.points) + safePoints(d2.qualifyingPoints)) : 0;
-                const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
-                const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
+                const d1Pos = d1 ? (isRaceDnf(d1) ? "DNF" : d1.finishingPos) : "-";
+                const d2Pos = d2 ? (isRaceDnf(d2) ? "DNF" : d2.finishingPos) : "-";
 
                 // datasets base
                 raceDiv.dataset.raceid = raceId;
@@ -1484,8 +1582,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 raceDiv.dataset.quali1 = d1 ? d1.qualifyingPos ?? 99 : 99;
                 raceDiv.dataset.quali2 = d2 ? d2.qualifyingPos ?? 99 : 99;
 
-                raceDiv.dataset.fastlap1 = d1 && d1.fastestLap ? 1 : 0;
-                raceDiv.dataset.fastlap2 = d2 && d2.fastestLap ? 1 : 0;
+                raceDiv.dataset.fastlap1 = hasFastestLapMark(d1, pair) ? 1 : 0;
+                raceDiv.dataset.fastlap2 = hasFastestLapMark(d2, pair) ? 1 : 0;
 
                 // Suma de puntos de carrera
                 teampoints += parseInt(raceDiv.dataset.pointsCount);
@@ -1544,8 +1642,6 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 if (currentFormula === 3) {
                     const sprintPosList = hasSprint ? buildTeamResultList(allEntries, "pos", true) : [];
                     const sprintQualiList = buildTeamResultList(allEntries, "quali", true);
-                    sprintDiv.dataset.poslist = JSON.stringify(sprintPosList);
-                    sprintDiv.dataset.qualilist = JSON.stringify(sprintQualiList);
                     if (pointsOrPos === "pos") {
                         renderTeamCellList(sprintDiv, sprintPosList);
                     }
@@ -1582,8 +1678,8 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
 
                 const d1Points = d1 ? safePoints(d1.points) : 0;
                 const d2Points = d2 ? safePoints(d2.points) : 0;
-                const d1Pos = d1 ? (d1.points === -1 || d1.finishingPos === -1 ? "DNF" : d1.finishingPos) : "-";
-                const d2Pos = d2 ? (d2.points === -1 || d2.finishingPos === -1 ? "DNF" : d2.finishingPos) : "-";
+                const d1Pos = d1 ? (isRaceDnf(d1) ? "DNF" : d1.finishingPos) : "-";
+                const d2Pos = d2 ? (isRaceDnf(d2) ? "DNF" : d2.finishingPos) : "-";
 
                 const d1PointsTotal = safePoints(d1?.points) + safePoints(d1?.qualifyingPoints);
                 const d2PointsTotal = safePoints(d2?.points) + safePoints(d2?.qualifyingPoints);
@@ -1615,8 +1711,6 @@ function new_addTeam(teamRaceMap, name, pos, id, lastPositionChange = 0) {
                 if (currentFormula === 3) {
                     const featurePosList = buildTeamResultList(allEntries, "pos", false);
                     const featureQualiList = buildTeamResultList(allEntries, "quali", false);
-                    featureDiv.dataset.poslist = JSON.stringify(featurePosList);
-                    featureDiv.dataset.qualilist = JSON.stringify(featureQualiList);
                     if (pointsOrPos === "pos") {
                         renderTeamCellList(featureDiv, featurePosList);
                     }
@@ -1731,7 +1825,7 @@ function buildF1DriverLogoElement(teamId) {
         logo.classList.add(driversTableLogosDict[alphaReplace]);
     }
     if (teamId === 9) {
-        if (alfaReplace === "sauber") {
+        if (["audi", "sauber"].includes(alfaReplace)) {
             logo = document.createElement("div");
             logo.classList = "drivers-table-logo";
             logo.dataset.teamid = teamId;
@@ -1828,7 +1922,7 @@ function new_addDriver(driver, races_done, odd) {
             if (races_done.includes(raceid) && race) {
                 const qualiPoints = parseInt(race.qualifyingPoints) || 0;
                 const racePointsRaw = parseInt(race.points);
-                const featurePoints = racePointsRaw === -1
+                const featurePoints = race?.dnf
                     ? -1
                     : racePointsRaw + Math.max(0, qualiPoints);
                 const hasSprintPoints = typeof race.sprintPoints !== "undefined" && race.sprintPoints !== null;
@@ -1844,7 +1938,7 @@ function new_addDriver(driver, races_done, odd) {
                     hasSprintPoints ? race.sprintPoints : undefined,     
                     "points"
                 );
-                raceDiv.dataset.fastlap = race.fastestLap ? 1 : 0; // normaliza a 0/1
+                raceDiv.dataset.fastlap = hasFastestLapMark(race, driver?.races || []) ? 1 : 0;
                 raceDiv.dataset.quali = manage_dataset_info_driver(
                     race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
                     undefined,
@@ -1897,11 +1991,11 @@ function new_addDriver(driver, races_done, odd) {
                     sprintDiv.textContent = "-";
                 }
 
-                featureDiv.dataset.pos = formatDriverCellValue(race.finishingPos, "pos");
+                featureDiv.dataset.pos = formatDriverCellValue(race?.dnf ? -1 : race.finishingPos, "pos");
                 const qualiPoints = parseInt(race.qualifyingPoints) || 0;
-                const featurePoints = (parseInt(race.points) || 0) + Math.max(0, qualiPoints);
+                const featurePoints = race?.dnf ? -1 : (parseInt(race.points) || 0) + Math.max(0, qualiPoints);
                 featureDiv.dataset.points = formatDriverCellValue(featurePoints, "points");
-                featureDiv.dataset.fastlap = race.fastestLap ? 1 : 0;
+                featureDiv.dataset.fastlap = hasFastestLapMark(race, driver?.races || []) ? 1 : 0;
                 featureDiv.dataset.quali = formatDriverCellValue(
                     race.qualifyingPos === 99 ? race.startingPos : race.qualifyingPos,
                     "quali"
@@ -2197,11 +2291,8 @@ export function generateYearsMenu(actualYear) {
     yearMenu.innerHTML = "";
     yearH2H.innerHTML = "";
 
-    const timeTravel2026Enabled = seasonModData?.["time-travel-2026"] === "1" || seasonModData?.["time-travel-2026"] === 1;
-    const minYear = timeTravel2026Enabled ? 2026 : game_version;
-
     // años (con data-year)
-    for (let year = actualYear; year >= minYear; year--) {
+    for (let year = actualYear; year >= game_version; year--) {
         const a = document.createElement("a");
         a.textContent = String(year);
         a.className = "redesigned-dropdown-item";
@@ -2274,8 +2365,6 @@ function manageRecordsSelected(forcedYearEl = null) {
     const selectedYear = selectedEl.dataset.year;
     const isCurrentYear = selectedYear === yearItems[1].dataset.year;
 
-    console.log("Selected year:", selectedYear, "Type:", typeVal);
-
     if (typeVal === "standings") {
         isYearSelected = true
         manage_show_tables();
@@ -2285,6 +2374,8 @@ function manageRecordsSelected(forcedYearEl = null) {
         manageSeasonReview();
     }
     else if (typeVal === "sessionresults") {
+        updateTopPanelControlsVisibility();
+        syncSessionResultsForYear(selectedYear);
         return;
     }
     else {
@@ -2296,6 +2387,12 @@ function manageRecordsSelected(forcedYearEl = null) {
         }
         manageShowRecords();
     }
+}
+
+export function refreshRecordsAfterDataChange() {
+    const firstRealYear = document.querySelector('#yearMenu a[data-year]:not([data-year="all"])');
+    if (!firstRealYear) return;
+    manageRecordsSelected(firstRealYear);
 }
 
 function manageSeasonReview(){
@@ -2368,7 +2465,7 @@ function populateComparisonsSeasonReview(comparisons, teamsStandings) {
     raceComparisons.innerHTML = "";
     qualiComparisons.innerHTML = "";
     updateComparisonsMaxHeight();
-    ensureComparisonsHeightListener();
+    initComparisonsHeightListener();
     if (!Array.isArray(comparisons) || comparisons.length === 0) return;
 
     const startH2HFromSeasonReview = (driver1Id, driver2Id) => {
@@ -2511,18 +2608,8 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
         const lastRaceIndex = meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId);
 
         if (lastRaceIndex >= 0) {
-            const racesLeft = meta.events.length - (lastRaceIndex + 1);
-            const sprintsLeftLocal = meta.events.filter(x => Number(x?.[2]) === 1 && Number(x?.[0]) >= lastRaceDoneId).length;
-
             const maxRacePoints = Number(meta.pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[0] ?? 0);
-            const isDoublePoints = Number(meta.pointsInfo?.isLastRaceDouble ?? meta.pointsInfo?.isLastraceDouble) === 1;
-            const fastestLapBonus = Number(meta.pointsInfo?.fastestLapBonusPoint) === 1;
-            const poleBonus = Number(meta.pointsInfo?.poleBonusPoint) === 1;
-
-            const pointsRemaining = racesLeft * maxRacePoints + sprintsLeftLocal * 8 +
-                (isDoublePoints ? maxRacePoints : 0) +
-                (fastestLapBonus ? racesLeft : 0) +
-                (poleBonus ? racesLeft : 0);
+            const pointsRemaining = getRemainingStandingsPoints(meta.events, lastRaceDoneId, meta.pointsInfo, maxRacePoints, 8).pointsRemaining;
 
             championClinched = (leaderPts - secondPts) > pointsRemaining;
         }
@@ -2580,10 +2667,9 @@ function populateDriversStandingsSeasonReview(data, meta = {}) {
 
     //calculate heiight and console log it
     let height = standings.getBoundingClientRect().height;
-    console.log("Drivers Standings Height:", height);
 
     updateDriversStandingsMaxHeight();
-    ensureDriversStandingsHeightListener();
+    initDriversStandingsHeightListener();
 }
 
 function updateDriversStandingsMaxHeight() {
@@ -2606,7 +2692,7 @@ function updateDriversStandingsMaxHeight() {
     }
 }
 
-function ensureDriversStandingsHeightListener() {
+function initDriversStandingsHeightListener() {
     if (driversStandingsHeightListenerAttached) return;
     driversStandingsHeightListenerAttached = true;
 
@@ -2640,7 +2726,7 @@ function updateTeamsStandingsMaxHeight() {
     }
 }
 
-function ensureTeamsStandingsHeightListener() {
+function initTeamsStandingsHeightListener() {
     if (teamsStandingsHeightListenerAttached) return;
     teamsStandingsHeightListenerAttached = true;
 
@@ -2676,7 +2762,7 @@ function updateComparisonsMaxHeight() {
     });
 }
 
-function ensureComparisonsHeightListener() {
+function initComparisonsHeightListener() {
     if (comparisonsHeightListenerAttached) return;
     comparisonsHeightListenerAttached = true;
 
@@ -2706,21 +2792,10 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
         const lastRaceIndex = meta.events.findIndex(x => Number(x?.[0]) === lastRaceDoneId);
 
         if (lastRaceIndex >= 0) {
-            const racesLeft = meta.events.length - (lastRaceIndex + 1);
-            const sprintsLeftLocal = meta.events.filter(x => Number(x?.[2]) === 1 && Number(x?.[0]) >= lastRaceDoneId).length;
-
             const maxFirstPoints = Number(meta.pointsInfo?.twoBiggestPoints?.[0]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[0] ?? 0);
             const maxSecondPoints = Number(meta.pointsInfo?.twoBiggestPoints?.[1]?.[0] ?? meta.pointsInfo?.twoBiggestPoints?.[1] ?? 0);
             const maxTeamRacePoints = maxFirstPoints + maxSecondPoints;
-
-            const isDoublePoints = Number(meta.pointsInfo?.isLastRaceDouble ?? meta.pointsInfo?.isLastraceDouble) === 1;
-            const fastestLapBonus = Number(meta.pointsInfo?.fastestLapBonusPoint) === 1;
-            const poleBonus = Number(meta.pointsInfo?.poleBonusPoint) === 1;
-
-            const pointsRemaining = racesLeft * maxTeamRacePoints + sprintsLeftLocal * 15 +
-                (isDoublePoints ? maxTeamRacePoints : 0) +
-                (fastestLapBonus ? racesLeft : 0) +
-                (poleBonus ? racesLeft : 0);
+            const pointsRemaining = getRemainingStandingsPoints(meta.events, lastRaceDoneId, meta.pointsInfo, maxTeamRacePoints, 15).pointsRemaining;
 
             championClinched = (Number(leaderPts) - Number(secondPts)) > pointsRemaining;
         }
@@ -2777,7 +2852,7 @@ function populateTeamsStandingsSeasonReview(data, meta = {}) {
     });
 
     updateTeamsStandingsMaxHeight();
-    ensureTeamsStandingsHeightListener();
+    initTeamsStandingsHeightListener();
 }
 
 function populateQualifyingAnalysisSeasonReview(data) {
@@ -2851,7 +2926,7 @@ function populateQualifyingAnalysisSeasonReview(data) {
     q2s.forEach((d, idx) => q2Container.appendChild(buildRow(d, idx + 1, Number(d?.q2Count) || 0)));
 
     updateQualifyingListsMaxHeight();
-    ensureQualifyingListsHeightListener();
+    initQualifyingListsHeightListener();
 }
 
 function updateQualifyingListsMaxHeight() {
@@ -2875,7 +2950,7 @@ function updateQualifyingListsMaxHeight() {
     });
 }
 
-function ensureQualifyingListsHeightListener() {
+function initQualifyingListsHeightListener() {
     if (qualifyingHeightListenerAttached) return;
     qualifyingHeightListenerAttached = true;
 
@@ -2940,7 +3015,7 @@ function populateWinsDriversSeasonReview(data) {
     });
 
     updateWinsDriversListMaxHeight();
-    ensureWinsDriversListHeightListener();
+    initWinsDriversListHeightListener();
 }
 
 function updateWinsDriversListMaxHeight() {
@@ -2961,7 +3036,7 @@ function updateWinsDriversListMaxHeight() {
     }
 }
 
-function ensureWinsDriversListHeightListener() {
+function initWinsDriversListHeightListener() {
     if (winsHeightListenerAttached) return;
     winsHeightListenerAttached = true;
 
@@ -3380,6 +3455,7 @@ export function onSessionResultsFetched(data) {
     const headerRound = document.querySelector(".session-results-title-round");
     const titleEl = document.querySelector(".session-results-title");
     const editToggle = document.getElementById("sessionResultsEditToggle");
+    const recordsButton = document.getElementById("recordsTypeButton");
     
     if (headerMain && headerSession) {
         const year = String(data?.year ?? "").trim();
@@ -3407,12 +3483,19 @@ export function onSessionResultsFetched(data) {
         headerMain.textContent = `${year} ${gpName}`.trim();
         headerSession.textContent = String(sessionLabel);
     }
+    if (recordsButton) {
+        const label = recordsButton.querySelector("span.dropdown-label");
+        if (label) {
+            label.textContent = getGpDisplayName(meta?.trackId);
+        }
+        recordsButton.dataset.value = "sessionresults";
+    }
     if (headerRound) {
         const yearKey = String(data?.year ?? "").trim();
-        const events = sessionResultsEventsCache.get(yearKey);
+        const events = sessionResultsEventsCache.get(yearKey) || [];
         const raceId = Number(data?.raceId ?? meta?.raceId);
-        const total = Array.isArray(events) ? events.length : 0;
-        const idx = Array.isArray(events) ? events.findIndex(e => Number(e?.[0]) === raceId) : -1;
+        const total = events.length;
+        const idx = events.findIndex(e => Number(e[0]) === raceId);
         headerRound.textContent = (total > 0 && idx >= 0) ? `ROUND ${idx + 1}/${total}` : "";
     }
 
@@ -3453,6 +3536,8 @@ export function onSessionResultsFetched(data) {
         const label = editToggle.querySelector("span");
         if (label) label.textContent = sessionResultsEditMode && isMainRaceSession ? "Cancel" : "Edit";
     }
+    updateTopPanelControlsVisibility();
+    syncSessionResultsSessionStepButton();
 
     const sessionResultsTable = document.querySelector(".session-results-table");
     const hasGrid = results.some((r) => {
@@ -3737,7 +3822,7 @@ export function onSessionResultsFetched(data) {
             const rowLaps = Number(row?.laps);
 
             if (dnf) {
-                timeDiv.innerText = "-";
+                timeDiv.innerText = "DNF";
             }
             else if (rowLaps < leaderLaps) {
                 timeDiv.innerText = `+${leaderLaps - rowLaps}L`;
@@ -3819,7 +3904,7 @@ export function onSessionResultsFetched(data) {
         const meta = sessionResultsLastFetched?.meta || {};
         const sessionKeyLower = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
         if (sessionKeyLower === "race") {
-            ensureSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
+            loadSessionResultsPointsInfo().finally(() => updateRaceEditPoints());
         }
         updateRaceEditPoints();
         manageSaveButton(true, "custom", saveSessionResultsRaceEdits);
@@ -4020,7 +4105,7 @@ async function saveSessionResultsRaceEdits() {
     }
 }
 
-async function ensureSessionResultsPointsInfo() {
+async function loadSessionResultsPointsInfo() {
     if (sessionResultsPointsInfo) return sessionResultsPointsInfo;
     if (sessionResultsPointsInfoPromise) return sessionResultsPointsInfoPromise;
     sessionResultsPointsInfoPromise = new Command("pointsRegulationsRequest", {}).promiseExecute()
@@ -4142,6 +4227,19 @@ function setupSessionResultsCompactToggle() {
         btn.querySelector("i").className = sessionResultsCompactMode ? "bi bi-arrows-expand-vertical" : "bi bi-arrows-collapse-vertical";
         const table = document.querySelector(".session-results-table");
         if (table) table.classList.toggle("is-compact", sessionResultsCompactMode);
+    });
+}
+
+function setupSessionResultsSessionStepButton() {
+    const btn = document.getElementById("sessionResultsSessionStepButton");
+    if (!btn || btn.dataset.init) return;
+    btn.dataset.init = "1";
+    btn.addEventListener("click", () => {
+        const nextSessionKey = String(btn.dataset.nextSessionKey || "").toLowerCase();
+        const year = String(btn.dataset.year || "").trim();
+        const raceId = Number(btn.dataset.raceId);
+        if (!nextSessionKey || !year || raceId <= 0) return;
+        openSessionResultsForRace(year, raceId, nextSessionKey);
     });
 }
 
@@ -4522,6 +4620,7 @@ function setupSessionResultsExportRltoolsButton() {
 setupSessionResultsEditToggle();
 setupSessionResultsCompactToggle();
 setupSessionResultsExportRltoolsButton();
+setupSessionResultsSessionStepButton();
 
 //time comes in seconds.miliseconds, and I want it in hh:mm:ss.sss format (if no hh, then mm:ss.sss)
 function formatLapTime(lapTimeMs) {
@@ -4567,38 +4666,193 @@ function getSessionOptionsForWeekend(weekendType) {
     const isSprint = Number(weekendType) === 1;
     if (isSprint) {
         return [
-            { key: "fp", label: "Free Practice" },
-            { key: "sprintquali", label: "Sprint Quali" },
-            { key: "sprintrace", label: "Sprint Race" },
-            { key: "quali", label: "Quali" },
-            { key: "race", label: "Race" }
+            { key: "fp", label: "Free Practice", shortLabel: "FP" },
+            { key: "sprintquali", label: "Sprint Quali", shortLabel: "Sprint Q" },
+            { key: "sprintrace", label: "Sprint Race", shortLabel: "Sprint R" },
+            { key: "quali", label: "Qualifying", shortLabel: "Qualifying" },
+            { key: "race", label: "Race", shortLabel: "Race" }
         ];
     }
     return [
-        { key: "fp1", label: "Free Practice 1" },
-        { key: "fp2", label: "Free Practice 2" },
-        { key: "fp3", label: "Free Practice 3" },
-        { key: "quali", label: "Qualifying" },
-        { key: "race", label: "Race" }
+        { key: "fp1", label: "Free Practice 1", shortLabel: "FP1" },
+        { key: "fp2", label: "Free Practice 2", shortLabel: "FP2" },
+        { key: "fp3", label: "Free Practice 3", shortLabel: "FP3" },
+        { key: "quali", label: "Qualifying", shortLabel: "Qualifying" },
+        { key: "race", label: "Race", shortLabel: "Race" }
     ];
 }
 
-function getLatestYearFromMenu() {
-    const yearMenu = document.getElementById("yearMenu");
-    const years = yearMenu
-        ? Array.from(yearMenu.querySelectorAll("a"))
-            .map(a => a.dataset.year)
-            .filter(year => /^\d+$/.test(year))
-            .map(Number)
-        : [];
-    return years.length ? Math.max(...years) : null;
+function getSessionOptionByKey(weekendType, sessionKey) {
+    const key = String(sessionKey || "").toLowerCase();
+    return getSessionOptionsForWeekend(weekendType).find((option) => option.key === key) || null;
+}
+
+function getEventAvailableSessionKeys(eventRow, weekendType) {
+    const keys = eventRow[8]
+        .map((key) => String(key || "").toLowerCase())
+        .filter(Boolean);
+    if (keys.length) return keys;
+
+    const completedSessionsCount = Number(eventRow?.[7]);
+    if (completedSessionsCount > 0) {
+        return getSessionOptionsForWeekend(weekendType)
+            .slice(0, completedSessionsCount)
+            .map((option) => option.key);
+    }
+
+    return [];
+}
+
+function buildSessionResultsGpMeta(year, eventRow) {
+    const raceId = Number(eventRow[0]);
+    const trackId = Number(eventRow[1]);
+    const weekendType = Number(eventRow[2]);
+    const availableSessionKeys = getEventAvailableSessionKeys(eventRow, weekendType);
+    const latestSessionKey = String(eventRow[6] || availableSessionKeys[availableSessionKeys.length - 1] || "").toLowerCase();
+
+    return {
+        year: String(year),
+        raceId,
+        trackId,
+        weekendType,
+        latestSessionKey,
+        availableSessionKeys
+    };
+}
+
+function getCachedSessionResultsGpMeta(year, raceId) {
+    const events = sessionResultsEventsCache.get(String(year)) || [];
+    const eventRow = events.find((event) => Number(event[0]) === Number(raceId));
+    return eventRow ? buildSessionResultsGpMeta(year, eventRow) : null;
+}
+
+function getCurrentSeasonYear() {
+    const yearItems = Array.from(document.querySelectorAll("#yearMenu a"));
+    const currentYearItem = yearItems.find((item) => item.dataset.year !== "all");
+    return currentYearItem ? String(currentYearItem.dataset.year) : "";
+}
+
+function isCurrentSeasonYear(year) {
+    return String(year).trim() === getCurrentSeasonYear();
+}
+
+function shouldShowSessionResultsSessionStepButton(typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value) {
+    const selectedYear = document.getElementById("yearButton")?.dataset?.year || sessionResultsLastFetched?.year;
+    return typeVal === "sessionresults" && sessionResultsLastFetched && isCurrentSeasonYear(selectedYear);
+}
+
+async function getSessionResultsEventsForYear(year) {
+    const yearKey = String(year).trim();
+    let events = sessionResultsEventsCache.get(yearKey);
+    if (events) return events;
+
+    const resp = await new Command("eventsFromRequest", { year: yearKey, formula: 1 }).promiseExecute();
+    events = resp?.content?.events || [];
+    sessionResultsEventsCache.set(yearKey, events);
+    return events;
+}
+
+function getMatchingSessionResultsGpMeta(year, trackId) {
+    const events = sessionResultsEventsCache.get(String(year)) || [];
+    const eventRow = events.find((event) => Number(event[1]) === Number(trackId));
+    return eventRow ? buildSessionResultsGpMeta(year, eventRow) : null;
+}
+
+function getSessionResultsTargetSessionKey(gpMeta, preferredSessionKey) {
+    const sessionKey = String(preferredSessionKey || "").toLowerCase();
+    if (gpMeta.availableSessionKeys.includes(sessionKey)) {
+        return sessionKey;
+    }
+    return gpMeta.latestSessionKey || gpMeta.availableSessionKeys[gpMeta.availableSessionKeys.length - 1] || "";
+}
+
+function clearSessionResultsSelection() {
+    sessionResultsYearSelectionToken += 1;
+    sessionResultsLastFetched = null;
+    sessionResultsActiveGpAnchor = null;
+    sessionResultsActiveGpMeta = null;
+    sessionResultsEditMode = false;
+    manageSaveButton(false);
+
+    const recordsButton = document.getElementById("recordsTypeButton");
+    if (recordsButton) {
+        const label = recordsButton.querySelector("span.dropdown-label");
+        if (label) label.textContent = "Session Results";
+        recordsButton.dataset.value = "sessionresults";
+    }
+
+    const sessionResultsTable = document.querySelector(".session-results-table");
+    if (sessionResultsTable) sessionResultsTable.classList.add("d-none");
+
+    updateTopPanelControlsVisibility();
+}
+
+async function syncSessionResultsForYear(selectedYear) {
+    if (!sessionResultsLastFetched) return;
+
+    const token = ++sessionResultsYearSelectionToken;
+    const meta = sessionResultsLastFetched.meta || {};
+    const trackId = Number(meta.trackId);
+    const preferredSessionKey = String(sessionResultsLastFetched.sessionKey || meta.sessionKey || "").toLowerCase();
+
+    await getSessionResultsEventsForYear(selectedYear);
+    if (token !== sessionResultsYearSelectionToken) return;
+
+    const gpMeta = getMatchingSessionResultsGpMeta(selectedYear, trackId);
+    if (!gpMeta) {
+        clearSessionResultsSelection();
+        return;
+    }
+
+    const sessionKey = getSessionResultsTargetSessionKey(gpMeta, preferredSessionKey);
+    if (!sessionKey) {
+        clearSessionResultsSelection();
+        return;
+    }
+
+    openSessionResultsForRace(selectedYear, gpMeta.raceId, sessionKey);
+}
+
+function syncSessionResultsSessionStepButton() {
+    const btn = document.getElementById("sessionResultsSessionStepButton");
+    if (!btn) return;
+
+    const typeVal = document.querySelector("#recordsTypeButton")?.dataset?.value;
+    const showButton = shouldShowSessionResultsSessionStepButton(typeVal);
+    btn.classList.toggle("d-none", !showButton);
+    if (!showButton) return;
+
+    const meta = sessionResultsLastFetched?.meta || {};
+    const year = String(sessionResultsLastFetched?.year ?? "").trim();
+    const raceId = Number(sessionResultsLastFetched?.raceId ?? meta?.raceId);
+    const weekendType = Number(meta?.weekendType);
+    const sessionKey = String(sessionResultsLastFetched?.sessionKey ?? meta?.sessionKey ?? "").toLowerCase();
+    const sessionOption = getSessionOptionByKey(weekendType, sessionKey);
+    const cachedGpMeta = getCachedSessionResultsGpMeta(year, raceId);
+    const availableSessionKeys = cachedGpMeta?.availableSessionKeys?.length
+        ? cachedGpMeta.availableSessionKeys
+        : getSessionOptionsForWeekend(weekendType).map((option) => option.key);
+    const currentIndex = availableSessionKeys.indexOf(sessionKey);
+    const nextSessionKey = currentIndex >= 0 && availableSessionKeys.length
+        ? availableSessionKeys[(currentIndex + 1) % availableSessionKeys.length]
+        : "";
+
+    btn.querySelector("span").textContent = sessionOption?.shortLabel || sessionOption?.label || sessionKey;
+    btn.dataset.year = year;
+    btn.dataset.raceId = String(raceId);
+    btn.dataset.nextSessionKey = nextSessionKey || "";
+    btn.classList.toggle("is-disabled", !nextSessionKey || availableSessionKeys.length <= 1);
 }
 
 function openSessionResultsForRace(year, raceId, sessionKey) {
     const recordsButton = document.getElementById("recordsTypeButton");
+    const gpMeta = getCachedSessionResultsGpMeta(year, raceId);
     if (recordsButton) {
-        recordsButton.querySelector("span.dropdown-label").textContent = "Session Results";
+        recordsButton.querySelector("span.dropdown-label").textContent = gpMeta ? getGpDisplayName(gpMeta.trackId) : "Session Results";
         recordsButton.dataset.value = "sessionresults";
+    }
+    if (gpMeta) {
+        sessionResultsActiveGpMeta = gpMeta;
     }
     syncRecordsTypeDropdownChecks();
     updateTopPanelControlsVisibility();
@@ -4606,7 +4860,7 @@ function openSessionResultsForRace(year, raceId, sessionKey) {
     new Command("sessionResultsRequest", { year, gameYear: game_version, raceId, sessionKey }).execute();
 }
 
-async function ensureSessionResultsMenuPopulated() {
+async function populateSessionResultsMenu() {
     const gpMenu = document.getElementById("sessionResultsGpMenu");
     if (!gpMenu) return;
 
@@ -4643,22 +4897,20 @@ async function ensureSessionResultsMenuPopulated() {
 
     try {
         let events = sessionResultsEventsCache.get(selectedYear);
-        if (!Array.isArray(events)) {
+        if (!events) {
             const resp = await new Command("eventsFromRequest", { year: selectedYear, formula: 1 }).promiseExecute();
             events = resp?.content?.events || [];
             sessionResultsEventsCache.set(selectedYear, events);
         }
 
         gpList.innerHTML = "";
-        const doneEvents = (Array.isArray(events) ? events : []).filter((e) => {
-            const state = Number(e?.[3]);
-            return state === 1 || state === 2;
-        });
+        const doneEvents = events.filter((eventRow) =>
+            getEventAvailableSessionKeys(eventRow, Number(eventRow?.[2])).length > 0
+        );
 
         doneEvents.forEach((evt) => {
-            const raceId = evt?.[0];
-            const trackId = evt?.[1];
-            const weekendType = evt?.[2];
+            const gpMeta = buildSessionResultsGpMeta(selectedYear, evt);
+            const { raceId, trackId, latestSessionKey } = gpMeta;
 
             const trigger = document.createElement("a");
             trigger.className = "redesigned-dropdown-item";
@@ -4673,14 +4925,14 @@ async function ensureSessionResultsMenuPopulated() {
 
             trigger.addEventListener("mouseenter", () => {
                 sessionResultsActiveGpAnchor = trigger;
-                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
+                sessionResultsActiveGpMeta = gpMeta;
                 populateAndShowSessionResultsSessionMenu();
             });
 
             trigger.addEventListener("click", () => {
                 sessionResultsActiveGpAnchor = trigger;
-                sessionResultsActiveGpMeta = { year: selectedYear, raceId, weekendType, trackId };
-                openSessionResultsForRace(selectedYear, raceId, "race");
+                sessionResultsActiveGpMeta = gpMeta;
+                openSessionResultsForRace(selectedYear, raceId, latestSessionKey || "race");
             });
 
             gpList.appendChild(trigger);
@@ -4689,7 +4941,7 @@ async function ensureSessionResultsMenuPopulated() {
         if (doneEvents.length === 0) {
             const item = document.createElement("a");
             item.className = "redesigned-dropdown-item";
-            item.textContent = "No completed races";
+            item.textContent = "No completed sessions";
             gpList.appendChild(item);
         }
 
@@ -4726,16 +4978,12 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
         return;
     }
 
-    const { year, raceId, weekendType } = sessionResultsActiveGpMeta;
+    const { year, raceId, weekendType, availableSessionKeys = [] } = sessionResultsActiveGpMeta;
 
     if (!opts.repositionOnly) {
         sessionMenu.innerHTML = "";
-        const optionsAll = getSessionOptionsForWeekend(weekendType);
-        const latestYear = getLatestYearFromMenu();
-        const isLatestYear = latestYear == null ? true : Number(year) === Number(latestYear);
-        const options = isLatestYear
-            ? optionsAll
-            : optionsAll.filter((o) => o.key === "race" || (o.key === "sprintrace" && Number(weekendType) === 1));
+        const options = getSessionOptionsForWeekend(weekendType)
+            .filter((option) => availableSessionKeys.includes(option.key));
 
         options.forEach((opt) => {
             const a = document.createElement("a");
@@ -4747,6 +4995,11 @@ function populateAndShowSessionResultsSessionMenu(opts = {}) {
             });
             sessionMenu.appendChild(a);
         });
+
+        if (!options.length) {
+            sessionMenu.classList.remove("is-open");
+            return;
+        }
     }
 
     // Position the session menu aligned with the hovered GP row (inside the scroll container)
@@ -5131,7 +5384,7 @@ document.querySelectorAll("#recordsTypeDropdown > a").forEach(function (elem) {
 })
 
 document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("mouseenter", () => {
-    ensureSessionResultsMenuPopulated();
+    populateSessionResultsMenu();
 });
 
 document.querySelector("#recordsTypeDropdown .session-results-root")?.addEventListener("click", () => {

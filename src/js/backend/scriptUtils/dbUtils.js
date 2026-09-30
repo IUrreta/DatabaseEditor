@@ -5,6 +5,7 @@ import { getMetadata, queryDB } from "../dbManager.js";
 import { getGlobals } from "../commandGlobals.js";
 import { customColors, default_dict, defaultColors, defaultTurningPointsFrequencyPreset } from "../../frontend/config.js";
 import { _standingsCache, rebuildStandingsUntil, rebuildStandingsUntilCached } from "./newsUtils.js";
+import { buildFacePath } from "./faceUtils.js";
 
 
 /**
@@ -145,48 +146,90 @@ export function checkYearSave() {
   return ["24", name, primaryColor, secondaryColor];
 }
 
-export function fetchNationality(driverID, gameYear) {
+function fetchCountryIdentity(driverID, gameYear) {
   let year = String(gameYear || "").trim();
   if (year === "2024") year = "24";
   if (year === "2023") year = "23";
 
-  if (year === "24") {
-    const countryID = queryDB(`
-        SELECT CountryID 
+  if (year === "23") {
+    const nationality = queryDB(`
+      SELECT Nationality 
         FROM Staff_BasicData 
-        WHERE StaffID = ?
+      WHERE StaffID = ?
       `, [driverID], 'singleValue');
-    if (!countryID) return "";
-
-    const countryName = queryDB(`
-        SELECT Name 
-        FROM Countries 
-        WHERE CountryID = ?
-      `, [countryID], 'singleValue');
-    if (!countryName) return "";
-
-
-    const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
-    if (match) {
-      const nat = match[0];
-      const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
-      return countries_abreviations[natName] || "";
+    if (!nationality) {
+      return { nationality: "", countryId: "" };
     }
 
-    return "";
-  } else if (year === "23") {
-    const nationality = queryDB(`
-        SELECT Nationality 
-        FROM Staff_BasicData 
-        WHERE StaffID = ?
-      `, [driverID], 'singleValue');
-    if (!nationality) return "";
-
     const natName = nationality.replace(/(?<!^)([A-Z])/g, " $1");
-    return countries_abreviations[natName] || "";
+    return {
+      nationality: countries_abreviations[natName] || "",
+      countryId: ""
+    };
   }
 
-  return "";
+  const countryID = queryDB(`
+      SELECT CountryID 
+      FROM Staff_BasicData 
+      WHERE StaffID = ?
+    `, [driverID], 'singleValue');
+  if (!countryID) {
+    return { nationality: "", countryId: "" };
+  }
+
+  const countryName = queryDB(`
+      SELECT Name 
+      FROM Countries 
+      WHERE CountryID = ?
+    `, [countryID], 'singleValue');
+  if (!countryName) {
+    return {
+      nationality: "",
+      countryId: countryID
+    };
+  }
+
+  const match = countryName.match(/(?<=\[Nationality_)[^\]]+/);
+  if (match) {
+    const nat = match[0];
+    const natName = nat.replace(/(?<!^)([A-Z])/g, " $1");
+    return {
+      nationality: countries_abreviations[natName] || "",
+      countryId: countryID
+    };
+  }
+
+  return {
+    nationality: "",
+    countryId: countryID
+  };
+}
+
+export function fetchNationality(driverID, gameYear) {
+  return fetchCountryIdentity(driverID, gameYear).nationality;
+}
+
+function fetchGeneratedStaffVisual(staffID) {
+  const row = queryDB(`
+      SELECT IsGeneratedStaff, FaceType, FaceIndex, AgeType, Gender
+      FROM Staff_BasicData
+      WHERE StaffID = ?
+    `, [staffID], 'singleRow');
+
+  const isGeneratedStaff = row?.[0] ?? 0;
+  const faceType = row?.[1] ?? 0;
+  const faceIndex = row?.[2] ?? 0;
+  const ageType = row?.[3] ?? 0;
+  const gender = row?.[4] ?? 0;
+
+  return {
+    isGeneratedStaff,
+    faceType,
+    faceIndex,
+    ageType,
+    gender,
+    facePath: isGeneratedStaff === 1 ? buildFacePath(gender, faceType, faceIndex, ageType) : ""
+  };
 }
 
 export function fetchForFutureContract(driverID) {
@@ -296,7 +339,7 @@ export function fetchEngines() {
   return [enginesList, engineAllocations];
 }
 
-export function ensureCustomEngineProgressionTable() {
+export function createCustomEngineProgressionTable() {
   queryDB(`
     CREATE TABLE IF NOT EXISTS Custom_Engine_Progression (
       SeasonID INTEGER NOT NULL,
@@ -315,7 +358,7 @@ export function ensureCustomEngineProgressionTable() {
 }
 
 function getNextSnapshotRaceIdForSeason(seasonId) {
-  if (!Number.isFinite(Number(seasonId))) {
+  if (!Number(seasonId)) {
     return null;
   }
 
@@ -330,7 +373,7 @@ function getNextSnapshotRaceIdForSeason(seasonId) {
 
   if (nextRaceIdRaw !== null && nextRaceIdRaw !== undefined) {
     const nextRaceId = Number(nextRaceIdRaw);
-    return Number.isFinite(nextRaceId) && nextRaceId > 0 ? nextRaceId : null;
+    return nextRaceId > 0 ? nextRaceId : null;
   }
 
   const maxRaceIdRaw = queryDB(`SELECT MAX(RaceID) FROM Races WHERE SeasonID = ?`, [seasonId], 'singleValue');
@@ -339,17 +382,17 @@ function getNextSnapshotRaceIdForSeason(seasonId) {
 }
 
 export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw = null, raceIdRaw = null) {
-  ensureCustomEngineProgressionTable();
+  createCustomEngineProgressionTable();
 
   const seasonId = Number(seasonIdRaw) || Number(queryDB(`SELECT CurrentSeason FROM Player_State`, [], 'singleValue')) || null;
   if (!seasonId) return { ok: false, error: "Missing season id" };
 
   const raceId = Number(raceIdRaw) || getNextSnapshotRaceIdForSeason(seasonId);
-  if (!Number.isFinite(raceId) || raceId <= 0) return { ok: false, error: "Missing race id" };
+  if (!raceId || raceId <= 0) return { ok: false, error: "Missing race id" };
 
   const engineIds = (engineIdsRaw || [])
     .map((id) => Number(id))
-    .filter((id) => Number.isFinite(id) && id > 0);
+    .filter((id) => id > 0);
 
   if (!engineIds.length) return { ok: true, seasonId, raceId, inserted: 0 };
 
@@ -366,7 +409,7 @@ export function snapshotEnginePowerProgression(engineIdsRaw, source, seasonIdRaw
   for (const row of powerRows) {
     const engineId = Number(row?.[0]);
     const power = Number(row?.[1]);
-    if (!engineId || !Number.isFinite(power)) continue;
+    if (!engineId) continue;
 
     queryDB(`
       INSERT OR IGNORE INTO Custom_Engine_Progression (SeasonID, RaceID, EngineID, Power, Source)
@@ -699,7 +742,8 @@ export function fetchDrivers(gameYear) {
     const futureTeam = fetchForFutureContract(driverID);
     const juniorContracts = fetchJuniorContracts(driverID);
     const driverCode = fetchDriverCode(driverID);
-    const nationality = fetchNationality(driverID, gameYear);
+    const countryIdentity = fetchCountryIdentity(driverID, gameYear);
+    const generatedVisual = fetchGeneratedStaffVisual(driverID);
 
     // result es array, lo convertimos a objeto para mayor claridad
     const data = { ...result };
@@ -712,7 +756,14 @@ export function fetchDrivers(gameYear) {
     data.team_future = futureTeam;
     data.team_junior = juniorContracts;
     data.driver_code = driverCode;
-    data.nationality = nationality;
+    data.nationality = countryIdentity.nationality;
+    data.countryId = countryIdentity.countryId;
+    data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
+    data.gender = generatedVisual.gender;
+    data.faceType = generatedVisual.faceType;
+    data.faceIndex = generatedVisual.faceIndex;
+    data.ageType = generatedVisual.ageType;
+    data.facePath = generatedVisual.facePath;
 
     // Datos específicos para 2024
     if (gameYear === "24") {
@@ -775,7 +826,8 @@ export function fetchStaff(gameYear) {
     const [retirementAge, age] = fetchDriverRetirement(staffID);
     let raceFormula = fetchRaceFormula(staffID) || 4;
     const futureTeam = fetchForFutureContract(staffID);
-    const nationality = fetchNationality(staffID, gameYear);
+    const countryIdentity = fetchCountryIdentity(staffID, gameYear);
+    const generatedVisual = fetchGeneratedStaffVisual(staffID);
     const isRetired = queryDB(`
       SELECT Retired
       FROM Staff_GameData
@@ -787,8 +839,15 @@ export function fetchStaff(gameYear) {
     data.age = age;
     data.race_formula = raceFormula;
     data.team_future = futureTeam;
-    data.nationality = nationality;
+    data.nationality = countryIdentity.nationality;
+    data.countryId = countryIdentity.countryId;
     data.is_retired = isRetired ?? 0;
+    data.isGeneratedStaff = generatedVisual.isGeneratedStaff;
+    data.gender = generatedVisual.gender;
+    data.faceType = generatedVisual.faceType;
+    data.faceIndex = generatedVisual.faceIndex;
+    data.ageType = generatedVisual.ageType;
+    data.facePath = generatedVisual.facePath;
 
     if (gameYear === "24") {
       const [morale, gMentality] = fetchMentality(staffID);
@@ -1000,7 +1059,7 @@ export function getDotDWinnersMap(season) {
 }
 
 function computeSeasonDriverOfTheDay(seasonResults, season) {
-  ensureCustomDoDRankingTable();
+  createCustomDoDRankingTable();
 
   // A) contexto por carrera
   const raceIds = getSeasonRaceIds(season).map(Number);
@@ -1082,6 +1141,453 @@ export function fetchSeasonResults(
 
 
   return resultsWithDoD;
+}
+
+const CUSTOM_SEASON_RESULTS_TABLE = "Custom_Season_Results";
+
+function createCustomSeasonResultsTable() {
+  queryDB(`
+    CREATE TABLE IF NOT EXISTS ${CUSTOM_SEASON_RESULTS_TABLE} (
+      SeasonID INTEGER NOT NULL,
+      RaceFormula INTEGER NOT NULL DEFAULT 1,
+      Payload TEXT NOT NULL,
+      PRIMARY KEY (SeasonID, RaceFormula)
+    )
+  `, [], 'run');
+}
+
+function setupCustomSeasonResultsTable() {
+  createCustomSeasonResultsTable();
+  queryDB(`
+    CREATE INDEX IF NOT EXISTS idx_Custom_Season_Results_Season_Formula
+    ON ${CUSTOM_SEASON_RESULTS_TABLE} (SeasonID, RaceFormula)
+  `, [], 'run');
+
+}
+
+// Imported seasons are only a fallback: a season that exists in the save always uses the save's data
+function hasSeasonDataInSave(seasonId) {
+  return !!queryDB(`
+    SELECT 1 FROM Races WHERE SeasonID = ?
+    UNION ALL
+    SELECT 1 FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1
+    LIMIT 1
+  `, [seasonId, seasonId], 'singleValue');
+}
+
+export function fetchCustomSeasonResultsPackage(year, formula = 1) {
+  if (formula !== 1) return null;
+  if (hasSeasonDataInSave(year)) return null;
+  setupCustomSeasonResultsTable();
+
+  const row = queryDB(`
+    SELECT Payload
+    FROM ${CUSTOM_SEASON_RESULTS_TABLE}
+    WHERE SeasonID = ?
+      AND RaceFormula = 1
+  `, [year], 'singleRow');
+
+  if (!row || !row[0]) return null;
+  const payload = JSON.parse(row[0]);
+  if (!payload || typeof payload !== "object") return null;
+
+  return {
+    ...payload,
+    events: payload.events.map((eventRow) => appendSessionInfoToEventRow(eventRow, ["race"])),
+    results: attachCustomSeasonDriverNationality(payload.results ?? [], year)
+  };
+}
+
+function fetchSeasonRaceResultsArchiveRows(seasonId) {
+  const rows = queryDB(`
+    SELECT
+      rr.Season,
+      rr.RaceID,
+      r.TrackID,
+      r.State,
+      rr.FinishingPos,
+      rr.DriverID,
+      rr.TeamID,
+      rr.Laps,
+      rr.Time,
+      rr.FastestLap,
+      rr.Points,
+      rr.DNF,
+      rr.SuccessfulOvertakes,
+      rr.FailedOvertakes,
+      rr.SuccessfulDefends,
+      rr.FailedDefends,
+      rr.SafetyCarDeployments,
+      rr.VirtualSafetyCarDeployments,
+      rr.StartingPos,
+      rr.FuelUsed,
+      rr.Performance
+    FROM Races_Results rr
+    JOIN Races r ON r.RaceID = rr.RaceID
+    WHERE rr.Season = ?
+    ORDER BY rr.RaceID ASC, rr.FinishingPos ASC
+  `, [seasonId], 'allRows') || [];
+
+  return rows.map((row) => ({
+    Season: row[0],
+    RaceID: row[1],
+    TrackID: row[2] ?? 0,
+    State: row[3] ?? 2,
+    FinishingPos: row[4],
+    DriverID: row[5],
+    TeamID: row[6],
+    Laps: row[7] ?? 0,
+    Time: row[8] ?? 0,
+    FastestLap: row[9] ?? 0,
+    Points: row[10] ?? 0,
+    DNF: row[11] ?? 0,
+    SuccessfulOvertakes: row[12] ?? 0,
+    FailedOvertakes: row[13] ?? 0,
+    SuccessfulDefends: row[14] ?? 0,
+    FailedDefends: row[15] ?? 0,
+    SafetyCarDeployments: row[16] ?? 0,
+    VirtualSafetyCarDeployments: row[17] ?? 0,
+    StartingPos: row[18] ?? 0,
+    FuelUsed: row[19] ?? 0,
+    Performance: row[20] ?? 2
+  }));
+}
+
+function buildCustomSeasonEventsFromRaceRows(raceRows = []) {
+  const byRaceId = new Map();
+
+  raceRows.forEach((row) => {
+    const raceId = row.RaceID ?? row[1];
+    if (byRaceId.has(raceId)) return;
+    const trackId = row.TrackID ?? row[2] ?? 0;
+    const state = row.State ?? row[3] ?? 2;
+    byRaceId.set(raceId, [raceId, trackId, 0, state, 0, 0]);
+  });
+
+  return Array.from(byRaceId.values()).sort((a, b) => a[0] - b[0]);
+}
+
+function buildCustomSeasonTeamsFromRaceRows(raceRows = []) {
+  const teamTotals = new Map();
+
+  raceRows.forEach((row) => {
+    const teamId = row.TeamID ?? row[6];
+    const points = row.Points ?? row[10] ?? 0;
+    if (!teamId) return;
+    teamTotals.set(teamId, (teamTotals.get(teamId) || 0) + points);
+  });
+
+  return Array.from(teamTotals.entries())
+    .sort((a, b) => b[1] - a[1] || a[0] - b[0])
+    .map(([teamId], index) => [teamId, index + 1, 0]);
+}
+
+function buildCustomSeasonResultsFromImportedRows(seasonId, raceRows = [], standingsRows = []) {
+  const fastestLapByRace = new Map();
+  const raceRowsByDriver = new Map();
+  const totalsByDriver = new Map();
+  const standingsByDriver = new Map();
+
+  standingsRows.forEach((row) => {
+    const driverId = row.DriverID ?? row[3];
+    if (!driverId) return;
+    standingsByDriver.set(driverId, {
+      position: row.Position ?? row[2],
+      teamId: row.TeamID ?? row[4]
+    });
+  });
+
+  raceRows.forEach((row) => {
+    const driverId = row.DriverID ?? row[5];
+    const raceId = row.RaceID ?? row[1];
+    const teamId = row.TeamID ?? row[6];
+    const points = row.Points ?? row[10] ?? 0;
+    const fastestLap = row.FastestLap ?? row[9] ?? 0;
+
+    if (!driverId) return;
+    if (!raceRowsByDriver.has(driverId)) raceRowsByDriver.set(driverId, []);
+    raceRowsByDriver.get(driverId).push(row);
+
+    const current = totalsByDriver.get(driverId) || { points: 0, teamId };
+    current.points += points;
+    current.teamId = teamId || current.teamId;
+    totalsByDriver.set(driverId, current);
+
+    if (fastestLap > 0) {
+      const best = fastestLapByRace.get(raceId);
+      if (!best || fastestLap < best.fastestLap) {
+        fastestLapByRace.set(raceId, { driverId, fastestLap });
+      }
+    }
+  });
+
+  const orderedDrivers = standingsByDriver.size
+    ? Array.from(standingsByDriver.entries())
+      .sort((a, b) => a[1].position - b[1].position || a[0] - b[0])
+      .map(([driverId]) => driverId)
+    : Array.from(totalsByDriver.entries())
+      .sort((a, b) => b[1].points - a[1].points || a[0] - b[0])
+      .map(([driverId]) => driverId);
+
+  return orderedDrivers.map((driverId, index) => {
+    const driverNameRow = queryDB(`
+      SELECT FirstName, LastName
+      FROM Staff_BasicData
+      WHERE StaffID = ?
+    `, [driverId], 'singleRow');
+    const driverRaceRows = (raceRowsByDriver.get(driverId) || []).sort((a, b) => (a.RaceID ?? a[1]) - (b.RaceID ?? b[1]));
+    const standingInfo = standingsByDriver.get(driverId) || {};
+    const latestTeamId = driverRaceRows.length
+      ? (driverRaceRows[driverRaceRows.length - 1].TeamID ?? driverRaceRows[driverRaceRows.length - 1][6] ?? standingInfo.teamId ?? 0)
+      : (standingInfo.teamId ?? totalsByDriver.get(driverId)?.teamId ?? 0);
+
+    const races = driverRaceRows.map((row) => {
+      const raceId = row.RaceID ?? row[1];
+      const isDnf = (row.DNF ?? row[11]) === 1;
+      const fastestLap = row.FastestLap ?? row[9] ?? 0;
+      return {
+        raceId,
+        finishingPos: row.FinishingPos ?? row[4] ?? 99,
+        points: row.Points ?? row[10] ?? 0,
+        dnf: isDnf,
+        fastestLap,
+        fastestLapWinner: fastestLap > 0 && fastestLapByRace.get(raceId)?.driverId === driverId,
+        qualifyingPos: row.StartingPos ?? row[18] ?? 99,
+        qualifyingPoints: 0,
+        gapToWinner: null,
+        gapToPole: null,
+        startingPos: row.StartingPos ?? row[18] ?? 99,
+        gapAhead: null,
+        gapBehind: null,
+        sprintPoints: 0,
+        sprintPos: null,
+        teamId: row.TeamID ?? row[6] ?? latestTeamId,
+        driverOfTheDay: false,
+        laps: row.Laps ?? row[7] ?? 0,
+        time: row.Time ?? row[8] ?? 0,
+        successfulOvertakes: row.SuccessfulOvertakes ?? row[12] ?? 0,
+        failedOvertakes: row.FailedOvertakes ?? row[13] ?? 0,
+        successfulDefends: row.SuccessfulDefends ?? row[14] ?? 0,
+        failedDefends: row.FailedDefends ?? row[15] ?? 0,
+        safetyCarDeployments: row.SafetyCarDeployments ?? row[16] ?? 0,
+        virtualSafetyCarDeployments: row.VirtualSafetyCarDeployments ?? row[17] ?? 0,
+        fuelUsed: row.FuelUsed ?? row[19] ?? 0,
+        performance: row.Performance ?? row[20] ?? 2
+      };
+    });
+
+    return {
+      driverName: formatDriverName(driverNameRow),
+      latestTeamId,
+      driverId,
+      nationality: fetchNationality(driverId, seasonId),
+      championshipPosition: standingInfo.position ?? (index + 1),
+      lastPositionChange: 0,
+      races
+    };
+  });
+}
+
+function buildCustomSeasonPackageFromRaceRows(seasonId, raceRows = [], standingsRows = []) {
+  return {
+    events: buildCustomSeasonEventsFromRaceRows(raceRows),
+    results: buildCustomSeasonResultsFromImportedRows(seasonId, raceRows, standingsRows),
+    teams: buildCustomSeasonTeamsFromRaceRows(raceRows)
+  };
+}
+
+function mergeCustomSeasonSupplementalResults(baseResults = [], supplementalResults = []) {
+  const supplementalByDriverId = new Map(
+    supplementalResults.map((driver) => [driver.driverId, driver])
+  );
+
+  return baseResults.map((driver) => {
+    const supplementalDriver = supplementalByDriverId.get(driver.driverId);
+    if (!supplementalDriver) return driver;
+
+    const supplementalRacesByRaceId = new Map(
+      supplementalDriver.races.map((race) => [race.raceId, race])
+    );
+
+    return {
+      ...driver,
+      driverName: supplementalDriver.driverName,
+      latestTeamId: supplementalDriver.latestTeamId,
+      nationality: supplementalDriver.nationality ?? driver.nationality,
+      championshipPosition: supplementalDriver.championshipPosition,
+      lastPositionChange: supplementalDriver.lastPositionChange,
+      seasonPoints: supplementalDriver.seasonPoints,
+      races: driver.races.map((race) => {
+        const supplementalRace = supplementalRacesByRaceId.get(race.raceId);
+        if (!supplementalRace) return race;
+
+        return {
+          ...race,
+          qualifyingPos: supplementalRace.qualifyingPos ?? race.qualifyingPos,
+          qualifyingPoints: supplementalRace.qualifyingPoints ?? race.qualifyingPoints,
+          gapToWinner: supplementalRace.gapToWinner ?? race.gapToWinner,
+          gapToPole: supplementalRace.gapToPole ?? race.gapToPole,
+          startingPos: supplementalRace.startingPos ?? race.startingPos,
+          gapAhead: supplementalRace.gapAhead ?? race.gapAhead,
+          gapBehind: supplementalRace.gapBehind ?? race.gapBehind,
+          sprintPoints: supplementalRace.sprintPoints ?? race.sprintPoints,
+          sprintPos: supplementalRace.sprintPos ?? race.sprintPos,
+          sprintQualiPos: supplementalRace.sprintQualiPos ?? race.sprintQualiPos,
+          teamId: supplementalRace.teamId ?? race.teamId,
+          driverOfTheDay: supplementalRace.driverOfTheDay ?? race.driverOfTheDay
+        };
+      })
+    };
+  });
+}
+
+function attachCustomSeasonDriverNationality(results = [], seasonId) {
+  return results.map((driver) => ({
+    ...driver,
+    nationality: driver.nationality || fetchNationality(driver.driverId, seasonId)
+  }));
+}
+
+export function hasCustomSeasonImport(seasonId) {
+  setupCustomSeasonResultsTable();
+  return !!queryDB(`
+    SELECT 1
+    FROM ${CUSTOM_SEASON_RESULTS_TABLE}
+    WHERE SeasonID = ?
+      AND RaceFormula = 1
+    LIMIT 1
+  `, [seasonId], 'singleValue');
+}
+
+export function fetchCustomSeasonViewerData(year, formula = 1) {
+  return fetchCustomSeasonResultsPackage(year, formula);
+}
+
+export function fetchSeasonYearsForRecordsExport() {
+  setupCustomSeasonResultsTable();
+
+  const dbYears = queryDB(`
+    SELECT DISTINCT SeasonID
+    FROM Races_DriverStandings
+    WHERE RaceFormula = 1
+    ORDER BY SeasonID DESC
+  `, [], 'allRows') || [];
+
+  const customYears = queryDB(`
+    SELECT DISTINCT SeasonID
+    FROM ${CUSTOM_SEASON_RESULTS_TABLE}
+    WHERE RaceFormula = 1
+    ORDER BY SeasonID DESC
+  `, [], 'allRows') || [];
+
+  const years = new Set();
+  dbYears.forEach((row) => years.add(row[0]));
+  customYears.forEach((row) => years.add(row[0]));
+  return Array.from(years).sort((a, b) => b - a);
+}
+
+export function exportSeasonsRecordsArchive(seasons = []) {
+  setupCustomSeasonResultsTable();
+
+  const payload = {
+    format: 'season-results-v2',
+    seasons: []
+  };
+
+  seasons.forEach((season) => {
+    const seasonId = season;
+    const customPackage = fetchCustomSeasonResultsPackage(seasonId, 1);
+    let packagePayload = customPackage;
+    const defaultSeasonResults = fetchSeasonResults(seasonId, false, true, 1);
+
+    if (!packagePayload) {
+      const raceRows = fetchSeasonRaceResultsArchiveRows(seasonId);
+      const driverStandingsRows = fetchDriversStandings(seasonId, 1).map((row) => ({
+        DriverID: row.DriverID,
+        Position: row.Position,
+        TeamID: row.TeamID
+      }));
+
+      if (raceRows.length) {
+        packagePayload = buildCustomSeasonPackageFromRaceRows(seasonId, raceRows, driverStandingsRows);
+        packagePayload.results = mergeCustomSeasonSupplementalResults(
+          packagePayload.results,
+          defaultSeasonResults
+        );
+        packagePayload.teams = fetchTeamsStandingsWithPositionChange(seasonId, 1);
+      }
+    }
+    else if (defaultSeasonResults.length) {
+      packagePayload = {
+        ...packagePayload,
+        results: mergeCustomSeasonSupplementalResults(packagePayload.results, defaultSeasonResults)
+      };
+    }
+
+    const events = packagePayload?.events ?? [];
+    const results = attachCustomSeasonDriverNationality(packagePayload?.results ?? [], seasonId);
+    const teams = packagePayload?.teams ?? [];
+
+    if (!events.length && !results.length && !teams.length) return;
+
+    payload.seasons.push({
+      season: seasonId,
+      formulas: [{
+        formula: 1,
+        events,
+        results,
+        teams
+      }]
+    });
+  });
+
+  return payload;
+}
+
+export function importSeasonsRecordsArchive(archive) {
+  setupCustomSeasonResultsTable();
+
+  const seasons = archive.seasons || [];
+  let importedSeasons = 0;
+  let skippedSeasons = 0;
+
+  seasons.forEach((seasonBlock) => {
+    const seasonId = seasonBlock.season;
+    if (!seasonId) return;
+    if (hasSeasonDataInSave(seasonId)) {
+      skippedSeasons += 1;
+      return;
+    }
+
+    let packagePayload = null;
+    const formulas = seasonBlock.formulas || [];
+    const f1Block = formulas.find((formulaBlock) => formulaBlock.formula === 1);
+
+    if (f1Block) {
+      packagePayload = {
+        events: f1Block.events || [],
+        results: attachCustomSeasonDriverNationality(f1Block.results || [], seasonId),
+        teams: f1Block.teams || []
+      };
+    }
+    else {
+      const raceRows = seasonBlock.raceResults || [];
+      const standingsRows = seasonBlock.standings || [];
+      if (raceRows.length) {
+        packagePayload = buildCustomSeasonPackageFromRaceRows(seasonId, raceRows, standingsRows);
+      }
+    }
+
+    if (!packagePayload) return;
+
+    queryDB(`
+      INSERT OR REPLACE INTO ${CUSTOM_SEASON_RESULTS_TABLE} (SeasonID, RaceFormula, Payload)
+      VALUES (?, 1, ?)
+    `, [seasonId, JSON.stringify(packagePayload)], 'run');
+    importedSeasons += 1;
+  });
+
+  return { importedSeasons, skippedSeasons };
 }
 
 export function fetchQualiResults(yearSelected) {
@@ -1714,7 +2220,7 @@ export function getDoDTopNForRace(season, raceId, topN = 3) {
   }));
 }
 
-export function ensureCustomDoDRankingTable() {
+export function createCustomDoDRankingTable() {
   queryDB(`
     CREATE TABLE IF NOT EXISTS Custom_DriverOfTheDay_Ranking (
       Season    INTEGER NOT NULL,
@@ -1994,6 +2500,69 @@ export function fetchEventsDoneBefore(year, day) {
   return eventsIds;
 }
 
+function getWeekendSessionOrder(weekendType) {
+  return Number(weekendType) === 1
+    ? ["fp", "sprintquali", "sprintrace", "quali", "race"]
+    : ["fp1", "fp2", "fp3", "quali", "race"];
+}
+
+function fetchAvailableSessionKeysForRace(raceId, weekendType, state) {
+  if (Number(state) === 0) return [];
+
+  const raceIdNum = Number(raceId);
+  const isSprintWeekend = Number(weekendType) === 1;
+  const hasPracticeResults = (practiceSession) => queryDB(`
+      SELECT 1
+      FROM Races_PracticeResults
+      WHERE RaceID = ?
+        AND RaceFormula = 1
+        AND PracticeSession = ?
+      LIMIT 1
+    `, [raceIdNum, practiceSession], 'singleValue') != null;
+  const hasQualifyingResults = (sprintShootout) => queryDB(`
+      SELECT 1
+      FROM Races_QualifyingResults
+      WHERE RaceID = ?
+        AND RaceFormula = 1
+        AND SprintShootout = ?
+      LIMIT 1
+    `, [raceIdNum, sprintShootout], 'singleValue') != null;
+  const hasSprintResults = queryDB(`
+      SELECT 1
+      FROM Races_SprintResults
+      WHERE RaceID = ?
+        AND RaceFormula = 1
+      LIMIT 1
+    `, [raceIdNum], 'singleValue') != null;
+  const hasRaceResults = queryDB(`
+      SELECT 1
+      FROM Races_Results
+      WHERE RaceID = ?
+      LIMIT 1
+    `, [raceIdNum], 'singleValue') != null;
+
+  const sessionAvailability = new Map();
+  if (isSprintWeekend) {
+    sessionAvailability.set("fp", hasPracticeResults(1));
+    sessionAvailability.set("sprintquali", hasQualifyingResults(1));
+    sessionAvailability.set("sprintrace", hasSprintResults);
+  }
+  else {
+    sessionAvailability.set("fp1", hasPracticeResults(1));
+    sessionAvailability.set("fp2", hasPracticeResults(2));
+    sessionAvailability.set("fp3", hasPracticeResults(3));
+  }
+  sessionAvailability.set("quali", hasQualifyingResults(0));
+  sessionAvailability.set("race", hasRaceResults);
+
+  return getWeekendSessionOrder(weekendType).filter((sessionKey) => sessionAvailability.get(sessionKey));
+}
+
+function appendSessionInfoToEventRow(eventRow, availableSessionKeys = []) {
+  const latestSessionKey = availableSessionKeys[availableSessionKeys.length - 1] || "";
+  return [...eventRow.slice(0, 6), latestSessionKey, availableSessionKeys.length, [...availableSessionKeys]];
+}
+
 export function fetchEventsFrom(year, formula = 1) {
   const seasonEventsRows = queryDB(`
       SELECT r.RaceID, r.TrackID, r.WeekendType, r.State, t.isF2Race, t.IsF3Race
@@ -2009,7 +2578,10 @@ export function fetchEventsFrom(year, formula = 1) {
   if (Number(formula) === 3) {
     return seasonEventsRows.filter(row => Number(row[5]) === 1);
   }
-  return seasonEventsRows;
+  return seasonEventsRows.map((row) => appendSessionInfoToEventRow(
+    row,
+    fetchAvailableSessionKeysForRace(row[0], row[2], row[3])
+  ));
 }
 
 export function fetchLastCompletedRaceId(year, formula = 1) {
@@ -2241,7 +2813,7 @@ export function fetchSessionResults(raceId, sessionKey, gameYear = "24") {
     try {
       const seasonId = queryDB(`SELECT SeasonID FROM Races WHERE RaceID = ?`, [raceIdNum], 'singleValue');
       if (seasonId != null) {
-        ensureCustomDoDRankingTable();
+        createCustomDoDRankingTable();
         let dotdDriverId = queryDB(
           `SELECT DriverID
            FROM Custom_DriverOfTheDay_Ranking
@@ -3109,7 +3681,7 @@ export function checkCustomTables(year) {
 
   createEngineMigrationTrigger();
 
-  ensureCustomEngineProgressionTable();
+  createCustomEngineProgressionTable();
 }
 
 export function fixCustomEnginesStatsTable() {
@@ -3151,15 +3723,6 @@ export function fixCustomEnginesStatsTable() {
 
 
   }
-}
-
-export function wipeTableAndRefill(tableName, data){
-  queryDB(`DELETE FROM ${tableName};`, [], 'run');
-  data.forEach(row => {
-    const placeholders = Object.keys(row).map(() => '?').join(', ');
-    const sql = `INSERT INTO ${tableName} (${Object.keys(row).join(', ')}) VALUES (${placeholders});`;
-    queryDB(sql, Object.values(row), 'run');
-  });
 }
 
 export function insertDefualtEnginesData(list, stats, allocations, customSave, engineRegulationState, year) {
@@ -3344,7 +3907,7 @@ export function editEngines(engineData) {
 }
 
 export function check2025ModCompatibility(year_version) {
-  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
+  createSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
 
   const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
   const currentDay = daySeason[0];
@@ -3386,65 +3949,6 @@ export function check2025ModCompatibility(year_version) {
   return "NotCompatible";
 }
 
-export function check2026ModCompatibility(year_version) {
-  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
-
-  const daySeason = queryDB(`SELECT Day, CurrentSeason FROM Player_State`, [], 'singleRow');
-  const currentDay = daySeason[0];
-  const currentSeason = daySeason[1];
-
-  const minDay2024 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2024`, [], 'singleValue');
-  const firstRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2024`, [minDay2024], 'singleValue');
-
-  const maxDay2024 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2024`, [], 'singleValue');
-  const lastRaceState2024 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2024`, [maxDay2024], 'singleValue');
-
-  const minDay2025 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2025`, [], 'singleValue');
-  const firstRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2025`, [minDay2025], 'singleValue');
-
-  const maxDay2025 = queryDB(`SELECT MAX(Day) FROM Races WHERE SeasonID = 2025`, [], 'singleValue');
-  const lastRaceState2025 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2025`, [maxDay2025], 'singleValue');
-
-  const minDay2026 = queryDB(`SELECT MIN(Day) FROM Races WHERE SeasonID = 2026`, [], 'singleValue');
-  const firstRaceState2026 = queryDB(`SELECT State FROM Races WHERE Day = ? AND SeasonID = 2026`, [minDay2026], 'singleValue');
-
-  if (year_version !== "24") {
-    return "NotCompatible";
-  }
-
-  const edited = queryDB(`SELECT * FROM Custom_2026_SeasonMod WHERE value = 1`, [], 'allRows');
-  if (edited.length > 0) {
-    return "AlreadyEdited";
-  }
-
-  //get staffID's from Staff_BasicData that have IsGeneratedForCustomTeam = 1 and StaffIDs are not 552 and 553
-  const generatedStaff = queryDB(`SELECT StaffID FROM Staff_BasicData WHERE IsGeneratedForCustomTeam = 1 AND StaffID NOT IN (552, 553)`, [], 'allRows');
-  if (generatedStaff.length > 0) {
-    return "NotCompatible";
-  }
-
-  if (firstRaceState2024 === 0 && currentSeason === 2024) {
-    return "Start2024";
-  }
-  
-  if (lastRaceState2024 === 2 && currentSeason === 2024) {
-    return "End2024";
-  }
-
-  if (firstRaceState2025 === 0 && currentSeason === 2025) {
-    return "Start2025";
-  }
-  if (lastRaceState2025 === 2 && currentSeason === 2025) {
-    return "End2025";
-  }
-
-  if (currentSeason === 2026 && firstRaceState2026 === 0) {
-    return "Direct2026";
-  }
-
-  return "NotCompatible";
-}
-
 const defaultSeasonModKeys2025 = [
   'time-travel',
   'extra-drivers',
@@ -3456,18 +3960,8 @@ const defaultSeasonModKeys2025 = [
   'change-performance'
 ];
 
-const defaultSeasonModKeys2026 = [
-  'time-travel-2026',
-  'extra-drivers-2026',
-  'change-line-ups-2026',
-  'change-stats-2026',
-  'change-calendar-2026',
-  'change-regulations-2026',
-  'change-cfd-2026',
-  'change-performance-2026'
-];
 
-function ensureSeasonModTable(tableName, defaultKeys) {
+function createSeasonModTable(tableName, defaultKeys) {
   const tableExists = queryDB(`SELECT name FROM sqlite_master WHERE type='table' AND name=?`, [tableName], "singleRow");
   if (!tableExists) {
     // Table name cannot be parameterized
@@ -3496,12 +3990,16 @@ export function updateTeamsSuppliedByEngine(engineId, stats) {
       }
 
     }
-    const valueERS = engine_unitValueToValue[18](stats[18]);
-    const unitValueERS = stats[18];
-    const valueGearbox = engine_unitValueToValue[19](stats[19]);
-    const unitValueGearbox = stats[19];
-    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueERS, unitValueERS, teamERSId], 'run');
-    queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueGearbox, unitValueGearbox, teamGearboxId], 'run');
+    if (Object.hasOwn(stats, 18)) {
+      const unitValueERS = stats[18];
+      const valueERS = engine_unitValueToValue[18](unitValueERS);
+      queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueERS, unitValueERS, teamERSId], 'run');
+    }
+    if (Object.hasOwn(stats, 19)) {
+      const unitValueGearbox = stats[19];
+      const valueGearbox = engine_unitValueToValue[19](unitValueGearbox);
+      queryDB(`UPDATE Parts_Designs_StatValues SET Value = ?, UnitValue = ? WHERE DesignID = ? AND PartStat = 15`, [valueGearbox, unitValueGearbox, teamGearboxId], 'run');
+    }
   });
 
 
@@ -3521,7 +4019,6 @@ export function updateCustomConfig(data) {
   const playerTeam = data.playerTeam
   const turningPointsFrequencyPreset = data.turningPointsFrequencyPreset;
   const forceEditorMinimapColors = data.forceEditorMinimapColors;
-  console.log("Updating custom config with data:", data);
 
   const replacableTeamsDict = { 9: 'alfa', 8: 'alphatauri', 5: 'alpine', 7: 'haas', 3: 'redbull', 10: 'aston', 6: 'williams', }
 
@@ -3625,7 +4122,6 @@ export function updateCustomConfig(data) {
   else {
     const teamId = 9;
     let color = defaultColors[teamId];
-    console.log("Reverting Alfa Romeo color to default:", color);
     queryDB(
       `UPDATE Teams_Colours SET Colour = ? WHERE TeamID = ?`,
       [color, teamId],
@@ -3679,6 +4175,8 @@ export function fetchCustomConfig() {
     teams: {},
     primaryColor: null,
     secondaryColor: null,
+    playerNationality: null,
+    playerNationalityPromptDisabled: 0,
     turningPointsFrequencyPreset: defaultTurningPointsFrequencyPreset,
     forceEditorMinimapColors: 0,
     renaultEngine: 'renault'
@@ -3693,6 +4191,12 @@ export function fetchCustomConfig() {
       config.primaryColor = value;
     } else if (key === 'secondaryColor') {
       config.secondaryColor = value;
+    }
+    else if (key === 'playerNationality') {
+      config.playerNationality = String(value || '').trim().toUpperCase() || null;
+    }
+    else if (key === 'playerNationalityPromptDisabled') {
+      config.playerNationalityPromptDisabled = parseInt(value, 10) === 1 ? 1 : 0;
     }
     else if (key === 'difficulty') {
       config.difficulty = value;
@@ -3756,7 +4260,7 @@ function fetchPlayerTeam() {
 }
 
 export function fetch2025ModData() {
-  ensureSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
+  createSeasonModTable('Custom_2025_SeasonMod', defaultSeasonModKeys2025);
 
   const rows = queryDB(`SELECT key, value FROM Custom_2025_SeasonMod`, [], 'allRows') || [];
   const config = {};
@@ -3767,23 +4271,6 @@ export function fetch2025ModData() {
     config[key] = value;
   });
 
-  return config;
-
-}
-
-export function fetch2026ModData() {
-  ensureSeasonModTable('Custom_2026_SeasonMod', defaultSeasonModKeys2026);
-
-  const rows = queryDB(`SELECT key, value FROM Custom_2026_SeasonMod`, [], 'allRows') || [];
-  const config = {};
-
-  rows.forEach(row => {
-    const key = row[0];
-    const value = row[1];
-    config[key] = value;
-  });
-
-  // Also return the aduo turning points flag so the 2026 mods UI can restore the toggle state.
   const aduoEnabled = queryDB(
     `SELECT value FROM Custom_Save_Config WHERE key = 'aduo_tp_enabled'`,
     [],
@@ -3792,7 +4279,9 @@ export function fetch2026ModData() {
   config.aduo_tp_enabled = aduoEnabled ?? "0";
 
   return config;
+
 }
+
 
 function createEngineMigrationTrigger() {
   const sql = `
