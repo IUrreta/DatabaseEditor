@@ -6,7 +6,7 @@ import {
     resetViewer, generateYearsMenu, resetYearButtons, update_logo, setEngineAllocations, engine_names, new_drivers_table, new_teams_table,
     new_load_drivers_table, new_load_teams_table, addEngineName, deleteEngineName, reloadTables,
     populateSeasonReview,
-    onSessionResultsFetched
+    onSessionResultsFetched, refreshRecordsAfterDataChange
 } from './seasonViewer';
 import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
@@ -35,7 +35,7 @@ import {
 import { place_news, updateNewsYearsButton } from './news.js';
 import { load_regulations, gather_regulations_data } from './regulations.js';
 import { loadRecordsList, loadTeamRecordsList } from './seasonViewer';
-import { resetStaffIDChanges, updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
+import { updateEditsWithModData } from '../backend/scriptUtils/modUtils.js';
 import { dbWorker, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, processSaveFile } from './dragFile';
 import { Command } from "../backend/command.js";
 import { saveAs } from "file-saver";
@@ -44,7 +44,8 @@ import { createTeamReplacers, logos_configs, pretty_names } from "./teamReplacem
 
 import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { getRecentHandles, saveHandleToRecents, removeRecentHandle } from './recentsManager.js';
-import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, syncMods2026Dependencies, syncMods2026ApplyAllButtonState, updateMod2025Blocking, updateMod2026Blocking } from './seasonMods.js';
+import { initSeasonMods, syncAduoTpToggles, syncMods2025Dependencies, updateMod2025Blocking } from './seasonMods.js';
+import { inverted_countries_abreviations } from '../backend/scriptUtils/countries.js';
 
 
 
@@ -62,7 +63,6 @@ const modPill = document.getElementById("modpill")
 export const editorPill = document.getElementById("editorPill")
 export const gamePill = document.getElementById("gamePill")
 const patreonPill = document.getElementById("patreonPill")
-const recordsPill = document.getElementById("recordsPill")
 
 const driverTransferDiv = document.getElementById("driver_transfers");
 const editStatsDiv = document.getElementById("edit_stats");
@@ -86,6 +86,8 @@ const panicDownloadButton = document.getElementById("panicDownloadButton");
 const downloadSaveIcon = document.querySelector(".bi-file-earmark-arrow-down");
 const recordsSeasonExportMenu = document.getElementById("recordsSeasonExportMenu");
 const recordsSeasonExportButton = document.getElementById("recordsSeasonExportButton");
+const migrateResultsButton = document.getElementById("migrateResultsButton");
+const migrateResultsMenu = document.getElementById("migrateResultsMenu");
 const exportRecordsSeasonsButton = document.getElementById("exportRecordsSeasonsButton");
 const importRecordsSeasonsButton = document.getElementById("importRecordsSeasonsButton");
 const importRecordsSeasonsInput = document.getElementById("importRecordsSeasonsInput");
@@ -163,10 +165,10 @@ let difcultyCustom = "default"
 export let game_version = 2023;
 export let custom_team = false;
 export let nightlyBlock = false;
-export let seasonModData = {};
 let latestSaveYear = null;
 let firstShow = false;
 let configCopy;
+let selectedPlayerNationality = null;
 
 let managingTeamChanged = false;
 let isSaveSelected = 0;
@@ -188,7 +190,7 @@ let newsAvailable = {
 
 let versionNow;
 const versionPanel = document.querySelector('.version-panel');
-const versionBadge = document.querySelector('.badge-version');
+const heroVersionText = document.getElementById('heroVersionText');
 const parchModalTitle = document.getElementById("patchModalTitle")
 
 let notificationsQueue = [];
@@ -680,7 +682,7 @@ function performanceModeHandler() {
         let parts = {};
         let n_parts_designs = {};
         let loadouts = {}
-        document.querySelectorAll(".part-performance").forEach(function (elem) {
+        document.querySelectorAll(".part-performance[data-partid]").forEach(function (elem) {
             let part = elem.dataset.part;
             let partID = elem.dataset.partid;
             let loadout1 = elem.dataset.loadout1;
@@ -1028,7 +1030,16 @@ const messageHandlers = {
     },
     "Config": (message) => {
         manage_config(message)
+        managePlayerNationalityPrompt(message?.playerNationality, message?.playerNationalityPromptDisabled)
         document.querySelector("#transferpill").click();
+    },
+    "Player nationality saved": (message) => {
+        if (configCopy && typeof configCopy === "object") {
+            configCopy.playerNationality = message?.nationality || null;
+            configCopy.playerNationalityPromptDisabled = message?.dontAskAgain ? 1 : 0;
+        }
+        bootstrap.Modal.getInstance(document.getElementById("playerNationalityModal"))?.hide();
+        if (message?.nationality) generateNews();
     },
     "24 Year": (message) => {
         manage_config(message, true)
@@ -1092,22 +1103,12 @@ const messageHandlers = {
         load_custom_engines(message.slice(1))
     },
     "Mod data fetched": (message) => {
-      seasonModData = message || {};
       updateEditsWithModData(message)
       syncAduoTpToggles(message?.aduo_tp_enabled);
       syncMods2025Dependencies();
-      syncMods2026Dependencies();
-      syncMods2026ApplyAllButtonState();
-      if (latestSaveYear) {
-        generateYearsMenu(latestSaveYear);
-      }
     },
     "Mod compatibility": (message) => {
         updateMod2025Blocking(message)
-    },
-    "Mod 2026 compatibility": (message) => {
-        updateMod2026Blocking(message)
-        resetStaffIDChanges();
     },
     "News fetched": (message) => {
         place_news(message, newsAvailable)
@@ -1119,6 +1120,7 @@ const messageHandlers = {
     },
     "Save selected finished": async (message) => {
         await migrateLegacyNewsOnce();
+        await promptPendingInjuryReturns();
         generateNews();
     },
     "Record fetched": (message) => {
@@ -1128,7 +1130,7 @@ const messageHandlers = {
         loadTeamRecordsList(message)
     },
     "Double points bug fixed": (message) => {
-        //TODO CLICK ON THE FIRST EYAR OF yearMenu
+        refreshRecordsAfterDataChange();
     },
     "Season review data fetched": (message) => {
         populateSeasonReview(message)
@@ -1137,6 +1139,42 @@ const messageHandlers = {
         onSessionResultsFetched(message);
     }
 };
+
+async function promptPendingInjuryReturns() {
+    try {
+        const response = await new Command("checkPendingInjuryReturns", {}).promiseExecute();
+        const pendingReturns = Array.isArray(response?.content) ? response.content : [];
+
+        for (const injuryReturn of pendingReturns) {
+            const openModal = document.querySelector('.modal.show:not(#confirmModal)');
+            if (openModal) {
+                await new Promise(resolve => openModal.addEventListener('hidden.bs.modal', resolve, { once: true }));
+            }
+
+            const returnRace = injuryReturn.expectedReturnCountry
+                ? ` before the next race in ${injuryReturn.expectedReturnCountry}`
+                : "";
+            const ok = await confirmModal({
+                title: "Driver ready to return",
+                body: `${injuryReturn.injuredName} has recovered${returnRace}. Do you want to swap them back in for ${injuryReturn.reserveName} at ${injuryReturn.teamName}?`,
+                confirmText: "Make the swap",
+                cancelText: "Not now"
+            });
+
+            if (!ok) continue;
+
+            await new Command("swapDrivers", {
+                driver1ID: injuryReturn.injuredId,
+                driver2ID: injuryReturn.reserveId,
+                driver1: injuryReturn.injuredName,
+                driver2: injuryReturn.reserveName
+            }).promiseExecute();
+            new Command("driversRefresh", {}).execute();
+        }
+    } catch (error) {
+        console.error("Failed to check pending injury returns:", error);
+    }
+}
 
 function removeLegacyKeys(base) {
     const lsNewsKey = `${base}_news`;
@@ -1440,8 +1478,6 @@ function manage_custom_team(nameColor) {
         const command = new Command("updateCombinedDict", { teamID: 32, newName: nameColor[1] });
         command.execute();
 
-        document.querySelector(".lineup-team--cadillac").classList.remove("d-none")
-
         document.getElementById("customTeamTransfers").classList.remove("d-none")
         document.getElementById("customTeamPerformance").classList.remove("d-none")
         document.getElementById("customTeamDropdown").classList.remove("d-none")
@@ -1461,7 +1497,6 @@ function manage_custom_team(nameColor) {
     else {
         resizeWindowToHeight("10teams")
         custom_team = false
-        document.querySelector(".lineup-team--cadillac").classList.add("d-none")
         document.getElementById("customTeamTransfers").classList.add("d-none")
         document.getElementById("customTeamPerformance").classList.add("d-none")
         document.getElementById("customTeamDropdown").classList.add("d-none")
@@ -1536,8 +1571,145 @@ document.querySelector(".gear-container").addEventListener("click", function () 
     let configDetailModal = new bootstrap.Modal(document.getElementById('configDetailModal'), {
         keyboard: false
     })
+    syncSettingsNationality()
     configDetailModal.show()
 })
+
+function resetPlayerNationalityPrompt() {
+    selectedPlayerNationality = null;
+
+    const button = document.getElementById("playerNationalityButton");
+    const flag = document.getElementById("playerNationalityFlag");
+    const saveButton = document.getElementById("savePlayerNationalityButton");
+    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
+
+    button.dataset.value = "";
+    button.classList.remove("open");
+    button.querySelector(".dropdown-label").textContent = "Select nationality";
+    flag.src = "";
+    flag.alt = "";
+    flag.classList.add("d-none");
+    dontAskCheckbox.checked = false;
+    saveButton.disabled = true;
+    saveButton.textContent = "Save";
+}
+
+function populateNationalityMenu(menu, button, flag, onSelect) {
+    const countries = Object.entries(inverted_countries_abreviations || {})
+        .filter(([code, name]) => /^[A-Z]{2}$/.test(code) && name)
+        .sort((a, b) => String(a[1]).localeCompare(String(b[1])));
+
+    const fragment = document.createDocumentFragment();
+    countries.forEach(([code, name]) => {
+        const item = document.createElement("a");
+        item.className = "redesigned-dropdown-item";
+        item.dataset.value = code;
+
+        const itemFlag = document.createElement("img");
+        itemFlag.src = `https://flagsapi.com/${code}/flat/64.png`;
+        itemFlag.alt = code;
+
+        const label = document.createElement("span");
+        label.textContent = name;
+
+        item.append(itemFlag, label);
+        item.addEventListener("click", () => {
+            button.dataset.value = code;
+            button.querySelector(".dropdown-label").textContent = name;
+            button.classList.remove("open");
+            flag.src = itemFlag.src;
+            flag.alt = code;
+            flag.classList.remove("d-none");
+            onSelect(code);
+        });
+        fragment.appendChild(item);
+    });
+    menu.replaceChildren(fragment);
+}
+
+function initSettingsNationality() {
+    const menu = document.getElementById("settingsNationalityMenu");
+    const button = document.getElementById("settingsNationalityButton");
+    const flag = document.getElementById("settingsNationalityFlag");
+    populateNationalityMenu(menu, button, flag, () => { });
+}
+
+function syncSettingsNationality() {
+    const button = document.getElementById("settingsNationalityButton");
+    const flag = document.getElementById("settingsNationalityFlag");
+    const nationality = configCopy?.playerNationality || "";
+    const item = nationality ? document.querySelector(`#settingsNationalityMenu [data-value="${nationality}"]`) : null;
+
+    button.dataset.value = item ? nationality : "";
+    button.querySelector(".dropdown-label").textContent = item ? item.textContent : "Select nationality";
+    flag.src = item ? item.querySelector("img").src : "";
+    flag.alt = item ? nationality : "";
+    flag.classList.toggle("d-none", !item);
+}
+
+function initPlayerNationalityPrompt() {
+    const menu = document.getElementById("playerNationalityMenu");
+    const button = document.getElementById("playerNationalityButton");
+    const flag = document.getElementById("playerNationalityFlag");
+    const saveButton = document.getElementById("savePlayerNationalityButton");
+    const dontAskCheckbox = document.getElementById("playerNationalityDontAsk");
+    if (!menu || !button || !flag || !saveButton || !dontAskCheckbox) return;
+
+    const syncSaveButtonState = () => {
+        saveButton.disabled = !selectedPlayerNationality && !dontAskCheckbox.checked;
+    };
+
+    populateNationalityMenu(menu, button, flag, (code) => {
+        selectedPlayerNationality = code;
+        syncSaveButtonState();
+    });
+
+    dontAskCheckbox.addEventListener("change", syncSaveButtonState);
+
+    saveButton.addEventListener("click", async () => {
+        const dontAskAgain = dontAskCheckbox.checked;
+        if (!selectedPlayerNationality && !dontAskAgain) return;
+
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+
+        try {
+            await new Command("setPlayerNationality", {
+                nationality: selectedPlayerNationality || "",
+                dontAskAgain
+            }).promiseExecute();
+        } catch (error) {
+            console.error("Failed to save player nationality:", error);
+            syncSaveButtonState();
+            saveButton.textContent = "Save";
+            new_update_notifications("Could not save the player nationality", "error");
+        }
+    });
+}
+
+function managePlayerNationalityPrompt(nationality, promptDisabled) {
+    const modalElement = document.getElementById("playerNationalityModal");
+    if (!modalElement) return;
+
+    const normalizedNationality = String(nationality || "").trim().toUpperCase();
+    const neverAskAgain = promptDisabled === true || Number(promptDisabled) === 1;
+    if (/^[A-Z]{2}$/.test(normalizedNationality) || neverAskAgain) {
+        bootstrap.Modal.getInstance(modalElement)?.hide();
+        return;
+    }
+
+    resetPlayerNationalityPrompt();
+    if (/^[A-Z]{2}$/.test(normalizedNationality)) {
+        document.querySelector(`#playerNationalityMenu [data-value="${normalizedNationality}"]`)?.click();
+    }
+    bootstrap.Modal.getOrCreateInstance(modalElement, {
+        backdrop: "static",
+        keyboard: false
+    }).show();
+}
+
+initPlayerNationalityPrompt();
+initSettingsNationality();
 
 function manage_config(info, year_config = false) {
     document.querySelector(".bi-gear-fill#settingsIcon").classList.remove("hidden")
@@ -1873,6 +2045,14 @@ export function applyConfigFromEditorUI(overrides = {}) {
         if (playerTeam !== -1) {
             configCopy.playerTeam = Number(playerTeam);
         }
+
+        const nationality = document.getElementById("settingsNationalityButton").dataset.value;
+        if (nationality && nationality !== configCopy.playerNationality) {
+            new Command("setPlayerNationality", {
+                nationality,
+                dontAskAgain: configCopy.playerNationalityPromptDisabled === 1
+            }).execute();
+        }
     }
 }
 
@@ -2061,14 +2241,14 @@ function loadRecordsExportOptions() {
         });
 }
 
-if (recordsPill) {
-    recordsPill.addEventListener("click", function () {
-        document.querySelector("#patreonChanges").classList.add("d-none")
-        document.querySelector("#editorChanges").classList.add("d-none")
-        document.querySelector("#gameChanges").classList.add("d-none")
-        document.querySelector("#recordsChanges").classList.remove("d-none")
-        loadRecordsExportOptions();
-    })
+if (migrateResultsButton && migrateResultsMenu) {
+    migrateResultsButton.addEventListener("click", function () {
+        // Runs before the generic dropdown toggle, so "open" is not set yet when opening
+        if (!this.classList.contains("open")) loadRecordsExportOptions();
+    });
+    migrateResultsMenu.addEventListener("click", function (event) {
+        event.stopPropagation();
+    });
 }
 
 if (exportRecordsSeasonsButton) {
@@ -2085,6 +2265,7 @@ if (exportRecordsSeasonsButton) {
             const blob = new Blob([JSON.stringify(response.content, null, 2)], { type: "application/json" });
             saveAs(blob, filename);
             new_update_notifications("Seasons records exported", "success");
+            migrateResultsButton.classList.remove("open");
         });
     });
 }
@@ -2104,7 +2285,7 @@ if (importRecordsSeasonsButton && importRecordsSeasonsInput) {
             const command = new Command("importRecordsSeasons", { archive });
             command.promiseExecute().then(() => {
                 new Command("saveSelected", {}).execute();
-                loadRecordsExportOptions();
+                migrateResultsButton.classList.remove("open");
             });
         };
         reader.readAsText(file);
@@ -2270,21 +2451,18 @@ gamePill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.remove("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
-    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 editorPill.addEventListener("click", function () {
     document.querySelector("#editorChanges").classList.remove("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
     document.querySelector("#patreonChanges").classList.add("d-none")
-    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 patreonPill.addEventListener("click", function () {
     document.querySelector("#patreonChanges").classList.remove("d-none")
     document.querySelector("#editorChanges").classList.add("d-none")
     document.querySelector("#gameChanges").classList.add("d-none")
-    document.querySelector("#recordsChanges").classList.add("d-none")
 })
 
 if (turningPointsFrequencySlider) {
@@ -2330,6 +2508,7 @@ function update_refurbish_span(value) {
 document.getElementById("freezeDevelopmentToggle").addEventListener("change", function () {
     let value = this.checked;
     update_development_span(value)
+    new Command("editFreezeDevelopment", { state: value ? 1 : 0 }).execute()
 });
 
 function update_development_span(value) {
@@ -2338,8 +2517,8 @@ function update_development_span(value) {
         span.className = "option-state frozen"
         span.textContent = "Frozen"
     } else {
-        span.className = "option-state default"
-        span.textContent = "Active"
+        span.className = "option-state inactive"
+        span.textContent = "Inactive"
     }
 }
 
@@ -2632,7 +2811,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const storedVersion = localStorage.getItem('lastVersion'); // Última versión guardada
     versionPanel.textContent = `${versionNow}`;
-    versionBadge.textContent = `Version ${versionNow}`;
+    heroVersionText.textContent = `v${versionNow}`;
     parchModalTitle.textContent = "Version " + versionNow + " patch notes"
     getPatchNotes()
 
@@ -2664,7 +2843,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         "Easily pick your save from the list of recent ones",
         "Customize the appearance of the tool to your liking",
         "Join the discord to get notified when new features are added",
-        "Edit how good or bad a car is going to be for next season"
+        "Edit how good or bad a car is going to be for next season",
+        "F*ck thermodynamics"
     
     ];
 
@@ -2873,6 +3053,17 @@ function updateToolbarThemeLogo() {
     const logoImg = document.querySelector(".toolbar-logo");
     if (!logoImg) return;
 
+    const titleSpans = document.querySelectorAll(".toolbar-title > span");
+    const setToolbarTitle = (lines = ["DB", "EDITOR"]) => {
+        titleSpans.forEach((span, index) => {
+            span.textContent = lines[index] || "";
+        });
+    };
+
+    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
+    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
+    setToolbarTitle();
+
     Object.values(themeToolbarLogos).forEach((meta) => {
         if (meta?.className) logoImg.classList.remove(meta.className);
     });
@@ -2882,14 +3073,12 @@ function updateToolbarThemeLogo() {
         return;
     }
 
-    const bodyThemeClass = Array.from(document.body.classList).find(className => className.endsWith("-theme"));
-    const appliedTheme = (bodyThemeClass || selectedTheme || "").toLowerCase();
-
     const themeKey = Object.keys(themeToolbarLogos).find((key) => appliedTheme.includes(key.replace("-theme", "")));
     if (themeKey) {
         const meta = themeToolbarLogos[themeKey];
         logoImg.src = meta.src;
         if (meta.className) logoImg.classList.add(meta.className);
+        if (meta.titleLines) setToolbarTitle(meta.titleLines);
         return;
     }
 
@@ -3085,7 +3274,8 @@ document.querySelectorAll(".redesigned-dropdown").forEach(dropdown => {
         e.stopPropagation();
 
         document.querySelectorAll(".redesigned-dropdown.open").forEach(openDropdown => {
-            if (openDropdown !== dropdown) {
+            // Keep a parent dropdown open when the clicked dropdown lives inside its menu
+            if (openDropdown !== dropdown && !openDropdown.parentElement.contains(dropdown)) {
                 openDropdown.classList.remove("open");
             }
         });
@@ -3101,8 +3291,9 @@ document.addEventListener("click", function () {
 });
 
 export function attachHold(btn, el, step = 1, opts = {}) {
-    const min = opts.min ?? -Infinity;
-    const max = opts.max ?? Infinity;
+    // min/max can be functions when the limit depends on the loaded save
+    const getMin = () => (typeof opts.min === 'function' ? opts.min() : (opts.min ?? -Infinity));
+    const getMax = () => (typeof opts.max === 'function' ? opts.max() : (opts.max ?? Infinity));
     const progressEl = opts.progressEl ?? null;
     const values = Array.isArray(opts.values) && opts.values.length ? opts.values.slice() : null;
     const loop = !!opts.loop;
@@ -3157,7 +3348,7 @@ export function attachHold(btn, el, step = 1, opts = {}) {
     };
 
     const setNum = (val) => {
-        const clamped = Math.max(min, Math.min(max, val));
+        const clamped = Math.max(getMin(), Math.min(getMax(), val));
         setText(clamped);
         updateProgress(clamped);
         onChange(clamped, currentPercent(clamped)); // Devuelve el valor numérico limpio
@@ -3210,6 +3401,8 @@ export function attachHold(btn, el, step = 1, opts = {}) {
             const i = idx < 0 ? 0 : idx;
             return Math.round((i / (len - 1)) * 100);
         }
+        const min = getMin();
+        const max = getMax();
         if (max > min) {
             const v = Number(valOrIdx);
             const p = ((v - min) / (max - min)) * 100;

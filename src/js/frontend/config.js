@@ -202,6 +202,12 @@ export const theme_colors = {
         "grid": "#5a3a5f",
         "general_secondary": "#f1f1f1",
         "engine_upgrade_line": "#ffe16acc"
+    },
+    "gcr-theme": {
+        "labels": "#f0f2f5",
+        "grid": "#1d3e62",
+        "general_secondary": "#35eeff",
+        "engine_upgrade_line": "#ffd166fa"
     }
 }
 
@@ -218,6 +224,11 @@ export const themeToolbarLogos = {
     "haas-theme": { src: "../assets/images/logos/haas.png", className: "toolbar-logo--haas" },
     "alpine-theme": { src: "../assets/images/logos/alpine.png", className: "toolbar-logo--alpine" },
     "f1cc-theme": { src: "../assets/images/logos/f1cc.png", className: "toolbar-logo--f1cc" },
+    "gcr-theme": {
+        src: "../assets/images/logos/gcr.png",
+        className: "toolbar-logo--gcr",
+        titleLines: ["GRAND", "CHELEM"]
+    },
 };
 
 //predictions
@@ -629,6 +640,20 @@ export function getParamMap(data) {
         109: {
             manufacturers: data.manufacturers,
             number_period: data.quarterString
+        },
+        110: {
+            team: data.team,
+            old_engine: data.oldEngineName,
+            new_engine: data.newEngineName,
+            reason: data.reason
+        },
+        111: {
+            child_name: data.childName,
+            player_team: data.playerTeam,
+            f3_team: data.f3Team,
+            replaced_driver: data.replacedDriver?.name,
+            nationality: data.childNationality,
+            reason: data.reason
         }
     };
 }
@@ -741,6 +766,16 @@ export const turningPointsTuningByType = {
     youngDrivers: {
         chance: [0.25, 0.5, 1, 1, 1],
         max: [1, 1, 1, 1, 1],
+    },
+    preseasonEngineSwitch: {
+        // One fixed preseason roll; the requested 59% is not frequency-scaled.
+        chance: [0.59, 0.59, 0.59, 0.59, 0.59],
+        max: [1, 1, 1, 1, 1],
+    },
+    playerChild: {
+        // One preseason roll per season; max is the total number of child offers per save.
+        chance: [0.05, 0.1, 0.2, 0.35, 0.5],
+        max: [2, 2, 2, 2, 2],
     },
 };
 

@@ -1,8 +1,8 @@
 import { getUserTierServer } from "../lib/getUserTierServer.js";
 import { getDailyLimitForTier } from "../lib/rateLimits.js";
 import { redis } from "../lib/redis.js";
-import { requestOpenAI } from "./ask-openai.js";
-import { requestOpenRouter } from "./ask-openrouter.js";
+import { requestOpenAI } from "../lib/openai.js";
+import { requestOpenRouter } from "../lib/openrouter.js";
 
 function shouldUseOpenRouter(tier, used, limit) {
   const isBacker = tier === "Backer";
