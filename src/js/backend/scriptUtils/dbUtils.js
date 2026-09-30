@@ -1165,8 +1165,19 @@ function setupCustomSeasonResultsTable() {
 
 }
 
+// Imported seasons are only a fallback: a season that exists in the save always uses the save's data
+function hasSeasonDataInSave(seasonId) {
+  return !!queryDB(`
+    SELECT 1 FROM Races WHERE SeasonID = ?
+    UNION ALL
+    SELECT 1 FROM Races_DriverStandings WHERE SeasonID = ? AND RaceFormula = 1
+    LIMIT 1
+  `, [seasonId, seasonId], 'singleValue');
+}
+
 export function fetchCustomSeasonResultsPackage(year, formula = 1) {
   if (formula !== 1) return null;
+  if (hasSeasonDataInSave(year)) return null;
   setupCustomSeasonResultsTable();
 
   const row = queryDB(`
@@ -1538,10 +1549,15 @@ export function importSeasonsRecordsArchive(archive) {
 
   const seasons = archive.seasons || [];
   let importedSeasons = 0;
+  let skippedSeasons = 0;
 
   seasons.forEach((seasonBlock) => {
     const seasonId = seasonBlock.season;
     if (!seasonId) return;
+    if (hasSeasonDataInSave(seasonId)) {
+      skippedSeasons += 1;
+      return;
+    }
 
     let packagePayload = null;
     const formulas = seasonBlock.formulas || [];
@@ -1571,7 +1587,7 @@ export function importSeasonsRecordsArchive(archive) {
     importedSeasons += 1;
   });
 
-  return importedSeasons;
+  return { importedSeasons, skippedSeasons };
 }
 
 export function fetchQualiResults(yearSelected) {

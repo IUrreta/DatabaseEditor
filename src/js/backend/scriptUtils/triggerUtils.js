@@ -675,6 +675,13 @@ export function editFreezeDevelopment(state) {
   `, [], 'run');
 }
 
+export function isFreezeDevelopmentActive() {
+  return queryDB(
+    "SELECT tbl_name FROM sqlite_master WHERE type='trigger' AND name='freeze_development'",
+    [], 'singleValue'
+  ) === "Parts_Designs_StatValues";
+}
+
 // Old versions created freeze_development on Parts_Designs, which reverted every DesignWork/DayCompleted
 // change of AI designs, so they could never finish parts (not even the new season car).
 export function repairLegacyFreezeDevelopment() {

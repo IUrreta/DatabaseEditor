@@ -623,7 +623,9 @@
                           <div class="">SAUBER</div>
                         </a>
                         <a class="redesigned-dropdown-item bold-font" data-value="audi">
-                          <img src="../assets/images/logos/audi.png" class="audilogo">
+                          <div class="team-menu-logo">
+                            <div class="audilogo"></div>
+                          </div>
                           <div class="">AUDI</div>
                         </a>
                       </ul>
@@ -4673,6 +4675,19 @@
                     <span>Also update older parts</span>
                   </span>
                 </label>
+                <hr>
+                <div class="bold-font">Grid Spread
+                  <i class="info-titles performance-option-info" tabindex="0"
+                    aria-label="Move every car's performance toward the grid average (left) or away from it (right)."
+                    data-tooltip="Move every car's performance toward the grid average (left) or away from it (right).">?</i>
+                  <span class="option-state inactive" id="spreadGridState">Neutral</span>
+                </div>
+                <div class="performance-equal-controls">
+                  <input class="form-range" type="range" min="-100" max="100" step="1" value="0"
+                    id="spreadGridSlider">
+                  <span class="option-state default" id="spreadGridValue">0%</span>
+                  <button type="button" class="confirm-modal" id="spreadGridApplyButton">Apply</button>
+                </div>
                 <hr>
                 <div class="bold-font">Equal Engines
                   <i class="info-titles performance-option-info" tabindex="0"

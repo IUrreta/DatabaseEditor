@@ -1,8 +1,6 @@
 import {
   fetchSeasonResults, fetchEventsFrom, fetchTeamsStandings,
   fetchTeamsStandingsWithPositionChange,
-  fetchTeamsStandingsWithPoints,
-  fetchDriversStandings,
   fetchDrivers, fetchStaff, fetchEngines, fetchYear, fetchDriverNumbers, checkCustomTables, checkYearSave,
   fetchOneDriverSeasonResults, fetchOneTeamSeasonResults, fetchEventsDoneFrom, updateCustomEngines, fetchDriversPerYear, fetchDriverContracts,
   fetchJuniorTeamDriverNames,
@@ -60,12 +58,25 @@ import { teamReplaceDict } from "./commandGlobals";
 import { excelToDate } from "./scriptUtils/eidtStatsUtils";
 import { analyzeFileToDatabase, repack } from "./UESaveHandler";
 import { fetchRegulationsData, updateRegulations } from "./scriptUtils/regulationsUtils.js";
-import { deleteProblematicTriggers, editFreezeDevelopment, repairLegacyFreezeDevelopment } from "./scriptUtils/triggerUtils.js";
+import { deleteProblematicTriggers, editFreezeDevelopment, isFreezeDevelopmentActive, repairLegacyFreezeDevelopment } from "./scriptUtils/triggerUtils.js";
 import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename, fetchRandomStaffAttributes, fetchRandomStaffDraft } from "./scriptUtils/createStaffUtils.js";
 import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 
 import initSqlJs from 'sql.js';
 import { combined_dict } from "../frontend/config";
+
+// The freeze triggers revert any stat/expertise change on AI teams, so manual edits lift the freeze
+// and take a new snapshot afterwards, keeping the edited values frozen.
+function editWithFreezeDevelopmentRefresh(edit) {
+  const isFrozen = isFreezeDevelopmentActive();
+  if (isFrozen) editFreezeDevelopment(0);
+  try {
+    return edit();
+  }
+  finally {
+    if (isFrozen) editFreezeDevelopment(1);
+  }
+}
 
 function getTeamName(data) {
   return combined_dict[data.teamID] || teamReplaceDict[data.teamName];
@@ -337,6 +348,8 @@ function buildCustomRaceSessionPayload(year, raceId, sessionKey) {
   };
 }
 
+const createdDraftStaffIds = new Map();
+
 // Diccionario de comandos
 const workerCommands = {
   loadDB: async (data, postMessage) => {
@@ -484,11 +497,12 @@ const workerCommands = {
     postMessage({ responseMessage: "Records seasons exported", content: archive });
   },
   importRecordsSeasons: (data, postMessage) => {
-    const importedSeasons = importSeasonsRecordsArchive(data.archive || {});
+    const { importedSeasons, skippedSeasons } = importSeasonsRecordsArchive(data.archive || {});
+    const skippedText = skippedSeasons ? `, skipped ${skippedSeasons} already in this save` : "";
     postMessage({
       responseMessage: "Records seasons imported",
       content: importedSeasons,
-      noti_msg: `Imported ${importedSeasons} season(s) to custom records`,
+      noti_msg: `Imported ${importedSeasons} season(s) to custom records${skippedText}`,
       isEditCommand: true,
       unlocksDownload: true
     });
@@ -614,7 +628,7 @@ const workerCommands = {
   },
   editExpertise: (data, postMessage) => {
     const globals = getGlobals();
-    updateTeamExpertise(data.teamID, data.expertise, globals.yearIteration);
+    editWithFreezeDevelopmentRefresh(() => updateTeamExpertise(data.teamID, data.expertise, globals.yearIteration));
     postMessage({
       responseMessage: "Expertise updated",
       noti_msg: `Succesfully edited ${getTeamName(data)}'s expertise`,
@@ -626,7 +640,7 @@ const workerCommands = {
   },
   editNextSeasonExpertise: (data, postMessage) => {
     const globals = getGlobals();
-    updateTeamNextSeasonExpertise(data.teamID, data.expertise, globals.yearIteration);
+    editWithFreezeDevelopmentRefresh(() => updateTeamNextSeasonExpertise(data.teamID, data.expertise, globals.yearIteration));
     postMessage({
       responseMessage: "Next season expertise updated",
       noti_msg: `Succesfully edited ${getTeamName(data)}'s ${Number(fetchYear()) + 1} car`,
@@ -757,7 +771,10 @@ const workerCommands = {
     });
   },
   createDraftStaff: (data, postMessage) => {
+    // A second save of the same draft (e.g. double click before the list refreshes) must not insert it again
+    if (createdDraftStaffIds.has(data.draftId)) return;
     const res = createDraftStaff(data);
+    createdDraftStaffIds.set(data.draftId, res.staffId);
     const isDriver = data.typeStaff === "0";
     const yearData = checkYearSave();
 
@@ -832,9 +849,11 @@ const workerCommands = {
 
     const yearData = checkYearSave();
 
-    overwritePerformanceTeam(data.teamID, data.parts, globals.isCreateATeam, globals.yearIteration, data.loadouts);
-    updateItemsForDesignDict(data.n_parts_designs, data.teamID)
-    fitLoadoutsDict(data.loadouts, data.teamID)
+    editWithFreezeDevelopmentRefresh(() => {
+      overwritePerformanceTeam(data.teamID, data.parts, globals.isCreateATeam, globals.yearIteration, data.loadouts);
+      updateItemsForDesignDict(data.n_parts_designs, data.teamID)
+      fitLoadoutsDict(data.loadouts, data.teamID)
+    });
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
     const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
@@ -872,13 +891,13 @@ const workerCommands = {
     let globals = getGlobals();
     const yearData = checkYearSave();
     const mode = data.mode || "performance";
-    const result = adjustTeamOverallToTarget(
+    const result = editWithFreezeDevelopmentRefresh(() => adjustTeamOverallToTarget(
       data.teamID,
       data.targetOverall,
       mode,
       globals.isCreateATeam,
       globals.yearIteration
-    );
+    ));
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
     const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
@@ -909,8 +928,7 @@ const workerCommands = {
     const modeLabel = mode === "nextSeasonCar" ? "next season car" : mode;
     let referenceTeam = null;
 
-    if (data.refreshFreezeDevelopment) editFreezeDevelopment(0);
-    try {
+    editWithFreezeDevelopmentRefresh(() => {
       if (data.copyFastestCar && mode === "performance" && targets.length) {
         const currentPerformance = getPerformanceAllTeams(null, null, globals.isCreateATeam);
         referenceTeam = targets.reduce((fastest, target) =>
@@ -950,10 +968,7 @@ const workerCommands = {
           );
         });
       }
-    }
-    finally {
-      if (data.refreshFreezeDevelopment) editFreezeDevelopment(1);
-    }
+    });
 
     const [performance, races] = getPerformanceAllTeamsSeason(yearData[2], { useHistoricalEnginePower: true });
     const aduoEngineUpgradeRaceIds = getAduoEngineUpgradeRaceIds();
@@ -1210,7 +1225,7 @@ const workerCommands = {
     postMessage({ responseMessage: "Staff fetched", content: staff });
   },
   changePerformance: (data, postMessage) => {
-    updatePerofmrnace2025();
+    editWithFreezeDevelopmentRefresh(() => updatePerofmrnace2025());
     postMessage({
       responseMessage: "Performance changed",
       isEditCommand: true,
@@ -1426,12 +1441,8 @@ const workerCommands = {
     const globals = getGlobals();
     const isCurrentYear = data.isCurrentYear ?? (String(globals?.yearIteration) === String(year));
     const customPackage = fetchCustomSeasonResultsPackage(year, formula);
-    const defaultEvents = fetchEventsFrom(year, formula);
-    const defaultDriversStandings = fetchDriversStandings(year, formula);
-    const defaultTeamsStandings = fetchTeamsStandingsWithPoints(year, formula);
-    const hasDefaultSeasonReviewData = defaultEvents.length > 0 || defaultDriversStandings.length > 0 || defaultTeamsStandings.length > 0;
 
-    const review = (!hasDefaultSeasonReviewData && customPackage)
+    const review = customPackage
       ? buildSeasonReviewFromCustomPackage(year, formula, customPackage)
       : fetchSeasonReviewData(year, formula, isCurrentYear);
 

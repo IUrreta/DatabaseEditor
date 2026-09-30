@@ -20,6 +20,10 @@ const performanceMoreOptionsMenu = document.getElementById("performanceMoreOptio
 const equalCarsSlider = document.getElementById("equalCarsSlider");
 const equalCarsValue = document.getElementById("equalCarsValue");
 const equalCarsApplyButton = document.getElementById("equalCarsApplyButton");
+const spreadGridSlider = document.getElementById("spreadGridSlider");
+const spreadGridValue = document.getElementById("spreadGridValue");
+const spreadGridState = document.getElementById("spreadGridState");
+const spreadGridApplyButton = document.getElementById("spreadGridApplyButton");
 const equalEnginesSlider = document.getElementById("equalEnginesSlider");
 const equalEnginesValue = document.getElementById("equalEnginesValue");
 const equalEnginesApplyButton = document.getElementById("equalEnginesApplyButton");
@@ -1433,9 +1437,47 @@ if (equalCarsApplyButton && equalCarsSlider) {
             mode: "performance",
             targets: targets,
             copyFastestCar: true,
-            updateOlderParts: document.getElementById("equalCarsAllPartsCheckbox").checked,
-            refreshFreezeDevelopment: document.getElementById("freezeDevelopmentToggle").checked
+            updateOlderParts: document.getElementById("equalCarsAllPartsCheckbox").checked
         }).execute();
+        document.getElementById("performanceMoreOptionsButton").classList.remove("open");
+    });
+}
+
+if (spreadGridSlider && spreadGridValue && spreadGridState) {
+    spreadGridSlider.addEventListener("input", function () {
+        const amount = Number(this.value);
+        spreadGridValue.textContent = `${Math.abs(amount)}%`;
+        spreadGridState.textContent = amount < 0 ? "Compress" : amount > 0 ? "Expand" : "Neutral";
+        spreadGridState.className = `option-state ${amount < 0 ? "frozen" : amount > 0 ? "default" : "inactive"}`;
+    });
+}
+
+if (spreadGridApplyButton && spreadGridSlider) {
+    spreadGridApplyButton.addEventListener("click", function () {
+        const factor = 1 + Number(spreadGridSlider.value) / 100;
+        const teams = [];
+
+        document.querySelectorAll("#teamsDiv .team-performance:not(.d-none)").forEach(function (teamElem) {
+            const bar = teamElem.querySelector(".performance-bar-progress");
+            if (!bar) return;
+            teams.push({
+                teamID: teamElem.dataset.teamid,
+                teamName: teamElem.dataset.teamname,
+                overall: getBarDatasetValue(bar, "overall")
+            });
+        });
+        if (!teams.length) return;
+
+        const average = teams.reduce((sum, team) => sum + team.overall, 0) / teams.length;
+        const targets = teams.map(function (team) {
+            return {
+                teamID: team.teamID,
+                teamName: team.teamName,
+                targetOverall: Math.max(0, Math.min(100, average + (team.overall - average) * factor))
+            };
+        });
+
+        new Command("editTargetOveralls", { mode: performanceDetailsMode, targets: targets }).execute();
         document.getElementById("performanceMoreOptionsButton").classList.remove("open");
     });
 }

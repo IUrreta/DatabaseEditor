@@ -11129,6 +11129,12 @@ body.og-theme .records-list {
   background-color: var(--view-transparent);
 }
 
+/* GCR: pill lines grow from the center outwards instead of from the left */
+body.gcr-theme .pill-line {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 body.gcr-theme .scriptPills .pill-line {
   background: var(--gcr-spectrum-gradient);
 }
@@ -18801,8 +18807,11 @@ p.news-error-api-key {
   color: var(--white-general);
 }
 
+/* Same separator as the settings modal sections */
 .performance-options-menu hr {
-  border-color: var(--separator);
+  border: 0;
+  border-top: 2px solid var(--separator);
+  opacity: 1;
   margin: 12px 0;
 }
 
@@ -18873,6 +18882,7 @@ p.news-error-api-key {
 }
 
 #equalCarsValue,
+#spreadGridValue,
 #equalEnginesValue,
 #engineLifeValue {
   color: var(--new-primary);
@@ -18882,7 +18892,7 @@ p.news-error-api-key {
 
 .performance-equal-checkbox {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   margin-top: 10px;
   cursor: pointer;
@@ -18891,6 +18901,7 @@ p.news-error-api-key {
 .performance-equal-checkbox .form-check-input {
   flex: 0 0 auto;
   margin-top: 2px;
+  cursor: pointer;
 }
 
 .performance-equal-checkbox .form-check-input:checked {
