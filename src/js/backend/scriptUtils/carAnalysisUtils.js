@@ -288,6 +288,14 @@ export function applyExpertiseBoost(boost, team) {
     `, [boost, team], 'run');
 }
 
+export function applyNextSeasonExpertiseBoost(boost, team) {
+    queryDB(`
+        UPDATE Parts_TeamExpertise
+        SET NextSeasonExpertise = NextSeasonExpertise + ?
+        WHERE TeamID = ?
+    `, [boost, team], 'run');
+}
+
 export function applyBoostToCarStats(designDict, boost, team) {
     const statsValues = {};
     for (const part in designDict) {
