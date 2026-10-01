@@ -5199,6 +5199,10 @@ phm
   background-color: var(--williams-primary);
 }
 
+.drivers-table-row:hover .logo-williams-2026-table {
+  background-color: #ffffff;
+}
+
 .logo-toyota-table {
   -webkit-mask: url('/assets/images/logos/toyota.svg') no-repeat center;
   mask: url('/assets/images/logos/toyota.svg') no-repeat center;
