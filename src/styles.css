@@ -11772,7 +11772,8 @@ input[type='number'] {
 
 #edit_teams #confidenceInput {
   min-width: 0 !important;
-  width: 48px;
+  max-width: none;
+  width: 66px;
 }
 
 /* Body */
