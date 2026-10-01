@@ -5271,6 +5271,16 @@ phm
   background-color: var(--text-general);
 }
 
+.drivers-table-row:hover .logo-alpine-table,
+.drivers-table-row:hover .logo-mclaren-table,
+.drivers-table-row:hover .logo-visarb-table,
+.drivers-table-row:hover .logo-alphatauri-table,
+.drivers-table-row:hover .logo-williams-2026-table,
+.drivers-table-row:hover .logo-toyota-table,
+.drivers-table-row:hover .logo-sauber-table {
+  background-color: #f0f0f0;
+}
+
 .drivers-table-row:hover .logo-toyota-table{
   background-color: var(--toyota-secondary);
 }
