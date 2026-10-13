@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
     const { messages, max_tokens } = body;
 
-    const user = getUserTierServer(req);
+    const user = await getUserTierServer(req, res);
     if (!user.isLoggedIn) {
       return res.status(401).json({ error: "Not logged in" });
     }

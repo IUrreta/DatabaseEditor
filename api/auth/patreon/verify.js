@@ -1,6 +1,5 @@
-import jwt from 'jsonwebtoken';
-import { serialize } from 'cookie';
 import { getEffectiveTier } from '../../../lib/accessControl.js';
+import { exchangeCode, fetchPatreonIdentity, signSession, setSessionCookie } from '../../../lib/patreonSession.js';
 
 export default async function handler(req, res) {
     const { code } = req.query;
@@ -16,81 +15,28 @@ export default async function handler(req, res) {
 
     try {
         // 1. Exchange code for access token
-        const tokenResponse = await fetch('https://www.patreon.com/api/oauth2/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams({
-                code,
-                grant_type: 'authorization_code',
-                client_id: PATREON_CLIENT_ID,
-                client_secret: PATREON_CLIENT_SECRET,
-                redirect_uri: PATREON_REDIRECT_URI,
-            }),
-        });
-
-        const tokenData = await tokenResponse.json();
+        const tokenResponse = await exchangeCode(code);
 
         if (!tokenResponse.ok) {
-            console.error('Token exchange failed:', tokenData);
-            return res.status(tokenResponse.status).json({ error: 'Failed to exchange token', details: tokenData });
+            console.error('Token exchange failed:', tokenResponse.data);
+            return res.status(tokenResponse.status).json({ error: 'Failed to exchange token', details: tokenResponse.data });
         }
 
-        const accessToken = tokenData.access_token;
+        const { access_token: accessToken, refresh_token: refreshToken } = tokenResponse.data;
 
-        // 2. Fetch user identity and memberships
-        // Using API v2
-        const identityResponse = await fetch('https://www.patreon.com/api/oauth2/v2/identity?include=memberships.currently_entitled_tiers&fields%5Buser%5D=full_name,thumb_url&fields%5Bmember%5D=patron_status,currently_entitled_amount_cents&fields%5Btier%5D=title', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
-        const identityData = await identityResponse.json();
-
-        if (!identityResponse.ok) {
-            console.error('Identity fetch failed:', identityData);
-            return res.status(identityResponse.status).json({ error: 'Failed to fetch identity', details: identityData });
+        // 2. Fetch user identity and memberships (API v2)
+        let identity;
+        try {
+            identity = await fetchPatreonIdentity(accessToken);
+        } catch (err) {
+            console.error('Identity fetch failed:', err.details || err);
+            return res.status(err.status || 500).json({ error: 'Failed to fetch identity', details: err.details });
         }
 
-        // 3. Parse membership data to find tier
-        const memberships = identityData.included || [];
-        let isMember = false;
-        let tier = 'Free';
-        let amountCents = 0;
-        let tierName = 'None';
-
-        const tierIDs = ["25157070", "25124139", "25132338"];
         const paidTiers = ["Backer", "Insider", "Founder"];
-        const patronStatusOrder = {
-            "None": 0,
-            "Free": 0,
-            "Backer": 1,
-            "Insider": 2,
-            "Founder": 3
-        };
+        const { isMember, amountCents, baseTier } = identity;
 
-        // Logic to determine tier based on memberships
-        for (const item of memberships) {
-            if (item.type === 'member' && item.attributes.patron_status === 'active_patron') {
-                isMember = true;
-                amountCents = item.attributes.currently_entitled_amount_cents;
-            }
-            if (item.type === 'tier' && tierIDs.includes(item.id)) {
-                //get the highest, order is backer -> insider -> founder
-                if (patronStatusOrder[item.attributes.title] > patronStatusOrder[tierName]) {
-                    tierName = item.attributes.title;
-                }
-            }
-        }
-
-        if (isMember) {
-            tier = tierName;
-        }
-
-        const fullName = identityData?.data?.attributes?.full_name || "";
-        const baseTier = tier;
+        const fullName = identity.fullName;
         const { tier: effectiveTier, whitelisted } = getEffectiveTier({ name: fullName, baseTier });
         const isPaid = paidTiers.includes(effectiveTier);
         const tierNumbers = {
@@ -102,31 +48,19 @@ export default async function handler(req, res) {
 
         const patreonUser = {
             name: fullName,
-            thumbUrl: identityData.data.attributes.thumb_url,
+            thumbUrl: identity.thumbUrl,
             isMember,
             amountCents,
             tier: effectiveTier,
         };
 
-        const token = jwt.sign(
-            {
-                name: patreonUser.name,
-                tier: baseTier,
-                patreonId: identityData.data.id
-            },
-            process.env.JWT_SECRET,
-            { expiresIn: '30d' }
-        );
-
-        const serializedCookie = serialize('auth_token', token, {
-            httpOnly: true,  // VITAL: Browser JS cannot read this
-            secure: process.env.NODE_ENV === 'production', // HTTPS only
-            sameSite: 'strict',
-            maxAge: 60 * 60 * 24 * 30, // 30 days
-            path: '/'
+        const token = signSession({
+            name: patreonUser.name,
+            tier: baseTier,
+            patreonId: identity.patreonId,
+            refreshToken,
         });
-
-        res.setHeader('Set-Cookie', serializedCookie);
+        setSessionCookie(res, token);
 
         return res.status(200).json({
             success: true,

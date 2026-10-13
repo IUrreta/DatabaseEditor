@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import { getEffectiveTier } from '../lib/accessControl.js';
+import { revalidateSession } from '../lib/patreonSession.js';
 
-export default function handler(req, res) {
+export default async function handler(req, res) {
     // Vercel parses the cookie string automatically into req.cookies
     const { auth_token } = req.cookies;
 
@@ -16,7 +17,7 @@ export default function handler(req, res) {
 
     try {
         // Verify the token signature
-        const decoded = jwt.verify(auth_token, process.env.JWT_SECRET);
+        const decoded = await revalidateSession(jwt.verify(auth_token, process.env.JWT_SECRET), res);
 
         const paidTiers = ["Backer", "Insider", "Founder"];
         const { tier, whitelisted } = getEffectiveTier({ name: decoded.name, baseTier: decoded.tier });

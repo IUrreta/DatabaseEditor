@@ -4,7 +4,7 @@ import { redis } from "../lib/redis.js";
 
 export default async function handler(req, res) {
   try {
-    const user = getUserTierServer(req);
+    const user = await getUserTierServer(req, res);
 
     if (!user.isLoggedIn) {
       return res.status(401).json({ error: "Not logged in" });
