@@ -1,8 +1,9 @@
-import { races_map, codes_dict, weather_dict, countries_dict, invertedRacesMap } from "./config";
+import { races_map, codes_dict, weather_dict, countries_dict, invertedRacesMap, modded_codes_dict } from "./config";
 import { game_version } from "./renderer";
 import { max_races } from "./head2head";
 import { Command } from "../backend/command";
 import interact from 'interactjs';
+import bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 let deleting = false;
 let deleted = false;
@@ -401,18 +402,17 @@ function changeFormat(div,format) {
  * Adds all the races to the addRace menu
  */
 function load_addRaces() {
-    document.getElementById("addTrackMenu").innerHTML = ""
-    for (let dataCode of Object.keys(codes_dict)) {
-        let elem = countries_dict[dataCode]
+    const menu = document.getElementById("addTrackMenu")
+    menu.innerHTML = ""
+    const addMenuItem = (dataCode, imageUrl) => {
         let li = document.createElement('li');
         let a = document.createElement('a');
         a.classList.add('redesigned-dropdown-item');
         a.classList.add('menu-race');
         a.href = '#';
-        a.textContent = elem;
+        a.textContent = countries_dict[dataCode];
         a.dataset.code = dataCode
         a.dataset.trackid = invertedRacesMap[dataCode]
-        let imageUrl = codes_dict[dataCode];
         let img = document.createElement('img');
         img.src = imageUrl;
         img.classList.add('menuFlag');
@@ -421,8 +421,18 @@ function load_addRaces() {
         a.appendChild(img)
 
         li.appendChild(a);
-        document.getElementById("addTrackMenu").appendChild(li);
-
+        menu.appendChild(li);
+    }
+    for (let dataCode of Object.keys(codes_dict)) {
+        if (modded_codes_dict[dataCode]) continue
+        addMenuItem(dataCode, codes_dict[dataCode])
+    }
+    let title = document.createElement('li');
+    title.className = "custom-dropdown-section-title bold-font";
+    title.textContent = "MODDED TRACKS";
+    menu.appendChild(title);
+    for (let dataCode of Object.keys(modded_codes_dict)) {
+        addMenuItem(dataCode, modded_codes_dict[dataCode])
     }
     listenerRaces()
 }
@@ -434,7 +444,7 @@ function listenerRaces() {
     document.querySelectorAll('#addTrackMenu a').forEach(item => {
         item.addEventListener("click",function () {
             if (document.querySelector(".main-calendar-section").childElementCount < max_races) {
-                addRace({
+                const race = {
                     code: item.dataset.code,
                     rainP: 0,
                     rainQ: 0,
@@ -444,9 +454,23 @@ function listenerRaces() {
                     state: 0,
                     isF2Race: 0,
                     isF3Race: 0
-                })
-                updateVisualizers()
-                update_numbers()
+                }
+                const addAndUpdate = () => {
+                    addRace(race)
+                    updateVisualizers()
+                    update_numbers()
+                }
+                if (modded_codes_dict[race.code]) {
+                    const modalEl = document.getElementById("moddedTrackWarningModal")
+                    const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
+                    document.getElementById("confirmModdedTrackButton").onclick = () => {
+                        modal.hide()
+                        addAndUpdate()
+                    }
+                    modal.show()
+                } else {
+                    addAndUpdate()
+                }
             }
         })
     })

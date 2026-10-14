@@ -19,6 +19,22 @@
 <body class="font">
   <div class="tech-grid"></div>
   <div class="glow-spot"></div>
+  <div class="modal custom-modal fade" id="moddedTrackWarningModal" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content custom-modal">
+        <div class="modal-header custom-header">
+          <h4 class="modal-title bold-font">Modded track warning</h4>
+        </div>
+        <div class="modal-body custom-body modal-text">
+          Adding France (Paul Ricard) <span class="important-text bold-font">MAY BREAK YOUR SAVE</span>. Only add it if you have the Paul Ricard mod installed in your game.
+        </div>
+        <div class="modal-footer custom-footer">
+          <button type="button" class="close-modal" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="confirm-modal" id="confirmModdedTrackButton">I have the mod, add it</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="modal custom-modal fade" id="enginesModal" data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
       <div class="modal-content custom-modal">
