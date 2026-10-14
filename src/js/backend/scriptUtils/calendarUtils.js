@@ -213,11 +213,12 @@ export function editCalendar(year_iteration, racesData) {
       const isF2Race = parseInt(race.isF2Race, 10) || 0;
       const isF3Race = parseInt(race.isF3Race, 10) || 0;
 
+      // Modded tracks (e.g. Paul Ricard) have no template in the base game
       const temps = queryDB(`
         SELECT TemperatureMin, TemperatureMax
         FROM Races_Templates
         WHERE TrackID = ?
-      `, [raceCode], 'singleRow');
+      `, [raceCode], 'singleRow') || [15, 30];
 
       const tempP = randomInt(temps[0], temps[1]);
       const tempQ = randomInt(temps[0], temps[1]);
