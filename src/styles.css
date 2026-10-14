@@ -3658,6 +3658,7 @@ body.mclaren-theme .background {
 }
 
 #addTrackMenu {
+  min-width: 220px;
   max-height: 300px;
   overflow-y: scroll;
 }
@@ -5277,7 +5278,8 @@ phm
 .drivers-table-row:hover .logo-alphatauri-table,
 .drivers-table-row:hover .logo-williams-2026-table,
 .drivers-table-row:hover .logo-toyota-table,
-.drivers-table-row:hover .logo-sauber-table {
+.drivers-table-row:hover .logo-sauber-table,
+.drivers-table-row:hover .logo-audi-table {
   background-color: #f0f0f0;
 }
 
@@ -17850,6 +17852,7 @@ p.news-error-api-key {
 }
 
 .custom-dropdown-section-title {
+  white-space: nowrap;
   padding: 4px 8px;
   color: var(--text-secondary);
   font-size: 16px;
