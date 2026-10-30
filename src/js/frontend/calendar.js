@@ -1,4 +1,4 @@
-import { races_map, codes_dict, weather_dict, countries_dict, invertedRacesMap, modded_codes_dict } from "./config";
+import { races_map, races_names, names_full, codes_dict, weather_dict, countries_dict, invertedRacesMap, standalone_codes_dict, external_codes_dict } from "./config";
 import { game_version } from "./renderer";
 import { max_races } from "./head2head";
 import { Command } from "../backend/command";
@@ -10,6 +10,15 @@ let deleted = false;
 let previewTarget = null;
 let previewPosition = null;
 const importPreviousSeasonCalendarIcon = document.getElementById("importPreviousSeasonCalendarIcon");
+
+function hideTrackTooltips() {
+    document.querySelectorAll('#addTrackMenu .calendar-track-info').forEach(button => {
+        bootstrap.Tooltip.getInstance(button)?.hide()
+    })
+}
+
+document.getElementById('addRaceButton').addEventListener('hide.bs.dropdown', hideTrackTooltips);
+document.getElementById('addTrackMenu').addEventListener('scroll', hideTrackTooltips);
 
 /**
  * Positions both the div the user's moving and the one he has moved it into
@@ -119,10 +128,14 @@ function addRace(race) {
     upperDiv.className = "upper-text-and-flag"
     let textDiv = document.createElement('div');
     textDiv.classList.add('upper-race','bold-font');
-    textDiv.textContent = code.slice(0,-1).toUpperCase();
+    const trackName = names_full[races_names[trackId]] || `Track ${trackId}`;
+    textDiv.textContent = code.startsWith('mod') ? trackName.slice(0, 3).toUpperCase() : code.slice(0,-1).toUpperCase();
+    upperDiv.title = trackName;
+    upperDiv.setAttribute('aria-label', trackName);
 
     const img = document.createElement('img');
     img.src = imageUrl;
+    img.alt = '';
     img.classList.add('flag');
     img.setAttribute("loading","lazy");
 
@@ -403,18 +416,31 @@ function changeFormat(div,format) {
  */
 function load_addRaces() {
     const menu = document.getElementById("addTrackMenu")
+    menu.querySelectorAll('.calendar-track-info').forEach(button => {
+        bootstrap.Tooltip.getInstance(button)?.dispose()
+    })
     menu.innerHTML = ""
-    const addMenuItem = (dataCode, imageUrl) => {
+    const addMenuItem = (dataCode, imageUrl, showId = false) => {
         let li = document.createElement('li');
         let a = document.createElement('a');
         a.classList.add('redesigned-dropdown-item');
         a.classList.add('menu-race');
         a.href = '#';
-        a.textContent = countries_dict[dataCode];
+        const name = document.createElement('span');
+        name.className = 'calendar-track-name';
+        name.textContent = countries_dict[dataCode];
+        if (showId) {
+            const id = document.createElement('span');
+            id.className = 'calendar-track-id';
+            id.textContent = `id: ${invertedRacesMap[dataCode]}`;
+            name.appendChild(id);
+        }
+        a.appendChild(name);
         a.dataset.code = dataCode
         a.dataset.trackid = invertedRacesMap[dataCode]
         let img = document.createElement('img');
         img.src = imageUrl;
+        img.alt = '';
         img.classList.add('menuFlag');
         img.setAttribute("loading","lazy");
 
@@ -424,15 +450,61 @@ function load_addRaces() {
         menu.appendChild(li);
     }
     for (let dataCode of Object.keys(codes_dict)) {
-        if (modded_codes_dict[dataCode]) continue
+        if (standalone_codes_dict[dataCode] || external_codes_dict[dataCode]) continue
         addMenuItem(dataCode, codes_dict[dataCode])
     }
-    let title = document.createElement('li');
-    title.className = "custom-dropdown-section-title bold-font";
-    title.textContent = "MODDED TRACKS";
-    menu.appendChild(title);
-    for (let dataCode of Object.keys(modded_codes_dict)) {
-        addMenuItem(dataCode, modded_codes_dict[dataCode])
+    for (const [label, tracks, explanation] of [
+        ["EXTERNAL TRACKS", { ...standalone_codes_dict, ...external_codes_dict },
+            'This list always includes <span class="important-text bold-font">France (Paul Ricard) and Sochi</span>, plus any additional circuits <span class="important-text bold-font">detected in your loaded save</span>. You need the corresponding track mods installed to race on them. France and Sochi have base-game track data but need a mod to supply the circuit model. IDs for additional tracks may vary between mods or saves.']
+    ]) {
+        if (Object.keys(tracks).length === 0) continue
+        const title = document.createElement('li');
+        title.className = "custom-dropdown-section-title bold-font";
+        title.textContent = label;
+        const info = document.createElement('button');
+        info.type = 'button';
+        info.className = 'info-titles calendar-track-info';
+        info.textContent = '?';
+        info.setAttribute('aria-label', `About ${label.toLowerCase()}`);
+        title.appendChild(info);
+        menu.appendChild(title);
+        const tooltip = new bootstrap.Tooltip(info, {
+            title: explanation,
+            html: true,
+            container: document.body,
+            placement: 'right',
+            trigger: 'manual',
+            customClass: 'calendar-track-tooltip'
+        });
+        let hideTimer;
+        const showTooltip = () => {
+            clearTimeout(hideTimer);
+            tooltip.show();
+        };
+        const scheduleHide = () => {
+            clearTimeout(hideTimer);
+            hideTimer = setTimeout(() => {
+                const tip = document.getElementById(info.getAttribute('aria-describedby'));
+                if (!info.matches(':hover, :focus') && !tip?.matches(':hover')) tooltip.hide();
+            }, 180);
+        };
+        info.addEventListener('mouseenter', showTooltip);
+        info.addEventListener('focus', showTooltip);
+        info.addEventListener('mouseleave', scheduleHide);
+        info.addEventListener('blur', scheduleHide);
+        info.addEventListener('inserted.bs.tooltip', () => {
+            const tip = document.getElementById(info.getAttribute('aria-describedby'));
+            tip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+            tip.addEventListener('mouseleave', scheduleHide);
+        });
+        info.addEventListener('hide.bs.tooltip', () => clearTimeout(hideTimer));
+        info.addEventListener('keydown', event => {
+            if (event.key === 'Escape') tooltip.hide();
+        });
+        info.addEventListener('click', event => event.stopPropagation());
+        for (const dataCode of Object.keys(tracks)) {
+            addMenuItem(dataCode, tracks[dataCode], true)
+        }
     }
     listenerRaces()
 }
@@ -460,9 +532,11 @@ function listenerRaces() {
                     updateVisualizers()
                     update_numbers()
                 }
-                if (modded_codes_dict[race.code]) {
+                if (standalone_codes_dict[race.code]) {
                     const modalEl = document.getElementById("moddedTrackWarningModal")
                     const modal = bootstrap.Modal.getOrCreateInstance(modalEl)
+                    const trackName = names_full[races_names[race.trackId]];
+                    modalEl.querySelector('.modal-body').innerHTML = `Adding ${trackName} <span class="important-text bold-font">MAY BREAK YOUR SAVE</span>. Only add it if you have the ${trackName} standalone track mod installed in your game.`;
                     document.getElementById("confirmModdedTrackButton").onclick = () => {
                         modal.hide()
                         addAndUpdate()

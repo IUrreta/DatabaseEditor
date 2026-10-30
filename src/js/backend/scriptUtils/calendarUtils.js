@@ -9,6 +9,15 @@ const weatherDict = {
   "5": 32
 };
 
+
+export function fetchTrackMetadata() {
+  return queryDB(`
+    SELECT t.TrackID, t.Name, c.EnumName
+    FROM Races_Tracks t
+    JOIN Countries c ON c.CountryID = t.CountryID
+  `).map(([trackId, name, country]) => ({ trackId, name, country }));
+}
+
 function getCurrentSeasonRow() {
   return queryDB(`
     SELECT Day, CurrentSeason
@@ -75,8 +84,11 @@ export function editCalendar(year_iteration, racesData) {
   let weeks;
 
   if (yearIteration === "24") {
-    maxRaces = 24;
+    maxRaces = 40;
     weeks = [11, 8, 15, 36, 24, 20, 22, 25, 26, 9, 28, 29, 34, 37, 13, 42, 41, 43, 48, 17, 33, 19, 46, 47];
+    // Fill unused weeks only as needed, preserving shorter calendars.
+    const extraWeeks = [30, 31, 32, 35, 38, 39, 10, 12, 13, 14, 16, 18, 21, 23, 27, 40];
+    weeks.push(...extraWeeks.slice(0, Math.max(0, racesData.length - weeks.length)));
   } else if (yearIteration === "23") {
     maxRaces = 23;
     weeks = [12, 8, 16, 21, 20, 23, 25, 26, 10, 28, 29, 34, 36, 37, 42, 41, 43, 46, 17, 33, 19, 45, 39];
@@ -85,7 +97,11 @@ export function editCalendar(year_iteration, racesData) {
     weeks = [];
   }
 
-  const raceBlanks = maxRaces - racesData.length;
+  if (racesData.length > maxRaces) {
+    throw new Error(`The calendar supports a maximum of ${maxRaces} races.`);
+  }
+
+  const raceBlanks = weeks.length - racesData.length;
 
   const daySeason = queryDB(`
     SELECT Day, CurrentSeason
@@ -149,9 +165,9 @@ export function editCalendar(year_iteration, racesData) {
   } else {
     const randomBlanks = [];
     for (let i = 0; i < raceBlanks; i++) {
-      let n = Math.floor(Math.random() * maxRaces);
+      let n = Math.floor(Math.random() * weeks.length);
       while (randomBlanks.includes(n)) {
-        n = Math.floor(Math.random() * maxRaces);
+        n = Math.floor(Math.random() * weeks.length);
       }
       randomBlanks.push(n);
     }

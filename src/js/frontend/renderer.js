@@ -8,7 +8,7 @@ import {
     populateSeasonReview,
     onSessionResultsFetched, refreshRecordsAfterDataChange
 } from './seasonViewer';
-import { combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
+import { loadSaveTracks, combined_dict, abreviations_dict, codes_dict, logos_disc, mentality_to_global_menatality, difficultyConfig, default_dict, weightDifConfig, defaultDifficultiesConfig, defaultTurningPointsFrequencyPreset, turningPointsFrequencyLabels, themeToolbarLogos } from './config';
 import {
     freeDriversDiv, insert_space, place_staff, remove_drivers, add_marquees_transfers, place_drivers, sortList, update_name,
     manage_modal,
@@ -963,6 +963,9 @@ const messageHandlers = {
     "Draft basic data created": (message) => {
         applyDraftBasicDataCreated(message);
     },
+    "Tracks fetched": (message) => {
+        loadSaveTracks(message);
+    },
     "Calendar fetched": (message) => {
         load_calendar(message)
     },
@@ -1430,7 +1433,7 @@ function manage_game_year(info) {
         document.getElementById("drs24").classList.remove("d-none")
         document.getElementById("drs24").dataset.attribute = "3"
         game_version = 2024
-        setMaxRaces(24)
+        setMaxRaces(40)
         manage_custom_team(info)
         document.querySelectorAll(".brake-cooling-replace").forEach(function (elem) {
             elem.textContent = "Tyre preservation"

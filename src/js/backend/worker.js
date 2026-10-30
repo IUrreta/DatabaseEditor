@@ -23,7 +23,7 @@ import { editTeam, fetchTeamData } from "./scriptUtils/editTeamUtils";
 import { overwritePerformanceTeam, updateItemsForDesignDict, fitLoadoutsDict, getPartsFromTeam, getUnitValueFromParts, getAllPartsFromTeam, getMaxDesign, getUnitValueFromOnePart, deleteCustomEngineAndReassign, getTeamExpertise, getTeamNextSeasonCarExpertise, updateTeamExpertise, updateTeamNextSeasonExpertise, getTeamPowerUnitConditionData, updateTeamPowerUnitCondition, adjustTeamOverallToTarget, copyTeamPerformance, syncSeasonDesignsToLatest } from "./scriptUtils/carAnalysisUtils";
 import { setGlobals, getGlobals } from "./commandGlobals";
 import { editAge, editGeneratedStaffBasicData, editMarketability, editName, editRetirement, editSuperlicense, editCode, editMentality, editStats, setAllDriversStatsTo85 } from "./scriptUtils/eidtStatsUtils";
-import { editCalendar, fetchCalendar, fetchPreviousSeasonCalendar } from "./scriptUtils/calendarUtils";
+import { editCalendar, fetchCalendar, fetchPreviousSeasonCalendar, fetchTrackMetadata } from "./scriptUtils/calendarUtils";
 import { fireDriver, hireDriver, swapDrivers, editContract, futureContract, transferJuniorDriver, CONTRACT_PLACEHOLDERS_24 } from "./scriptUtils/transferUtils";
 import {
   change2024Standings, changeDriverLineUps, changeStats, removeFastestLap, timeTravelWithData, manageAffiliates, changeRaces, manageStandings,
@@ -63,7 +63,7 @@ import { createDraftStaff, fetchCountryLocaleWithFace, fetchRandomDraftForename,
 import { buildFaceGalleryEntries } from "./scriptUtils/faceUtils.js";
 
 import initSqlJs from 'sql.js';
-import { combined_dict } from "../frontend/config";
+import { combined_dict, loadSaveTracks } from "../frontend/config";
 
 // The freeze triggers revert any stat/expertise change on AI teams, so manual edits lift the freeze
 // and take a new snapshot afterwards, keeping the edited values frozen.
@@ -404,6 +404,9 @@ const workerCommands = {
   },
 
   saveSelected: (data, postMessage) => {
+    const tracks = fetchTrackMetadata();
+    loadSaveTracks(tracks);
+    postMessage({ responseMessage: "Tracks fetched", content: tracks });
 
     const yearData = checkYearSave();
     postMessage({ responseMessage: "Game Year", content: yearData });

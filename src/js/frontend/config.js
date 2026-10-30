@@ -1,5 +1,8 @@
+import { countries_abreviations } from '../backend/scriptUtils/countries';
+
 // calendar
 export let codes_dict = {
+    "rus0": "../assets/images/russia.svg",
     "bah0": "../assets/images/bahrain.png", "sau0": "../assets/images/saudi.jpg", "aus0": "../assets/images/australia.png", "aze0": "../assets/images/azerbaiyan.png",
     "mia0": "../assets/images/usa.png", "imo0": "../assets/images/italy.png", "mon0": "../assets/images/monaco.png", "spa0": "../assets/images/spain.png", "can0": "../assets/images/canada.png",
     "aut0": "../assets/images/austria.png", "gbr0": "../assets/images/gbr.png", "hun0": "../assets/images/hungry.png", "bel0": "../assets/images/balgium.png", "ned0": "../assets/images/ned.png",
@@ -7,16 +10,21 @@ export let codes_dict = {
     "bra0": "../assets/images/brazil.png", "veg0": "../assets/images/usa.png", "uae0": "../assets/images/uae.png", "chi0": "../assets/images/china.png", "fra0": "../assets/images/france.png"
 }
 export let countries_dict = {
+    "rus0": "Sochi",
     "bah0": "Bahrain", "sau0": "Saudi Arabia", "aus0": "Australia", "aze0": "Azerbaijan",
     "mia0": "Miami", "imo0": "Imola", "mon0": "Monaco", "spa0": "Spain", "can0": "Canada",
     "aut0": "Austria", "gbr0": "United Kingdom", "hun0": "Hungary", "bel0": "Belgium", "ned0": "Netherlands",
     "ita0": "Italy", "sgp0": "Singapore", "jap0": "Japan", "qat0": "Qatar", "usa0": "USA", "mex0": "Mexico",
     "bra0": "Brazil", "veg0": "Vegas", "uae0": "Abu Dhbai", "chi0": "China", "fra0": "France"
 };
-// tracks that need a game mod; they get their own section in the add race menu
-export let modded_codes_dict = {
+// Base-game tracks that need a standalone mod to supply the missing circuit model.
+export const standalone_codes_dict = {
+    "rus0": "../assets/images/russia.svg",
     "fra0": "../assets/images/france.png"
 }
+
+// Additional tracks detected in the current save, separate from base-game tracks.
+export const external_codes_dict = {};
 
 export let weather_dict = {
     0: "bi bi-sun", 1: "bi bi-cloud-sun", 2: "bi bi-cloud", 3: "bi bi-cloud-drizzle", 4: "bi bi-cloud-rain", 5: "bi bi-cloud-rain-heavy"
@@ -237,6 +245,7 @@ export const themeToolbarLogos = {
 
 //predictions
 export const names_full = {
+    "RUS": "Sochi",
     "BAH": "Bahrain",
     "AUS": "Australia",
     "SAU": "Saudi Arabia",
@@ -272,9 +281,9 @@ export let driversTableLogosDict = {
     "cadillac": "logo-cadillac-table", "ford": "logo-ford-table", "racingpoint": "logo-racingpoint-table", "jordan": "logo-jordan-table"
 }
 
-export const races_map = { 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
-export const invertedRacesMap = { "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0": 3 };
-export const races_names = { 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
+export const races_map = { 16: "rus0", 2: "bah0", 1: "aus0", 11: "sau0", 24: "imo0", 22: "mia0", 5: "spa0", 6: "mon0", 4: "aze0", 7: "can0", 10: "gbr0", 9: "aut0", 8: "fra0", 12: "hun0", 13: "bel0", 14: "ita0", 15: "sgp0", 17: "jap0", 19: "usa0", 18: "mex0", 20: "bra0", 21: "uae0", 23: "ned0", 25: "veg0", 26: "qat0", 3: "chi0" };
+export const invertedRacesMap = { "rus0": 16, "bah0": 2, "aus0": 1, "sau0": 11, "imo0": 24, "mia0": 22, "spa0": 5, "mon0": 6, "aze0": 4, "can0": 7, "gbr0": 10, "aut0": 9, "fra0": 8, "hun0": 12, "bel0": 13, "ita0": 14, "sgp0": 15, "jap0": 17, "usa0": 19, "mex0": 18, "bra0": 20, "uae0": 21, "ned0": 23, "veg0": 25, "qat0": 26, "chi0": 3 };
+export const races_names = { 16: "RUS", 2: "BAH", 1: "AUS", 11: "SAU", 24: "IMO", 22: "MIA", 5: "SPA", 6: "MON", 4: "AZE", 7: "CAN", 10: "GBR", 9: "AUT", 8: "FRA", 12: "HUN", 13: "BEL", 14: "ITA", 15: "SGP", 17: "JAP", 19: "USA", 18: "MEX", 20: "BRA", 21: "UAE", 23: "NED", 25: "VEG", 26: "QAT", 3: "CHI" };
 export const contintntRacesRegions = {
     "Europe": [24, 5, 6, 10, 9, 12, 13, 14, 23],
     "Asia": [17, 3, 15, 1],
@@ -390,6 +399,7 @@ export const countries_data = {
     "CAN": { "country": "Canada", "adjective": "Canadian", "circuit": "Montreal", "track": "Circuit Gilles Villeneuve", "rlToolsName": "montreal.2002" },
     "GBR": { "country": "Great Britain", "adjective": "British", "circuit": "Silverstone", "track": "Silverstone Circuit", "rlToolsName": "silverstone.2011" },
     "AUT": { "country": "Austria", "adjective": "Austrian", "circuit": "Red Bull Ring", "track": "Red Bull Ring", "rlToolsName": "spielberg.2016" },
+    "RUS": { "country": "Russia", "adjective": "Russian", "circuit": "Sochi", "track": "Sochi Autodrom" },
     "FRA": { "country": "France", "adjective": "French", "circuit": "Paul Ricard", "track": "Circuit Paul Ricard", "rlToolsName": "paulricard.2005" },
     "HUN": { "country": "Hungary", "adjective": "Hungarian", "circuit": "Hungaroring", "track": "Hungaroring", "rlToolsName": "hungaroring.2003" },
     "BEL": { "country": "Belgium", "adjective": "Belgian", "circuit": "Spa", "track": "Circuit de Spa-Francorchamps", "rlToolsName": "spa.2007" },
@@ -405,6 +415,65 @@ export const countries_data = {
     "QAT": { "country": "Qatar", "adjective": "Qatar", "circuit": "Lusail", "track": "Lusail International Circuit", "rlToolsName": "losail.2023" },
     "CHI": { "country": "China", "adjective": "Chinese", "circuit": "Shanghai", "track": "Shanghai International Circuit", "rlToolsName": "shanghai.2004" }
 };
+
+// Prefer bundled flags where available; identify countries from the save, not track names.
+const trackFlagsByCountry = {
+  Germany: '../assets/images/germany.webp'
+};
+
+// Unknown tracks belong to the current save, not to a global list of mod IDs.
+let saveTrackIds = [];
+
+export function loadSaveTracks(tracks) {
+  for (const trackId of saveTrackIds) {
+    const code = races_map[trackId];
+    const shortName = races_names[trackId];
+    delete races_map[trackId];
+    delete races_names[trackId];
+    delete invertedRacesMap[code];
+    delete codes_dict[code];
+    delete external_codes_dict[code];
+    delete countries_dict[code];
+    delete names_full[shortName];
+    delete countries_data[shortName];
+  }
+  saveTrackIds = [];
+
+  // Reuse an existing flag only when the save identifies the same country.
+  const flagsByCountry = new Map();
+  for (const track of tracks) {
+    const flag = codes_dict[races_map[track.trackId]];
+    if (flag) flagsByCountry.set(track.country, flag);
+  }
+
+  for (const { trackId, name, country } of tracks) {
+    if (races_map[trackId]) continue;
+    const code = `mod${trackId}0`;
+    const shortName = `T${trackId}`;
+    const rawName = name || `Track ${trackId}`;
+    const displayName = rawName
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
+      .replace(/([a-zA-Z])(\d)/g, '$1 $2')
+      .replace(/(\d)([a-zA-Z])/g, '$1 $2');
+    const countryName = country.replace(/(?<!^)([A-Z])/g, ' $1');
+    const countryCode = countries_abreviations[countryName];
+    const flag = trackFlagsByCountry[country]
+      || flagsByCountry.get(country)
+      || (countryCode ? `https://flagcdn.com/${countryCode.toLowerCase()}.svg` : '../assets/images/unknown-track.svg');
+    races_map[trackId] = code;
+    races_names[trackId] = shortName;
+    invertedRacesMap[code] = trackId;
+    codes_dict[code] = flag;
+    external_codes_dict[code] = flag;
+    countries_dict[code] = displayName;
+    names_full[shortName] = displayName;
+    countries_data[shortName] = {
+      country, adjective: displayName, circuit: displayName, track: displayName
+    };
+    saveTrackIds.push(trackId);
+  }
+}
 
 // custom news
 export const CUSTOM_NEWS_TYPE_META = {

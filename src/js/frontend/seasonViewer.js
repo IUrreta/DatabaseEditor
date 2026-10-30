@@ -566,10 +566,13 @@ function createHeaderCell(trackId, labelSuffix = "", baseClass = "drivers-table-
     let race = races_map[trackId]
     let flag_src = codes_dict[race]
     headerPosFlag.src = flag_src
+    headerPosFlag.alt = ""
+    headerPos.title = getGpDisplayName(trackId)
     let headerPosDiv = document.createElement("div")
     headerPosDiv.classList.add("text-in-front")
     headerPosDiv.classList.add("bold-font")
-    headerPosDiv.innerText = labelSuffix ? `${labelSuffix}` : races_names[trackId]
+    const trackLabel = race?.startsWith("mod") ? getGpDisplayName(trackId).slice(0, 3).toUpperCase() : races_names[trackId]
+    headerPosDiv.innerText = labelSuffix ? `${labelSuffix}` : trackLabel
     if (labelSuffix === "SPR") {
         headerPosDiv.classList.add("sprint-label")
         headerPosDiv.classList.add("sprint-result-cell")
@@ -5113,22 +5116,22 @@ export function loadRecordsList(data) {
 
         let firstRace = document.createElement("div")
         firstRace.classList = "extra-stat"
-        let trackName = record.firstRace.trackName ? record.firstRace.trackName : (record.firstRace.trackId ? names_full[races_names[record.firstRace.trackId]] : "")
+        let trackName = record.firstRace.trackName ? record.firstRace.trackName : (record.firstRace.trackId ? getGpDisplayName(record.firstRace.trackId) : "")
         firstRace.textContent = `First Race: ${trackName} ${record.firstRace.season}`
 
         let firstPodium = document.createElement("div")
         firstPodium.classList = "extra-stat"
-        let podiumTrackName = record.firstPodium.trackName ? record.firstPodium.trackName : (record.firstPodium.trackId ? names_full[races_names[record.firstPodium.trackId]] : "")
+        let podiumTrackName = record.firstPodium.trackName ? record.firstPodium.trackName : (record.firstPodium.trackId ? getGpDisplayName(record.firstPodium.trackId) : "")
         firstPodium.textContent = `First Podium: ${podiumTrackName} ${record.firstPodium.season}`
 
         let firstWin = document.createElement("div")
         firstWin.classList = "extra-stat"
-        let winTrackName = record.firstWin.trackName ? record.firstWin.trackName : (record.firstWin.trackId ? names_full[races_names[record.firstWin.trackId]] : "")
+        let winTrackName = record.firstWin.trackName ? record.firstWin.trackName : (record.firstWin.trackId ? getGpDisplayName(record.firstWin.trackId) : "")
         firstWin.textContent = `First Win: ${winTrackName} ${record.firstWin.season}`
 
         let lastWin = document.createElement("div")
         lastWin.classList = "extra-stat"
-        let lastWinTrackName = record.lastWin.trackName ? record.lastWin.trackName : (record.lastWin.trackId ? names_full[races_names[record.lastWin.trackId]] : "")
+        let lastWinTrackName = record.lastWin.trackName ? record.lastWin.trackName : (record.lastWin.trackId ? getGpDisplayName(record.lastWin.trackId) : "")
         lastWin.textContent = `Last Win: ${lastWinTrackName} ${record.lastWin.season}`
 
         let fastestLaps = document.createElement("div")
