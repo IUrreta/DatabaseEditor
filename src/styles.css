@@ -3658,20 +3658,103 @@ body.mclaren-theme .background {
 }
 
 #addTrackMenu {
-  min-width: 220px;
-  max-height: 300px;
-  overflow-y: scroll;
+  min-width: 280px;
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  max-height: 280px;
+  overflow-y: auto;
 }
 
+#addTrackMenu .menu-race {
+  width: 100%;
+  max-width: none;
+}
+
+#addTrackMenu .calendar-track-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+#addTrackMenu .calendar-track-id {
+  margin-left: 8px;
+  color: var(--text-secondary);
+  opacity: 0.8;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#addTrackMenu .menuFlag {
+  flex-shrink: 0;
+}
+
+#addTrackMenu .custom-dropdown-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+#addTrackMenu .calendar-track-info {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  border: 0;
+  padding: 0;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: inherit;
+  line-height: inherit;
+  vertical-align: 1px;
+  cursor: help;
+}
+
+.calendar-track-info:focus-visible {
+  outline: 2px solid var(--new-primary);
+  outline-offset: 3px;
+}
+
+.calendar-track-tooltip {
+  pointer-events: auto;
+  --bs-tooltip-max-width: 280px;
+  --bs-tooltip-bg: var(--dropdown-back);
+  --bs-tooltip-color: var(--text-general);
+  --bs-tooltip-opacity: 1;
+}
+
+.calendar-track-tooltip .tooltip-inner {
+  width: 280px;
+  padding: 9px 11px;
+  border: 1px solid var(--separator);
+  border-radius: 7px;
+  background: var(--dropdown-back);
+  box-shadow: var(--shadow-m);
+  color: var(--text-general);
+  font-family: 'Formula1';
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.calendar-track-tooltip .tooltip-arrow {
+  display: none;
+}
+
+.main-calendar-section::-webkit-scrollbar,
 #addTrackMenu::-webkit-scrollbar {
   width: 4px;
 }
 
+.main-calendar-section::-webkit-scrollbar-thumb,
 #addTrackMenu::-webkit-scrollbar-thumb {
   background-color: var(--white-general);
   border-radius: 3px;
 }
 
+.main-calendar-section::-webkit-scrollbar-thumb:hover,
 #addTrackMenu::-webkit-scrollbar-thumb:hover {
   background-color: var(--scrollbar-hover);
 }
@@ -3703,6 +3786,8 @@ body.mclaren-theme .background {
   height: 10px;
   width: 20px;
   margin-left: 10px;
+  object-fit: cover;
+  object-position: center;
 }
 
 #edit_teams {
@@ -5968,6 +6053,8 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 .flag-header img {
   width: 100%;
   height: 33px;
+  object-fit: cover;
+  object-position: center;
 }
 
 .text-in-front {
@@ -6021,8 +6108,8 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 .main-calendar-section {
   margin-left: 14px;
   color: var(--white-general);
-  min-height: 660px;
-  max-height: 660px;
+  min-height: 720px;
+  max-height: 720px;
   overflow-y: auto;
   border-radius: 10px;
   display: grid;
@@ -6329,6 +6416,8 @@ body.light-theme .drivers-table:has(.f3-table-data) .drivers-table-row .drivers-
 .flag {
   width: 95px;
   height: 45px;
+  object-fit: cover;
+  object-position: center;
   border-radius: 6px;
   opacity: 0.45;
 }

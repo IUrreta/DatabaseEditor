@@ -6463,7 +6463,24 @@ function getLatestChampions(seasonId) {
 
 }
 
+// These image families exist as <code>.webp, <code>_car.webp and <code>_tra.webp.
+// This is an asset list, not a list of supported TrackIDs.
+const newsTrackImageCodes = [
+    'aus', 'aut', 'aze', 'bah', 'bel', 'bra', 'can', 'chi', 'fra', 'gbr',
+    'hun', 'imo', 'ita', 'jap', 'mex', 'mia', 'mon', 'ned', 'qat', 'sau',
+    'sgp', 'spa', 'uae', 'usa', 'veg'
+];
+
 function getImagePath(teamId, code, type) {
+    if (['raceQuali', 'champion', 'reaction', 'race_substitution'].includes(type)) {
+        const normalizedCode = String(code ?? '').toLowerCase();
+        const suffix = type === 'raceQuali' && normalizedCode.endsWith('_car') ? '_car' : '';
+        const trackCode = normalizedCode.replace(/_car$/, '');
+        // Keep the image category, but never change the race's name or metadata.
+        const imageCode = newsTrackImageCodes.includes(trackCode) ? trackCode : randomPick(newsTrackImageCodes);
+        code = `${imageCode}${suffix}`;
+    }
+
     const maxImages = {
         'fe': 5, 'mc': 2, 'rb': 4, 'me': 4, 'al': 2, 'wi': 3,
         'ha': 2, 'at': 2, 'af': 2, 'as': 2, 'ct': 2, 'f2': 2, 'f3': 2
